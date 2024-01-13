@@ -24,4 +24,12 @@ public class Diagnostics extends SubsystemBase {
   public String getDiagnosticResult(){
     return diagnosticResult;
   }
+
+  public void setOK(boolean ok){
+    this.ok = ok;
+  }
+
+  public void setDiagnosticResult(String diagnosticResult){
+    this.diagnosticResult = diagnosticResult;
+  }
 }
