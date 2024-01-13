@@ -7,11 +7,21 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Diagnostics extends SubsystemBase {
+  private boolean ok;
+  private String diagnosticResult;
   /** Creates a new Diagnostics. */
-  public Diagnostics() {}
+  public Diagnostics() {
+    ok = false;
+    diagnosticResult = "";
+  }
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
+  public void runDiagnostics(){}
+
+  public boolean isOK(){
+    return ok;
+  }
+
+  public String getDiagnosticResult(){
+    return diagnosticResult;
   }
 }
