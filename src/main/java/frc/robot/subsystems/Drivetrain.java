@@ -4,9 +4,8 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Drivetrain extends SubsystemBase {
+public class Drivetrain extends Diagnostics{
   /** Creates a new Drivetrain. */
   public Drivetrain() {}
 

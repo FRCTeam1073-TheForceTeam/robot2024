@@ -4,9 +4,7 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-public class AprilTagFinder extends SubsystemBase {
+public class AprilTagFinder extends Diagnostics {
   /** Creates a new AprilTagFinder. */
   public AprilTagFinder() {}
 

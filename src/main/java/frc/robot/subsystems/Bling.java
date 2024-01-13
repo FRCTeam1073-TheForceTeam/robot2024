@@ -4,9 +4,7 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-public class Bling extends SubsystemBase {
+public class Bling extends Diagnostics {
   /** Creates a new Bling. */
   public Bling() {}
 

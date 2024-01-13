@@ -4,9 +4,8 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class OI extends SubsystemBase {
+public class OI extends Diagnostics{
   /** Creates a new OI. */
   public OI() {}
 
