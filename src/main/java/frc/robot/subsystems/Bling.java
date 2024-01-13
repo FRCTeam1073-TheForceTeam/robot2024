@@ -82,10 +82,13 @@ public class Bling extends Diagnostics {
    * 
    * @return the results
    */
-  public String getDiagnostics() {
+  @Override
+  public void runDiagnostics() {
     String result = new String();
-    //Check errors for all hardware
-    return result;
+    boolean isOK = true;
+    //TODO: run diagnostics here
+    super.setDiagnosticResult(result);
+    super.setOK(isOK);
   }
 
   /**
