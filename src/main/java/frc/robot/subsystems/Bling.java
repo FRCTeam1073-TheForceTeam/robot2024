@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.RobotController;
@@ -15,6 +16,10 @@ public class Bling extends Diagnostics {
   public int length = 24;
   public int slotLength;
   public int numSlots = 8;
+
+  private int red;
+  private int green;
+  private int blue;
   
   /**
    * Creates a new bling.
@@ -61,6 +66,18 @@ public class Bling extends Diagnostics {
     return m_ledBuffer;
   }
 
+  public int getRed(){
+    return red;
+  }
+
+  public int getGreen(){
+    return green;
+  }
+
+  public int getBlue(){
+    return blue;
+  }
+
   /**
    * Sets one LED to a color
    * @param i - the index to write
@@ -81,6 +98,7 @@ public class Bling extends Diagnostics {
    * @return buffer length
    */
   public void setRGBAll(int r, int g, int b) {
+    red = r; green = g; blue = b;
     for (var i = 0; i < (m_ledBuffer.getLength()); i++) {
       m_ledBuffer.setRGB(i, r, g, b);
     }
@@ -90,6 +108,7 @@ public class Bling extends Diagnostics {
    * Turns off all LEDs
    */
   public void clearLEDs() {
+    red = 0; green = 0; blue = 0;
     setRGBAll(0, 0, 0);
   }
 
@@ -160,5 +179,13 @@ public class Bling extends Diagnostics {
     //TODO: run diagnostics here
     super.setDiagnosticResult(result);
     super.setOK(isOK);
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder){
+    builder.setSmartDashboardType("Bling");
+    builder.addIntegerProperty("redAll", this::getRed, null);
+    builder.addIntegerProperty("greenAll", this::getGreen, null);
+    builder.addIntegerProperty("blueAll", this::getBlue, null);
   }
 }
