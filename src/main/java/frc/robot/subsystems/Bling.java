@@ -8,6 +8,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Bling extends Diagnostics {
   public AddressableLED m_led;
@@ -184,8 +185,7 @@ public class Bling extends Diagnostics {
   @Override
   public void initSendable(SendableBuilder builder){
     builder.setSmartDashboardType("Bling");
-    builder.addIntegerProperty("redAll", this::getRed, null);
-    builder.addIntegerProperty("greenAll", this::getGreen, null);
-    builder.addIntegerProperty("blueAll", this::getBlue, null);
+    builder.addBooleanProperty("ok", this::isOK, null);
+    builder.addStringProperty("diagnostics", this::getDiagnosticResult, null);
   }
 }
