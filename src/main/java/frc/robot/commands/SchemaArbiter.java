@@ -2,6 +2,8 @@ package frc.robot.commands;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.commands.MotionSchema.Rotate;
 import frc.robot.commands.MotionSchema.Translate;
@@ -13,10 +15,12 @@ public class SchemaArbiter extends Command
     Drivetrain drivetrain;
     MotionSchema.Translate totalTranslate = new MotionSchema.Translate(0, 0, 0);
     MotionSchema.Rotate totalRotate = new MotionSchema.Rotate(0, 0);
+    boolean isFieldCentric;
 
-    public SchemaArbiter(Drivetrain drivetrain)
+    public SchemaArbiter(Drivetrain drivetrain, boolean isFieldCentric)
     {
         this.drivetrain = drivetrain;
+        this.isFieldCentric = isFieldCentric;
         addRequirements(drivetrain);
     }
 
@@ -30,7 +34,7 @@ public class SchemaArbiter extends Command
     {
         for (int i = 0; i < schema.size(); i++)
         {
-            schema.get(i).initialize();
+            schema.get(i).initialize(drivetrain);
         }
     }
 
@@ -51,13 +55,33 @@ public class SchemaArbiter extends Command
         totalTranslate.resolve();
         totalRotate.resolve();
         // send to drive subsystem
-        // TODO: actually do this
+        if (isFieldCentric)
+        {
+            drivetrain.setChassisSpeeds(
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                    totalTranslate.vx, 
+                    totalTranslate.vy,
+                    totalRotate.omega, 
+                    Rotation2d.fromDegrees(drivetrain.getHeading()) // gets fused heading
+                )
+            );
+        }
+        else
+        {
+            drivetrain.setChassisSpeeds(
+                new ChassisSpeeds(
+                    totalTranslate.vx, 
+                    totalTranslate.vy, 
+                    totalRotate.omega
+                )
+            );
+        }
     }
 
     @Override
     public void end(boolean interrupted)
     {
-        // TODO: set drivetrain velocity to 0
+        drivetrain.setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
     }
 
     @Override

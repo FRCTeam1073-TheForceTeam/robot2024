@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
 
 public class TeleopTranslateSchema extends MotionSchema 
@@ -12,7 +13,8 @@ public class TeleopTranslateSchema extends MotionSchema
     }
 
     @Override
-    public void update() {
-        // TODO: set a translate based on operator input
+    public void update(Drivetrain drivetrain) 
+    {
+        setTranslate(oi.getDriverTranslateX(), oi.getDriverTranslateY(), 1);
     }
 }

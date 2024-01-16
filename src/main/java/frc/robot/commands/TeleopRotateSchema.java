@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
 
 public class TeleopRotateSchema extends MotionSchema 
@@ -12,8 +13,8 @@ public class TeleopRotateSchema extends MotionSchema
     }
 
     @Override
-    public void update()
+    public void update(Drivetrain drivetrain)
     {
-        // TODO: set a rotate based on operator input
+        setRotate(oi.getDriverRotate(), 1);
     }
 }

@@ -1,5 +1,7 @@
 package frc.robot.commands;
 
+import frc.robot.subsystems.Drivetrain;
+
 public class MotionSchema 
 {
     public static class Translate
@@ -96,14 +98,29 @@ public class MotionSchema
         return rotate;
     }
 
-    public void initialize()
+    public void initialize(Drivetrain drivetrain)
     {
         // same thing as update
     }
 
-    public void update()
+    public void update(Drivetrain drivetrain)
     {
         // Derived classes override this method and set their translate and rotate terms
+    }
+
+    public void execute()
+    {
+
+    }
+
+    public void end(boolean interrupted)
+    {
+
+    }
+
+    public boolean isFinished()
+    {
+        return false;
     }
 
     public final void setTranslate(double vx, double vy, double weight)
