@@ -4,17 +4,21 @@
 
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
+
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.RobotController;
 
 public class Bling extends Diagnostics {
-  public AddressableLED m_led;
-  public AddressableLEDBuffer m_ledBuffer;
+  private AddressableLED m_led;
+  private AddressableLEDBuffer m_ledBuffer;
 
-  public int length = 24;
-  public int slotLength;
-  public int numSlots = 8;
+  private int length = 24;
+  private int slotLength;
+  private int numSlots = 8;
+
+  private ArrayList<ArrayList<int[]>> slotStacks = new ArrayList<ArrayList<int[]>>(numSlots);
   
   /**
    * Creates a new bling.
@@ -62,8 +66,28 @@ public class Bling extends Diagnostics {
   }
 
   /**
+   * Pushes a new rgb array to the stack of the given slot.
+   * @param slotNumber - the slot to write to
+   * @param r - the r value [0-255]
+   * @param g - the g value [0-255]
+   * @param b - the b value [0-255]
+   */
+  public void pushRGB(int slotNumber, int r, int g, int b){
+    int[] rgbArray = {r, g, b};
+    slotStacks.get(slotNumber).add(rgbArray);
+  }
+
+  /**
+   * Pops the last rgb array from the stack of the given slot.
+   * @param i - the slot to write to
+   */
+  public void popRGB(int slotNumber){
+    slotStacks.get(slotNumber).remove(slotStacks.size() - 1);
+  }
+
+  /**
    * Sets one LED to a color
-   * @param i - the index to write
+   * @param i - the index to write to
    * @param r - the r value [0-255]
    * @param g - the g value [0-255]
    * @param b - the b value [0-255]
@@ -114,7 +138,7 @@ public class Bling extends Diagnostics {
 
   /**
    * Sets a slot of LEDs to one color.
-   * @param slotNumber
+   * @param slotNumber - the slot to write to
    * @param r - the r value [0-255]
    * @param g - the g value [0-255]
    * @param b - the b value [0-255]
@@ -129,7 +153,7 @@ public class Bling extends Diagnostics {
    * Green when battery voltage is greater than 12
    * Blue when battery voltage is greater than 10
    * Red when battery voltage is less than or equal to 10
-   * @param slotNumber
+   * @param slotNumber - the slot to write to
    */
   public void setBatteryBling(int slotNumber) {
     double volts = RobotController.getBatteryVoltage();
