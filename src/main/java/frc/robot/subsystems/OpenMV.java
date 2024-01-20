@@ -33,6 +33,7 @@ public class OpenMV extends SubsystemBase{
     // This method will be called once per scheduler run
     if (port != null) {
       System.out.println(port.readString());
+      //System.out.println("Hellow Third World");
     }     
   }
 
