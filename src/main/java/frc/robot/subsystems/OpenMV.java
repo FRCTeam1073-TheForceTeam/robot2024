@@ -17,6 +17,7 @@ public class OpenMV extends SubsystemBase{
 
   private SerialPort port;
   private double lastUpdateTime = 0;
+  private String talk = "This is from Java";
 
   public OpenMV(SerialPort.Port p) {
     try {
@@ -32,8 +33,11 @@ public class OpenMV extends SubsystemBase{
   public void periodic() {
     // This method will be called once per scheduler run
     if (port != null) {
-      System.out.println(port.readString());
-      //System.out.println("Hellow Third World");
+      //System.out.println(port.readString());
+      Integer bytesout = port.writeString(talk);
+      System.out.println(String.format("bytesout %s", bytesout));
+      System.out.println(String.format("talklen: %s",talk.length()));
+      System.out.println("Hellow Third World");
     }     
   }
 
