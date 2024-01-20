@@ -4,13 +4,43 @@
 
 package frc.robot.subsystems;
 
+import java.util.ArrayList;
 
-public class OpenMV extends Diagnostics{
+import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+
+
+public class OpenMV extends SubsystemBase{
   /** Creates a new OpenMV. */
-  public OpenMV() {}
+
+  private SerialPort port;
+  private double lastUpdateTime = 0;
+
+  public OpenMV(SerialPort.Port p) {
+    try {
+      port = new SerialPort(19200,p,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
+    }
+    catch (Exception e) {
+      System.out.println("OpenMV Could not open serial port!");
+      port = null;
+    }
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if (port != null) {
+      System.out.println(port.readString());
+    }     
   }
+
+  // public boolean parseMessage(String s){
+  //   // System.out.println(String.format("OpenMV Parse Message %s", s));
+    
+  //   lastUpdateTime = Timer.getFPGATimestamp(); // Update last valid time since we have a packet.
+  //   System.out.println(lastUpdateTime);
+  //   return true;
+  // }
 }
