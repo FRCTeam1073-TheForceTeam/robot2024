@@ -20,9 +20,9 @@ public class OpenMV extends SubsystemBase{
 
   public OpenMV(SerialPort.Port p) {
     try {
-      port = new SerialPort(19200,p,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
+      port = new SerialPort(921600,p,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
       // port.setFlowControl(SerialPort.FlowControl.kNone);
-      port.setFlowControl(SerialPort.FlowControl.kDtsDsr);
+      port.setFlowControl(SerialPort.FlowControl.kNone);
     }
     catch (Exception e) {
       System.out.println("OpenMV Could not open serial port!");
