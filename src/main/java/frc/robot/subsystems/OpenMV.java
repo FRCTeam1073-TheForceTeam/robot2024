@@ -4,10 +4,9 @@
 
 package frc.robot.subsystems;
 
-import java.util.ArrayList;
+// import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -17,11 +16,13 @@ public class OpenMV extends SubsystemBase{
 
   private SerialPort port;
   private double lastUpdateTime = 0;
-  private String talk = "This is from Java";
+  private String talk = "q";
 
   public OpenMV(SerialPort.Port p) {
     try {
       port = new SerialPort(19200,p,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
+      // port.setFlowControl(SerialPort.FlowControl.kNone);
+      port.setFlowControl(SerialPort.FlowControl.kDtsDsr);
     }
     catch (Exception e) {
       System.out.println("OpenMV Could not open serial port!");
@@ -31,13 +32,13 @@ public class OpenMV extends SubsystemBase{
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
     if (port != null) {
-      //System.out.println(port.readString());
-      Integer bytesout = port.writeString(talk);
-      System.out.println(String.format("bytesout %s", bytesout));
-      System.out.println(String.format("talklen: %s",talk.length()));
-      System.out.println("Hellow Third World");
+      System.out.println("sending q");
+      Integer wrote = port.writeString(talk);
+      System.out.println(String.format("wrote: %s", wrote));
+      // System.out.println(String.format("bytesout %s", bytesout));
+      // System.out.println(String.format("talklen: %s",talk.length()));
+      // System.out.println("Hellow Third World");
     }     
   }
 
