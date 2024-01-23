@@ -15,11 +15,11 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 
 public class Collector extends DiagnosticsSubsystem {
-
-  TalonFX collectMotor = new TalonFX(0); // same thing
+  
+    TalonFX collectMotor = new TalonFX(0); // same thing
   MotorFault collectMotorFault = new MotorFault(collectMotor, 0);
   private double collectorSpeed;
-  private DigitalInput tof1;
+    private DigitalInput tof1;
   private DutyCycle tof1DutyCycleInput;
   private double tof1DutyCycle;
   private double tof1Freq;
@@ -40,7 +40,7 @@ public class Collector extends DiagnosticsSubsystem {
   /** Creates a new Collector. */
   public Collector() {
     collectorSpeed = 0;
-
+    
     tof1 = new DigitalInput(0); // TODO: set correct port #
     tof1DutyCycleInput = new DutyCycle(tof1);
     tof1Freq = 0;
@@ -58,7 +58,7 @@ public class Collector extends DiagnosticsSubsystem {
 
     collectMotor.getConfigurator().apply(collectMotorClosedLoopConfig);
   }
-  
+
   public void runCollectMotor(double collectorSpeed)
   {
     collectMotor.setControl(new VelocityVoltage(collectorSpeed * collectorTicksPerMeter));
@@ -97,7 +97,7 @@ public class Collector extends DiagnosticsSubsystem {
   public void periodic() 
   {
     runCollectMotor(collectorSpeed);
-    tof1Freq = tof1DutyCycleInput.getFrequency();
+        tof1Freq = tof1DutyCycleInput.getFrequency();
     tof1DutyCycle = tof1DutyCycleInput.getOutput();
     tof1Range = tof1ScaleFactor * (tof1DutyCycle / tof1Freq - 0.001);
   }
@@ -107,7 +107,7 @@ public class Collector extends DiagnosticsSubsystem {
   public boolean updateDiagnostics() 
   {
     String result = "";
-
+    
     if(tof1DutyCycleInput.getFrequency()< 2){
       return setDiagnosticsFeedback(String.format("tof1 not working"), false);
     }
