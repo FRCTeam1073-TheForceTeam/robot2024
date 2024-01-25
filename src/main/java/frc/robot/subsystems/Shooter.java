@@ -26,9 +26,12 @@ public class Shooter extends Diagnostics{
   private final TalonFX pivotMotor;
   private final DigitalInput triggerBeamBreakEnter;
   private final DigitalInput triggerBeamBreakExit;
+  /*TODO: One near motor for shooter, one near motor for trigger?*/
   private double shooterMotorVelocity;
   private double offset;
   private double triggerMotorVelocity;
+  private double topMotorVelocity;
+  private double bottomMotorVelocity;
 
   private double p = 0.11;
   private double i = 0.5;
@@ -116,21 +119,23 @@ public void setConfigsPivot(){
   pivotMotor.getConfigurator().apply(configs);
 }
 
-  public void setTopMotorVelocity(double shooterMotorVelocity)
+  public void setTopMotorVelocity(double velocity)
   {
-    topMotor.setControl(new VelocityVoltage(-shooterMotorVelocity));
+    topMotorVelocity = velocity;
+    topMotor.setControl(new VelocityVoltage(-velocity));
   }
-
-    public void setBottomMotorVelocity(double shooterMotorVelocity)
+  
+    public void setBottomMotorVelocity(double velocity)
   {
-    bottomMotor.setControl(new VelocityVoltage(-shooterMotorVelocity));
+    bottomMotorVelocity = velocity;
+    bottomMotor.setControl(new VelocityVoltage(-velocity));
   }
 
     public void settriggerMotorLeader(double triggerMotorVelocity)
   {
     triggerMotorLeader.setControl(new VelocityVoltage(triggerMotorVelocity));
   }
-
+/* TODO: Rename */
     public void settriggerMotorFollower(double triggerMotorVelocity)
   {
     triggerMotorFollower.setControl(new VelocityVoltage(triggerMotorVelocity));
@@ -148,26 +153,6 @@ public void setConfigsPivot(){
   public boolean triggerBeamBreakExitValue(){
     return triggerBeamBreakExit.get();
   }
-
-  /* return true if note is only in the first beam break sensor */
-  public boolean noteEnteringtrigger(){
-    return triggerBeamBreakEnterValue() & ! triggerBeamBreakExitValue(); 
-  }
-
-
-  /* return true if note is only in the second beam break sensor */
-  public boolean noteExitingtrigger(){
-    return !triggerBeamBreakEnterValue() & triggerBeamBreakExitValue(); 
-  }
-
-  /* return true if note is in both beam break sensors */
-  public boolean noteIntrigger(){
-    return triggerBeamBreakEnterValue() & triggerBeamBreakExitValue(); 
-  }
-
-public void setShooterMotorVelocity(double velocity) {
-   shooterMotorVelocity = velocity;
-}
 
 public double getShooterMotorVelocity(){
   return shooterMotorVelocity;
