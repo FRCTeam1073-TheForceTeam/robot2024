@@ -119,38 +119,38 @@ public void setConfigsPivot(){
   pivotMotor.getConfigurator().apply(configs);
 }
 
-  public void setTopMotorVelocity(double velocity)
+  public void setTopMotorVelocity(double velocityRPS)
   {
-    topMotorVelocity = velocity;
-    topMotor.setControl(new VelocityVoltage(-velocity));
+    topMotorVelocity = velocityRPS;
+    topMotor.setControl(new VelocityVoltage(-velocityRPS));
   }
   
-    public void setBottomMotorVelocity(double velocity)
+    public void setBottomMotorVelocity(double velocityRPS)
   {
-    bottomMotorVelocity = velocity;
-    bottomMotor.setControl(new VelocityVoltage(-velocity));
-  }
-
-    public void settriggerMotorLeader(double triggerMotorVelocity)
-  {
-    triggerMotorLeader.setControl(new VelocityVoltage(triggerMotorVelocity));
+    bottomMotorVelocity = velocityRPS;
+    bottomMotor.setControl(new VelocityVoltage(-velocityRPS));
   }
 /* TODO: Rename */
-    public void settriggerMotorFollower(double triggerMotorVelocity)
+
+    public void setTriggerMotorTopVelocity(double triggerMotorRPS)
   {
-    triggerMotorFollower.setControl(new VelocityVoltage(triggerMotorVelocity));
+    triggerMotorLeader.setControl(new VelocityVoltage(triggerMotorRPS));
+  }
+    public void setTriggerMotorBottomVelocity(double triggerMotorRPS)
+  {
+    triggerMotorFollower.setControl(new VelocityVoltage(triggerMotorRPS));
   }
 
-    public void setpivotMotor(double pivotMotorPosition)
+    public void setPivotMotor(double pivotMotorPosition)
   {
     pivotMotor.setControl(new PositionVoltage(pivotMotorPosition));
   }
   
-  public boolean triggerBeamBreakEnterValue(){
+  public boolean noteIsInTrigger(){
     return triggerBeamBreakEnter.get();
   }
 
-  public boolean triggerBeamBreakExitValue(){
+  public boolean noteIsInShooter(){
     return triggerBeamBreakExit.get();
   }
 
@@ -158,11 +158,11 @@ public double getShooterMotorVelocity(){
   return shooterMotorVelocity;
 }
 
-public void settriggerMotorVelocity(double velocity) {
+public void setTriggerMotorVelocity(double velocity) {
    triggerMotorVelocity = velocity;
 }
 
-public double gettriggerMotorVelocity(){
+public double getTriggerMotorVelocity(){
   return triggerMotorVelocity;
 }
 
