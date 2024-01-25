@@ -64,12 +64,14 @@ public class Camera extends SubsystemBase {
 
 
     HashMap<String, String> sendMessage = new HashMap<String, String>();
-    sendMessage.put("Message", "Message"); //TODO
+    sendMessage.put("Message", "<CameraID, cmd(AT, GP, LD, OR), (TagID, CenterX, CenterY, Rotation, Distance, Quality)* Tag Number"); 
 
+    HashMap<String, String> recieveMessage = new HashMap<String, String>();
+    recieveMessage.put("Message", "3, AT, (9, 3.33, 3.33, 0.0, 1.35, 50)* 5"); //TODO Change Numbers
   }
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    
   }
 }
