@@ -44,7 +44,7 @@ public class Collector extends Diagnostics {
     collectorSpeed = 0;
     liftSpeed = 0;
 
-    tof1 = new DigitalInput(0); 
+    tof1 = new DigitalInput(0); // TODO: set correct port #
     tof1DutyCycleInput = new DutyCycle(tof1);
     tof1Freq = 0;
     tof1Range = 0;
@@ -72,21 +72,21 @@ public class Collector extends Diagnostics {
     collectMotor.getConfigurator().apply(collectMotorClosedLoopConfig);
 
   }
-  public void setLiftMotorSpeed(double liftSpeed)
+  public void runLiftMotor(double liftSpeed)
   {
     liftMotor.setControl(new VelocityVoltage(liftSpeed));
   }
 
-  public void setCollectMotorSpeed(double collectorSpeed)
+  public void runCollectMotor(double collectorSpeed)
   {
     collectMotor.setControl(new VelocityVoltage(collectorSpeed * collectorTicksPerMeter));
   }
 
-  public void setMotorSpeeds(double speed)
-  {
-    setLiftMotorSpeed(speed);
-    setCollectMotorSpeed(speed);
-  }
+  // public void setMotorSpeeds(double speed)
+  // {
+  //   setLiftMotorSpeed(speed);
+  //   setCollectMotorSpeed(speed);
+  // }
 
 
   public void setCollectorSpeed(double collectorSpeed)
@@ -112,16 +112,17 @@ public class Collector extends Diagnostics {
   {
     builder.setSmartDashboardType("Collector");
     builder.addDoubleProperty("Speed", this::getCollectorSpeed, this::setCollectorSpeed);
-    builder.setSmartDashboardType("tof1Range");
     builder.addDoubleProperty("tof1Range", this::getRange1, this::setRange1);
+    builder.addBooleanProperty("ok", this::isOK, null);
+    builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
   }
 
   @Override
   public void periodic() 
   {
-    setMotorSpeeds(collectorSpeed);
+    runCollectMotor(collectorSpeed);
+    runLiftMotor(liftSpeed);
     tof1Freq = tof1DutyCycleInput.getFrequency();
-    tof1DutyCycle = tof1DutyCycleInput.getOutput();
     tof1DutyCycle = tof1DutyCycleInput.getOutput();
     tof1Range = tof1ScaleFactor * (tof1DutyCycle / tof1Freq - 0.001);
     
@@ -131,29 +132,24 @@ public class Collector extends Diagnostics {
   @Override
   public void runDiagnostics() 
   {
+    String result = "";
+
+    Faults faults = new Faults();
+    collectMotor.getFaults(faults);
+
+    if(faults.hasAnyFault()){
+      result += faults.toString();
+    }
+    ErrorCode error = collectMotor.clearStickyFaults(500);
+    if (error != ErrorCode.OK) {
+      result += String.format("can't clear collectorMotor faults");
+    }
+
+    if(tof1DutyCycleInput.getFrequency()< 2){
+      result += String.format("tof1 not working");
+    }
+
+    setDiagnosticResult(result);
     setOK(true);
   }
-
-  // public String getDiagnostics(){
-  //   String result = "";
-  //   Faults faults = new Faults();
-  //   collectorMotor.getFaults(faults);
-
-  //   if(faults.hasAnyFault()){
-  //     result += faults.toString();
-  //   }
-  //   ErrorCode error = collectorMotor.clearStickyFaults(500);
-  //   if (error != ErrorCode.OK) {
-  //     result += String.format("can't clear collectorMotor faults");
-  //   }
-
-  //   if(tof1DutyCycleInput.getFrequency()< 2){
-  //     result += String.format("tof1 not working");
-  //   }
-  //   // if(tof2DutyCycleInput.getFrequency()< 2){
-  //   //   result += String.format("tof2 not working");
-  //   // }
-        
-  //   return result;
-
 }
