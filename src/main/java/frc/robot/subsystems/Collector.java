@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.System_StateValue;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -15,6 +16,8 @@ import edu.wpi.first.wpilibj.DutyCycle;
 public class Collector extends Diagnostics {
   TalonFX liftMotor = new TalonFX(0); // TODO: set device id
   TalonFX collectMotor = new TalonFX(0); // same thing
+  MotorFault liftMotorFault = new MotorFault(liftMotor, 0);
+  MotorFault collectMotorFault = new MotorFault(liftMotor, 0);
   private double collectorSpeed;
   private double liftSpeed;
   private DigitalInput tof1;
@@ -133,23 +136,18 @@ public class Collector extends Diagnostics {
   public void runDiagnostics() 
   {
     String result = "";
+    setOK(true);
 
-    Faults faults = new Faults();
-    collectMotor.getFaults(faults);
-
-    if(faults.hasAnyFault()){
-      result += faults.toString();
-    }
-    ErrorCode error = collectMotor.clearStickyFaults(500);
-    if (error != ErrorCode.OK) {
-      result += String.format("can't clear collectorMotor faults");
+    if(liftMotorFault.hasFaults() || collectMotorFault.hasFaults()){
+        setOK(false);
     }
 
     if(tof1DutyCycleInput.getFrequency()< 2){
       result += String.format("tof1 not working");
     }
 
+    result += liftMotorFault.getFaults() + collectMotorFault.getFaults();
+
     setDiagnosticResult(result);
-    setOK(true);
   }
 }
