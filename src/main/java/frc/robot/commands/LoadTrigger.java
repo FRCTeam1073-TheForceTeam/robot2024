@@ -21,8 +21,8 @@ public class LoadTrigger extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    shooter.setTriggerMotorTopVelocity(5);
-    shooter.setTriggerMotorBottomVelocity(5);
+    shooter.setTopTriggerMotorVelocity(5);
+    shooter.setBottomTriggerMotorVelocity(5);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -32,8 +32,8 @@ public class LoadTrigger extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.setTriggerMotorTopVelocity(0);
-    shooter.setTriggerMotorBottomVelocity(0);
+    shooter.setTopTriggerMotorVelocity(0);
+    shooter.setBottomTriggerMotorVelocity(0);
   }
 
   // Returns true when the command should end.

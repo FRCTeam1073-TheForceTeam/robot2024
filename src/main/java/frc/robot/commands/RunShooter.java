@@ -13,15 +13,15 @@ public class RunShooter extends Command {
   private Shooter shooter;
   private double shooterTopRPS;
   private double shooterBottomRPS;
-  private double feederTopRPS;
-  private double feederBottomRPS;
+  private double triggerTopRPS;
+  private double triggerBottomRPS;
   /* Creates a new RunShooter. */
-  public RunShooter(Shooter shooter, double shootortopRPS, double shootorbottomRPS, double feederTopRPS, double feederBottomRPS) {
+  public RunShooter(Shooter shooter, double shootortopRPS, double shootorbottomRPS, double triggerTopRPS, double triggerBottomRPS) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.shooterTopRPS = shooterTopRPS;
     this.shooterBottomRPS = shooterBottomRPS;
-    this.feederTopRPS = feederTopRPS;
-    this.feederBottomRPS = feederBottomRPS; 
+    this.triggerTopRPS = triggerTopRPS;
+    this.triggerBottomRPS = triggerBottomRPS; 
     this.shooter = shooter;
     addRequirements(shooter);
   }
@@ -30,8 +30,8 @@ public class RunShooter extends Command {
   /* start shooter wheels to get them up to speed */
   @Override
   public void initialize() {
-    shooter.setTopMotorVelocity(shooterTopRPS);
-    shooter.setBottomMotorVelocity(shooterBottomRPS);
+    shooter.setTopShooterMotorVelocity(shooterTopRPS);
+    shooter.setBottomShooterMotorVelocity(shooterBottomRPS);
 
   }
 
@@ -39,15 +39,20 @@ public class RunShooter extends Command {
   @Override
   public void execute() {
     /* if shooter motors are up to speed, then turn on trigger motors */
+    /* might need to adjust the numbers depending on what % we want the power at */
+    if ((shooter.getTopShooterMotorVelocity() >= 0.98 * shooterTopRPS) && (shooter.getBottomShooterMotorVelocity() >= 0.98 * shooterBottomRPS)){
+      shooter.setTopTriggerMotorVelocity(triggerTopRPS);
+      shooter.setBottomShooterMotorVelocity(triggerBottomRPS);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.setTopMotorVelocity(0);
-    shooter.setBottomMotorVelocity(0);
-    shooter.setTriggerMotorTopVelocity(0);
-   shooter.setTriggerMotorBottomVelocity(0);    
+    shooter.setTopShooterMotorVelocity(0);
+    shooter.setBottomShooterMotorVelocity(0);
+    shooter.setTopTriggerMotorVelocity(0);
+    shooter.setBottomTriggerMotorVelocity(0);    
   }
 
   // Returns true when the command should end.

@@ -7,16 +7,24 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Shooter;
+
 
 public class SetShooterAngle extends Command {
+  private Shooter shooter;
+  double targetPositionRotations;
   /** Creates a new SetShooterAngle. */
-  public SetShooterAngle() {
+  public SetShooterAngle(Shooter shooter, double targetPositionRotations) {
     // Use addRequirements() here to declare subsystem dependencies.
+    this.shooter = shooter;
+    this.targetPositionRotations = targetPositionRotations;
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    shooter.setPivotMotorRotations(targetPositionRotations);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -24,11 +32,13 @@ public class SetShooterAngle extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return (shooter.getPivotMotorRotations() >= targetPositionRotations * 0.98);
   }
 }

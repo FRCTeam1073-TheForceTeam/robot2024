@@ -19,19 +19,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends Diagnostics{
   
-  TalonFX topMotor;
-  TalonFX bottomMotor;
+  private final TalonFX topShooterMotor;
+  private final TalonFX bottomShooterMotor;
   private final TalonFX triggerMotorLeader;
   private final TalonFX triggerMotorFollower;
   private final TalonFX pivotMotor;
-  private final DigitalInput triggerBeamBreakEnter;
-  private final DigitalInput triggerBeamBreakExit;
-  /*TODO: One near motor for shooter, one near motor for trigger?*/
-  private double shooterMotorVelocity;
+  private final DigitalInput triggerBeamBreak;
+  private final DigitalInput shooterBeamBreak;
   private double offset;
   private double triggerMotorVelocity;
-  private double topMotorVelocity;
-  private double bottomMotorVelocity;
+  private double topShooterMotorVelocity;
+  private double bottomShooterMotorVelocity;
 
   private double p = 0.11;
   private double i = 0.5;
@@ -40,17 +38,20 @@ public class Shooter extends Diagnostics{
   /** Creates a new Shooter. **/
   public Shooter() {
     //one motor might be a follower
-    topMotor = new TalonFX(12); // Kracken - TODO: set CAN ID
-    bottomMotor = new TalonFX(24); //Kracken - TODO: set CAN ID
+    topShooterMotor = new TalonFX(12); // Kracken - TODO: set CAN ID
+    bottomShooterMotor = new TalonFX(24); //Kracken - TODO: set CAN ID
     triggerMotorLeader = new TalonFX(18); //Falcon - TODO: set CAN ID
     triggerMotorFollower = new TalonFX(16); //Falcon - TODO: set CAN ID
-    triggerBeamBreakEnter = new DigitalInput(0); //TODO: correct port
-    triggerBeamBreakExit = new DigitalInput(3); //TODO: correct port
+    triggerBeamBreak = new DigitalInput(0); //TODO: correct port
+    shooterBeamBreak = new DigitalInput(3); //TODO: correct port
     pivotMotor = new TalonFX(18); //Falcon - TODO: set CAN ID
-    shooterMotorVelocity = 0;
+    topShooterMotorVelocity = 0;
+    bottomShooterMotorVelocity = 0;
     offset = 0;
     setConfigsShooter();
     setConfigsTrigger();
+    setConfigsPivot();
+    pivotMotor.setPosition(0); //initialize to 0 rotations
 }
  
   @Override
@@ -76,8 +77,8 @@ public void setConfigsShooter(){
   configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
   configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
 
-  topMotor.getConfigurator().apply(configs);
-  bottomMotor.getConfigurator().apply(configs);
+  topShooterMotor.getConfigurator().apply(configs);
+  bottomShooterMotor.getConfigurator().apply(configs);
 }
 
 public void setConfigsTrigger(){
@@ -118,50 +119,69 @@ public void setConfigsPivot(){
 
   pivotMotor.getConfigurator().apply(configs);
 }
-
-  public void setTopMotorVelocity(double velocityRPS)
+  /* sets the desired top shooter motor velocity in rotations per second */
+  public void setTopShooterMotorVelocity(double velocityRPS)
   {
-    topMotorVelocity = velocityRPS;
-    topMotor.setControl(new VelocityVoltage(-velocityRPS));
+    topShooterMotor.setControl(new VelocityVoltage(-velocityRPS));
   }
   
-    public void setBottomMotorVelocity(double velocityRPS)
+  /* sets the desired bottom shooter motor velocity in rotations per second */
+  public void setBottomShooterMotorVelocity(double velocityRPS)
   {
-    bottomMotorVelocity = velocityRPS;
-    bottomMotor.setControl(new VelocityVoltage(-velocityRPS));
+    bottomShooterMotor.setControl(new VelocityVoltage(-velocityRPS));
   }
-/* TODO: Rename */
 
-    public void setTriggerMotorTopVelocity(double triggerMotorRPS)
+  /* sets the desired top trigger motor velocity in rotations per second */
+  public void setTopTriggerMotorVelocity(double triggerMotorRPS)
   {
     triggerMotorLeader.setControl(new VelocityVoltage(triggerMotorRPS));
   }
-    public void setTriggerMotorBottomVelocity(double triggerMotorRPS)
+
+  /* sets the desired bottom trigger motor velocity in rotations per second */
+  public void setBottomTriggerMotorVelocity(double triggerMotorRPS)
   {
     triggerMotorFollower.setControl(new VelocityVoltage(triggerMotorRPS));
   }
 
-    public void setPivotMotor(double pivotMotorPosition)
+  /* sets the desired number of rotations for the pivot motor */
+  public void setPivotMotorRotations(double pivotMotorPosition)
   {
     pivotMotor.setControl(new PositionVoltage(pivotMotorPosition));
   }
+
+  /* returns the position value */
+  public double getPivotMotorRotations(){
+    return pivotMotor.getPosition().getValue();
+  }
   
+  /* uses the beam break sensor to detect if the note has entered the trigger */
   public boolean noteIsInTrigger(){
-    return triggerBeamBreakEnter.get();
+    return triggerBeamBreak.get();
   }
 
+  /* uses the beam break sensor to detect if the note has entered the shooter */
   public boolean noteIsInShooter(){
-    return triggerBeamBreakExit.get();
+    return shooterBeamBreak.get();
   }
 
-public double getShooterMotorVelocity(){
-  return shooterMotorVelocity;
+/* gets the value of the velocity that the top shooter motor is at */
+public double getTopShooterMotorVelocity(){
+  topShooterMotorVelocity = (topShooterMotor.getVelocity()).getValue();
+  return topShooterMotorVelocity;
 }
 
+/* gets the value of the velocity that the bottom shooter motor is at */
+public double getBottomShooterMotorVelocity(){ 
+  bottomShooterMotorVelocity = bottomShooterMotor.getVelocity().getValue();
+  return bottomShooterMotorVelocity;
+}
+
+/* sets the velocity of the trigger motor */
 public void setTriggerMotorVelocity(double velocity) {
    triggerMotorVelocity = velocity;
 }
 
+/* gets the value of the trigger motor velocity */
 public double getTriggerMotorVelocity(){
   return triggerMotorVelocity;
 }
