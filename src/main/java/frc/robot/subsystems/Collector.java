@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.System_StateValue;
@@ -14,6 +15,14 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 
 public class Collector extends Diagnostics {
+  
+  enum POSE{
+    START,
+    STOW,
+    COLLECT,
+    SCORE
+  }
+
   TalonFX liftMotor = new TalonFX(0); // TODO: set device id
   TalonFX collectMotor = new TalonFX(0); // same thing
   MotorFault liftMotorFault = new MotorFault(liftMotor, 0);
@@ -85,13 +94,6 @@ public class Collector extends Diagnostics {
     collectMotor.setControl(new VelocityVoltage(collectorSpeed * collectorTicksPerMeter));
   }
 
-  // public void setMotorSpeeds(double speed)
-  // {
-  //   setLiftMotorSpeed(speed);
-  //   setCollectMotorSpeed(speed);
-  // }
-
-
   public void setCollectorSpeed(double collectorSpeed)
   {
     this.collectorSpeed = collectorSpeed;
@@ -115,9 +117,11 @@ public class Collector extends Diagnostics {
   {
     builder.setSmartDashboardType("Collector");
     builder.addDoubleProperty("Speed", this::getCollectorSpeed, this::setCollectorSpeed);
-    builder.addDoubleProperty("tof1Range", this::getRange1, this::setRange1);
+    builder.addDoubleProperty("tof1Range", this::getRange1, null);
     builder.addBooleanProperty("ok", this::isOK, null);
     builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
+    collectMotor.initSendable(builder);
+    liftMotor.initSendable(builder);
   }
 
   @Override
@@ -128,7 +132,6 @@ public class Collector extends Diagnostics {
     tof1Freq = tof1DutyCycleInput.getFrequency();
     tof1DutyCycle = tof1DutyCycleInput.getOutput();
     tof1Range = tof1ScaleFactor * (tof1DutyCycle / tof1Freq - 0.001);
-    
   }
 
 
