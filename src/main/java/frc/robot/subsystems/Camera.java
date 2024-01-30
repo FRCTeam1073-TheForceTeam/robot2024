@@ -25,7 +25,7 @@ public class Camera extends SubsystemBase {
   /** Creates a new Camera. */
   public Camera(SerialPort.Port p) {
     HashMap<String, Integer> camStats = new HashMap<String, Integer>();
-    camStats.put("baudrate", 926000);
+    camStats.put("baudrate", 921600);
     camStats.put("timeStamp", 54);
 
     HashMap<String, Double> aprilTags = new HashMap<String, Double>();
@@ -88,12 +88,12 @@ public class Camera extends SubsystemBase {
 
   @Override
   public void periodic() {
-    if (port != null) {
+    /*if (port != null) {
       System.out.println("sending q");
       Integer wrote = port.writeString("1,A,\n");
       System.out.println(String.format("wrote: %s", wrote));
       String read = port.readString();
       System.out.println(read);
-    }
+    }*/
   }
 }
