@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 // import java.util.ArrayList;
 import java.lang.Thread;
 import java.lang.annotation.Target;
+import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,6 +18,7 @@ public class SerialComms extends SubsystemBase{
   /** Creates a new OpenMV. */
 
   private static SerialPort port;
+  private ArrayList<Target> targets;
   public int camID = 1;
   public String cam_id = Integer.toString(camID);
   public String cmd;
@@ -105,8 +107,11 @@ public class SerialComms extends SubsystemBase{
           t.tagID = Integer.parseInt(fields[index +1]);
           t.imagey = Double.parseDouble(fields[index +2]);
           t.imagex = Double.parseDouble(fields[index +3]);
-          t.confidence = Double.parseDouble(fields[index +4]);
-
+          t.rotation = Double.parseDouble(fields[index +4]);
+          t.distance = Double.parseDouble(fields[index +5]);
+          t.confidence = Double.parseDouble(fields[index +6]);
+          t.amt = Integer.parseInt(fields[index +7]);
+          targets.add(t);
         }
       } 
     }
@@ -118,5 +123,10 @@ public class SerialComms extends SubsystemBase{
     System.out.println(port.readString());
     String msgR ="";  
     Recieve.msg = msgR;  
+    parseMessage(msgR);
+  }
+
+  public ArrayList<Target> getTargets(){
+    return targets;
   }
 }
