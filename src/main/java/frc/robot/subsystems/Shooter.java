@@ -6,16 +6,13 @@ package frc.robot.subsystems;
 // need to deal with angle adjustments, imputting velocity or power //
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.ControlModeValue;
-import com.ctre.phoenix6.controls.PositionVoltage;
 
-import edu.wpi.first.wpilibj.DigitalInput; 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 
 public class Shooter extends Diagnostics{
@@ -37,10 +34,13 @@ public class Shooter extends Diagnostics{
   private double followerTriggerMotorVelocity;
   private double topShooterMotorVelocity;
   private double bottomShooterMotorVelocity;
+    private double targetTopShooterMotorVelocity;
+  private double targetBottomShooterMotorVelocity;
   private double toftrigger1Freq;
   private double toftrigger1Range;
-  private final double toftrigger1ScaleFactor = 100000;
-  private DutyCycle toftrigger1DutyCycleInput;
+  private double toftrigger1DutyCycle;
+  private final double toftrigger1ScaleFactor = 3000000/4; // for 50cm (irs16a): 3/4 million || for 130 cm (irs17a): 2 million || for 300 cm (irs17a): 4 million
+  private final DutyCycle toftrigger1DutyCycleInput;
 
   private double p = 0.11;
   private double i = 0.5;
@@ -54,13 +54,15 @@ public class Shooter extends Diagnostics{
     triggerMotorLeader = new TalonFX(18); //Falcon - TODO: set CAN ID
     triggerMotorFollower = new TalonFX(16); //Falcon - TODO: set CAN ID
     shooterBeamBreak = new DigitalInput(3); //TODO: correct port
-    toftrigger1 = new DigitalInput(2)//TODO: correct port
+    toftrigger1 = new DigitalInput(2);//TODO: correct port/channel
     pivotMotor = new TalonFX(18); //Falcon - TODO: set CAN ID
     topShooterMotorFault = new MotorFault(topShooterMotor, 12); //TODO set CAN ID
     bottomShooterMotorFault = new MotorFault(bottomShooterMotor, 24); //TODO set CAN ID
     triggerMotorLeaderFault = new MotorFault(triggerMotorLeader, 18); //TODO set CAN ID   
     triggerMotorFollowerFault = new MotorFault(triggerMotorFollower, 16); //TODO set CAN ID   
     pivotMotorFault = new MotorFault(pivotMotor, 18); //TODO set CAN ID
+    SlewRateLimiter topFlyWheelFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
+    SlewRateLimiter bottomFlyWheelFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
 
     toftrigger1DutyCycleInput = new DutyCycle(toftrigger1);
     toftrigger1Freq = 0;
@@ -68,6 +70,8 @@ public class Shooter extends Diagnostics{
 
     topShooterMotorVelocity = 0;
     bottomShooterMotorVelocity = 0;
+    targetTopShooterMotorVelocity = 0;
+    targetBottomShooterMotorVelocity = 0;
     leaderTriggerMotorVelocity = 0;
     followerTriggerMotorVelocity = 0;
     offset = 0;
@@ -81,8 +85,17 @@ public class Shooter extends Diagnostics{
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    //System.out.println("TOF Running");
+    toftrigger1Freq = toftrigger1DutyCycleInput.getFrequency();
+    System.out.println(toftrigger1Freq);
+    toftrigger1DutyCycle = toftrigger1DutyCycleInput.getOutput();
+    toftrigger1Range = toftrigger1DutyCycleInput.getOutput();
+    toftrigger1Range = toftrigger1ScaleFactor * (toftrigger1DutyCycle / toftrigger1Freq - 0.001);
+    System.out.println(toftrigger1Range);
+    topShooterMotorVelocity = topFlyWheelFilter.calculate(targetTopShooterMotorVelocity);
+    bottomShooterMotorVelocity = bottomFlyWheelFilter.calculate(targetBottomShooterMotorVelocity);
     topShooterMotor.setControl(new VelocityVoltage(-topShooterMotorVelocity));
-    bottomShooterMotor.setControl(new VelocityVoltage(bottomShooterMotorVelocity));
+    bottomShooterMotor.setControl(new VelocityVoltage(targetBottomShooterMotorVelocity));
     triggerMotorLeader.setControl(new VelocityVoltage(leaderTriggerMotorVelocity));
     triggerMotorFollower.setControl(new VelocityVoltage(followerTriggerMotorVelocity));
   }
@@ -157,8 +170,10 @@ public void initSendable(SendableBuilder builder)
   builder.addDoubleProperty("p", this::getP, this::setP);
   builder.addDoubleProperty("i", this::getI, this::setI);
   builder.addDoubleProperty("d", this::getD, this::setD);
+  builder.setSmartDashboardType("Tof");
+  builder.addDoubleProperty("Range", this::getRangeTrigger1, null);
+  builder.addDoubleProperty("Freq", this::getFreqTrigger1, null);
 }
-
 
   public double getP(){
     return p;
@@ -187,13 +202,13 @@ public void initSendable(SendableBuilder builder)
   /* sets the desired top shooter motor velocity in rotations per second */
   public void setTopShooterMotorVelocity(double velocityRPS)
   {
-    topShooterMotorVelocity = velocityRPS;
+    targetTopShooterMotorVelocity = velocityRPS;
   }
   
   /* sets the desired bottom shooter motor velocity in rotations per second */
   public void setBottomShooterMotorVelocity(double velocityRPS)
   {
-    bottomShooterMotorVelocity = velocityRPS;
+    targetBottomShooterMotorVelocity = velocityRPS;
   }
 
   /* sets the desired top trigger motor velocity in rotations per second */
@@ -236,12 +251,12 @@ public void initSendable(SendableBuilder builder)
 
 /* gets the value of the velocity that the top shooter motor is at */
 public double getTopShooterMotorVelocity(){
-  return topShooterMotorVelocity;
+  return targetTopShooterMotorVelocity;
 }
 
 /* gets the value of the velocity that the bottom shooter motor is at */
 public double getBottomShooterMotorVelocity(){ 
-  return bottomShooterMotorVelocity;
+  return targetBottomShooterMotorVelocity;
 }
 
 /* gets the value of the trigger motor velocity */
