@@ -15,20 +15,10 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 
 public class Collector extends Diagnostics {
-  
-  enum POSE{
-    START,
-    STOW,
-    COLLECT,
-    SCORE
-  }
 
-  TalonFX liftMotor = new TalonFX(0); // TODO: set device id
   TalonFX collectMotor = new TalonFX(0); // same thing
-  MotorFault liftMotorFault = new MotorFault(liftMotor, 0);
-  MotorFault collectMotorFault = new MotorFault(liftMotor, 0);
+  MotorFault collectMotorFault = new MotorFault(collectMotor, 0);
   private double collectorSpeed;
-  private double liftSpeed;
   private DigitalInput tof1;
   private DutyCycle tof1DutyCycleInput;
   private double tof1DutyCycle;
@@ -41,11 +31,7 @@ public class Collector extends Diagnostics {
   // private final double intakeTicksPerRadian = 2048.0 * intakeGearRatio / (2.0 * Math.PI);
   
   // fill in PID values
-  private double lift_kP = 0;
-  private double lift_kI = 0;
-  private double lift_kD = 0;
-  private double lift_kF = 0;
-
+  
   private double collect_kP = 0;
   private double collect_kI = 0;
   private double collect_kD = 0;
@@ -54,7 +40,6 @@ public class Collector extends Diagnostics {
   /** Creates a new Collector. */
   public Collector() {
     collectorSpeed = 0;
-    liftSpeed = 0;
 
     tof1 = new DigitalInput(0); // TODO: set correct port #
     tof1DutyCycleInput = new DutyCycle(tof1);
@@ -63,16 +48,6 @@ public class Collector extends Diagnostics {
   }
 
   public void setUpMotors() {
-    //PID loop setting for lift motor
-    var liftMotorClosedLoopConfig = new Slot0Configs();
-
-    liftMotorClosedLoopConfig.withKP(lift_kP);
-    liftMotorClosedLoopConfig.withKI(lift_kI);
-    liftMotorClosedLoopConfig.withKD(lift_kD);
-    liftMotorClosedLoopConfig.withKV(lift_kF);
-
-    liftMotor.getConfigurator().apply(liftMotorClosedLoopConfig);
-
     //PID loop setting for collect motor
     var collectMotorClosedLoopConfig = new Slot0Configs();
 
@@ -83,10 +58,6 @@ public class Collector extends Diagnostics {
 
     collectMotor.getConfigurator().apply(collectMotorClosedLoopConfig);
 
-  }
-  public void runLiftMotor(double liftSpeed)
-  {
-    liftMotor.setControl(new VelocityVoltage(liftSpeed));
   }
 
   public void runCollectMotor(double collectorSpeed)
@@ -121,14 +92,12 @@ public class Collector extends Diagnostics {
     builder.addBooleanProperty("ok", this::isOK, null);
     builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
     collectMotor.initSendable(builder);
-    liftMotor.initSendable(builder);
   }
 
   @Override
   public void periodic() 
   {
     runCollectMotor(collectorSpeed);
-    runLiftMotor(liftSpeed);
     tof1Freq = tof1DutyCycleInput.getFrequency();
     tof1DutyCycle = tof1DutyCycleInput.getOutput();
     tof1Range = tof1ScaleFactor * (tof1DutyCycle / tof1Freq - 0.001);
@@ -141,15 +110,11 @@ public class Collector extends Diagnostics {
     String result = "";
     setOK(true);
 
-    if(liftMotorFault.hasFaults() || collectMotorFault.hasFaults()){
-        setOK(false);
-    }
-
     if(tof1DutyCycleInput.getFrequency()< 2){
       result += String.format("tof1 not working");
     }
 
-    result += liftMotorFault.getFaults() + collectMotorFault.getFaults();
+    result += collectMotorFault.getFaults();
 
     setDiagnosticResult(result);
   }
