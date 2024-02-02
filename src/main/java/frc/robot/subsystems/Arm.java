@@ -23,15 +23,32 @@ public class Arm extends Diagnostics {
     SCORE
   }
 
-  TalonFX liftMotor = new TalonFX(0); // TODO: set device id
-  TalonFX extendMotor = new TalonFX(0); // TODO: set device id
+  TalonFX liftMotor;
+  TalonFX extendMotor;
   
   MotorFault liftMotorFault = new MotorFault(liftMotor, 0);
   MotorFault extendMotorFault = new MotorFault(extendMotor, 0);
   private double liftSpeed;
   private double extendSpeed; 
 
-  private final double liftTicksPerMeter = 1;
+  //TODO: Change all of these values
+  private final double liftLength = 0;
+  private final double armLength = 0;
+  // Approximage masses of arm segments for gravity compensation:
+  private final double liftArmMass = 0; 
+  private final double extendArmMass = 0; 
+  private final double gravityCompensationGain = 1.25;            // Increase this to increase the overall amount of gravity compensation.
+  private final double gravityCompensationLiftGain = 0.0125; // 1/80 gear ratio
+  private final double gravityCompensationExtendGain = 0.025;     // 1/40 gear ratio
+
+  private final double liftAbsoluteOffset = 0;
+  private final double extendAbsoluteOffset = 0;
+  private final double liftTicksPerRadian = -20.656*4*2048/(2*Math.PI);
+  private final double extendTicksPerRadian = 20.656*4*2048/(2*Math.PI);
+  // private final JointVelocities maxVelocities = new JointVelocities(1.5, 2.1, 1);
+  // private final double maxExtendAcc = 1.5;
+  private final double minLiftAngle;
+  private final double maxLiftAngle; 
   
   // fill in PID values
   private double lift_kP = 0;
@@ -44,10 +61,93 @@ public class Arm extends Diagnostics {
   private double extend_kD = 0;
   private double extend_kF = 0;
 
+  public class JointPositions {
+    public double lift;
+    public double extend;
+
+    public JointPositions(double liftAngle, double extendLength) {
+      lift = liftAngle;
+      extend = extendLength;
+    }
+
+    public JointPositions() {
+      lift = 0.0;
+      extend = 0.0;
+    }
+
+    // public JointPositions(JointPositions source) {
+    //   lift = source.lift;
+    //   extend = source.extend;
+    // }
+
+    public double getLiftAngle() {
+      return lift;
+    }
+
+    public double getExtendLength() {
+      return extend;
+    }
+
+  }
+
+  public class JointVelocities{
+    public double lift;
+    public double extend;
+
+    public JointVelocities(double liftVel, double extendVel){
+      lift = liftVel;
+      extend = extendVel;
+    }
+
+    public JointVelocities(){
+      lift = 0.0;
+      extend = 0.0;
+    }
+
+    public void copyFrom(JointVelocities source) {
+      lift = source.lift;
+      extend = source.extend;
+    }
+  }
+
+  public class JointWaypoints{
+    public double lift;
+    public double extend;
+    public double time;
+
+    public JointWaypoints(double lift, double extend, double time){
+      this.lift = lift;
+      this.extend = extend;
+      this.time = time;
+    }
+
+    public JointWaypoints(JointPositions positions, double time){
+      lift = positions.lift;
+      extend = positions.extend;
+      this.time = time;
+    }
+  }
+
+    public class ArmTrajectory {
+      double[] liftPostions;
+      double[] extendPostions;
+      double[] times;
+      double finalTime;
+      double startTime;
+    }
+
+
   /** Creates a new Arm. */
   public Arm() {
+    liftMotor = new TalonFX(0); // TODO: set device id
+    extendMotor = new TalonFX(0); // TODO: set device id
     liftSpeed = 0;
     extendSpeed = 0;
+    setUpMotors();
+
+    // TODO: fill out values in radians
+    minLiftAngle = 0;
+    maxLiftAngle = 0;
   }
 
   public void setUpMotors() {
@@ -74,12 +174,22 @@ public class Arm extends Diagnostics {
   }
   public void runLiftMotor(double liftSpeed)
   {
-    liftMotor.setControl(new VelocityVoltage(liftSpeed * liftTicksPerMeter));
+    liftMotor.setControl(new VelocityVoltage(liftSpeed * liftTicksPerRadian));
   }
 
   public void runExtendMotor(double extendSpeed)
   {
     extendMotor.setControl(new VelocityVoltage(extendSpeed));
+  }
+
+   public void setLiftSpeed(double liftSpeed)
+  {
+    this.liftSpeed = liftSpeed;
+  }
+
+  public double getLiftSpeed()
+  {
+    return liftSpeed;
   }
 
   public void setExtendSpeed(double extendSpeed)
@@ -95,8 +205,9 @@ public class Arm extends Diagnostics {
   @Override
   public void initSendable(SendableBuilder builder)
   {
-    builder.setSmartDashboardType("Collector");
-    builder.addDoubleProperty("Speed", this::getExtendSpeed, this::setExtendSpeed);
+    builder.setSmartDashboardType("Arm");
+    builder.addDoubleProperty("Lift Speed", this::getLiftSpeed, this::setLiftSpeed);
+    builder.addDoubleProperty("Extend Speed", this::getExtendSpeed, this::setExtendSpeed);
     builder.addBooleanProperty("ok", this::isOK, null);
     builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
     extendMotor.initSendable(builder);
