@@ -19,26 +19,14 @@ public class Shooter extends Diagnostics{
   
   private final TalonFX topShooterMotor;
   private final TalonFX bottomShooterMotor;
-  private final TalonFX triggerMotorLeader;
-  private final TalonFX triggerMotorFollower;
   private final MotorFault topShooterMotorFault;
   private final MotorFault bottomShooterMotorFault;
-  private final MotorFault triggerMotorLeaderFault;
-  private final MotorFault triggerMotorFollowerFault;
   private final DigitalInput shooterBeamBreak;
-  private final DigitalInput toftrigger1;
   private double offset;
-  private double leaderTriggerMotorVelocity;
-  private double followerTriggerMotorVelocity;
   private double topShooterMotorVelocity;
   private double bottomShooterMotorVelocity;
   private double targetTopShooterMotorVelocity;
   private double targetBottomShooterMotorVelocity;
-  private double toftrigger1Freq;
-  private double toftrigger1Range;
-  private double toftrigger1DutyCycle;
-  private final double toftrigger1ScaleFactor = 3000000/4; // for 50cm (irs16a): 3/4 million || for 130 cm (irs17a): 2 million || for 300 cm (irs17a): 4 million
-  private final DutyCycle toftrigger1DutyCycleInput;
   private final SlewRateLimiter topFlyWheelFilter;
   private final SlewRateLimiter bottomFlyWheelFilter;
 
@@ -51,49 +39,31 @@ public class Shooter extends Diagnostics{
     //one motor might be a follower
     topShooterMotor = new TalonFX(12); // Kracken - TODO: set CAN ID
     bottomShooterMotor = new TalonFX(24); //Kracken - TODO: set CAN ID
-    triggerMotorLeader = new TalonFX(18); //Falcon - TODO: set CAN ID
-    triggerMotorFollower = new TalonFX(16); //Falcon - TODO: set CAN ID
     shooterBeamBreak = new DigitalInput(3); //TODO: correct port
-    toftrigger1 = new DigitalInput(2);//TODO: correct port/channel
     topShooterMotorFault = new MotorFault(topShooterMotor, 12); //TODO set CAN ID
     bottomShooterMotorFault = new MotorFault(bottomShooterMotor, 24); //TODO set CAN ID
-    triggerMotorLeaderFault = new MotorFault(triggerMotorLeader, 18); //TODO set CAN ID   
-    triggerMotorFollowerFault = new MotorFault(triggerMotorFollower, 16); //TODO set CAN ID
     topFlyWheelFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
     bottomFlyWheelFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
 
-    toftrigger1DutyCycleInput = new DutyCycle(toftrigger1);
-    toftrigger1Freq = 0;
-    toftrigger1Range = 0;    
 
     topShooterMotorVelocity = 0;
     bottomShooterMotorVelocity = 0;
     targetTopShooterMotorVelocity = 0;
     targetBottomShooterMotorVelocity = 0;
-    leaderTriggerMotorVelocity = 0;
-    followerTriggerMotorVelocity = 0;
     offset = 0;
 
     setConfigsShooter();
-    setConfigsTrigger();
 }
  
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     //System.out.println("TOF Running");
-    toftrigger1Freq = toftrigger1DutyCycleInput.getFrequency();
-    System.out.println(toftrigger1Freq);
-    toftrigger1DutyCycle = toftrigger1DutyCycleInput.getOutput();
-    toftrigger1Range = toftrigger1DutyCycleInput.getOutput();
-    toftrigger1Range = toftrigger1ScaleFactor * (toftrigger1DutyCycle / toftrigger1Freq - 0.001);
-    System.out.println(toftrigger1Range);
+
     topShooterMotorVelocity = topFlyWheelFilter.calculate(targetTopShooterMotorVelocity);
     bottomShooterMotorVelocity = bottomFlyWheelFilter.calculate(targetBottomShooterMotorVelocity);
     topShooterMotor.setControl(new VelocityVoltage(-topShooterMotorVelocity));
     bottomShooterMotor.setControl(new VelocityVoltage(bottomShooterMotorVelocity));
-    triggerMotorLeader.setControl(new VelocityVoltage(leaderTriggerMotorVelocity));
-    triggerMotorFollower.setControl(new VelocityVoltage(followerTriggerMotorVelocity));
   }
 
 /* returns true if the beam has been broken, false if there's no note in the sensor */
@@ -118,25 +88,6 @@ public void setConfigsShooter(){
   bottomShooterMotor.getConfigurator().apply(configs);
 }
 
-public void setConfigsTrigger(){
-  TalonFXConfiguration configs = new TalonFXConfiguration();
-  configs.Slot0.kP = p;
-  configs.Slot0.kI = i;
-  configs.Slot0.kD = d;
-  configs.Slot0.kV = 0.12;
-  configs.Voltage.PeakForwardVoltage = 8;
-  configs.Voltage.PeakReverseVoltage = -8;
-
-  configs.Slot1.kP = 5;
-  configs.Slot1.kI = 0.1;
-  configs.Slot1.kD = 0.001;
-
-  configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
-  configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
-
-  triggerMotorLeader.getConfigurator().apply(configs);
-  triggerMotorFollower.getConfigurator().apply(configs);
-}
 
 
 @Override
@@ -149,8 +100,6 @@ public void initSendable(SendableBuilder builder)
   builder.addDoubleProperty("i", this::getI, this::setI);
   builder.addDoubleProperty("d", this::getD, this::setD);
   builder.setSmartDashboardType("Tof");
-  builder.addDoubleProperty("Range", this::getRangeTrigger1, null);
-  builder.addDoubleProperty("Freq", this::getFreqTrigger1, null);
 }
 
   public double getP(){
@@ -189,28 +138,6 @@ public void initSendable(SendableBuilder builder)
     targetBottomShooterMotorVelocity = velocityRPS;
   }
 
-  /* sets the desired top trigger motor velocity in rotations per second */
-  public void setTopTriggerMotorVelocity(double triggerMotorRPS)
-  {
-    leaderTriggerMotorVelocity = triggerMotorRPS;
-  }
-
-  /* sets the desired bottom trigger motor velocity in rotations per second */
-  public void setBottomTriggerMotorVelocity(double triggerMotorRPS)
-  {
-    followerTriggerMotorVelocity = triggerMotorRPS;
-  }
-
-
-
-  /* uses the beam break sensor to detect if the note has entered the trigger */
-  public boolean noteIsInTrigger(){
-    if (toftrigger1Range < 12){
-
-    }
-    return false;
-    // return triggerBeamBreak.get();
-  }
 
   /* uses the beam break sensor to detect if the note has entered the shooter */
   public boolean noteIsInShooter(){
@@ -227,42 +154,17 @@ public double getBottomShooterMotorVelocity(){
   return targetBottomShooterMotorVelocity;
 }
 
-/* gets the value of the trigger motor velocity */
-public double getLeaderTriggerMotorVelocity(){
-  return leaderTriggerMotorVelocity;
-}
-
-public double getFollowerTriggerMotorVelocity(){
-  return followerTriggerMotorVelocity;
-}
-
-public double getRangeTrigger1(){
-  return toftrigger1Range;
-}
-
-public double getFreqTrigger1(){
-  return toftrigger1Freq;
-}
-
 @Override
 public void runDiagnostics(){
   String result = "";
   this.setOK(true);
   if (topShooterMotorFault.hasFaults()||
-  bottomShooterMotorFault.hasFaults()||
-  triggerMotorLeaderFault.hasFaults()||
-  triggerMotorFollowerFault.hasFaults());{
+  bottomShooterMotorFault.hasFaults());{
     this.setOK(false);
   }
 
-  if(toftrigger1DutyCycleInput.getFrequency()<2){
-    result += String.format("toftrigger1 not working");
-  }
-
   this.setDiagnosticResult(topShooterMotorFault.getFaults() + 
-  bottomShooterMotorFault.getFaults() + 
-  triggerMotorLeaderFault.getFaults() + 
-  triggerMotorFollowerFault.getFaults());
+  bottomShooterMotorFault.getFaults());
 }
 
 }

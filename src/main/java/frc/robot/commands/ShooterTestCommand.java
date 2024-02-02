@@ -10,10 +10,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.Trigger;
 
 public class ShooterTestCommand extends Command {
   /** Creates a new ShooterTestCommand. */
   private Shooter shooter;
+  private Trigger trigger;
   private OI oi;
   private Pivot pivot;
   private double topShooterMotorVelocity;
@@ -41,8 +43,8 @@ public class ShooterTestCommand extends Command {
     triggerMotorFollowerVelocity = SmartDashboard.getNumber("Trigger Motor Follower Velocity", 0.0); //in RPS
     pivotMotorPosition = SmartDashboard.getNumber("Pivot Motor Rotations", 0.0);
     if(getTriggerOn()){
-      shooter.setTopTriggerMotorVelocity(triggerMotorLeaderVelocity);
-      shooter.setBottomTriggerMotorVelocity(triggerMotorFollowerVelocity);
+      trigger.setTopTriggerMotorVelocity(triggerMotorLeaderVelocity);
+      trigger.setBottomTriggerMotorVelocity(triggerMotorFollowerVelocity);
     }
     if(getShooterOn()){
       shooter.setTopShooterMotorVelocity(topShooterMotorVelocity);
