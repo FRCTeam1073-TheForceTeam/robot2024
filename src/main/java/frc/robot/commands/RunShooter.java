@@ -8,11 +8,11 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Trigger;
+import frc.robot.subsystems.Feeder;
 
 public class RunShooter extends Command {
   private Shooter shooter;
-  private Trigger trigger;
+  private Feeder trigger;
   private double shooterTopRPS;
   private double shooterBottomRPS;
   private double triggerTopRPS;

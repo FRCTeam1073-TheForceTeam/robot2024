@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Trigger extends Diagnostics {
+public class Feeder extends Diagnostics {
   private final TalonFX triggerMotorLeader;
   private final TalonFX triggerMotorFollower;
   private final MotorFault triggerMotorLeaderFault;
@@ -31,7 +31,7 @@ public class Trigger extends Diagnostics {
   private final double toftrigger1ScaleFactor = 3000000/4; // for 50cm (irs16a): 3/4 million || for 130 cm (irs17a): 2 million || for 300 cm (irs17a): 4 million
   private final DutyCycle toftrigger1DutyCycleInput;
   /** Creates a new Trigger. */
-  public Trigger() {
+  public Feeder() {
     triggerMotorLeader = new TalonFX(18); //Falcon - TODO: set CAN ID
     triggerMotorFollower = new TalonFX(16); //Falcon - TODO: set CAN ID
     toftrigger1 = new DigitalInput(2);//TODO: correct port/channel
