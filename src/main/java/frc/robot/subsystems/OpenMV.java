@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 // import java.util.ArrayList;
 import java.lang.Thread;
+import java.util.ArrayList;
+import java.util.List;
 
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -14,15 +16,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class OpenMV extends SubsystemBase{
   /** Creates a new OpenMV. */
-
   private SerialPort port;
-  private double lastUpdateTime = 0;
-  private String talk = "q";
 
   public OpenMV(SerialPort.Port p) {
     try {
       port = new SerialPort(2000000,p,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
-      // port.setFlowControl(SerialPort.FlowControl.kNone);
       port.setFlowControl(SerialPort.FlowControl.kNone);
     }
     catch (Exception e) {
@@ -31,20 +29,33 @@ public class OpenMV extends SubsystemBase{
     }
   }
 
-// this one reads 1,a from openmv
-  // @Override
-  // public void periodic() {
-  //   int recvd = 0;
-  //   recvd = port.getBytesReceived();
-  //   if( recvd != 0) {
-  //     String incoming = port.readString();
-  //     System.out.println(String.format("incoming: %s", incoming));
-  //   } 
-  // }
+
+  public void getAprilTag() {
+    byte[] cmdBytes = "1,a\n".getBytes();
+    int bytesWritten = port.write(cmdBytes, cmdBytes.length);
+
+  }
+
+  public ArrayList<Byte> getMsg()
+  {
+    ArrayList<Byte> msg = new ArrayList();
+    byte[] oneByte = port.read(1);
+    if (oneByte == "\n".getBytes()) {
+      return msg.toArray(new byte[0]);
+    }
+    else {
+      byte oneActualByte = oneByte[0];
+      msg.add(oneActualByte);
+    }
+  }
+
 
   @Override
   public void periodic() {
-    Integer wrote = port.writeString("2,g,billybuiltaguillitinetrieditonhisistrjeansaidmotherwhensh\n");
+    int bytesWaiting = port.getBytesReceived();  // returns the number of bytes waiting to be read, without actually reading them
+    byte[] cmdBytes = "2,g,0,1,2,3,4,5,6,7,8,9\n".getBytes("ASCII");
+    int cmdBytesLen = cmdBytes.length;
+    Integer wrote = port.write(cmdBytes, cmdBytesLen); // second arg is maximum bytes to write, which isn't a big deal for us
     System.out.println(String.format("just wrote this many bytes: %d", wrote));
     try {
       Thread.sleep(1000);
@@ -52,8 +63,14 @@ public class OpenMV extends SubsystemBase{
     catch (final InterruptedException e) {
       throw new RuntimeException(e);
     }
-    
+    ArrayList<Byte> msg = getMsg();
+    //String msgString = msg.toString();
+    char cmdChar = (char)msg[2];
+    if (cmdChar == 'a') {
+      //do whatever apriltags do
   }
+}
+
 
 
 
@@ -66,24 +83,3 @@ public class OpenMV extends SubsystemBase{
       // System.out.println(String.format("byte: %d", thebytes[0]));
       // int val = thebytes[0] & 0x00ff;
       // System.out.println(val);
-
-    //byte[] newmsg = port.read(1);
-    //Byte thebyte = newmsg[0];
-    // if (port != null) {
-       //System.out.println("sending q");
-    //   Integer wrote = port.writeString("o");
-    //   System.out.println(String.format("writing buddy"));
-    //if (port != null) {
-      //System.out.println(thestr);
-      //System.out.println();
-    //int msgasint = Byte.toUnsignedInt(thebyte);
-    //System.out.println(msgasint);
-    //System.out.println(msg)
-  // public boolean parseMessage(String s){
-  //   // System.out.println(String.format("OpenMV Parse Message %s", s));
-    
-  //   lastUpdateTime = Timer.getFPGATimestamp(); // Update last valid time since we have a packet.
-  //   System.out.println(lastUpdateTime);
-  //   return true;
-  // }
-}
