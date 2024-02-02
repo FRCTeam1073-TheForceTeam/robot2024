@@ -21,12 +21,10 @@ public class Shooter extends Diagnostics{
   private final TalonFX bottomShooterMotor;
   private final TalonFX triggerMotorLeader;
   private final TalonFX triggerMotorFollower;
-  private final TalonFX pivotMotor;
   private final MotorFault topShooterMotorFault;
   private final MotorFault bottomShooterMotorFault;
   private final MotorFault triggerMotorLeaderFault;
   private final MotorFault triggerMotorFollowerFault;
-  private final MotorFault pivotMotorFault;
   private final DigitalInput shooterBeamBreak;
   private final DigitalInput toftrigger1;
   private double offset;
@@ -34,13 +32,15 @@ public class Shooter extends Diagnostics{
   private double followerTriggerMotorVelocity;
   private double topShooterMotorVelocity;
   private double bottomShooterMotorVelocity;
-    private double targetTopShooterMotorVelocity;
+  private double targetTopShooterMotorVelocity;
   private double targetBottomShooterMotorVelocity;
   private double toftrigger1Freq;
   private double toftrigger1Range;
   private double toftrigger1DutyCycle;
   private final double toftrigger1ScaleFactor = 3000000/4; // for 50cm (irs16a): 3/4 million || for 130 cm (irs17a): 2 million || for 300 cm (irs17a): 4 million
   private final DutyCycle toftrigger1DutyCycleInput;
+  private final SlewRateLimiter topFlyWheelFilter;
+  private final SlewRateLimiter bottomFlyWheelFilter;
 
   private double p = 0.11;
   private double i = 0.5;
@@ -55,14 +55,12 @@ public class Shooter extends Diagnostics{
     triggerMotorFollower = new TalonFX(16); //Falcon - TODO: set CAN ID
     shooterBeamBreak = new DigitalInput(3); //TODO: correct port
     toftrigger1 = new DigitalInput(2);//TODO: correct port/channel
-    pivotMotor = new TalonFX(18); //Falcon - TODO: set CAN ID
     topShooterMotorFault = new MotorFault(topShooterMotor, 12); //TODO set CAN ID
     bottomShooterMotorFault = new MotorFault(bottomShooterMotor, 24); //TODO set CAN ID
     triggerMotorLeaderFault = new MotorFault(triggerMotorLeader, 18); //TODO set CAN ID   
-    triggerMotorFollowerFault = new MotorFault(triggerMotorFollower, 16); //TODO set CAN ID   
-    pivotMotorFault = new MotorFault(pivotMotor, 18); //TODO set CAN ID
-    SlewRateLimiter topFlyWheelFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
-    SlewRateLimiter bottomFlyWheelFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
+    triggerMotorFollowerFault = new MotorFault(triggerMotorFollower, 16); //TODO set CAN ID
+    topFlyWheelFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
+    bottomFlyWheelFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
 
     toftrigger1DutyCycleInput = new DutyCycle(toftrigger1);
     toftrigger1Freq = 0;
@@ -75,11 +73,9 @@ public class Shooter extends Diagnostics{
     leaderTriggerMotorVelocity = 0;
     followerTriggerMotorVelocity = 0;
     offset = 0;
-    pivotMotor.setPosition(0); //initialize to 0 rotations
 
     setConfigsShooter();
     setConfigsTrigger();
-    setConfigsPivot();
 }
  
   @Override
@@ -95,7 +91,7 @@ public class Shooter extends Diagnostics{
     topShooterMotorVelocity = topFlyWheelFilter.calculate(targetTopShooterMotorVelocity);
     bottomShooterMotorVelocity = bottomFlyWheelFilter.calculate(targetBottomShooterMotorVelocity);
     topShooterMotor.setControl(new VelocityVoltage(-topShooterMotorVelocity));
-    bottomShooterMotor.setControl(new VelocityVoltage(targetBottomShooterMotorVelocity));
+    bottomShooterMotor.setControl(new VelocityVoltage(bottomShooterMotorVelocity));
     triggerMotorLeader.setControl(new VelocityVoltage(leaderTriggerMotorVelocity));
     triggerMotorFollower.setControl(new VelocityVoltage(followerTriggerMotorVelocity));
   }
@@ -142,24 +138,6 @@ public void setConfigsTrigger(){
   triggerMotorFollower.getConfigurator().apply(configs);
 }
 
-public void setConfigsPivot(){
-  TalonFXConfiguration configs = new TalonFXConfiguration();
-  configs.Slot0.kP = p;
-  configs.Slot0.kI = i;
-  configs.Slot0.kD = d;
-  configs.Slot0.kV = 0.12;
-  configs.Voltage.PeakForwardVoltage = 8;
-  configs.Voltage.PeakReverseVoltage = -8;
-
-  configs.Slot1.kP = 5;
-  configs.Slot1.kI = 0.1;
-  configs.Slot1.kD = 0.001;
-
-  configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
-  configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
-
-  pivotMotor.getConfigurator().apply(configs);
-}
 
 @Override
 public void initSendable(SendableBuilder builder)
@@ -223,18 +201,8 @@ public void initSendable(SendableBuilder builder)
     followerTriggerMotorVelocity = triggerMotorRPS;
   }
 
-  /* sets the desired number of rotations for the pivot motor */
-  public void setPivotMotorRotations(double pivotMotorPosition)
-  {
-    //todo next step
-    pivotMotor.setControl(new PositionVoltage(pivotMotorPosition));
-  }
 
-  /* returns the position value */
-  public double getPivotMotorRotations(){
-    return pivotMotor.getPosition().getValue();
-  }
-  
+
   /* uses the beam break sensor to detect if the note has entered the trigger */
   public boolean noteIsInTrigger(){
     if (toftrigger1Range < 12){
@@ -283,8 +251,7 @@ public void runDiagnostics(){
   if (topShooterMotorFault.hasFaults()||
   bottomShooterMotorFault.hasFaults()||
   triggerMotorLeaderFault.hasFaults()||
-  triggerMotorFollowerFault.hasFaults()||
-  pivotMotorFault.hasFaults());{
+  triggerMotorFollowerFault.hasFaults());{
     this.setOK(false);
   }
 
@@ -295,8 +262,7 @@ public void runDiagnostics(){
   this.setDiagnosticResult(topShooterMotorFault.getFaults() + 
   bottomShooterMotorFault.getFaults() + 
   triggerMotorLeaderFault.getFaults() + 
-  triggerMotorFollowerFault.getFaults() + 
-  pivotMotorFault.getFaults()+ result);
+  triggerMotorFollowerFault.getFaults());
 }
 
 }
