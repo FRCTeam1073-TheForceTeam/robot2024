@@ -44,14 +44,14 @@ Swerve Module #3 is back right
 
 
 
-### Bling slots
+## Bling slots
 (will be added later in the season)
 
 | Slot | Mechanism |
 | ---- | --------- |
 
 
-#### PS4 Controller Symbols
+## PS4 Controller Symbols
 
 | Letter | Shape |
 | ------ | ----- |
