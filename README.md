@@ -9,6 +9,7 @@ Swerve Module #0 is front left
 Swerve Module #1 is front right
 Swerve Module #2 is back left
 Swerve Module #3 is back right
+
 | Device                | CAN ID |
 | --------------------- | ------ |
 | PDH                   |   0    |
@@ -25,6 +26,23 @@ Swerve Module #3 is back right
 | Swerve #2 Drive Motor |  11    |
 | Swerve #3 Drive Motor |  12    |
 | Pigeon 2              |  13    |
+| Collector Motor       |  14    |
+| Lift Motor            |  15    |
+| Extend Motor          |  16    |
+| Top Shooter Motor     |  17    |
+| Bottom Shooter Motor  |  18    |
+| Leader Feeder Motor   |  19    |
+| Follower Feeder Motor |  20    |
+| Pivot Motor           |  21    |
+| Climber Motor #1      |  22    |
+
+| Digital IO            | Port   |
+| --------------------- | ------ |
+| Collector Tof         |   0    |
+| Feeder Tof            |   1    |
+| Shooter Beam Break    |   2    |
+
+
 
 ### Bling slots
 (will be added later in the season)
