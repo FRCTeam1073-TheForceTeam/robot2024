@@ -23,8 +23,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class OpenMV extends SubsystemBase{
   /** Creates a new OpenMV. */
   private SerialPort port;
+  private SerialPort.Port p;
 
-  public OpenMV(SerialPort.Port p) {
+  public OpenMV() {
     try {
       port = new SerialPort(2000000,p,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
       port.setFlowControl(SerialPort.FlowControl.kNone);
