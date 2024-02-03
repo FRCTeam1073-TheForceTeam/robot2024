@@ -53,10 +53,9 @@ Swerve Module #3 is back right
 
 ## PS4 Controller Symbols
 
-| Letter | Shape |
-| ------ | ----- |
-
-A | X
-B | Circle
-X | Square
-Y | Triangle
+| Letter | Shape    |
+| ------ | -------- |
+|   A    |   X      |
+|   B    | Circle   |
+|   X    | Square   |
+|   Y    | Triangle |
