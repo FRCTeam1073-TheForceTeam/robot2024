@@ -24,7 +24,7 @@ public class TeleopDrive extends Command
   ChassisSpeeds chassisSpeeds;
   Pose2d targetRotation;
   Pose2d robotRotation;
-  Drivetrain m_driveSubsystem;
+  Drivetrain m_drivetrain;
   OI m_OI;
   private boolean fieldCentric;
   private boolean parked = false;
@@ -42,9 +42,10 @@ public class TeleopDrive extends Command
 
 
   /** Creates a new Teleop. */
-  public TeleopDrive(Drivetrain ds, OI oi){
+  public TeleopDrive(Drivetrain ds, OI oi)
+  {
     super.setName("Teleop Drive");
-    m_driveSubsystem = ds;
+    m_drivetrain = ds;
     m_OI = oi;
     fieldCentric = true;
     startAngle = ds.getHeading();
@@ -57,7 +58,8 @@ public class TeleopDrive extends Command
     addRequirements(ds);
   }
 
-  public void initPreferences(){
+  public void initPreferences()
+  {
     Preferences.initDouble("Snap to Position P", 0.1);
     Preferences.initDouble("Snap to Position I", 0);
     Preferences.initDouble("Snap to Position D", 0);
@@ -66,13 +68,15 @@ public class TeleopDrive extends Command
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize(){
+  public void initialize()
+  {
     System.out.println("TeleopDrive: Init");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute(){
+  public void execute()
+  {
     //multiples the angle by a number from 1 to the square root of 30:
     double mult1 = 1.0 + (m_OI.getDriverLeftTrigger() * ((Math.sqrt(25)) - 1));
     double mult2 = 1.0 + (m_OI.getDriverRightTrigger() * ((Math.sqrt(25)) - 1));
@@ -81,28 +85,33 @@ public class TeleopDrive extends Command
     double leftX = m_OI.getDriverLeftX();
     double rightX = m_OI.getDriverRightX();
     //sets deadzones on the controller to extend to .05:
-    if(Math.abs(leftY) < .05) {leftY = 0;}
-    if(Math.abs(leftX) < .05) {leftX = 0;}
+    if(Math.abs(leftY) < .15) {leftY = 0;}
+    if(Math.abs(leftX) < .15) {leftX = 0;}
     if(Math.abs(rightX) < .15) {rightX = 0;}
 
     // ChassisSpeeds chassisSpeeds = new ChassisSpeeds(leftY * 0.5, leftX * 0.5, rightX); //debug
-    if (m_OI.getFieldCentricToggle() && lastRobotCentricButton == false){
+    if (m_OI.getFieldCentricToggle() && lastRobotCentricButton == false)
+    {
       fieldCentric = !fieldCentric;
     }
     lastRobotCentricButton = m_OI.getFieldCentricToggle();
     SmartDashboard.putBoolean("Field Centric", fieldCentric);
     
-    if(m_OI.getLeftBumper() && lastParkingBreakButton == false){
+    if(m_OI.getLeftBumper() && lastParkingBreakButton == false)
+    {
       parked = !parked;
     }
     lastParkingBreakButton = m_OI.getLeftBumper();
-    if(parked && !m_driveSubsystem.getParkingBrake()){
-      m_driveSubsystem.parkingBrake(true);
+    if(parked && !m_drivetrain.getParkingBrake())
+    {
+      m_drivetrain.parkingBrake(true);
     }
-    if(!parked && m_driveSubsystem.getParkingBrake()){
-      m_driveSubsystem.parkingBrake(false);
+    if(!parked && m_drivetrain.getParkingBrake())
+    {
+      m_drivetrain.parkingBrake(false);
     }
-    else if (fieldCentric){
+    else if (fieldCentric)
+    {
 
       double vx = MathUtil.clamp(-(leftY * maximumLinearVelocity / 25 )* mult1 * mult2, -maximumLinearVelocity, maximumLinearVelocity);
       double vy = MathUtil.clamp(-(leftX * maximumLinearVelocity / 25 ) * mult1 * mult2, -maximumLinearVelocity, maximumLinearVelocity);
@@ -112,50 +121,53 @@ public class TeleopDrive extends Command
         vx,
         vy,
         w,
-        Rotation2d.fromDegrees(m_driveSubsystem.getHeading())); // get fused heading
-        m_driveSubsystem.setChassisSpeeds(speeds);
+        Rotation2d.fromDegrees(m_drivetrain.getHeading())); // get fused heading
+        m_drivetrain.setChassisSpeeds(speeds);
     }
-    else{
+    else
+    {
       // Robot centric driving.
       speeds = new ChassisSpeeds();
       speeds.vxMetersPerSecond = MathUtil.clamp(-(leftY * maximumLinearVelocity / 25 )* mult1 * mult2, -maximumLinearVelocity, maximumLinearVelocity); 
       speeds.vyMetersPerSecond = MathUtil.clamp(-(leftX * maximumLinearVelocity / 25)* mult1 * mult2, -maximumLinearVelocity, maximumLinearVelocity); 
       speeds.omegaRadiansPerSecond = MathUtil.clamp(-(rightX * maximumRotationVelocity / 25)* mult1 * mult2, -maximumRotationVelocity, maximumRotationVelocity);
-      m_driveSubsystem.setChassisSpeeds(speeds); 
+      m_drivetrain.setChassisSpeeds(speeds); 
     }
     
     // Allow driver to zero the drive subsystem heading for field-centric control.
     if(m_OI.getMenuButton()){
-      m_driveSubsystem.zeroHeading();
+      m_drivetrain.zeroHeading();
     }
 
     if(m_OI.getAButton()){
       Rotation2d zeroRotate = new Rotation2d();
       Pose2d zero = new Pose2d(0.0, 0.0, zeroRotate);
-      m_driveSubsystem.resetOdometry(zero);
+      m_drivetrain.resetOdometry(zero);
     }
+
+    SmartDashboard.putBoolean("Field Centric ", fieldCentric);
   }
 
-  public double snapToHeading(double currentAngle, double targetAngle, double joystickDesired){
-    if(targetAngle == 361){
-      targetAngle = joystickDesired;
-    }
-    double error = currentAngle - targetAngle;
-    while(error < -180){error += 360;}
-    while(error > 180){error -= 360;}
-    SmartDashboard.putNumber("Angle Error", error);
+  // public double snapToHeading(double currentAngle, double targetAngle, double joystickDesired){
+  //   if(targetAngle == 361){
+  //     targetAngle = joystickDesired;
+  //   }
+  //   double error = currentAngle - targetAngle;
+  //   while(error < -180){error += 360;}
+  //   while(error > 180){error -= 360;}
+  //   SmartDashboard.putNumber("Angle Error", error);
     
-    error = error * Math.PI / 180;
-    double new_error = error;
-    double current_time = System.currentTimeMillis();
-    double derivative = (new_error - last_error)/(current_time - last_time);
-    last_time = current_time;
-    last_error = error;
-    error = MathUtil.clamp(error, -maximumRotationVelocity, maximumRotationVelocity);
+  //   error = error * Math.PI / 180;
+  //   double new_error = error;
+  //   double current_time = System.currentTimeMillis();
+  //   double derivative = (new_error - last_error)/(current_time - last_time);
+  //   last_time = current_time;
+  //   last_error = error;
+  //   error = MathUtil.clamp(error, -maximumRotationVelocity, maximumRotationVelocity);
 
-    return MathUtil.clamp(error * .7 + derivative * .1, -maximumRotationVelocity, maximumRotationVelocity) / maximumRotationVelocity;
+  //   return MathUtil.clamp(error * .7 + derivative * .1, -maximumRotationVelocity, maximumRotationVelocity) / maximumRotationVelocity;
     
-  }
+  // }
 
   // Called once the command ends or is interrupted.
   @Override
