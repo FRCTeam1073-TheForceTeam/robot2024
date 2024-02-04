@@ -5,16 +5,13 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.System_StateValue;
 
+import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DutyCycle;
 
-public class Arm extends Diagnostics {
+public class CollectorArm extends Diagnostics {
   
   enum POSE{
     START,
@@ -31,6 +28,8 @@ public class Arm extends Diagnostics {
   private double liftSpeed;
   private double extendSpeed; 
 
+  InterpolatingTreeMap<Double,Double> aMap;
+  
   //TODO: Change all of these values
   private final double liftLength = 0;
   private final double armLength = 0;
@@ -104,10 +103,10 @@ public class Arm extends Diagnostics {
       extend = 0.0;
     }
 
-    public void copyFrom(JointVelocities source) {
-      lift = source.lift;
-      extend = source.extend;
-    }
+    // public void copyFrom(JointVelocities source) {
+    //   lift = source.lift;
+    //   extend = source.extend;
+    // }
   }
 
   public class JointWaypoints{
@@ -138,7 +137,7 @@ public class Arm extends Diagnostics {
 
 
   /** Creates a new Arm. */
-  public Arm() {
+  public CollectorArm() {
     liftMotor = new TalonFX(0); // TODO: set device id
     extendMotor = new TalonFX(0); // TODO: set device id
     liftSpeed = 0;
@@ -202,6 +201,36 @@ public class Arm extends Diagnostics {
     return extendSpeed;
   }
 
+  public void put(double key, double value) {
+    aMap.put(key, value);
+  }
+
+  public double get(double currentAngle, double goalAngle) {
+    double angle = aMap.get(goalAngle);
+    if (angle == 0) {
+      double ceilingKey = aMap.ceilingKey(key);
+      double floorKey = aMap.floorKey(key);
+
+      if (ceilingKey == 0 && floorKey == 0) {
+        return 0;
+      }
+      else if (ceilingKey == 0) {
+        return aMap.get(floorKey);
+      }
+      else if (floorKey == 0) {
+        return aMap.get(ceilingKey);
+      }
+      double floor = aMap.get(floorKey);
+      double ceiling = aMap.get(ceilingKey);
+
+      return m_interpolator.interpolate(
+          floor, ceiling, m_inverseInterpolator.inverseInterpolate(floorKey, ceilingKey, key));
+    } else {
+      return angle;
+    }
+  }
+
+
   @Override
   public void initSendable(SendableBuilder builder)
   {
@@ -219,6 +248,8 @@ public class Arm extends Diagnostics {
   {
     runExtendMotor(extendSpeed);
     runLiftMotor(liftSpeed);
+    
+    // interpolator tree map member smth
   }
 
 
