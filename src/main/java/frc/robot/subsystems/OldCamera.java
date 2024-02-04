@@ -54,7 +54,7 @@ public class OldCamera extends SubsystemBase {
     this.camStats = this.camStats;
     this.aprilTags = this.aprilTags;
     this.lineDetection = this.lineDetection;
-     this.gamePiece = this.gamePiece;
+    this.gamePiece = this.gamePiece;
 
 
     try {
@@ -68,23 +68,6 @@ public class OldCamera extends SubsystemBase {
     }
 
   }
-  
-  public void SerialComms() {
-    this.route = this.route;
-    this.send = this.send;
-    this.receive = this.receive;
-
-    //HashMap<String, Integer> send = new HashMap<String, Integer>();
-    //send.put ("camera.ID", route);
-    
-    //HashMap<String, String> sendMessage = new HashMap<String, String>();
-    //sendMessage.put("Message", "1,A"); 
-
-    //HashMap<String, String> recieveMessage = new HashMap<String, String>();
-    //recieveMessage.put("Message", "1, A, CenterX, CenterY, Distance, Quality"); //TODO Change Numbers
-  }
-
-  
 
   @Override
   public void periodic() {
