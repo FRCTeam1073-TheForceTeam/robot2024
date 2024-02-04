@@ -7,8 +7,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-
-import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
+import java.util.TreeMap;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
 public class CollectorArm extends Diagnostics {
@@ -23,12 +22,12 @@ public class CollectorArm extends Diagnostics {
   TalonFX liftMotor;
   TalonFX extendMotor;
   
-  MotorFault liftMotorFault = new MotorFault(liftMotor, 0);
-  MotorFault extendMotorFault = new MotorFault(extendMotor, 0);
+  MotorFault liftMotorFault = new MotorFault(liftMotor, 15);
+  MotorFault extendMotorFault = new MotorFault(extendMotor, 16);
   private double liftSpeed;
   private double extendSpeed; 
 
-  InterpolatingTreeMap<Double,Double> aMap;
+  InterpolatingTreeMap<Double, Double> aMap;
   
   //TODO: Change all of these values
   private final double liftLength = 0;
@@ -138,8 +137,8 @@ public class CollectorArm extends Diagnostics {
 
   /** Creates a new Arm. */
   public CollectorArm() {
-    liftMotor = new TalonFX(0); // TODO: set device id
-    extendMotor = new TalonFX(0); // TODO: set device id
+    liftMotor = new TalonFX(15); // TODO: set device id
+    extendMotor = new TalonFX(16); // TODO: set device id
     liftSpeed = 0;
     extendSpeed = 0;
     setUpMotors();
@@ -201,35 +200,42 @@ public class CollectorArm extends Diagnostics {
     return extendSpeed;
   }
 
-  public void put(double key, double value) {
-    aMap.put(key, value);
-  }
+  public class InterpolatingTreeMap<K extends Number, V extends Number> {
+    InterpolatingTreeMap<Double, Double> aMap = new InterpolatingTreeMap<Double, Double>();
 
-  public double get(double currentAngle, double goalAngle) {
-    double angle = aMap.get(goalAngle);
-    if (angle == 0) {
-      double ceilingKey = aMap.ceilingKey(key);
-      double floorKey = aMap.floorKey(key);
-
-      if (ceilingKey == 0 && floorKey == 0) {
-        return 0;
-      }
-      else if (ceilingKey == 0) {
-        return aMap.get(floorKey);
-      }
-      else if (floorKey == 0) {
-        return aMap.get(ceilingKey);
-      }
-      double floor = aMap.get(floorKey);
-      double ceiling = aMap.get(ceilingKey);
-
-      return m_interpolator.interpolate(
-          floor, ceiling, m_inverseInterpolator.inverseInterpolate(floorKey, ceilingKey, key));
-    } else {
-      return angle;
+    public void put(double key, double value) {
+      aMap.put(key, value);
     }
+
+    public double get(double currentAngle, double goalAngle) {
+      double angle = aMap.get(goalAngle);
+      if (angle == 0) {
+        double ceilingKey = aMap.ceilingKey(key);
+        double floorKey = aMap.floorKey(key);
+
+        if (ceilingKey == 0 && floorKey == 0) {
+          return 0;
+        }
+        else if (ceilingKey == 0) {
+          return aMap.get(floorKey);
+        }
+        else if (floorKey == 0) {
+          return aMap.get(ceilingKey);
+        }
+        double floor = aMap.get(floorKey);
+        double ceiling = aMap.get(ceilingKey);
+
+        return interpolate(
+            floor, ceiling, inverseInterpolate(floorKey, ceilingKey, key));
+      } else {
+        return angle;
+      }
+    }
+
+    public double interpolate(double )
   }
 
+ 
 
   @Override
   public void initSendable(SendableBuilder builder)
