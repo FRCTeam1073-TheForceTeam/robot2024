@@ -5,14 +5,13 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.OpenMV;
+import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.SerialComms;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -21,11 +20,14 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-
-  private final OpenMV m_OpemMVCamera = new OpenMV(port);
   // The robot's subsystems and commands are defined here...
+  private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
+  private final Camera m_camera1 = new Camera(m_serial, 1);  // camID is how SerialComms and the cameras themselves tells them apart
+  private final Camera m_camera2 = new Camera(m_serial, 2);
+  // and so on for however many cameras we have
 
-  //private final SerialComms m_OpenMV = new SerialComms(SerialPort.Port.kUSB);
+  // NSargent: the stuff below was already here
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);

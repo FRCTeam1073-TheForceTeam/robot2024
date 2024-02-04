@@ -10,7 +10,7 @@ import java.util.HashMap;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Camera extends SubsystemBase {
+public class OldCamera extends SubsystemBase {
   int id;
   Dictionary camStats;
   Dictionary aprilTags;
@@ -23,7 +23,7 @@ public class Camera extends SubsystemBase {
   private double lastUpdateTime = 0;
   private String talk = "q";
   /** Creates a new Camera. */
-  public Camera(SerialPort.Port p) {
+  public OldCamera(SerialPort.Port p) {
     HashMap<String, Integer> camStats = new HashMap<String, Integer>();
     camStats.put("baudrate", 921600);
     camStats.put("timeStamp", 54);

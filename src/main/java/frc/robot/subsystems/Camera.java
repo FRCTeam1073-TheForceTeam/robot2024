@@ -9,33 +9,19 @@ import java.lang.Thread;
 import java.util.ArrayList;
 import java.util.List;
 
-//import edu.wpi.first.networktables.DoubleEntry;
-import edu.wpi.first.networktables.IntegerArrayTopic;
-import edu.wpi.first.networktables.IntegerArrayPublisher;
-import edu.wpi.first.networktables.NetworkTablesJNI;
-import edu.wpi.first.networktables.PubSubOption;
-// import edu.wpi.first.networktables.TimestampedDouble;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+// TODO: lots of Cole's apriltag/target code may live in here
 
+public class Camera extends SubsystemBase{
+  /** Creates a new Camera. */
+  private SerialComms serialComms;
+  private int camID;
 
-public class OpenMV extends SubsystemBase{
-  /** Creates a new OpenMV. */
-  private SerialPort port;
-  private SerialPort.Port p;
+  public Camera(SerialComms serialComms, int camID) {
+  //public ArrayList<Byte> msg = new ArrayList();
 
-  public OpenMV() {
-    try {
-      port = new SerialPort(2000000,p,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
-      port.setFlowControl(SerialPort.FlowControl.kNone);
-    }
-    catch (Exception e) {
-      System.out.println("OpenMV Could not open serial port!");
-      port = null;
-    }
-  }
-  public ArrayList<Byte> msg = new ArrayList();
 
 
   public void sendAprilTag() {
@@ -80,23 +66,3 @@ public class OpenMV extends SubsystemBase{
   }
 }
 }
-// class AprilTagPublisher {
-//   // the publisher is an instance variable so its lifetime matches that of the class
-//   IntegerArrayPublisher intArrayPub;
-
-//   public void PublishAprilTag(IntegerArrayTopic intArrayTopic) {
-//     // start publishing; the return value must be retained (in this case, via
-//     // an instance variable)
-//     //int[] someintarray = [];
-//     intArrayPub = intArrayTopic.publish();
-
-//     // publish options may be specified using PubSubOption
-//     // intArrayPub = intArrayTopic.publish(PubSubOption.keepDuplicates(true));
-//   }
-
-
-//   public void close() {
-//     // stop publishing
-//     intArrayPub.close();
-//   }
-// }
