@@ -16,9 +16,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SerialComms extends SubsystemBase{
 
-  private static SerialPort serialPort;
+  private SerialPort.Port portUSB;
+  private SerialPort serialPort;
+
 
   public SerialComms(SerialPort.Port portUSB) {
+    this.portUSB = portUSB;
   //   try {
   //     SerialPort serialPort = new SerialPort(1000000,port,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne)
   //     serialPort.setFlowControl(SerialPort.FlowControl.kNone);
@@ -28,8 +31,15 @@ public class SerialComms extends SubsystemBase{
   //     port = null;
   //   }
   // }
-    SerialPort serialPort = new SerialPort(1000000,portUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
-    serialPort.setFlowControl(SerialPort.FlowControl.kNone);
+    try {
+      this.serialPort = new SerialPort(1000000,this.portUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
+      serialPort.setFlowControl(SerialPort.FlowControl.kNone);
+      System.out.println("set serialPort and flowcontrol");
+    }
+    catch (Exception e) {
+      System.out.println("Could not open serial port!");
+      serialPort = null;
+    }
   }
 
   public ArrayList<Byte> getVisionData(byte[] message){

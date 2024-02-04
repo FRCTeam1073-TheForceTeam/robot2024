@@ -23,7 +23,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
   private final Camera m_camera1 = new Camera(m_serial, 1);  // camID is how SerialComms and the cameras themselves tells them apart
-  private final Camera m_camera2 = new Camera(m_serial, 2);
+  //private final Camera m_camera2 = new Camera(m_serial, 2);
   // and so on for however many cameras we have
 
   // NSargent: the stuff below was already here

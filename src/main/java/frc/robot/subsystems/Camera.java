@@ -16,19 +16,29 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Camera extends SubsystemBase {
   /** Creates a new Camera. */
+  //private SerialPort port = new SerialPort(1000000, SerialPort.Port.kUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
+
   private SerialComms serialComms;
   private int camID;
-  private SerialPort port = new SerialPort(1000000, SerialPort.Port.kUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
-
+  
   public Camera(SerialComms serialComms, int camID) {
-  //public ArrayList<Byte> msg = new ArrayList();
+    this.serialComms = serialComms;
+    //public ArrayList<Byte> msg = new ArrayList();
+    if(serialComms == null){
+      System.out.println(serialComms.toString());
+    }
+    else{
+      
+        System.out.println(serialComms.toString());
+
+    }
   }
 
   public void buildCommand() {
   }
 
   public void getAprilTag(){
-    String cmdStr = "%i,a\n".formatted(camID);
+    String cmdStr = "%s,a\n".formatted(camID);
     byte[] cmdBytes = cmdStr.getBytes();
     ArrayList<Byte> data = serialComms.getVisionData(cmdBytes);
     System.out.println(data);
@@ -56,12 +66,14 @@ public class Camera extends SubsystemBase {
 
   @Override
   public void periodic() {
-    int bytesWaiting = port.getBytesReceived();  // returns the number of bytes waiting to be read, without actually reading them
+    //int bytesWaiting = port.getBytesReceived();  // returns the number of bytes waiting to be read, without actually reading them
     // byte[] cmdBytes = "2,g,0,1,2,3,4,5,6,7,8,9\n".getBytes("ASCII");
     //int cmdBytesLen = cmdBytes.length;
     //Integer wrote = port.write(cmdBytes, cmdBytesLen); // second arg is maximum bytes to write, which isn't a big deal for us
     //System.out.println(String.format("just wrote this many bytes: %d", wrote));
-
+    // ArrayList<Byte> aprilTag = getAprilTag()
+    System.out.println("getting apriltag data");
+    getAprilTag();
     try {
       Thread.sleep(1000);
     }
