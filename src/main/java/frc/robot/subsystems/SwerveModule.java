@@ -68,7 +68,7 @@ public class SwerveModule extends DiagnosticsBase implements Sendable
     
         driveVelocityVoltage = new VelocityVoltage(0).withSlot(0);
         steerPositionVoltage = new PositionVoltage(0).withSlot(0);
-        configureHardare();
+        configureHardware();
     }
 
     public static void initPreferences() 
@@ -78,11 +78,23 @@ public class SwerveModule extends DiagnosticsBase implements Sendable
 
     @Override
     public boolean updateDiagnostics() {
+        // Check the CANCoder.
         StatusCode error = steerEncoder.clearStickyFaults(1);
         if (!error.isOK()) 
         {
            return setDiagnosticsFeedback(String.format(" Module %d, steerEncoder %d, error.", cfg.moduleNumber, idcfg.steerEncoderID), false);
         }
+
+        MotorFault steerFault = new MotorFault(steerMotor,idcfg.steerMotorID);
+        if (steerFault.hasFaults()) {
+            return setDiagnosticsFeedback(steerFault.getFaults(), false);
+        }
+
+        MotorFault driveFault = new MotorFault(driveMotor, idcfg.driveMotorID);
+        if (driveFault.hasFaults()) {
+            return setDiagnosticsFeedback(driveFault.getFaults(), false);
+        }
+
         return setDiagnosticsFeedback("OK", true);
     }
 
@@ -179,7 +191,7 @@ public class SwerveModule extends DiagnosticsBase implements Sendable
     }
 
     // configures motors with PIDF values, if it is inverted or not, current limits, etc.
-    public void configureHardare()
+    public void configureHardware()
     {
         // Default configurations:
         TalonFXConfiguration steerConfigs = new TalonFXConfiguration();
