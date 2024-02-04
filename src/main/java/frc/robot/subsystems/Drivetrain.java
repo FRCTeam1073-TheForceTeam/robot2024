@@ -118,6 +118,21 @@ public class Drivetrain extends DiagnosticsSubsystem
     Preferences.initDouble("Drive.ModulePositions", 0.5017);
   }
 
+  // Returns target x velocity (for sendable)
+  double getTargetVx() {
+    return targetChassisSpeeds.vxMetersPerSecond;
+  }
+
+  // Returns target y velocity (for sendable)
+  double getTargetVy() {
+    return targetChassisSpeeds.vyMetersPerSecond;
+  }
+
+  // Returns target angular velocity (for sendable)
+  double getTargetOmega() {
+    return targetChassisSpeeds.omegaRadiansPerSecond;
+  }
+
   @Override
   public void initSendable(SendableBuilder builder){
     builder.setSmartDashboardType("Drivetrain");
@@ -126,6 +141,9 @@ public class Drivetrain extends DiagnosticsSubsystem
     builder.addDoubleProperty("Odo Y", odometry.getPoseMeters()::getY, null);
     builder.addDoubleProperty("Odo Heading(DEG)", this::getHeadingDegrees, null);
     builder.addDoubleProperty("Odo Wrapped Heading", this::getWrappedHeadingDegrees, null);
+    builder.addDoubleProperty("Target Vx", this::getTargetVx, null);
+    builder.addDoubleProperty("Target Vy", this::getTargetVy, null);
+    builder.addDoubleProperty("Target Omega", this::getTargetOmega, null);
     builder.addDoubleProperty("Pitch", this::getPitch, null);
     builder.addDoubleProperty("Roll", this::getRoll, null);
 
@@ -140,6 +158,7 @@ public class Drivetrain extends DiagnosticsSubsystem
     String result = new String();
     boolean isOK = true;
 
+    // Run the diagnostics for each ofthe modules and return value if something is wrong:
     for (int mod = 0; mod < 4; ++mod) {
       if (!modules[mod].updateDiagnostics())
         return setDiagnosticsFeedback(modules[mod].getDiagnosticsDetails(), false);
@@ -200,9 +219,6 @@ public class Drivetrain extends DiagnosticsSubsystem
   // Set the commanded chassis speeds for the drive subsystem.
   public void setTargetChassisSpeeds(ChassisSpeeds speeds)
   {
-    // SmartDashboard.putNumber("ChassisSpeed x", speeds.vxMetersPerSecond);
-    // SmartDashboard.putNumber("ChassisSpeed y", speeds.vyMetersPerSecond);
-    // SmartDashboard.putNumber("ChassisSpeed rotation", speeds.omegaRadiansPerSecond);
     targetChassisSpeeds = speeds;
   }
 
@@ -280,20 +296,10 @@ public class Drivetrain extends DiagnosticsSubsystem
       SwerveModuleState[] states = kinematics.toSwerveModuleStates(targetChassisSpeeds);
       SwerveDriveKinematics.desaturateWheelSpeeds(states, maximumLinearSpeed);
 
-      // SmartDashboard.putNumber("Module 0 unoptimized", states[0].angle.getRotations()); 
-      // SmartDashboard.putNumber("Module 1 unoptimized", states[1].angle.getRotations()); 
-      // SmartDashboard.putNumber("Module 2 unoptimized", states[2].angle.getRotations()); 
-      // SmartDashboard.putNumber("Module 3 unoptimized", states[3].angle.getRotations()); 
-
       states[0] = SwerveModuleState.optimize(states[0], Rotation2d.fromRotations(modules[0].getSteerRotations()));
       states[1] = SwerveModuleState.optimize(states[1], Rotation2d.fromRotations(modules[1].getSteerRotations()));
       states[2] = SwerveModuleState.optimize(states[2], Rotation2d.fromRotations(modules[2].getSteerRotations()));
       states[3] = SwerveModuleState.optimize(states[3], Rotation2d.fromRotations(modules[3].getSteerRotations()));
-
-      // SmartDashboard.putNumber("Module 0 optimized", states[0].angle.getRadians());
-      // SmartDashboard.putNumber("Module 1 optimized", states[1].angle.getRadians());
-      // SmartDashboard.putNumber("Module 2 optimized", states[2].angle.getRadians());
-      // SmartDashboard.putNumber("Module 3 optimized", states[3].angle.getRadians());
 
       modules[0].setCommand(states[0].angle.getRotations(), states[0].speedMetersPerSecond);
       modules[1].setCommand(states[1].angle.getRotations(), states[1].speedMetersPerSecond);
@@ -315,11 +321,21 @@ public class Drivetrain extends DiagnosticsSubsystem
       targetChassisSpeeds.vyMetersPerSecond = 0.0;
       targetChassisSpeeds.omegaRadiansPerSecond = 0.0;
       SwerveModuleState[] states = kinematics.toSwerveModuleStates(targetChassisSpeeds);
-      states[0] = optimize(new SwerveModuleState(0, new Rotation2d(Math.PI / 4)), Rotation2d.fromRotations(modules[0].getSteerRotations()));
-      states[1] = optimize(new SwerveModuleState(0, new Rotation2d(-Math.PI / 4)), Rotation2d.fromRotations(modules[1].getSteerRotations()));
-      states[2] = optimize(new SwerveModuleState(0, new Rotation2d(-Math.PI / 4)), Rotation2d.fromRotations(modules[2].getSteerRotations()));
-      states[3] = optimize(new SwerveModuleState(0, new Rotation2d(Math.PI / 4)), Rotation2d.fromRotations(modules[3].getSteerRotations()));
 
+      // Set angles for locked parking position:
+      states[0].angle = Rotation2d.fromRadians(Math.PI/4.0);
+      states[1].angle = Rotation2d.fromDegrees(-Math.PI/4.0);
+      states[2].angle = Rotation2d.fromDegrees(-Math.PI/4.0);
+      states[3].angle = Rotation2d.fromDegrees(Math.PI/4.0);
+
+
+      // Run the optimizer for the states:
+      states[0] = SwerveModuleState.optimize(states[0], Rotation2d.fromRotations(modules[0].getSteerRotations()));
+      states[1] = SwerveModuleState.optimize(states[1], Rotation2d.fromRotations(modules[1].getSteerRotations()));
+      states[2] = SwerveModuleState.optimize(states[2], Rotation2d.fromRotations(modules[2].getSteerRotations()));
+      states[3] = SwerveModuleState.optimize(states[3], Rotation2d.fromRotations(modules[3].getSteerRotations()));
+
+      
       modules[0].setCommand(states[0].angle.getRotations(), states[0].speedMetersPerSecond);
       modules[1].setCommand(states[1].angle.getRotations(), states[1].speedMetersPerSecond);
       modules[2].setCommand(states[2].angle.getRotations(), states[2].speedMetersPerSecond);
@@ -342,8 +358,6 @@ public class Drivetrain extends DiagnosticsSubsystem
 
   public void setDebugAngle(double power) // sets the angle directly
   {
-    //SmartDashboard.putNumber("Debug Angle", angle);
-
     modules[0].setDebugRotate(power);
     modules[1].setDebugRotate(power);
     modules[2].setDebugRotate(power);
@@ -358,58 +372,4 @@ public class Drivetrain extends DiagnosticsSubsystem
     modules[3].setDebugTranslate(power);
   }
 
-
-  // optimizes the module states to take the shortest path to the desired position
-  public static SwerveModuleState optimize(SwerveModuleState desiredState, Rotation2d currentAngle)
-  {
-    double targetAngle = placeInAppropriate0To360Scope(currentAngle.getDegrees(), desiredState.angle.getDegrees());
-    double targetSpeed = desiredState.speedMetersPerSecond;
-    double delta = targetAngle - currentAngle.getDegrees();
-    if (Math.abs(delta) > 90)
-    {
-      targetSpeed = -targetSpeed;
-      targetAngle = delta > 90 ? (targetAngle -= 180) : (targetAngle += 180);
-    }        
-    return new SwerveModuleState(targetSpeed, Rotation2d.fromDegrees(targetAngle));
-  }
-
-  /**
-   * @param scopeReference Current Angle
-   * @param newAngle Target Angle
-   * @return Closest angle within scope
-   */
-  // places the desired angle to be in a 0 to 360 scope to minimize distance for wheels to rotate 
-  private static double placeInAppropriate0To360Scope(double scopeReference, double newAngle) 
-  {
-    double lowerBound;
-    double upperBound;
-    double lowerOffset = scopeReference % 360;
-    if (lowerOffset >= 0)
-    {
-      lowerBound = scopeReference - lowerOffset;
-      upperBound = scopeReference + (360 - lowerOffset);
-    } 
-    else
-    {
-      upperBound = scopeReference - lowerOffset;
-      lowerBound = scopeReference - (360 + lowerOffset);
-    }
-    while (newAngle < lowerBound)
-    {
-      newAngle += 360;
-    }
-    while (newAngle > upperBound)
-    {
-      newAngle -= 360;
-    }
-    if (newAngle - scopeReference > 180)
-    {
-      newAngle -= 360;
-    } 
-    else if (newAngle - scopeReference < -180) 
-    {
-      newAngle += 360;
-    }
-    return newAngle;
-  }
 }
