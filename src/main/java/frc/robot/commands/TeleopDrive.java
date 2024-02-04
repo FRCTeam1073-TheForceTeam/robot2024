@@ -48,7 +48,7 @@ public class TeleopDrive extends Command
     m_drivetrain = ds;
     m_OI = oi;
     fieldCentric = true;
-    startAngle = ds.getHeading();
+    startAngle = ds.getHeadingDegrees();
     desiredAngle = startAngle;
     snapPidProfile = new PIDController(
       0.05, 
@@ -96,7 +96,8 @@ public class TeleopDrive extends Command
     }
     lastRobotCentricButton = m_OI.getFieldCentricToggle();
     SmartDashboard.putBoolean("Field Centric", fieldCentric);
-    
+    SmartDashboard.putBoolean("Parking Brake", parked);
+
     if(m_OI.getLeftBumper() && lastParkingBreakButton == false)
     {
       parked = !parked;
@@ -121,8 +122,8 @@ public class TeleopDrive extends Command
         vx,
         vy,
         w,
-        Rotation2d.fromDegrees(m_drivetrain.getHeading())); // get fused heading
-        m_drivetrain.setChassisSpeeds(speeds);
+        Rotation2d.fromDegrees(m_drivetrain.getHeadingDegrees())); // get fused heading
+        m_drivetrain.setTargetChassisSpeeds(speeds);
     }
     else
     {
@@ -131,7 +132,7 @@ public class TeleopDrive extends Command
       speeds.vxMetersPerSecond = MathUtil.clamp(-(leftY * maximumLinearVelocity / 25 )* mult1 * mult2, -maximumLinearVelocity, maximumLinearVelocity); 
       speeds.vyMetersPerSecond = MathUtil.clamp(-(leftX * maximumLinearVelocity / 25)* mult1 * mult2, -maximumLinearVelocity, maximumLinearVelocity); 
       speeds.omegaRadiansPerSecond = MathUtil.clamp(-(rightX * maximumRotationVelocity / 25)* mult1 * mult2, -maximumRotationVelocity, maximumRotationVelocity);
-      m_drivetrain.setChassisSpeeds(speeds); 
+      m_drivetrain.setTargetChassisSpeeds(speeds); 
     }
     
     // Allow driver to zero the drive subsystem heading for field-centric control.
@@ -144,8 +145,6 @@ public class TeleopDrive extends Command
       Pose2d zero = new Pose2d(0.0, 0.0, zeroRotate);
       m_drivetrain.resetOdometry(zero);
     }
-
-    SmartDashboard.putBoolean("Field Centric ", fieldCentric);
   }
 
   // public double snapToHeading(double currentAngle, double targetAngle, double joystickDesired){

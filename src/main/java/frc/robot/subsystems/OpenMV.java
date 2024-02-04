@@ -5,7 +5,7 @@
 package frc.robot.subsystems;
 
 
-public class OpenMV extends Diagnostics{
+public class OpenMV extends DiagnosticsSubsystem {
   /** Creates a new OpenMV. */
   public OpenMV() {}
 

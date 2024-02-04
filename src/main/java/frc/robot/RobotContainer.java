@@ -39,6 +39,7 @@ public class RobotContainer {
   public RobotContainer() {
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     SmartDashboard.putData(m_drivetrain);
+    SmartDashboard.putData(m_OI);
 
     // Configure the trigger bindings
     configureBindings();
