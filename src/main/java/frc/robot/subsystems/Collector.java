@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.DutyCycle;
 
 public class Collector extends Diagnostics {
 
-  TalonFX collectMotor = new TalonFX(0); // same thing
+  TalonFX collectMotor = new TalonFX(14); // same thing
   MotorFault collectMotorFault = new MotorFault(collectMotor, 0);
   private double collectorSpeed;
   private DigitalInput tof1;
