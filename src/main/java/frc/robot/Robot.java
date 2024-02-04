@@ -25,8 +25,10 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    RobotContainer.initPreferences(); // Before you create the container.
-    
+
+    // We must call this before creating the robot container: Sets up preferences *once* at startup.
+    RobotContainer.initPreferences();
+
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
