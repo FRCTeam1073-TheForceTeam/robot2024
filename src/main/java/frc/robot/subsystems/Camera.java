@@ -14,33 +14,44 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 // TODO: lots of Cole's apriltag/target code may live in here
 
-public class Camera extends SubsystemBase{
+public class Camera extends SubsystemBase {
   /** Creates a new Camera. */
   private SerialComms serialComms;
   private int camID;
+  private SerialPort port = new SerialPort(1000000, SerialPort.Port.kUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
 
   public Camera(SerialComms serialComms, int camID) {
   //public ArrayList<Byte> msg = new ArrayList();
-
-
-
-  public void sendAprilTag() {
-    byte[] cmdBytes = "1,a\n".getBytes();
-    int bytesWritten = port.write(cmdBytes, cmdBytes.length);
   }
 
-  public ArrayList<Byte> getMsg()
-  {
-    ArrayList<Byte> msg = new ArrayList();
-    byte[] oneByte = port.read(1);
-    if (oneByte == "\n".getBytes()) {
-      return msg;
-    }
-    else {
-      byte oneActualByte = oneByte[0];
-      msg.add(oneActualByte);
-    }
+  public void buildCommand() {
   }
+
+  public void getAprilTag(){
+    String cmdStr = "%i,a\n".formatted(camID);
+    byte[] cmdBytes = cmdStr.getBytes();
+    ArrayList<Byte> data = serialComms.getVisionData(cmdBytes);
+    System.out.println(data);
+  }
+
+
+  // public void sendAprilTag() {
+  //   byte[] cmdBytes = "1,a\n".getBytes();
+  //   int bytesWritten = port.write(cmdBytes, cmdBytes.length);
+  // }
+
+  // public ArrayList<Byte> getMsg()
+  // {
+  //   ArrayList<Byte> msg = new ArrayList();
+  //   byte[] oneByte = serialComms.getMsg(1);
+  //   if (oneByte == "\n".getBytes()) {
+  //     return msg;
+  //   }
+  //   else {
+  //     byte oneActualByte = oneByte[0];
+  //     msg.add(oneActualByte);
+  //   }
+  // }
 
 
   @Override
@@ -58,11 +69,11 @@ public class Camera extends SubsystemBase{
       throw new RuntimeException(e);
     }
     //ArrayList<Byte> msg = getMsg();
-    this.msg = getMsg();
+    //this.msg = getMsg();
     //String msgString = msg.toString();
     // char cmdChar = (char)msg[2];
     // if (cmdChar == 'a') {
     //   //do whatever apriltags do
   }
 }
-}
+

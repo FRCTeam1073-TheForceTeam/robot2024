@@ -5,6 +5,9 @@
 package frc.robot.subsystems;
 
 import java.lang.Thread;  // might use sleeps at some point
+import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -29,15 +32,34 @@ public class SerialComms extends SubsystemBase{
     serialPort.setFlowControl(SerialPort.FlowControl.kNone);
   }
 
-  public class Transmit {  
-    public static String msgA = "1,a\n";
-    public static String msgG = "1,g\n";
-    public static String msgL = "1,l\n";
+  public ArrayList<Byte> getVisionData(byte[] message){
+    send(message);
+    return recieve();
   }
 
-  public class Recieve{
-    static String msg = serialPort.readString();
+  public void send(byte[] message) {
+    serialPort.write(message, message.length);
   }
+
+  public ArrayList<Byte> recieve() {
+    ArrayList<Byte> msg = new ArrayList();
+
+    while(1 == 1){
+      int recvd = serialPort.getBytesReceived();
+
+      if(recvd != 0){
+            byte[] data = serialPort.read(1);
+            msg.add(data[0]);
+
+            String dataString = new String(data, StandardCharsets.US_ASCII);
+
+            if(dataString == "\n") {
+              return msg;
+            }
+
+      }
+  }
+    }
 
 // this one reads 1,a from openmv
 // keep around for a bit as an example of basic serial usage
