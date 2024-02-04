@@ -5,7 +5,7 @@
 package frc.robot.subsystems;
 
 
-public class Shooter extends Diagnostics{
+public class Shooter extends DiagnosticsSubsystem {
   /** Creates a new Shooter. */
   public Shooter() {}
 
