@@ -5,7 +5,7 @@
 package frc.robot.subsystems;
 
 
-public class NoteFinder extends Diagnostics{
+public class NoteFinder extends DiagnosticsSubsystem {
   /** Creates a new NoteFinder. */
   public NoteFinder() {}
 
