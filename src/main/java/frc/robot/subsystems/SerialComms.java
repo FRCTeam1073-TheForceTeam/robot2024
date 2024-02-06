@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.Thread;  // might use sleeps at some point
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
@@ -17,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class SerialComms extends SubsystemBase{
 
   private SerialPort.Port portUSB;
-  private SerialPort serialPort;
+  private static SerialPort serialPort;
 
 
   public SerialComms(SerialPort.Port portUSB) {
@@ -42,16 +43,17 @@ public class SerialComms extends SubsystemBase{
     }
   }
 
-  public ArrayList<Byte> getVisionData(byte[] message){
+  public static ArrayList<Byte> getVisionData(byte[] message){
     send(message);
     return recieve();
   }
 
-  public void send(byte[] message) {
+  public static void send(byte[] message) {
     serialPort.write(message, message.length);
+    System.out.println("Sending");
   }
 
-  public ArrayList<Byte> recieve() {
+  public static ArrayList<Byte> recieve() {
     ArrayList<Byte> msg = new ArrayList();
 
     while(1 == 1){
@@ -94,14 +96,8 @@ public class SerialComms extends SubsystemBase{
 
   @Override
   public void periodic() {
+    
 
     //TODO: unclear how/if SerialComms will use periodic()
-
-    // int byteswritten = serialPort.writeString(Transmit.msgA);
-    // System.out.println(byteswritten);
-    // System.out.println(serialPort.readString());
-    // String msgR ="";  
-    // Recieve.msg = msgR;  
-    // parseMessage(msgR);
   }
 }

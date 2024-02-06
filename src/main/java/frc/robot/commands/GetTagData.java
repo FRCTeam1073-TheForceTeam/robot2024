@@ -5,11 +5,15 @@
 package frc.robot.commands;
 
 
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+
 //import com.ctre.phoenix.sensors.Pigeon2;
 
 //import edu.wpi.first.math.wpiilibj2.command.CommandBase;  // NSargent: deprecated I guess?
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Camera;
+import frc.robot.subsystems.SerialComms;
 
 
 public class GetTagData extends Command {
@@ -33,6 +37,7 @@ public class GetTagData extends Command {
    */
   @Override
   public void initialize() {
+
     // NSargent: not sure if we'll need this
   }
 
@@ -44,6 +49,14 @@ public class GetTagData extends Command {
    */
   @Override
   public void execute() {
+    try {
+      ArrayList<Byte> thedata = SerialComms.getVisionData("1,a\n".getBytes("ASCII"));
+      System.out.println(thedata);
+
+    } catch (UnsupportedEncodingException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 
   // Called once the command ends or is interrupted.

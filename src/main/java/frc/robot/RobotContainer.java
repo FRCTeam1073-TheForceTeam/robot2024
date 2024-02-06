@@ -6,8 +6,10 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.Camera;
+import frc.robot.commands.GetTagData;
 import frc.robot.subsystems.SerialComms;
 import edu.wpi.first.wpilibj.SerialPort;
+import frc.robot.subsystems.OI;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -23,6 +25,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
   private final Camera m_camera1 = new Camera(m_serial, 1);  // camID is how SerialComms and the cameras themselves tells them apart
+  //private final GetTagData c_GetTagData = new GetTagData(m_camera1);
+  private final OI m_OI = new OI();
   //private final Camera m_camera2 = new Camera(m_serial, 2);
   // and so on for however many cameras we have
 
@@ -48,15 +52,22 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
+  public Command getTagData(){
+    System.out.println("XBUTTON");
+    //return c_GetTagData;
+    return new GetTagData(m_camera1);
+  }
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-  
-
+    System.out.println("Configuring buttons");
+    Trigger tagButton = new Trigger(m_OI::getXButton);
+    tagButton.onTrue(getTagData());
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
 
   }
 
+  // NSargent: commandScheduler.getInstance.setDefaultCommand(m_camera1, getTagdata())
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -66,4 +77,6 @@ public class RobotContainer {
     // An example command will be run in autonomous
     return null;
   }
+
+
 }
