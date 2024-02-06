@@ -14,7 +14,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 
-public class Collector extends Diagnostics {
+public class Collector extends DiagnosticsSubsystem {
 
   TalonFX collectMotor = new TalonFX(14); // same thing
   MotorFault collectMotorFault = new MotorFault(collectMotor, 0);
@@ -25,6 +25,7 @@ public class Collector extends Diagnostics {
   private double tof1Freq;
   private double tof1Range;
   private final double tof1ScaleFactor = 100000; 
+
 
   private final double collectorTicksPerMeter = 1;
   // private final double intakeGearRatio = 5.0;
@@ -89,8 +90,8 @@ public class Collector extends Diagnostics {
     builder.setSmartDashboardType("Collector");
     builder.addDoubleProperty("Speed", this::getCollectorSpeed, this::setCollectorSpeed);
     builder.addDoubleProperty("tof1Range", this::getRange1, null);
-    builder.addBooleanProperty("ok", this::isOK, null);
-    builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
+    //builder.addBooleanProperty("ok", this::isOK, null);
+    //builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
     collectMotor.initSendable(builder);
   }
 
@@ -105,17 +106,18 @@ public class Collector extends Diagnostics {
 
 
   @Override
-  public void runDiagnostics() 
+  public boolean updateDiagnostics() 
   {
     String result = "";
-    setOK(true);
+    boolean OK = true;
 
-    if(tof1DutyCycleInput.getFrequency()< 2){
+    if(tof1DutyCycleInput.getFrequency()< 2 || collectMotorFault.hasFaults()){
       result += String.format("tof1 not working");
+      OK = false;
     }
 
     result += collectMotorFault.getFaults();
 
-    setDiagnosticResult(result);
+    return setDiagnosticsFeedback(result, OK);
   }
 }
