@@ -5,7 +5,14 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.TeleopDrive;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.OI;
+import frc.robot.subsystems.SwerveModuleConfig;
 
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -25,12 +32,17 @@ import frc.robot.commands.FeederTestCommand;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private Pivot pivot;
-  private Shooter shooter;
-  private Feeder feeder;
+  private final Pivot pivot = new Pivot();
+  private final Shooter shooter = new Shooter();
+  private final Feeder feeder = new Feeder(); 
   private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(pivot);
   private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(shooter);
   private final FeederTestCommand m_triggerTestCommand = new FeederTestCommand(feeder);
+  private final Drivetrain m_drivetrain = new Drivetrain();
+  private final OI m_OI = new OI();
+  private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
+  
+  
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -40,6 +52,9 @@ public class RobotContainer {
     CommandScheduler.getInstance().setDefaultCommand(pivot, m_pivotTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(shooter, m_shooterTestCommand);
     //CommandScheduler.getInstance().setDefaultCommand(trigger, m_triggerTestCommand);
+    CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
+    SmartDashboard.putData(m_drivetrain);
+    SmartDashboard.putData(m_OI);
 
     // Configure the trigger bindings
     configureBindings();
@@ -61,6 +76,14 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
 
+  }
+
+  public static void initPreferences() {
+    System.out.println("RobotContainer: init Preferences.");
+    SwerveModuleConfig.initPreferences();
+    Drivetrain.initPreferences();
+    //OI.initPreferences();
+    //SwerveModule.initPreferences();
   }
 
   /**

@@ -6,16 +6,14 @@ package frc.robot.subsystems;
 // need to deal with angle adjustments, imputting velocity or power //
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DutyCycle;
 
-public class Shooter extends Diagnostics{
+public class Shooter extends DiagnosticsSubsystem{
   
   private final TalonFX topShooterMotor;
   private final TalonFX bottomShooterMotor;
@@ -155,16 +153,15 @@ public double getBottomShooterMotorVelocity(){
 }
 
 @Override
-public void runDiagnostics(){
+public boolean updateDiagnostics(){
   String result = "";
-  this.setOK(true);
+  boolean ok = true;
   if (topShooterMotorFault.hasFaults()||
   bottomShooterMotorFault.hasFaults());{
-    this.setOK(false);
+    ok = false;
   }
-
-  this.setDiagnosticResult(topShooterMotorFault.getFaults() + 
-  bottomShooterMotorFault.getFaults());
+  result = topShooterMotorFault.getFaults() +  bottomShooterMotorFault.getFaults();
+  return setDiagnosticsFeedback(result, ok);
 }
 
 }
