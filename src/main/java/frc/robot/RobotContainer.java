@@ -12,6 +12,7 @@ import frc.robot.subsystems.SwerveModuleConfig;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -29,6 +30,8 @@ public class RobotContainer {
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
+  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  private static final String kNoAuto = "No Autonomous";
   
   
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -40,6 +43,8 @@ public class RobotContainer {
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
+
+    m_chooser.setDefaultOption("No Autonomous", kNoAuto);
 
     // Configure the trigger bindings
     configureBindings();
@@ -63,6 +68,7 @@ public class RobotContainer {
 
   }
 
+
   public static void initPreferences() {
     System.out.println("RobotContainer: init Preferences.");
     SwerveModuleConfig.initPreferences();
@@ -78,6 +84,12 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return null;
+    switch(m_chooser.getSelected()){
+      case kNoAuto:
+        return null;
+      default:
+        System.out.println("No Auto Selected :/");
+        return null;
+    }
   }
 }
