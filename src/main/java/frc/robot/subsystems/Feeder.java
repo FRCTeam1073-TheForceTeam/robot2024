@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Feeder extends Diagnostics {
+public class Feeder extends DiagnosticsSubsystem {
   private final TalonFX triggerMotorLeader;
   private final TalonFX triggerMotorFollower;
   private final MotorFault triggerMotorLeaderFault;
@@ -154,19 +154,20 @@ public boolean noteIsInTrigger(){
   return false;
   // return triggerBeamBreak.get();
 }
-public void runDiagnostics(){
+
+@Override
+public boolean updateDiagnostics(){
   String result = "";
-  this.setOK(true);
+  boolean ok = true;
   if (triggerMotorLeaderFault.hasFaults()||
   triggerMotorFollowerFault.hasFaults());{
-    this.setOK(false);
+    ok = false;
   }
 
   if(toftrigger1DutyCycleInput.getFrequency()<2){
     result += String.format("toftrigger1 not working");
   }
-
-  this.setDiagnosticResult(triggerMotorLeaderFault.getFaults() + 
-  triggerMotorFollowerFault.getFaults());
+  result = triggerMotorLeaderFault.getFaults() + triggerMotorFollowerFault.getFaults();
+  return setDiagnosticsFeedback(result, ok);
 }
 }

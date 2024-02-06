@@ -7,10 +7,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Pivot extends Diagnostics {
+public class Pivot extends DiagnosticsSubsystem {
   /** Creates a new Pivot. */
 
   private final TalonFX pivotMotor;
@@ -61,14 +59,16 @@ public void setConfigsPivot(){
   public void periodic() {
     // This method will be called once per scheduler run
   }
-  public void runDiagnostics(){
+
+  @Override
+  public boolean updateDiagnostics(){
     String result = "";
-    this.setOK(true);
+    boolean ok = true;
     if (
     pivotMotorFault.hasFaults());{
-      this.setOK(false);
+      ok = false;
     }
-  
-    this.setDiagnosticResult(pivotMotorFault.getFaults());
+    result = pivotMotorFault.getFaults();
+    return setDiagnosticsFeedback(result, ok);
   }
 }
