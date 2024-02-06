@@ -7,10 +7,16 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+
+import java.util.ArrayList;
 import java.util.TreeMap;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
-public class CollectorArm extends Diagnostics {
+public class CollectorArm extends DiagnosticsSubsystem {
   
   enum POSE{
     START,
@@ -27,7 +33,7 @@ public class CollectorArm extends Diagnostics {
   private double liftSpeed;
   private double extendSpeed; 
 
-  InterpolatingTreeMap<Double, Double> aMap;
+  InterpolatingTreeMap<Double, Double> armMap;
   
   //TODO: Change all of these values
   private final double liftLength = 0;
@@ -47,6 +53,9 @@ public class CollectorArm extends Diagnostics {
   // private final double maxExtendAcc = 1.5;
   private final double minLiftAngle;
   private final double maxLiftAngle; 
+
+  private final double minExtend;
+  private final double maxExtend;
   
   // fill in PID values
   private double lift_kP = 0;
@@ -132,7 +141,30 @@ public class CollectorArm extends Diagnostics {
       double[] times;
       double finalTime;
       double startTime;
+
+
     }
+
+    // public void generateTrajectory(ArrayList<Pose2d> angleValue){
+    // double trajectoryTime = 0;
+    // xTrajectory.clear();
+    // yTrajectory.clear();
+    // thetaTrajectory.clear();
+    // for(int i = 0; i < wayPoints.size(); i++){
+
+    //   xTrajectory.put(trajectoryTime, wayPoints.get(i).getX());
+    //   yTrajectory.put(trajectoryTime, wayPoints.get(i).getY());
+    //   thetaTrajectory.put(trajectoryTime, wayPoints.get(i).getRotation().getRadians());
+    //   //update time appropriately
+    //   if(i < wayPoints.size() - 1){
+    //     Transform2d difference = new Transform2d(wayPoints.get(i), wayPoints.get(i + 1));
+    //     double tTime = difference.getTranslation().getNorm() / maxVelocity;
+    //     double rTime = Math.abs(difference.getRotation().getRadians()) / maxAngularVelocity;
+    //     trajectoryTime += Math.max(tTime, rTime);
+    //   }
+    // }
+    // endTime = trajectoryTime;
+  }
 
 
   /** Creates a new Arm. */
@@ -146,6 +178,8 @@ public class CollectorArm extends Diagnostics {
     // TODO: fill out values in radians
     minLiftAngle = 0;
     maxLiftAngle = 0;
+
+    //armMap = new InterpolatingTreeMap<Double, Double>;
   }
 
   public void setUpMotors() {
@@ -200,41 +234,6 @@ public class CollectorArm extends Diagnostics {
     return extendSpeed;
   }
 
-  public class InterpolatingTreeMap<K extends Number, V extends Number> {
-    InterpolatingTreeMap<Double, Double> aMap = new InterpolatingTreeMap<Double, Double>();
-
-    public void put(double key, double value) {
-      aMap.put(key, value);
-    }
-
-    public double get(double currentAngle, double goalAngle) {
-      double angle = aMap.get(goalAngle);
-      if (angle == 0) {
-        double ceilingKey = aMap.ceilingKey(key);
-        double floorKey = aMap.floorKey(key);
-
-        if (ceilingKey == 0 && floorKey == 0) {
-          return 0;
-        }
-        else if (ceilingKey == 0) {
-          return aMap.get(floorKey);
-        }
-        else if (floorKey == 0) {
-          return aMap.get(ceilingKey);
-        }
-        double floor = aMap.get(floorKey);
-        double ceiling = aMap.get(ceilingKey);
-
-        return interpolate(
-            floor, ceiling, inverseInterpolate(floorKey, ceilingKey, key));
-      } else {
-        return angle;
-      }
-    }
-
-    public double interpolate(double )
-  }
-
  
 
   @Override
@@ -243,8 +242,8 @@ public class CollectorArm extends Diagnostics {
     builder.setSmartDashboardType("Arm");
     builder.addDoubleProperty("Lift Speed", this::getLiftSpeed, this::setLiftSpeed);
     builder.addDoubleProperty("Extend Speed", this::getExtendSpeed, this::setExtendSpeed);
-    builder.addBooleanProperty("ok", this::isOK, null);
-    builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
+    //builder.addBooleanProperty("ok", this::isOK, null);
+    //builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
     extendMotor.initSendable(builder);
     liftMotor.initSendable(builder);
   }
@@ -260,17 +259,17 @@ public class CollectorArm extends Diagnostics {
 
 
   @Override
-  public void runDiagnostics() 
+  public boolean updateDiagnostics() 
   {
     String result = "";
-    setOK(true);
+    boolean OK = true;
 
     if(liftMotorFault.hasFaults() || extendMotorFault.hasFaults()){
-        setOK(false);
+        OK = false;
     }
 
     result += liftMotorFault.getFaults() + extendMotorFault.getFaults();
 
-    setDiagnosticResult(result);
+    return setDiagnosticsFeedback(result, OK);
   }
 }
