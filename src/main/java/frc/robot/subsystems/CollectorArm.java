@@ -5,14 +5,9 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import java.util.ArrayList;
-import java.util.TreeMap;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
@@ -49,13 +44,19 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private final double extendAbsoluteOffset = 0;
   private final double liftTicksPerRadian = -20.656*4*2048/(2*Math.PI);
   private final double extendTicksPerRadian = 20.656*4*2048/(2*Math.PI);
-  // private final JointVelocities maxVelocities = new JointVelocities(1.5, 2.1, 1);
-  // private final double maxExtendAcc = 1.5;
-  private final double minLiftAngle;
-  private final double maxLiftAngle; 
 
-  private final double minExtend;
-  private final double maxExtend;
+  // TODO: fill out values in radians
+  private final double minLiftAngle = 0;
+  private final double maxLiftAngle = 0; 
+
+  // TODO: fill out values (unit tbd)
+  private final double minExtend = 0;
+  private final double maxExtend = 0;
+
+  private double currentLiftAngle;
+  private double currentExtendLength;
+  private double targetLiftAngle;
+  private double targetExtendLength;
   
   // fill in PID values
   private double lift_kP = 0;
@@ -68,105 +69,6 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private double extend_kD = 0;
   private double extend_kF = 0;
 
-  public class JointPositions {
-    public double lift;
-    public double extend;
-
-    public JointPositions(double liftAngle, double extendLength) {
-      lift = liftAngle;
-      extend = extendLength;
-    }
-
-    public JointPositions() {
-      lift = 0.0;
-      extend = 0.0;
-    }
-
-    // public JointPositions(JointPositions source) {
-    //   lift = source.lift;
-    //   extend = source.extend;
-    // }
-
-    public double getLiftAngle() {
-      return lift;
-    }
-
-    public double getExtendLength() {
-      return extend;
-    }
-
-  }
-
-  public class JointVelocities{
-    public double lift;
-    public double extend;
-
-    public JointVelocities(double liftVel, double extendVel){
-      lift = liftVel;
-      extend = extendVel;
-    }
-
-    public JointVelocities(){
-      lift = 0.0;
-      extend = 0.0;
-    }
-
-    // public void copyFrom(JointVelocities source) {
-    //   lift = source.lift;
-    //   extend = source.extend;
-    // }
-  }
-
-  public class JointWaypoints{
-    public double lift;
-    public double extend;
-    public double time;
-
-    public JointWaypoints(double lift, double extend, double time){
-      this.lift = lift;
-      this.extend = extend;
-      this.time = time;
-    }
-
-    public JointWaypoints(JointPositions positions, double time){
-      lift = positions.lift;
-      extend = positions.extend;
-      this.time = time;
-    }
-  }
-
-    public class ArmTrajectory {
-      double[] liftPostions;
-      double[] extendPostions;
-      double[] times;
-      double finalTime;
-      double startTime;
-
-
-    }
-
-    // public void generateTrajectory(ArrayList<Pose2d> angleValue){
-    // double trajectoryTime = 0;
-    // xTrajectory.clear();
-    // yTrajectory.clear();
-    // thetaTrajectory.clear();
-    // for(int i = 0; i < wayPoints.size(); i++){
-
-    //   xTrajectory.put(trajectoryTime, wayPoints.get(i).getX());
-    //   yTrajectory.put(trajectoryTime, wayPoints.get(i).getY());
-    //   thetaTrajectory.put(trajectoryTime, wayPoints.get(i).getRotation().getRadians());
-    //   //update time appropriately
-    //   if(i < wayPoints.size() - 1){
-    //     Transform2d difference = new Transform2d(wayPoints.get(i), wayPoints.get(i + 1));
-    //     double tTime = difference.getTranslation().getNorm() / maxVelocity;
-    //     double rTime = Math.abs(difference.getRotation().getRadians()) / maxAngularVelocity;
-    //     trajectoryTime += Math.max(tTime, rTime);
-    //   }
-    // }
-    // endTime = trajectoryTime;
-  }
-
-
   /** Creates a new Arm. */
   public CollectorArm() {
     liftMotor = new TalonFX(15); // TODO: set device id
@@ -174,12 +76,82 @@ public class CollectorArm extends DiagnosticsSubsystem {
     liftSpeed = 0;
     extendSpeed = 0;
     setUpMotors();
+  }
 
-    // TODO: fill out values in radians
-    minLiftAngle = 0;
-    maxLiftAngle = 0;
+  @Override
+  public void periodic() 
+  {
+    runExtendMotor(extendSpeed);
+    runLiftMotor(liftSpeed);
+    updateCurrentPositions();
+    
+    // interpolator tree map member smth
+  }
 
-    //armMap = new InterpolatingTreeMap<Double, Double>;
+
+  private void updateCurrentPositions() {
+    // Sensor angles should be divided by the appropriate ticks per radian
+    currentLiftAngle = liftMotor.getPosition().getValue(); //Todo: conversions
+    currentExtendLength = extendMotor.getPosition().getValue();
+  }
+
+  public double getCurrentLiftAngle() {
+    return currentLiftAngle;
+  }
+
+  public double getCurrentExtendLength() {
+    return currentExtendLength;
+  }
+
+  public void setTargetLiftAngle(double target) {
+    targetLiftAngle = target;
+  }
+
+  public double getTargetLiftAngle() {
+    return targetLiftAngle;
+  }
+
+  public double getTargetExtendLength() {
+    return targetExtendLength;
+  }
+
+  /** Takes a lift angle and calculates the target extend length */
+  public void interpolate(double liftAngle){
+
+    targetExtendLength = 0.0; //TODO: Implement
+    // maybe make a interpolate that takes the extend length and gets the radians it needs to rotate to get that desired length
+  }
+
+  public void runLiftMotor(double liftSpeed)
+  {
+    liftMotor.setControl(new PositionVoltage(liftSpeed * liftTicksPerRadian)); //TODO: Position to drive toward in rotations
+    // liftMotor.setControl(new VelocityVoltage(liftSpeed * liftTicksPerRadian));
+  }
+
+  public void runExtendMotor(double extendSpeed)
+  {
+    extendMotor.setControl(new PositionVoltage(extendSpeed * extendTicksPerRadian)); 
+    // extendMotor.setControl(new VelocityVoltage(extendSpeed * extendTicksPerRadian));
+  }
+
+  public void setLiftSpeed(double liftSpeed)
+  {
+    this.liftSpeed = liftSpeed;
+  }
+
+  public double getLiftSpeed()
+  {
+    return liftSpeed;
+  }
+
+  public void setExtendSpeed(double extendSpeed)
+  {
+    this.extendSpeed = extendSpeed;
+  }
+
+  public double getExtendSpeed()
+  {
+    return extendSpeed;
   }
 
   public void setUpMotors() {
@@ -202,39 +174,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     extendMotorClosedLoopConfig.withKV(extend_kF);
 
     extendMotor.getConfigurator().apply(extendMotorClosedLoopConfig);
-
   }
-  public void runLiftMotor(double liftSpeed)
-  {
-    liftMotor.setControl(new VelocityVoltage(liftSpeed * liftTicksPerRadian));
-  }
-
-  public void runExtendMotor(double extendSpeed)
-  {
-    extendMotor.setControl(new VelocityVoltage(extendSpeed));
-  }
-
-   public void setLiftSpeed(double liftSpeed)
-  {
-    this.liftSpeed = liftSpeed;
-  }
-
-  public double getLiftSpeed()
-  {
-    return liftSpeed;
-  }
-
-  public void setExtendSpeed(double extendSpeed)
-  {
-    this.extendSpeed = extendSpeed;
-  }
-
-  public double getExtendSpeed()
-  {
-    return extendSpeed;
-  }
-
- 
 
   @Override
   public void initSendable(SendableBuilder builder)
@@ -247,16 +187,6 @@ public class CollectorArm extends DiagnosticsSubsystem {
     extendMotor.initSendable(builder);
     liftMotor.initSendable(builder);
   }
-
-  @Override
-  public void periodic() 
-  {
-    runExtendMotor(extendSpeed);
-    runLiftMotor(liftSpeed);
-    
-    // interpolator tree map member smth
-  }
-
 
   @Override
   public boolean updateDiagnostics() 
