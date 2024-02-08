@@ -16,12 +16,24 @@ public class SchemaArbiter extends Command
     MotionSchema.Translate totalTranslate = new MotionSchema.Translate(0, 0, 0);
     MotionSchema.Rotate totalRotate = new MotionSchema.Rotate(0, 0);
     boolean isFieldCentric;
+    boolean stopOnEnd;
 
-    public SchemaArbiter(Drivetrain drivetrain, boolean isFieldCentric)
+    public SchemaArbiter(Drivetrain drivetrain, boolean stopOnEnd)
     {
         this.drivetrain = drivetrain;
-        this.isFieldCentric = isFieldCentric;
+        isFieldCentric = true;
+        this.stopOnEnd = stopOnEnd;
         addRequirements(drivetrain);
+    }
+
+    public void setFieldCentric(boolean fieldCentric)
+    {
+        isFieldCentric = fieldCentric;
+    }
+
+    public boolean getFieldCentric()
+    {
+        return isFieldCentric;
     }
 
     public void addSchema(MotionSchema schema)
@@ -81,7 +93,10 @@ public class SchemaArbiter extends Command
     @Override
     public void end(boolean interrupted)
     {
-        drivetrain.setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
+        if (stopOnEnd)
+        {
+            drivetrain.setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
+        }
     }
 
     @Override

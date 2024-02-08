@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
 
-public class TeleopDrive extends Command 
+public class TeleopDrive extends SchemaArbiter 
 {
   double angleTolerance = 0.05;
   double startAngle;
@@ -33,6 +33,8 @@ public class TeleopDrive extends Command
   double last_time = 0; //for snap-to-positions derivative
   boolean lastParkingBreakButton = false;
   boolean lastRobotCentricButton = false;
+  TeleopTranslateSchema translateSchema;
+  TeleopRotateSchema rotateSchema;
 
   PIDController snapPidProfile;
 
@@ -42,8 +44,9 @@ public class TeleopDrive extends Command
 
 
   /** Creates a new Teleop. */
-  public TeleopDrive(Drivetrain ds, OI oi)
+  public TeleopDrive(Drivetrain ds, OI oi) 
   {
+    super(ds, true);
     super.setName("Teleop Drive");
     m_drivetrain = ds;
     m_OI = oi;
@@ -54,6 +57,10 @@ public class TeleopDrive extends Command
       0.05, 
       0.0, 
       0.0);
+    translateSchema = new TeleopTranslateSchema(m_OI, maximumLinearVelocity);
+    rotateSchema = new TeleopRotateSchema(m_OI, maximumRotationVelocity);
+    addSchema(translateSchema);
+    addSchema(rotateSchema);
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(ds);
   }
@@ -71,6 +78,7 @@ public class TeleopDrive extends Command
   public void initialize()
   {
     System.out.println("TeleopDrive: Init");
+    super.initialize();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -78,16 +86,16 @@ public class TeleopDrive extends Command
   public void execute()
   {
     //multiples the angle by a number from 1 to the square root of 30:
-    double mult1 = 1.0 + (m_OI.getDriverLeftTrigger() * ((Math.sqrt(25)) - 1));
-    double mult2 = 1.0 + (m_OI.getDriverRightTrigger() * ((Math.sqrt(25)) - 1));
+    // double mult1 = 1.0 + (m_OI.getDriverLeftTrigger() * ((Math.sqrt(25)) - 1));
+    // double mult2 = 1.0 + (m_OI.getDriverRightTrigger() * ((Math.sqrt(25)) - 1));
 
-    double leftY = m_OI.getDriverLeftY();
-    double leftX = m_OI.getDriverLeftX();
-    double rightX = m_OI.getDriverRightX();
+    // double leftY = m_OI.getDriverLeftY();
+    // double leftX = m_OI.getDriverLeftX();
+    // double rightX = m_OI.getDriverRightX();
     //sets deadzones on the controller to extend to .05:
-    if(Math.abs(leftY) < .15) {leftY = 0;}
-    if(Math.abs(leftX) < .15) {leftX = 0;}
-    if(Math.abs(rightX) < .15) {rightX = 0;}
+    // if(Math.abs(leftY) < .15) {leftY = 0;}
+    // if(Math.abs(leftX) < .15) {leftX = 0;}
+    // if(Math.abs(rightX) < .15) {rightX = 0;}
 
     // ChassisSpeeds chassisSpeeds = new ChassisSpeeds(leftY * 0.5, leftX * 0.5, rightX); //debug
     if (m_OI.getFieldCentricToggle() && lastRobotCentricButton == false)
@@ -110,29 +118,33 @@ public class TeleopDrive extends Command
     {
       m_drivetrain.parkingBrake(false);
     }
-    else if (fieldCentric)
+    else // if (fieldCentric)
     {
 
-      double vx = MathUtil.clamp(-(leftY * maximumLinearVelocity / 25 )* mult1 * mult2, -maximumLinearVelocity, maximumLinearVelocity);
-      double vy = MathUtil.clamp(-(leftX * maximumLinearVelocity / 25 ) * mult1 * mult2, -maximumLinearVelocity, maximumLinearVelocity);
-      double w = MathUtil.clamp(-(rightX * maximumRotationVelocity / 25) * mult1 * mult2, -maximumRotationVelocity, maximumRotationVelocity);
+      // double vx = MathUtil.clamp(-(leftY * maximumLinearVelocity / 25 )* mult1 * mult2, -maximumLinearVelocity, maximumLinearVelocity);
+      // double vy = MathUtil.clamp(-(leftX * maximumLinearVelocity / 25 ) * mult1 * mult2, -maximumLinearVelocity, maximumLinearVelocity);
+      // double w = MathUtil.clamp(-(rightX * maximumRotationVelocity / 25) * mult1 * mult2, -maximumRotationVelocity, maximumRotationVelocity);
 
-      speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-        vx,
-        vy,
-        w,
-        Rotation2d.fromDegrees(m_drivetrain.getHeading())); // get fused heading
-        m_drivetrain.setChassisSpeeds(speeds);
+      // speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+      //   vx,
+      //   vy,
+      //   w,
+      //   Rotation2d.fromDegrees(m_drivetrain.getHeading())); // get fused heading
+      // m_drivetrain.setChassisSpeeds(speeds);
+      
+      translateSchema.update(m_drivetrain);
+      rotateSchema.update(m_drivetrain);
+      
     }
-    else
-    {
-      // Robot centric driving.
-      speeds = new ChassisSpeeds();
-      speeds.vxMetersPerSecond = MathUtil.clamp(-(leftY * maximumLinearVelocity / 25 )* mult1 * mult2, -maximumLinearVelocity, maximumLinearVelocity); 
-      speeds.vyMetersPerSecond = MathUtil.clamp(-(leftX * maximumLinearVelocity / 25)* mult1 * mult2, -maximumLinearVelocity, maximumLinearVelocity); 
-      speeds.omegaRadiansPerSecond = MathUtil.clamp(-(rightX * maximumRotationVelocity / 25)* mult1 * mult2, -maximumRotationVelocity, maximumRotationVelocity);
-      m_drivetrain.setChassisSpeeds(speeds); 
-    }
+    // else
+    // {
+    //   Robot centric driving.
+    //   speeds = new ChassisSpeeds();
+    //   speeds.vxMetersPerSecond = MathUtil.clamp(-(leftY * maximumLinearVelocity / 25 )* mult1 * mult2, -maximumLinearVelocity, maximumLinearVelocity); 
+    //   speeds.vyMetersPerSecond = MathUtil.clamp(-(leftX * maximumLinearVelocity / 25)* mult1 * mult2, -maximumLinearVelocity, maximumLinearVelocity); 
+    //   speeds.omegaRadiansPerSecond = MathUtil.clamp(-(rightX * maximumRotationVelocity / 25)* mult1 * mult2, -maximumRotationVelocity, maximumRotationVelocity);
+    //   m_drivetrain.setChassisSpeeds(speeds); 
+    // }
     
     // Allow driver to zero the drive subsystem heading for field-centric control.
     if(m_OI.getMenuButton()){
@@ -146,6 +158,8 @@ public class TeleopDrive extends Command
     }
 
     SmartDashboard.putBoolean("Field Centric ", fieldCentric);
+
+    super.execute();
   }
 
   // public double snapToHeading(double currentAngle, double targetAngle, double joystickDesired){
@@ -175,6 +189,7 @@ public class TeleopDrive extends Command
     if (interrupted) {
       System.out.println("TeleopDrive: Interrupted!");
     }
+    super.end(interrupted);
   }
 
   // Returns true when the command should end.
