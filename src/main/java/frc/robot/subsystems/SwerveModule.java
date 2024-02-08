@@ -115,7 +115,7 @@ public class SwerveModule extends DiagnosticsBase implements Sendable
     // Return drive position in meters.
     public double getDrivePosition()
     {
-        return -driveMotor.getRotorPosition().getValue() * cfg.rotationsPerMeter;
+        return -driveMotor.getRotorPosition().getValue() / cfg.rotationsPerMeter;
     }
 
     // Return drive velocity in meters/second.
@@ -300,6 +300,7 @@ public class SwerveModule extends DiagnosticsBase implements Sendable
         builder.addDoubleProperty(String.format("Target Drive V %d", cfg.moduleNumber), this::getTargetDriveVelocity, null);
         builder.addDoubleProperty(String.format("Steer R %d", cfg.moduleNumber), this::getSteerRotations, null);
         builder.addDoubleProperty(String.format("Drive V %d", cfg.moduleNumber), this::getDriveVelocity, null);
+        builder.addDoubleProperty(String.format("Drive Position %d", cfg.moduleNumber), this::getDrivePosition, null);
     //   steerEncoder.initSendable(builder);
     //   steerMotor.initSendable(builder);
     //   driveMotor.initSendable(builder);
