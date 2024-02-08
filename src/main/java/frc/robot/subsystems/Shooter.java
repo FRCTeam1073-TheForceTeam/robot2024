@@ -2,6 +2,10 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+/* TODO: make it a velocity controlled motor, change methods to meters per second/get conversion
+ * from Kylie, set to global variable instead of making a new one each time
+ */
+
 package frc.robot.subsystems;
 // need to deal with angle adjustments, imputting velocity or power //
 
@@ -21,8 +25,6 @@ public class Shooter extends DiagnosticsSubsystem{
   private final MotorFault bottomShooterMotorFault;
   private final DigitalInput shooterBeamBreak;
   private double offset;
-  private double topShooterMotorVelocity;
-  private double bottomShooterMotorVelocity;
   private double targetTopShooterMotorVelocity;
   private double targetBottomShooterMotorVelocity;
   private final SlewRateLimiter topFlyWheelFilter;
@@ -35,17 +37,15 @@ public class Shooter extends DiagnosticsSubsystem{
   /** Creates a new Shooter. **/
   public Shooter() {
     //one motor might be a follower
-    topShooterMotor = new TalonFX(12); // Kracken - TODO: set CAN ID
-    bottomShooterMotor = new TalonFX(24); //Kracken - TODO: set CAN ID
-    shooterBeamBreak = new DigitalInput(3); //TODO: correct port
-    topShooterMotorFault = new MotorFault(topShooterMotor, 12); //TODO set CAN ID
-    bottomShooterMotorFault = new MotorFault(bottomShooterMotor, 24); //TODO set CAN ID
+    topShooterMotor = new TalonFX(17); // Kracken 
+    bottomShooterMotor = new TalonFX(18); //Kracken 
+    shooterBeamBreak = new DigitalInput(2);
+    topShooterMotorFault = new MotorFault(topShooterMotor, 17);
+    bottomShooterMotorFault = new MotorFault(bottomShooterMotor, 18);
     topFlyWheelFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
     bottomFlyWheelFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
 
 
-    topShooterMotorVelocity = 0;
-    bottomShooterMotorVelocity = 0;
     targetTopShooterMotorVelocity = 0;
     targetBottomShooterMotorVelocity = 0;
     offset = 0;
@@ -58,10 +58,8 @@ public class Shooter extends DiagnosticsSubsystem{
     // This method will be called once per scheduler run
     //System.out.println("TOF Running");
 
-    topShooterMotorVelocity = topFlyWheelFilter.calculate(targetTopShooterMotorVelocity);
-    bottomShooterMotorVelocity = bottomFlyWheelFilter.calculate(targetBottomShooterMotorVelocity);
-    topShooterMotor.setControl(new VelocityVoltage(-topShooterMotorVelocity));
-    bottomShooterMotor.setControl(new VelocityVoltage(bottomShooterMotorVelocity));
+    topShooterMotor.setControl(new VelocityVoltage(topFlyWheelFilter.calculate(-targetTopShooterMotorVelocity)));
+    bottomShooterMotor.setControl(new VelocityVoltage(bottomFlyWheelFilter.calculate(targetBottomShooterMotorVelocity)));
   }
 
 /* returns true if the beam has been broken, false if there's no note in the sensor */

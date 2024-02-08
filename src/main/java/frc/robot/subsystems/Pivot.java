@@ -2,28 +2,47 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+/* TODO: slew rate limiters, make it a position controlled motor, initialize to the right angle, 
+change methods to use pivot in radians */
+
 package frc.robot.subsystems;
+
+import javax.swing.text.Position;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+
+import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.util.sendable.SendableBuilder;
 
 public class Pivot extends DiagnosticsSubsystem {
   /** Creates a new Pivot. */
 
   private final TalonFX pivotMotor;
   private final MotorFault pivotMotorFault;
+  private final SlewRateLimiter pivotMotorFilter;
   private double pivotMotorPosition;
+  private double targetPivotMotorPositionRot;
+  private double pivotRotationsPerRadian = 20.0; //TODO: get this from EM
+  private PositionVoltage pivotPositionVoltage;
 
   private double p = 0.11;
   private double i = 0.5;
   private double d = 0.0001;
 
   public Pivot() {
-    pivotMotor = new TalonFX(18); //Falcon - TODO: set CAN ID   
-    pivotMotorFault = new MotorFault(pivotMotor, 18); //TODO set CAN ID
-    pivotMotor.setPosition(0); //initialize to 0 rotations
+    pivotMotor = new TalonFX(21); //Falcon  
+    pivotMotorFault = new MotorFault(pivotMotor, 21);
+    pivotMotorFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
+    pivotPositionVoltage = new PositionVoltage(0);
+        // TODO - is this right
+    pivotMotor.setPosition(0); //TODO - initialize position
     setConfigsPivot();
+
+    targetPivotMotorPositionRot = 0;
   }
 public void setConfigsPivot(){
   TalonFXConfiguration configs = new TalonFXConfiguration();
@@ -40,24 +59,60 @@ public void setConfigsPivot(){
 
   configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
   configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
+  //configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
   pivotMotor.getConfigurator().apply(configs);
 }
 
   /* sets the desired number of rotations for the pivot motor */
-  public void setPivotMotorRotations(double pivotMotorPosition)
+  public void setPivotMotorPositionRadians(double pivotMotorPositionRad)
   {
     //todo next step
-    pivotMotor.setControl(new PositionVoltage(pivotMotorPosition));
+    targetPivotMotorPositionRot  = pivotMotorPositionRad * pivotRotationsPerRadian;
   }
   /* returns the position value */
-  public double getPivotMotorRotations(){
-    return pivotMotor.getPosition().getValue();
+  public double getPivotMotorPositionRadians(){
+    return pivotMotor.getPosition().getValue() / pivotRotationsPerRadian;
   }
     
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    pivotMotor.setControl(pivotPositionVoltage.withPosition(pivotMotorFilter.calculate(-targetPivotMotorPositionRot)));
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder)
+  {
+    builder.setSmartDashboardType("Pivot");
+    builder.addDoubleProperty("Pivot Motor Velocity", this::getPivotMotorPositionRadians, this::setPivotMotorPositionRadians);
+    builder.addDoubleProperty("p", this::getP, this::setP);
+    builder.addDoubleProperty("i", this::getI, this::setI);
+    builder.addDoubleProperty("d", this::getD, this::setD);
+  }
+
+  public double getP(){
+    return p;
+  }
+
+  public void setP(double p){
+    this.p = p;
+  }
+
+  public double getI(){
+    return i;
+  }
+
+  public void setI(double i){
+    this.i = i;
+  }
+
+  public double getD(){
+    return d;
+  }
+
+  public void setD(double d){
+    this.d = d;
   }
 
   @Override

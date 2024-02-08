@@ -2,6 +2,10 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+/* TODO: make it a velocity controlled motor, change methods to meters per second/get conversion
+ * from Kylie, use slewrate limiters, set to global variable instead of making a new one each time
+ */
+
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -14,11 +18,10 @@ import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Feeder extends DiagnosticsSubsystem {
-  private final TalonFX triggerMotorLeader;
-  private final TalonFX triggerMotorFollower;
-  private final MotorFault triggerMotorLeaderFault;
-  private final MotorFault triggerMotorFollowerFault;
+  private final TalonFX triggerMotor;
+  private final MotorFault triggerMotorFault;
   private final DigitalInput toftrigger1;
+  private float feederMetersPerRotation;
   
   private double leaderTriggerMotorVelocity;
   private double followerTriggerMotorVelocity;
@@ -32,11 +35,9 @@ public class Feeder extends DiagnosticsSubsystem {
   private final DutyCycle toftrigger1DutyCycleInput;
   /** Creates a new Trigger. */
   public Feeder() {
-    triggerMotorLeader = new TalonFX(18); //Falcon - TODO: set CAN ID
-    triggerMotorFollower = new TalonFX(16); //Falcon - TODO: set CAN ID
-    toftrigger1 = new DigitalInput(2);//TODO: correct port/channel
-    triggerMotorLeaderFault = new MotorFault(triggerMotorLeader, 18); //TODO set CAN ID   
-    triggerMotorFollowerFault = new MotorFault(triggerMotorFollower, 16); //TODO set CAN ID
+    triggerMotor = new TalonFX(19); //Falcon
+    toftrigger1 = new DigitalInput(1);
+    triggerMotorFault = new MotorFault(triggerMotor, 19);
     
     toftrigger1DutyCycleInput = new DutyCycle(toftrigger1);
     toftrigger1Freq = 0;
@@ -65,8 +66,7 @@ public void setConfigsTrigger(){
   configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
   configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
 
-  triggerMotorLeader.getConfigurator().apply(configs);
-  triggerMotorFollower.getConfigurator().apply(configs);
+  triggerMotor.getConfigurator().apply(configs);
 }
 
   @Override
@@ -78,8 +78,7 @@ public void setConfigsTrigger(){
     toftrigger1Range = toftrigger1DutyCycleInput.getOutput();
     toftrigger1Range = toftrigger1ScaleFactor * (toftrigger1DutyCycle / toftrigger1Freq - 0.001);
     System.out.println(toftrigger1Range);
-    triggerMotorLeader.setControl(new VelocityVoltage(leaderTriggerMotorVelocity));
-    triggerMotorFollower.setControl(new VelocityVoltage(followerTriggerMotorVelocity));
+    triggerMotor.setControl(new VelocityVoltage(leaderTriggerMotorVelocity));
   }
 
   @Override
@@ -159,15 +158,14 @@ public boolean noteIsInTrigger(){
 public boolean updateDiagnostics(){
   String result = "";
   boolean ok = true;
-  if (triggerMotorLeaderFault.hasFaults()||
-  triggerMotorFollowerFault.hasFaults());{
+  if (triggerMotorFault.hasFaults());{
     ok = false;
   }
 
   if(toftrigger1DutyCycleInput.getFrequency()<2){
     result += String.format("toftrigger1 not working");
   }
-  result = triggerMotorLeaderFault.getFaults() + triggerMotorFollowerFault.getFaults();
+  result = triggerMotorFault.getFaults();
   return setDiagnosticsFeedback(result, ok);
 }
 }

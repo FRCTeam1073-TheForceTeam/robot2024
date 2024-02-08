@@ -30,7 +30,7 @@ public class PivotTestCommand extends Command {
   public void execute() {
     pivotMotorPosition = SmartDashboard.getNumber("Pivot Motor Rotations", 0.0);    
     if(getPivotOn()){
-      pivot.setPivotMotorRotations(pivotMotorPosition);
+      pivot.setPivotMotorPositionRadians(pivotMotorPosition);
     }
   }
 
