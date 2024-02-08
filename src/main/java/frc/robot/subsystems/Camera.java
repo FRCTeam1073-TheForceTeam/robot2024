@@ -24,24 +24,16 @@ public class Camera extends SubsystemBase {
   public Camera(SerialComms serialComms, int camID) {
     this.serialComms = serialComms;
     //public ArrayList<Byte> msg = new ArrayList();
-    if(serialComms == null){
-      System.out.println(serialComms.toString());
-    }
-    else{
-      
-        System.out.println(serialComms.toString());
-
-    }
   }
 
   public void buildCommand() {
   }
 
   public void getAprilTag(){
-    String cmdStr = "%s,a\n".formatted(camID);
+    /*String cmdStr = "%s,a\n".formatted(camID);
     byte[] cmdBytes = cmdStr.getBytes();
-    ArrayList<Byte> data = serialComms.getVisionData(cmdBytes);
-    System.out.println(data);
+    ArrayList<Byte> data = SerialComms.getVisionData(cmdBytes);
+    System.out.println(data);*/
   }
 
 

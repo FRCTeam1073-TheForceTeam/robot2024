@@ -37,7 +37,7 @@ public class GetTagData extends Command {
    */
   @Override
   public void initialize() {
-
+    System.out.println("Initializing");
     // NSargent: not sure if we'll need this
   }
 
@@ -49,6 +49,7 @@ public class GetTagData extends Command {
    */
   @Override
   public void execute() {
+    System.out.println("DATA");
     try {
       ArrayList<Byte> thedata = SerialComms.getVisionData("1,a\n".getBytes("ASCII"));
       System.out.println(thedata);

@@ -33,13 +33,14 @@ public class RobotContainer {
   // NSargent: the stuff below was already here
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    
-    // Configure the trigger bindings
+
+    CommandScheduler.getInstance().setDefaultCommand(m_camera1, getTagData());
+    //CommandScheduler.getInstance().schedule(getTagData());;
+    //Configure the trigger bindings
     configureBindings();
   }
 
@@ -57,6 +58,7 @@ public class RobotContainer {
     //return c_GetTagData;
     return new GetTagData(m_camera1);
   }
+
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     System.out.println("Configuring buttons");

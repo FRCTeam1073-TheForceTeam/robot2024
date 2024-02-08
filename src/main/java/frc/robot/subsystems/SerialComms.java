@@ -33,7 +33,7 @@ public class SerialComms extends SubsystemBase{
   //   }
   // }
     try {
-      this.serialPort = new SerialPort(1000000,this.portUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
+      serialPort = new SerialPort(1000000, portUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
       serialPort.setFlowControl(SerialPort.FlowControl.kNone);
       System.out.println("set serialPort and flowcontrol");
     }
@@ -43,10 +43,7 @@ public class SerialComms extends SubsystemBase{
     }
   }
 
-  public static ArrayList<Byte> getVisionData(byte[] message){
-    send(message);
-    return recieve();
-  }
+  
 
   public static void send(byte[] message) {
     serialPort.write(message, message.length);
@@ -70,8 +67,16 @@ public class SerialComms extends SubsystemBase{
             }
 
       }
-  }
+      
     }
+  }
+
+  public static ArrayList<Byte> getVisionData(byte[] message){
+    send(message);
+    System.out.println("Vision Data doing its thingy");
+    return recieve();
+  }
+
 
 // this one reads 1,a from openmv
 // keep around for a bit as an example of basic serial usage
