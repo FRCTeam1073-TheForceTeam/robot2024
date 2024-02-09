@@ -6,8 +6,10 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
@@ -25,8 +27,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
   
   MotorFault liftMotorFault = new MotorFault(liftMotor, 15);
   MotorFault extendMotorFault = new MotorFault(extendMotor, 16);
-  private double liftSpeed;
-  private double extendSpeed; 
+  private final SlewRateLimiter liftFilter;
+  private final SlewRateLimiter extendFilter;
 
   InterpolatingTreeMap<Double, Double> armMap;
   
@@ -73,17 +75,19 @@ public class CollectorArm extends DiagnosticsSubsystem {
   public CollectorArm() {
     liftMotor = new TalonFX(15); // TODO: set device id
     extendMotor = new TalonFX(16); // TODO: set device id
-    liftSpeed = 0;
-    extendSpeed = 0;
+    liftFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
+    extendFilter = new SlewRateLimiter(0.5); 
     setUpMotors();
+    setUpInterpolator();
   }
 
   @Override
   public void periodic() 
   {
-    runExtendMotor(extendSpeed);
-    runLiftMotor(liftSpeed);
     updateCurrentPositions();
+    runLiftMotor(targetLiftAngle);
+    targetExtendLength = interpolateExtendPosition(currentLiftAngle);
+    runExtendMotor(targetExtendLength);
     
     // interpolator tree map member smth
   }
@@ -116,42 +120,24 @@ public class CollectorArm extends DiagnosticsSubsystem {
   }
 
   /** Takes a lift angle and calculates the target extend length */
-  public void interpolate(double liftAngle){
+  public double interpolateExtendPosition(double currentliftAngle){
 
-    targetExtendLength = 0.0; //TODO: Implement
-    // maybe make a interpolate that takes the extend length and gets the radians it needs to rotate to get that desired length
+    return armMap.get(currentLiftAngle);
   }
 
-  public void runLiftMotor(double liftSpeed)
+
+  public void runLiftMotor(double liftAngle)
   {
-    liftMotor.setControl(new PositionVoltage(liftSpeed * liftTicksPerRadian)); //TODO: Position to drive toward in rotations
-    // liftMotor.setControl(new VelocityVoltage(liftSpeed * liftTicksPerRadian));
+    liftMotor.setControl(new PositionVoltage(liftAngle)); //TODO: Position to drive toward in rotations = revolutations = 2pi
+    liftMotor.setControl(new VelocityVoltage(liftFilter.calculate(liftVelocity))); //change that variable
+
   }
 
-  public void runExtendMotor(double extendSpeed)
+  public void runExtendMotor(double extendLength)
   {
-    extendMotor.setControl(new PositionVoltage(extendSpeed * extendTicksPerRadian)); 
-    // extendMotor.setControl(new VelocityVoltage(extendSpeed * extendTicksPerRadian));
-  }
+    extendMotor.setControl(new PositionVoltage(extendLength)); 
+    extendMotor.setControl(new VelocityVoltage(extendFilter.calculate(extendVelocity)));
 
-  public void setLiftSpeed(double liftSpeed)
-  {
-    this.liftSpeed = liftSpeed;
-  }
-
-  public double getLiftSpeed()
-  {
-    return liftSpeed;
-  }
-
-  public void setExtendSpeed(double extendSpeed)
-  {
-    this.extendSpeed = extendSpeed;
-  }
-
-  public double getExtendSpeed()
-  {
-    return extendSpeed;
   }
 
   public void setUpMotors() {
@@ -176,12 +162,17 @@ public class CollectorArm extends DiagnosticsSubsystem {
     extendMotor.getConfigurator().apply(extendMotorClosedLoopConfig);
   }
 
+  public void setUpInterpolator() {
+    armMap.put(Double.valueOf(0.0), Double.valueOf(2.0)); 
+    //TODO: fill out the rest of the table (angle, extendLength)
+  }
+
   @Override
   public void initSendable(SendableBuilder builder)
   {
     builder.setSmartDashboardType("Arm");
-    builder.addDoubleProperty("Lift Speed", this::getLiftSpeed, this::setLiftSpeed);
-    builder.addDoubleProperty("Extend Speed", this::getExtendSpeed, this::setExtendSpeed);
+    builder.addDoubleProperty("Lift Angle", this::getCurrentLiftAngle, null);
+    builder.addDoubleProperty("Extend Length", this::getCurrentExtendLength, null);
     //builder.addBooleanProperty("ok", this::isOK, null);
     //builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
     extendMotor.initSendable(builder);
