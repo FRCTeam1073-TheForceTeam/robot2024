@@ -128,16 +128,13 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   public void runLiftMotor(double liftAngle)
   {
-    liftMotor.setControl(new PositionVoltage(liftAngle)); //TODO: Position to drive toward in rotations = revolutations = 2pi
-    liftMotor.setControl(new VelocityVoltage(liftFilter.calculate(liftVelocity))); //change that variable
+    liftMotor.setControl(new PositionVoltage(liftFilter.calculate(liftAngle))); //TODO: conversions: Position to drive toward in rotations = revolutations = 2pi
 
   }
 
   public void runExtendMotor(double extendLength)
   {
-    extendMotor.setControl(new PositionVoltage(extendLength)); 
-    extendMotor.setControl(new VelocityVoltage(extendFilter.calculate(extendVelocity)));
-
+    extendMotor.setControl(new PositionVoltage(extendFilter.calculate(extendLength))); 
   }
 
   public void setUpMotors() {
