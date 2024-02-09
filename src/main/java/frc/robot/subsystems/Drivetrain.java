@@ -309,6 +309,9 @@ public class Drivetrain extends DiagnosticsSubsystem
     }
    
     updateOdometry();
+
+    SmartDashboard.putNumber("Odometry X", getOdometry().getX());
+    SmartDashboard.putNumber("Odometry Y", getOdometry().getY());
   }
 
 

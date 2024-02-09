@@ -115,7 +115,9 @@ public class SwerveModule extends DiagnosticsBase implements Sendable
     // Return drive position in meters.
     public double getDrivePosition()
     {
-        return -driveMotor.getRotorPosition().getValue() / cfg.rotationsPerMeter;
+        //double alpha = 4.87 / 5.356;
+        double alpha = 0.95598;
+        return alpha * (-driveMotor.getRotorPosition().getValue() / cfg.rotationsPerMeter);
     }
 
     // Return drive velocity in meters/second.
