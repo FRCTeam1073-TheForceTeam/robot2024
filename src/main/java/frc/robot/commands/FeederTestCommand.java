@@ -11,12 +11,11 @@ import frc.robot.subsystems.Feeder;
 
 public class FeederTestCommand extends Command {
   /** Creates a new TriggerTestCommand. */
-  private Feeder trigger;
-  private double triggerMotorLeaderVelocity;
-  private double triggerMotorFollowerVelocity;
+  private Feeder feeder;
+  private double feederMotorVelocityMPS;
   private boolean isTriggerOn;
   public FeederTestCommand(Feeder feeder) {
-    this.trigger = feeder;
+    this.feeder = feeder;
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -27,11 +26,9 @@ public class FeederTestCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    triggerMotorLeaderVelocity = SmartDashboard.getNumber("Trigger Motor Leader Velocity", 0.0); //in RPS
-    triggerMotorFollowerVelocity = SmartDashboard.getNumber("Trigger Motor Follower Velocity", 0.0); //in RPS
+    feederMotorVelocityMPS = SmartDashboard.getNumber("Feeder Motor Velocity MPS", 0.0); //in MPS
     if(getTriggerOn()){
-      trigger.setTopTriggerMotorVelocity(triggerMotorLeaderVelocity);
-      trigger.setBottomTriggerMotorVelocity(triggerMotorFollowerVelocity);
+      feeder.setFeederMotorVelocity(feederMotorVelocityMPS);
     }}
 
   // Called once the command ends or is interrupted.

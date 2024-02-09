@@ -12,7 +12,7 @@ import frc.robot.subsystems.Feeder;
 
 public class LoadTrigger extends Command {
   private Shooter shooter;
-  private Feeder trigger;
+  private Feeder feeder;
   /** Creates a new LoadTrigger. */
   public LoadTrigger(Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -23,8 +23,7 @@ public class LoadTrigger extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    trigger.setTopTriggerMotorVelocity(5);
-    trigger.setBottomTriggerMotorVelocity(5);
+    feeder.setFeederMotorVelocity(5);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -34,13 +33,12 @@ public class LoadTrigger extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    trigger.setTopTriggerMotorVelocity(0);
-    trigger.setBottomTriggerMotorVelocity(0);
+    feeder.setFeederMotorVelocity(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return trigger.noteIsInTrigger();
+    return feeder.noteIsInTrigger();
   }
 }

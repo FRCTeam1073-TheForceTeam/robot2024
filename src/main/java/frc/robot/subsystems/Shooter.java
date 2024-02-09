@@ -2,8 +2,8 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-/* TODO: make it a velocity controlled motor, change methods to meters per second/get conversion
- * from Kylie, set to global variable instead of making a new one each time
+/* TODO:
+ * Might be nice: set to global variable instead of making a new one each time
  */
 
 package frc.robot.subsystems;
@@ -25,10 +25,16 @@ public class Shooter extends DiagnosticsSubsystem{
   private final MotorFault bottomShooterMotorFault;
   private final DigitalInput shooterBeamBreak;
   private double offset;
-  private double targetTopShooterMotorVelocity;
-  private double targetBottomShooterMotorVelocity;
+  private double targetTopShooterMotorVelocityRPS;
+  private double targetBottomShooterMotorVelocityRPS;
   private final SlewRateLimiter topFlyWheelFilter;
   private final SlewRateLimiter bottomFlyWheelFilter;
+    /* 1 motor rotation = 2 wheel rotations
+   * Diameter of the wheel is 4"
+   * Wheel circumference is 4π (πd)
+   * Therefore, the velocity = 8π inches/rotation
+   */
+  private double shooterMetersPerRotation = 8 * Math.PI * 0.0254; // 0.0254 meters/inch
 
   private double p = 0.11;
   private double i = 0.5;
@@ -46,8 +52,8 @@ public class Shooter extends DiagnosticsSubsystem{
     bottomFlyWheelFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
 
 
-    targetTopShooterMotorVelocity = 0;
-    targetBottomShooterMotorVelocity = 0;
+    targetTopShooterMotorVelocityRPS = 0;
+    targetBottomShooterMotorVelocityRPS = 0;
     offset = 0;
 
     setConfigsShooter();
@@ -58,8 +64,8 @@ public class Shooter extends DiagnosticsSubsystem{
     // This method will be called once per scheduler run
     //System.out.println("TOF Running");
 
-    topShooterMotor.setControl(new VelocityVoltage(topFlyWheelFilter.calculate(-targetTopShooterMotorVelocity)));
-    bottomShooterMotor.setControl(new VelocityVoltage(bottomFlyWheelFilter.calculate(targetBottomShooterMotorVelocity)));
+    topShooterMotor.setControl(new VelocityVoltage(topFlyWheelFilter.calculate(-targetTopShooterMotorVelocityRPS)));
+    bottomShooterMotor.setControl(new VelocityVoltage(bottomFlyWheelFilter.calculate(targetBottomShooterMotorVelocityRPS)));
   }
 
 /* returns true if the beam has been broken, false if there's no note in the sensor */
@@ -123,15 +129,15 @@ public void initSendable(SendableBuilder builder)
   }
 
   /* sets the desired top shooter motor velocity in rotations per second */
-  public void setTopShooterMotorVelocity(double velocityRPS)
+  public void setTopShooterMotorVelocity(double velocityMPS)
   {
-    targetTopShooterMotorVelocity = velocityRPS;
+    targetTopShooterMotorVelocityRPS = velocityMPS / shooterMetersPerRotation;
   }
   
   /* sets the desired bottom shooter motor velocity in rotations per second */
-  public void setBottomShooterMotorVelocity(double velocityRPS)
+  public void setBottomShooterMotorVelocity(double velocityMPS)
   {
-    targetBottomShooterMotorVelocity = velocityRPS;
+    targetBottomShooterMotorVelocityRPS = velocityMPS / shooterMetersPerRotation;
   }
 
 
@@ -142,12 +148,12 @@ public void initSendable(SendableBuilder builder)
 
 /* gets the value of the velocity that the top shooter motor is at */
 public double getTopShooterMotorVelocity(){
-  return targetTopShooterMotorVelocity;
+  return targetTopShooterMotorVelocityRPS;
 }
 
 /* gets the value of the velocity that the bottom shooter motor is at */
 public double getBottomShooterMotorVelocity(){ 
-  return targetBottomShooterMotorVelocity;
+  return targetBottomShooterMotorVelocityRPS;
 }
 
 @Override

@@ -37,7 +37,7 @@ public class RobotContainer {
   private final Feeder feeder = new Feeder(); 
   private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(pivot);
   private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(shooter);
-  private final FeederTestCommand m_triggerTestCommand = new FeederTestCommand(feeder);
+  private final FeederTestCommand m_feederTestCommand = new FeederTestCommand(feeder);
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
@@ -51,7 +51,7 @@ public class RobotContainer {
   public RobotContainer() {
     CommandScheduler.getInstance().setDefaultCommand(pivot, m_pivotTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(shooter, m_shooterTestCommand);
-    //CommandScheduler.getInstance().setDefaultCommand(trigger, m_triggerTestCommand);
+    CommandScheduler.getInstance().setDefaultCommand(feeder, m_feederTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);

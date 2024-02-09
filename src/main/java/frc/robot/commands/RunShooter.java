@@ -12,18 +12,16 @@ import frc.robot.subsystems.Feeder;
 
 public class RunShooter extends Command {
   private Shooter shooter;
-  private Feeder trigger;
-  private double shooterTopRPS;
-  private double shooterBottomRPS;
-  private double triggerTopRPS;
-  private double triggerBottomRPS;
+  private Feeder feeder;
+  private double shooterTopMPS;
+  private double shooterBottomMPS;
+  private double feederMotorMPS;
   /* Creates a new RunShooter. */
-  public RunShooter(Shooter shooter, double shootortopRPS, double shootorbottomRPS, double triggerTopRPS, double triggerBottomRPS) {
+  public RunShooter(Shooter shooter, double shootortopRPS, double shootorbottomRPS, double feederMotorMPS) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.shooterTopRPS = shooterTopRPS;
-    this.shooterBottomRPS = shooterBottomRPS;
-    this.triggerTopRPS = triggerTopRPS;
-    this.triggerBottomRPS = triggerBottomRPS; 
+    this.shooterTopMPS = shooterTopMPS;
+    this.shooterBottomMPS = shooterBottomMPS;
+    this.feederMotorMPS = feederMotorMPS;
     this.shooter = shooter;
     addRequirements(shooter);
   }
@@ -32,8 +30,8 @@ public class RunShooter extends Command {
   /* start shooter wheels to get them up to speed */
   @Override
   public void initialize() {
-    shooter.setTopShooterMotorVelocity(shooterTopRPS);
-    shooter.setBottomShooterMotorVelocity(shooterBottomRPS);
+    shooter.setTopShooterMotorVelocity(shooterTopMPS);
+    shooter.setBottomShooterMotorVelocity(shooterBottomMPS);
 
   }
 
@@ -42,9 +40,8 @@ public class RunShooter extends Command {
   public void execute() {
     /* if shooter motors are up to speed, then turn on trigger motors */
     /* might need to adjust the numbers depending on what % we want the power at */
-    if ((shooter.getTopShooterMotorVelocity() >= 0.98 * shooterTopRPS) && (shooter.getBottomShooterMotorVelocity() >= 0.98 * shooterBottomRPS)){
-      trigger.setTopTriggerMotorVelocity(triggerTopRPS);
-      trigger.setBottomTriggerMotorVelocity(triggerBottomRPS);
+    if ((shooter.getTopShooterMotorVelocity() >= 0.98 * shooterTopMPS) && (shooter.getBottomShooterMotorVelocity() >= 0.98 * shooterBottomMPS)){
+      feeder.setFeederMotorVelocity(feederMotorMPS);
     }
   }
 
@@ -53,14 +50,13 @@ public class RunShooter extends Command {
   public void end(boolean interrupted) {
     shooter.setTopShooterMotorVelocity(0);
     shooter.setBottomShooterMotorVelocity(0);
-    trigger.setTopTriggerMotorVelocity(0);
-    trigger.setBottomTriggerMotorVelocity(0);    
+    feeder.setFeederMotorVelocity(0); 
   }
 
   // Returns true when the command should end.
   /* return true when the note is not in the trigger/shooter */
   @Override
   public boolean isFinished() {
-    return !shooter.noteIsInShooter() && !trigger.noteIsInTrigger();
+    return !shooter.noteIsInShooter() && !feeder.noteIsInTrigger();
   }
 }

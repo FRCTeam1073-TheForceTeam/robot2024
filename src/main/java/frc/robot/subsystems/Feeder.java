@@ -2,8 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-/* TODO: make it a velocity controlled motor, change methods to meters per second/get conversion
- * from Kylie, use slewrate limiters, set to global variable instead of making a new one each time
+/* TODO: may need position control/command (slot 1) to fire the note
  */
 
 package frc.robot.subsystems;
@@ -16,15 +15,21 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 
 public class Feeder extends DiagnosticsSubsystem {
   private final TalonFX triggerMotor;
   private final MotorFault triggerMotorFault;
   private final DigitalInput toftrigger1;
-  private float feederMetersPerRotation;
+  private SlewRateLimiter feederMotorFilter;
+  /* 1 motor rotation = 2 wheel rotations
+   * Diameter of the wheel is 2"
+   * Wheel circumference is 2π (πd)
+   * Therefore, the velocity = 4π inches/rotation
+   */
+  private double feederMetersPerRotation = 4 * Math.PI * 0.0254; // 0.0254 meters/inch
   
-  private double leaderTriggerMotorVelocity;
-  private double followerTriggerMotorVelocity;
+  private double feederMotorVelocityRPS;
   private double toftrigger1Freq;
   private double toftrigger1Range;
   private double toftrigger1DutyCycle;
@@ -43,8 +48,7 @@ public class Feeder extends DiagnosticsSubsystem {
     toftrigger1Freq = 0;
     toftrigger1Range = 0;    
 
-    leaderTriggerMotorVelocity = 0;
-    followerTriggerMotorVelocity = 0;
+    feederMotorVelocityRPS = 0;
     
     setConfigsTrigger();
   }
@@ -78,8 +82,8 @@ public void setConfigsTrigger(){
     toftrigger1Range = toftrigger1DutyCycleInput.getOutput();
     toftrigger1Range = toftrigger1ScaleFactor * (toftrigger1DutyCycle / toftrigger1Freq - 0.001);
     System.out.println(toftrigger1Range);
-    triggerMotor.setControl(new VelocityVoltage(leaderTriggerMotorVelocity));
-  }
+    triggerMotor.setControl(new VelocityVoltage(feederMotorFilter.calculate(feederMotorVelocityRPS)));
+   }
 
   @Override
 public void initSendable(SendableBuilder builder)
@@ -118,22 +122,13 @@ public void setD(double d){
 }
 
   /* sets the desired top trigger motor velocity in rotations per second */
-public void setTopTriggerMotorVelocity(double triggerMotorRPS){
-  leaderTriggerMotorVelocity = triggerMotorRPS;
+public void setFeederMotorVelocity(double triggerMotorMPS){
+  feederMotorVelocityRPS = triggerMotorMPS / feederMetersPerRotation;
  }
 
-/* sets the desired bottom trigger motor velocity in rotations per second */
-public void setBottomTriggerMotorVelocity(double triggerMotorRPS){
-  followerTriggerMotorVelocity = triggerMotorRPS;
-}
-
 /* gets the value of the trigger motor velocity */
-public double getLeaderTriggerMotorVelocity(){
-  return leaderTriggerMotorVelocity;
-}
-
-public double getFollowerTriggerMotorVelocity(){
-  return followerTriggerMotorVelocity;
+public double getFeederMotorVelocityRPS(){
+  return feederMotorVelocityRPS;
 }
 
 public double getRangeTrigger1(){

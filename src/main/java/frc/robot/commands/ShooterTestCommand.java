@@ -29,8 +29,8 @@ public class ShooterTestCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    topShooterMotorVelocity = SmartDashboard.getNumber("Top Shooter Motor Velocity", 0.0); //in RPS
-    bottomShooterMotorVelocity = SmartDashboard.getNumber("Bottom Shooter Motor Velocity", 0.0); //in RPS
+    topShooterMotorVelocity = SmartDashboard.getNumber("Top Shooter Motor Velocity MPS", 0.0); //in MPS
+    bottomShooterMotorVelocity = SmartDashboard.getNumber("Bottom Shooter Motor Velocity MPS", 0.0); //in MPS
     if(getShooterOn()){
       shooter.setTopShooterMotorVelocity(topShooterMotorVelocity);
       shooter.setBottomShooterMotorVelocity(bottomShooterMotorVelocity);
