@@ -35,6 +35,7 @@ public class TeleopDrive extends SchemaArbiter
   boolean lastRobotCentricButton = false;
   TeleopTranslateSchema translateSchema;
   TeleopRotateSchema rotateSchema;
+  TeleopHeadingHoldSchema holdSchema;
 
   PIDController snapPidProfile;
 
@@ -59,8 +60,10 @@ public class TeleopDrive extends SchemaArbiter
       0.0);
     translateSchema = new TeleopTranslateSchema(m_OI, maximumLinearVelocity);
     rotateSchema = new TeleopRotateSchema(m_OI, maximumRotationVelocity);
+    holdSchema = new TeleopHeadingHoldSchema(m_OI);
     addSchema(translateSchema);
     addSchema(rotateSchema);
+    addSchema(holdSchema);
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(ds);
   }
@@ -134,6 +137,7 @@ public class TeleopDrive extends SchemaArbiter
       
       translateSchema.update(m_drivetrain);
       rotateSchema.update(m_drivetrain);
+      holdSchema.update(m_drivetrain);
       
     }
     // else
