@@ -10,6 +10,7 @@ import frc.robot.commands.GetTagData;
 import frc.robot.subsystems.SerialComms;
 import edu.wpi.first.wpilibj.SerialPort;
 import frc.robot.subsystems.OI;
+import frc.robot.subsystems.OpenMV;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
+  private final OpenMV m_openMV = new OpenMV(SerialPort.Port.kUSB);
   private final Camera m_camera1 = new Camera(m_serial, 1);  // camID is how SerialComms and the cameras themselves tells them apart
   //private final GetTagData c_GetTagData = new GetTagData(m_camera1);
   private final OI m_OI = new OI();
