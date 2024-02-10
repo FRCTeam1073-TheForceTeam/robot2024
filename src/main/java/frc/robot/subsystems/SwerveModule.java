@@ -47,6 +47,7 @@ public class SwerveModule extends DiagnosticsBase implements Sendable
     public PositionVoltage steerPositionVoltage;
     private double targetSteerRotations = 0.0;
     private double targetDriveVelocity = 0.0;
+    private double targetDriveVelocityRotations = 0.0;
     
     
     /** Constructs a swerve module class. Initializes drive and steer motors
@@ -134,6 +135,21 @@ public class SwerveModule extends DiagnosticsBase implements Sendable
         return targetDriveVelocity;
     }
 
+    //debug only
+    public double getTargetDriveVelocityRotations(){
+        return targetDriveVelocityRotations;
+    }
+
+    //debug only
+    public double getDriveVelocityRotations(){
+        return getDriveVelocity() * cfg.rotationsPerMeter;
+    }
+
+    //debug only
+    public double getVelocityError(){
+        return Math.abs(getTargetDriveVelocity()) - Math.abs(getDriveVelocity());
+    }
+
     //*Wrapping code from sds example swerve library
     public void setCommand(double steerRotations, double driveVelocity){
         targetSteerRotations = steerRotations;
@@ -165,6 +181,8 @@ public class SwerveModule extends DiagnosticsBase implements Sendable
     // Sets the velocity for the drive motors in meters per second.
     public void setDriveVelocity(double driveVelocity)
     {
+        //line below is Debug only
+        targetDriveVelocityRotations = driveVelocity * cfg.rotationsPerMeter;
         driveMotor.setControl(driveVelocityVoltage.withVelocity((driveVelocity * cfg.rotationsPerMeter)));
     }
 
@@ -228,10 +246,11 @@ public class SwerveModule extends DiagnosticsBase implements Sendable
         steerMotor.getConfigurator().apply(new CurrentLimitsConfigs().withSupplyCurrentThreshold(cfg.steerCurrentThreshold));
         steerMotor.getConfigurator().apply(new CurrentLimitsConfigs().withSupplyTimeThreshold(cfg.steerCurrentThresholdTime));
 
-        driveMotor.getConfigurator().apply(new CurrentLimitsConfigs().withSupplyCurrentLimitEnable(true));
-        driveMotor.getConfigurator().apply(new CurrentLimitsConfigs().withSupplyCurrentLimit(cfg.driveCurrentLimit));
-        driveMotor.getConfigurator().apply(new CurrentLimitsConfigs().withSupplyCurrentThreshold(cfg.driveCurrentThreshold));
-        driveMotor.getConfigurator().apply(new CurrentLimitsConfigs().withSupplyTimeThreshold(cfg.driveCurrentThresholdTime));
+        CurrentLimitsConfigs driveCurrentLimitsConfigs = new CurrentLimitsConfigs();
+        driveMotor.getConfigurator().apply(driveCurrentLimitsConfigs.withSupplyCurrentLimitEnable(true));
+        driveMotor.getConfigurator().apply(driveCurrentLimitsConfigs.withSupplyCurrentLimit(cfg.driveCurrentLimit));
+        driveMotor.getConfigurator().apply(driveCurrentLimitsConfigs.withSupplyCurrentThreshold(cfg.driveCurrentThreshold));
+        driveMotor.getConfigurator().apply(driveCurrentLimitsConfigs.withSupplyTimeThreshold(cfg.driveCurrentThresholdTime));
         
         MagnetSensorConfigs mgSenseCfg = new MagnetSensorConfigs();
         // mgSenseCfg.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
@@ -265,7 +284,7 @@ public class SwerveModule extends DiagnosticsBase implements Sendable
         driveConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
         driveMotor.getConfigurator().apply(driveConfigs);
         driveMotor.setPosition(0);
-    
+
         // PID Loop settings for steering position control:
         var steerMotorClosedLoopConfig = new Slot0Configs();
         steerMotorClosedLoopConfig.withKP(cfg.steerP); 
@@ -303,6 +322,9 @@ public class SwerveModule extends DiagnosticsBase implements Sendable
         builder.addDoubleProperty(String.format("Steer R %d", cfg.moduleNumber), this::getSteerRotations, null);
         builder.addDoubleProperty(String.format("Drive V %d", cfg.moduleNumber), this::getDriveVelocity, null);
         builder.addDoubleProperty(String.format("Drive Position %d", cfg.moduleNumber), this::getDrivePosition, null);
+        builder.addDoubleProperty(String.format("Target Drive V Rotations %d", cfg.moduleNumber), this::getTargetDriveVelocityRotations, null);
+        builder.addDoubleProperty(String.format("Drive V Rotations %d", cfg.moduleNumber), this::getDriveVelocityRotations, null);
+        builder.addDoubleProperty(String.format("Drive V Error %d", cfg.moduleNumber), this::getVelocityError, null);
     //   steerEncoder.initSendable(builder);
     //   steerMotor.initSendable(builder);
     //   driveMotor.initSendable(builder);
