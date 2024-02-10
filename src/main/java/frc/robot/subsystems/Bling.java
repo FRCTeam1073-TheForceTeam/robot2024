@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.RobotController;
 
-public class Bling extends Diagnostics {
+public class Bling extends DiagnosticsSubsystem {
   public AddressableLED m_led;
   public AddressableLEDBuffer m_ledBuffer;
 
@@ -154,11 +154,11 @@ public class Bling extends Diagnostics {
    * @return diagnostic results
    */
   @Override
-  public void runDiagnostics() {
+  public boolean updateDiagnostics() {
     String result = new String();
     boolean isOK = true;
+    
     //TODO: run diagnostics here
-    super.setDiagnosticResult(result);
-    super.setOK(isOK);
+    return setDiagnosticsFeedback(result, isOK);
   }
 }
