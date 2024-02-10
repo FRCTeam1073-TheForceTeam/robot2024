@@ -5,7 +5,7 @@
 package frc.robot.subsystems;
 
 
-public class Climber extends Diagnostics {
+public class Climber extends DiagnosticsSubsystem {
   /** Creates a new Climber. */
   public Climber() {}
 

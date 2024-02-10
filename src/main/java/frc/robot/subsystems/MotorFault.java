@@ -18,28 +18,28 @@ public class MotorFault {
 	}
 
 	/** Returns true if the motor has any faults. */
-	public boolean hasFaults(){
-		return motor.getFault_BootDuringEnable().getValue() ||
-		motor.getFault_BridgeBrownout().getValue() ||
-		motor.getFault_DeviceTemp().getValue() ||
-		motor.getFault_ForwardHardLimit().getValue() ||
-		motor.getFault_ForwardSoftLimit().getValue() ||
-		motor.getFault_FusedSensorOutOfSync().getValue() ||
-		motor.getFault_Hardware().getValue() ||
-		motor.getFault_MissingDifferentialFX().getValue() ||
-		motor.getFault_OverSupplyV().getValue() ||
-		motor.getFault_ProcTemp().getValue() ||
-		motor.getFault_RemoteSensorDataInvalid().getValue() ||
-		motor.getFault_RemoteSensorPosOverflow().getValue() ||
-		motor.getFault_RemoteSensorReset().getValue() ||
-		motor.getFault_ReverseHardLimit().getValue() ||
-		motor.getFault_ReverseSoftLimit().getValue() ||
-		motor.getFault_StatorCurrLimit().getValue() ||
-		motor.getFault_SupplyCurrLimit().getValue() ||
-		motor.getFault_Undervoltage().getValue() ||
-		motor.getFault_UnlicensedFeatureInUse().getValue() ||
-		motor.getFault_UnstableSupplyV().getValue() ||
-		motor.getFault_UsingFusedCANcoderWhileUnlicensed().getValue();
+	public boolean hasFaults() {
+		return motor.getFault_BootDuringEnable().refresh().getValue() ||
+		motor.getFault_BridgeBrownout().refresh().getValue() ||
+		motor.getFault_DeviceTemp().refresh().getValue() ||
+		motor.getFault_ForwardHardLimit().refresh().getValue() ||
+		motor.getFault_ForwardSoftLimit().refresh().getValue() ||
+		motor.getFault_FusedSensorOutOfSync().refresh().getValue() ||
+		motor.getFault_Hardware().refresh().getValue() ||
+		motor.getFault_MissingDifferentialFX().refresh().getValue() ||
+		motor.getFault_OverSupplyV().refresh().getValue() ||
+		motor.getFault_ProcTemp().refresh().getValue() ||
+		motor.getFault_RemoteSensorDataInvalid().refresh().getValue() ||
+		motor.getFault_RemoteSensorPosOverflow().refresh().getValue() ||
+		motor.getFault_RemoteSensorReset().refresh().getValue() ||
+		motor.getFault_ReverseHardLimit().refresh().getValue() ||
+		motor.getFault_ReverseSoftLimit().refresh().getValue() ||
+		motor.getFault_StatorCurrLimit().refresh().getValue() ||
+		motor.getFault_SupplyCurrLimit().refresh().getValue() ||
+		motor.getFault_Undervoltage().refresh().getValue() ||
+		motor.getFault_UnlicensedFeatureInUse().refresh().getValue() ||
+		motor.getFault_UnstableSupplyV().refresh().getValue() ||
+		motor.getFault_UsingFusedCANcoderWhileUnlicensed().refresh().getValue();
 	}
 
 	/** Returns a string with the number and type of faults. */

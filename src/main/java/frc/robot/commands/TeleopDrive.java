@@ -52,7 +52,7 @@ public class TeleopDrive extends SchemaArbiter
     m_drivetrain = ds;
     m_OI = oi;
     fieldCentric = true;
-    startAngle = ds.getHeading();
+    startAngle = ds.getHeadingDegrees();
     desiredAngle = startAngle;
     snapPidProfile = new PIDController(
       0.05, 
@@ -107,7 +107,8 @@ public class TeleopDrive extends SchemaArbiter
     }
     lastRobotCentricButton = m_OI.getFieldCentricToggle();
     SmartDashboard.putBoolean("Field Centric", fieldCentric);
-    
+    SmartDashboard.putBoolean("Parking Brake", parked);
+
     if(m_OI.getLeftBumper() && lastParkingBreakButton == false)
     {
       parked = !parked;
@@ -138,7 +139,7 @@ public class TeleopDrive extends SchemaArbiter
       translateSchema.update(m_drivetrain);
       rotateSchema.update(m_drivetrain);
       holdSchema.update(m_drivetrain);
-      
+
     }
     // else
     // {
@@ -161,9 +162,11 @@ public class TeleopDrive extends SchemaArbiter
       m_drivetrain.resetOdometry(zero);
     }
 
+
     SmartDashboard.putBoolean("Field Centric ", fieldCentric);
 
     super.execute();
+
   }
 
   // public double snapToHeading(double currentAngle, double targetAngle, double joystickDesired){
