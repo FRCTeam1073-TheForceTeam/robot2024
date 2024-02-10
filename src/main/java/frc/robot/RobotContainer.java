@@ -32,8 +32,7 @@ public class RobotContainer {
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private static final String kNoAuto = "No Autonomous";
-  private static final String auto1 = "auto 1";
-  private static final String auto2 = "auto 2";
+  // ex: private static final String auto1 = "auto 1";
   
   
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -47,8 +46,7 @@ public class RobotContainer {
     SmartDashboard.putData(m_OI);
 
     m_chooser.setDefaultOption("No Autonomous", kNoAuto);
-    m_chooser.addOption("Auto1", auto1);
-    m_chooser.addOption("Auto2", auto2);
+    //ex: m_chooser.addOption("Auto1", auto1);
     SmartDashboard.putData("Autonomous Chooser", m_chooser);
 
     // Configure the trigger bindings
