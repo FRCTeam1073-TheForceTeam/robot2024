@@ -21,7 +21,7 @@ public class TeleopHeadingHoldSchema extends MotionSchema
     public void initialize(Drivetrain drivetrain)
     {
         holdHeading = false;
-        heldHeading = drivetrain.getHeading();
+        heldHeading = drivetrain.getHeadingDegrees();
         System.out.println(heldHeading);
     }
 
@@ -30,12 +30,12 @@ public class TeleopHeadingHoldSchema extends MotionSchema
     {
         if (!holdHeading)
         {
-            heldHeading = drivetrain.getHeading();
+            heldHeading = drivetrain.getHeadingDegrees();
         }
         if (oi.getDriverRotate() == 0)
         {
             holdHeading = false; 
-            setRotate(heldHeading - drivetrain.getHeading(), 1);
+            setRotate(heldHeading - drivetrain.getHeadingDegrees(), 1);
         }
         else 
         {

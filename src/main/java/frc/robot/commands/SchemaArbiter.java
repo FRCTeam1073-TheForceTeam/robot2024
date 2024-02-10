@@ -69,18 +69,18 @@ public class SchemaArbiter extends Command
         // send to drive subsystem
         if (isFieldCentric)
         {
-            drivetrain.setChassisSpeeds(
+            drivetrain.setTargetChassisSpeeds(
                 ChassisSpeeds.fromFieldRelativeSpeeds(
                     totalTranslate.vx, 
                     totalTranslate.vy,
                     totalRotate.omega, 
-                    Rotation2d.fromDegrees(drivetrain.getHeading()) // gets fused heading
+                    Rotation2d.fromDegrees(drivetrain.getHeadingDegrees()) // gets fused heading
                 )
             );
         }
         else
         {
-            drivetrain.setChassisSpeeds(
+            drivetrain.setTargetChassisSpeeds(
                 new ChassisSpeeds(
                     totalTranslate.vx, 
                     totalTranslate.vy, 
@@ -95,7 +95,7 @@ public class SchemaArbiter extends Command
     {
         if (stopOnEnd)
         {
-            drivetrain.setChassisSpeeds(new ChassisSpeeds(0, 0, 0));
+            drivetrain.setTargetChassisSpeeds(new ChassisSpeeds(0, 0, 0));
         }
     }
 
