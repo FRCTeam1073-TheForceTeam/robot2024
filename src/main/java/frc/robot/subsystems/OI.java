@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class OI extends SubsystemBase {
   // Declares our controller variable
   public static Joystick driverController;
+  public static Joystick operatorController;
 
   // Declares the "zero" value variables (which allow us to compensate for joysticks that are a little off)
   private double LEFT_X_ZERO;
@@ -23,17 +25,16 @@ public class OI extends SubsystemBase {
   public OI() {
     // Sets the driver controller to a new joystick object at port 0
     driverController = new Joystick(0);
+    operatorController = new Joystick(0);
     zeroDriverController();
+    zeroOperatorController();
   }
 
   /** This method will be called once per scheduler run */
   @Override
   public void periodic() {
     // Prints our joystick values on SmartDashboard for debugging
-    SmartDashboard.putNumber("Right Y", getDriverRightY());
-    SmartDashboard.putNumber("Right X", getDriverRightX());
-    SmartDashboard.putNumber("Left Y", getDriverLeftY());
-    SmartDashboard.putNumber("Right Y", getDriverRightY());
+    
 
     // You can add more smartdashboard printouts here for additional joysticks or buttons
   }
@@ -71,5 +72,53 @@ public class OI extends SubsystemBase {
   /** Returns a specified button from the driver controller */
   public boolean getDriverRawButton(int i) {
     return driverController.getRawButton(i);
+  }
+
+  public void zeroOperatorController() {
+    //Sets all the offsets to zero, then uses whatever value it returns as the new offset.
+    LEFT_X_ZERO = 0;
+    LEFT_Y_ZERO = 0;
+    RIGHT_X_ZERO = 0;
+    RIGHT_Y_ZERO = 0;
+    LEFT_X_ZERO = getOperatorLeftX();
+    LEFT_Y_ZERO = getOperatorLeftY();
+    RIGHT_X_ZERO = getOperatorRightX();
+    RIGHT_Y_ZERO = getOperatorRightY();
+  }
+
+  /** The following methods return quality-controlled values from the operator controller */
+  public double getOperatorLeftX() {
+    // "Clamping" the value makes sure that it's still between 1 and -1 even if we have added an offset to it
+    return MathUtil.clamp(operatorController.getRawAxis(0) - LEFT_X_ZERO, -1, 1);
+  }
+
+  public double getOperatorLeftY() {
+    return MathUtil.clamp(operatorController.getRawAxis(1) - LEFT_Y_ZERO, -1, 1);
+  }
+
+  public double getOperatorRightX() {
+    return MathUtil.clamp(operatorController.getRawAxis(4) - RIGHT_X_ZERO, -1, 1);
+  }
+
+  public double getOperatorRightY() {
+    return MathUtil.clamp(operatorController.getRawAxis(5) - RIGHT_Y_ZERO, -1, 1);
+  }
+
+  /** Returns a specified button from the operator controller */
+  public boolean getOperatorRawButton(int i) {
+    return operatorController.getRawButton(i);
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder){
+    builder.setSmartDashboardType("OI");
+    builder.addDoubleProperty("Driver Right Y", this::getDriverRightY, null);
+    builder.addDoubleProperty("Driver Right X", this::getDriverRightX, null);
+    builder.addDoubleProperty("Driver Left Y", this::getDriverLeftY, null);
+    builder.addDoubleProperty("Driver Left X", this::getDriverLeftX, null);
+    builder.addDoubleProperty("Operator Right Y", this::getOperatorRightY, null);
+    builder.addDoubleProperty("Operator Right X", this::getOperatorRightX, null);
+    builder.addDoubleProperty("Operator Left Y", this::getOperatorLeftY, null);
+    builder.addDoubleProperty("Operator Left X", this::getOperatorLeftX, null);
   }
 }
