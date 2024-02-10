@@ -5,10 +5,11 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.Camera;
-import frc.robot.commands.GetTagData;
-import frc.robot.subsystems.SerialComms;
+//import frc.robot.subsystems.Camera;
+//import frc.robot.commands.GetTagData;
+//import frc.robot.subsystems.SerialComms;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.OpenMV;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,10 +24,11 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  SerialPort.Port serial_port = SerialPort.Port.kUSB;
   // The robot's subsystems and commands are defined here...
-  private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
-  private final OpenMV m_openMV = new OpenMV(SerialPort.Port.kUSB);
-  private final Camera m_camera1 = new Camera(m_serial, 1);  // camID is how SerialComms and the cameras themselves tells them apart
+  //private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
+  private final OpenMV m_OpenMV = new OpenMV(serial_port);
+  //private final Camera m_camera1 = new Camera(m_serial, 1);  // camID is how SerialComms and the cameras themselves tells them apart
   //private final GetTagData c_GetTagData = new GetTagData(m_camera1);
   private final OI m_OI = new OI();
   //private final Camera m_camera2 = new Camera(m_serial, 2);
@@ -40,7 +42,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-    CommandScheduler.getInstance().setDefaultCommand(m_camera1, getTagData());
+    //CommandScheduler.getInstance().setDefaultCommand(m_camera1, getTagData());
     //CommandScheduler.getInstance().schedule(getTagData());;
     //Configure the trigger bindings
     configureBindings();
@@ -58,7 +60,8 @@ public class RobotContainer {
   public Command getTagData(){
     System.out.println("XBUTTON");
     //return c_GetTagData;
-    return new GetTagData(m_camera1);
+    //return new GetTagData(m_camera1);
+    return null;
   }
 
   private void configureBindings() {
