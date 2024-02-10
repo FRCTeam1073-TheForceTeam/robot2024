@@ -24,6 +24,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     SCORE
   }
 
+  private OI m_OI;
   private TalonFX liftMotor;
   private TalonFX extendMotor;
   
@@ -63,6 +64,10 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private double currentExtendLength;
   private double targetLiftAngle;
   private double targetExtendLength;
+  private double currentLiftVelocity;
+  private double currentExtendVelocity;
+  private double targetLiftVelocity;
+  private double targetExtendVelocity;
   
   // fill in PID values
   private double lift_kP = 0;
@@ -76,7 +81,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private double extend_kF = 0;
 
   /** Creates a new Arm. */
-  public CollectorArm() {
+  public CollectorArm(OI oi) {
+    m_OI = oi;
     liftMotor = new TalonFX(15); // TODO: set device id
     extendMotor = new TalonFX(16); // TODO: set device id
     liftFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
@@ -89,9 +95,16 @@ public class CollectorArm extends DiagnosticsSubsystem {
   public void periodic() 
   {
     updateCurrentPositions();
-    runLiftMotor(targetLiftAngle);
+    targetLiftVelocity = m_OI.getOperatorRightY();
+    targetExtendVelocity = m_OI.getOperatorLeftY();
+    if(m_OI.getOperatorRawButton(2)) {
+      runLiftMotor(targetLiftAngle);
+    }
     targetExtendLength = interpolateExtendPosition(currentLiftAngle);
-    runExtendMotor(targetExtendLength); 
+    if(m_OI.getOperatorRawButton(4)) {
+      runExtendMotor(targetExtendLength);
+    }
+     
   }
 
 
@@ -121,6 +134,23 @@ public class CollectorArm extends DiagnosticsSubsystem {
     return targetExtendLength;
   }
 
+   public double getCurrentLiftVelocity() {
+    return targetLiftVelocity;
+  }
+
+  public double getCurrentExtendVelocity() {
+    return targetExtendVelocity;
+  }
+
+  public double getTargetLiftVelocity() {
+    return targetLiftVelocity;
+  }
+
+  public double getTargetExtendVelocity() {
+    return targetExtendVelocity;
+  }
+
+
   public void setUpInterpolator() {
     armMap.put(Double.valueOf(0.0), Double.valueOf(2.0)); 
     //TODO: fill out the rest of the table (angle, extendLength)
@@ -142,6 +172,16 @@ public class CollectorArm extends DiagnosticsSubsystem {
   public void runExtendMotor(double extendLength)
   {
     // extendMotor.setControl(new PositionVoltage(extendFilter.calculate(extendLength))); 
+  }
+
+  public void runLiftMotorAtVelocity(double liftVelocity)
+  {
+    // liftMotor.setControl(new VelocityVoltage(Velocity * liftTicksPerMeter));
+  }
+
+  public void runExtendMotorAtVelocity(double extendVelocity)
+  {
+    // extendMotor.setControl(new VelocityVoltage(Velocity * extendTicksPerMeter));
   }
 
   public void configureHardware(){
@@ -183,6 +223,12 @@ public class CollectorArm extends DiagnosticsSubsystem {
     builder.setSmartDashboardType("Arm");
     builder.addDoubleProperty("Lift Angle", this::getCurrentLiftAngle, null);
     builder.addDoubleProperty("Extend Length", this::getCurrentExtendLength, null);
+    builder.addDoubleProperty("Target Lift Angle", this::getTargetLiftAngle, null);
+    builder.addDoubleProperty("Target Extend Length", this::getTargetExtendLength, null);
+    builder.addDoubleProperty("Current Lift Velocity", this::getCurrentLiftVelocity, null);
+    builder.addDoubleProperty("Current Extend Velocity", this::getCurrentExtendVelocity, null);
+    builder.addDoubleProperty("Target Lift Velocity", this::getTargetLiftVelocity, null);
+    builder.addDoubleProperty("Target Extend Velocity", this::getTargetExtendVelocity, null);
     //builder.addBooleanProperty("ok", this::isOK, null);
     //builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
     extendMotor.initSendable(builder);
