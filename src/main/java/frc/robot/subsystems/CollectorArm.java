@@ -5,6 +5,8 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -27,6 +29,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
   
   MotorFault liftMotorFault = new MotorFault(liftMotor, 15);
   MotorFault extendMotorFault = new MotorFault(extendMotor, 16);
+  private TalonFXConfiguration liftMotorConfigurator = new TalonFXConfiguration();
+  private TalonFXConfiguration extendMotorConfigurator = new TalonFXConfiguration();
   private final SlewRateLimiter liftFilter;
   private final SlewRateLimiter extendFilter;
 
@@ -128,13 +132,13 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   public void runLiftMotor(double liftAngle)
   {
-    liftMotor.setControl(new PositionVoltage(liftFilter.calculate(liftAngle))); //TODO: conversions: Position to drive toward in rotations = revolutations = 2pi
+    //liftMotor.setControl(new PositionVoltage(liftFilter.calculate(liftAngle))); //TODO: conversions: Position to drive toward in rotations = revolutations = 2pi
 
   }
 
   public void runExtendMotor(double extendLength)
   {
-    extendMotor.setControl(new PositionVoltage(extendFilter.calculate(extendLength))); 
+    // extendMotor.setControl(new PositionVoltage(extendFilter.calculate(extendLength))); 
   }
 
   public void setUpMotors() {
@@ -162,6 +166,19 @@ public class CollectorArm extends DiagnosticsSubsystem {
   public void setUpInterpolator() {
     armMap.put(Double.valueOf(0.0), Double.valueOf(2.0)); 
     //TODO: fill out the rest of the table (angle, extendLength)
+  }
+
+  public void configureHardware(){
+    var error = liftMotor.getConfigurator().apply(new TalonFXConfiguration(), 0.5);
+    if(!error.isOK()){
+      System.err.print(String.format("Module %d LIFT MOTOR ERROR: %s", error.toString()));
+      setDiagnosticsFeedback(error.getDescription(), false);
+    }
+    error = extendMotor.getConfigurator().apply(new TalonFXConfiguration(), 0.5);
+    if(!error.isOK()){
+      System.err.print(String.format("Module %d EXTEND MOTOR ERROR: %s", error.toString()));
+      setDiagnosticsFeedback(error.getDescription(), false);
+    }
   }
 
   @Override

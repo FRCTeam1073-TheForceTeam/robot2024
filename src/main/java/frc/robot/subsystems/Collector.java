@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj.DutyCycle;
 
 public class Collector extends DiagnosticsSubsystem {
 
-  TalonFX collectMotor = new TalonFX(0); // same thing
-  MotorFault collectMotorFault = new MotorFault(collectMotor, 0);
+  TalonFX collectMotor = new TalonFX(14); // same thing
+  MotorFault collectMotorFault = new MotorFault(collectMotor, 14);
   private double collectorSpeed;
   private DigitalInput tof1;
   private DutyCycle tof1DutyCycleInput;
@@ -41,7 +41,7 @@ public class Collector extends DiagnosticsSubsystem {
   public Collector() {
     collectorSpeed = 0;
 
-    tof1 = new DigitalInput(0); // TODO: set correct port #
+    tof1 = new DigitalInput(0); 
     tof1DutyCycleInput = new DutyCycle(tof1);
     tof1Freq = 0;
     tof1Range = 0;
@@ -61,7 +61,7 @@ public class Collector extends DiagnosticsSubsystem {
   
   public void runCollectMotor(double collectorSpeed)
   {
-    collectMotor.setControl(new VelocityVoltage(collectorSpeed * collectorTicksPerMeter));
+    // collectMotor.setControl(new VelocityVoltage(collectorSpeed * collectorTicksPerMeter));
   }
 
   public void setCollectorSpeed(double collectorSpeed)
