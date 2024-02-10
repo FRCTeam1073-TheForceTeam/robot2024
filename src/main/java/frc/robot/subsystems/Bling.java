@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems;
 
-public class Bling extends Diagnostics {
+public class Bling extends DiagnosticsSubsystem {
   /** Creates a new Bling. */
   public Bling() {}
 

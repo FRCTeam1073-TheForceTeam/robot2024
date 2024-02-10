@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems;
 
-public class AprilTagFinder extends Diagnostics {
+public class AprilTagFinder extends DiagnosticsSubsystem {
   /** Creates a new AprilTagFinder. */
   public AprilTagFinder() {}
 
