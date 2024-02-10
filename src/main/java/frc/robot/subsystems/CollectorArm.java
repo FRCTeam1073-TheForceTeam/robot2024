@@ -24,8 +24,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     SCORE
   }
 
-  TalonFX liftMotor;
-  TalonFX extendMotor;
+  private TalonFX liftMotor;
+  private TalonFX extendMotor;
   
   MotorFault liftMotorFault = new MotorFault(liftMotor, 15);
   MotorFault extendMotorFault = new MotorFault(extendMotor, 16);
@@ -81,7 +81,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     extendMotor = new TalonFX(16); // TODO: set device id
     liftFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
     extendFilter = new SlewRateLimiter(0.5); 
-    setUpMotors();
+    configureHardware();
     setUpInterpolator();
   }
 
@@ -91,9 +91,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     updateCurrentPositions();
     runLiftMotor(targetLiftAngle);
     targetExtendLength = interpolateExtendPosition(currentLiftAngle);
-    runExtendMotor(targetExtendLength);
-    
-    // interpolator tree map member smth
+    runExtendMotor(targetExtendLength); 
   }
 
 
@@ -123,6 +121,11 @@ public class CollectorArm extends DiagnosticsSubsystem {
     return targetExtendLength;
   }
 
+  public void setUpInterpolator() {
+    armMap.put(Double.valueOf(0.0), Double.valueOf(2.0)); 
+    //TODO: fill out the rest of the table (angle, extendLength)
+  }
+
   /** Takes a lift angle and calculates the target extend length */
   public double interpolateExtendPosition(double currentliftAngle){
 
@@ -141,7 +144,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     // extendMotor.setControl(new PositionVoltage(extendFilter.calculate(extendLength))); 
   }
 
-  public void setUpMotors() {
+  public void configureHardware(){
     //PID loop setting for lift motor
     var liftMotorClosedLoopConfig = new Slot0Configs();
 
@@ -161,14 +164,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     extendMotorClosedLoopConfig.withKV(extend_kF);
 
     extendMotor.getConfigurator().apply(extendMotorClosedLoopConfig);
-  }
 
-  public void setUpInterpolator() {
-    armMap.put(Double.valueOf(0.0), Double.valueOf(2.0)); 
-    //TODO: fill out the rest of the table (angle, extendLength)
-  }
-
-  public void configureHardware(){
     var error = liftMotor.getConfigurator().apply(new TalonFXConfiguration(), 0.5);
     if(!error.isOK()){
       System.err.print(String.format("Module %d LIFT MOTOR ERROR: %s", error.toString()));
