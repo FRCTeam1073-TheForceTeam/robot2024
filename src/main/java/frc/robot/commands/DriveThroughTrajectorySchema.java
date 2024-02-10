@@ -2,6 +2,70 @@
 // // Open Source Software; you can modify and/or share it under the terms of
 // // the WPILib BSD license file in the root directory of this project.
 
+
+package frc.robot.commands;
+
+import java.util.ArrayList;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import frc.robot.subsystems.Drivetrain;
+
+public class DriveThroughTrajectorySchema extends SchemaArbiter
+{
+
+    Drivetrain drivetrain;
+    ChassisSpeeds speeds;
+    Pose2d startPose;
+    Pose2d endPose;
+    Pose2d robotPose;
+    ArrayList<Pose2d> posePoints;
+    ArrayList<Pose2d> posePointInput;
+    double currentTime;
+    double maxVelocity;
+    double maxAngularVelocity;
+    double alpha;
+    double endTime;
+
+    
+    public DriveThroughTrajectorySchema(Drivetrain ds, ArrayList<Pose2d> posePointList, 
+        double maxVelocity, double maxAngularVelocity, double maxAcceleration, double alpha) 
+    {
+        super(ds, true);
+        drivetrain = ds;
+        startPose = new Pose2d();
+        posePointInput = posePointList;
+        this.maxVelocity = maxVelocity;
+        this.maxAngularVelocity = maxAngularVelocity;
+        this.alpha = alpha;
+    }
+    
+    @Override
+    public void initialize()
+    {
+
+    }
+
+    @Override 
+    public void execute()
+    {
+
+    }
+
+    @Override
+    public void end(boolean interrupted)
+    {
+
+    }
+
+    @Override
+    public boolean isFinished()
+    {
+        return false;
+    }
+}
+
+
 // package frc.robot.commands;
 
 // import java.util.ArrayList;

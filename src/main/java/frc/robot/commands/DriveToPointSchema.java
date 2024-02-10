@@ -101,7 +101,7 @@ public class DriveToPointSchema extends MotionSchema
   public boolean isFinished() 
   {
     var error = targetPose.minus(robotPose);
-    if (error.getTranslation().getNorm()< distanceTolerance && error.getRotation().getRadians() < angleTolerance) 
+    if (error.getTranslation().getNorm() < distanceTolerance && error.getRotation().getRadians() < angleTolerance) 
     {
       System.out.println("DriveToPoint Is Finished");
       return true;
