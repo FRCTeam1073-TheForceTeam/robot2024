@@ -9,6 +9,7 @@ import frc.robot.commands.TeleopDrive;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.SwerveModuleConfig;
+import frc.robot.subsystems.Collector;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 
@@ -29,6 +30,7 @@ public class RobotContainer {
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
+  private final Collector m_collector = new Collector(m_OI);
   
   
   // Replace with CommandPS4Controller or CommandJoystick if needed

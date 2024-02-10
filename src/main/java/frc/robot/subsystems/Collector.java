@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.System_StateValue;
@@ -16,9 +17,11 @@ import edu.wpi.first.wpilibj.DutyCycle;
 
 public class Collector extends DiagnosticsSubsystem {
 
-  TalonFX collectMotor = new TalonFX(14); // same thing
-  MotorFault collectMotorFault = new MotorFault(collectMotor, 14);
-  private double collectorSpeed;
+  private OI m_OI;
+  private TalonFX collectMotor = new TalonFX(14); // same thing
+  private MotorFault collectMotorFault = new MotorFault(collectMotor, 14);
+  private TalonFXConfiguration collectMotorConfigurator = new TalonFXConfiguration();
+  private double collectorVelocity;
   private DigitalInput tof1;
   private DutyCycle tof1DutyCycleInput;
   private double tof1DutyCycle;
@@ -38,40 +41,57 @@ public class Collector extends DiagnosticsSubsystem {
   private double collect_kF = 0;
 
   /** Creates a new Collector. */
-  public Collector() {
-    collectorSpeed = 0;
+  public Collector(OI oi) {
+    m_OI = oi;
+    collectorVelocity = 0;
 
     tof1 = new DigitalInput(0); 
     tof1DutyCycleInput = new DutyCycle(tof1);
     tof1Freq = 0;
     tof1Range = 0;
+    configureHardware();
+  }
+
+  @Override
+  public void periodic() 
+  {
+    if(m_OI)
+    {
+
+    }
+    runCollectMotor(collectorVelocity);
+    tof1Freq = tof1DutyCycleInput.getFrequency();
+    tof1DutyCycle = tof1DutyCycleInput.getOutput();
+    tof1Range = tof1ScaleFactor * (tof1DutyCycle / tof1Freq - 0.001);
   }
 
   public void setUpMotors() {
-    //PID loop setting for collect motor
-    var collectMotorClosedLoopConfig = new Slot0Configs();
 
-    collectMotorClosedLoopConfig.withKP(collect_kP);
-    collectMotorClosedLoopConfig.withKI(collect_kI);
-    collectMotorClosedLoopConfig.withKD(collect_kD);
-    collectMotorClosedLoopConfig.withKV(collect_kF);
-
-    collectMotor.getConfigurator().apply(collectMotorClosedLoopConfig);
   }
   
-  public void runCollectMotor(double collectorSpeed)
+  public void runCollectMotor(double collectorVelocity)
   {
-    // collectMotor.setControl(new VelocityVoltage(collectorSpeed * collectorTicksPerMeter));
+    // collectMotor.setControl(new VelocityVoltage(collectorVelocity * collectorTicksPerMeter));
   }
 
-  public void setCollectorSpeed(double collectorSpeed)
+  public void setTargetCollectorVelocity(double collectorVelocity)
   {
-    this.collectorSpeed = collectorSpeed;
+    this.collectorVelocity = collectorVelocity;
   }
 
-  public double getCollectorSpeed()
+  public double getTargetCollectorVelocity()
   {
-    return collectorSpeed;
+    return collectorVelocity;
+  }
+
+  public double getActualCollectorVelocity()
+  {
+    return collectMotor.getVelocity().getValueAsDouble();
+  }
+
+  public double getActualCollectorPosition()
+  {
+    return collectMotor.getPosition().getValueAsDouble();
   }
 
   public double getRange1() {
@@ -82,26 +102,35 @@ public class Collector extends DiagnosticsSubsystem {
     this.tof1Range = tof1Range;
   }
 
+  private void configureHardware(){
+    //PID loop setting for collect motor
+    var collectMotorClosedLoopConfig = new Slot0Configs();
+
+    collectMotorClosedLoopConfig.withKP(collect_kP);
+    collectMotorClosedLoopConfig.withKI(collect_kI);
+    collectMotorClosedLoopConfig.withKD(collect_kD);
+    collectMotorClosedLoopConfig.withKV(collect_kF);
+
+    collectMotor.getConfigurator().apply(collectMotorClosedLoopConfig);
+    var error = collectMotor.getConfigurator().apply(new TalonFXConfiguration(), 0.5);
+    if(!error.isOK()){
+      System.err.print(String.format("Module %d COLLECT MOTOR ERROR: %s", error.toString()));
+      setDiagnosticsFeedback(error.getDescription(), false);
+    }
+  }
+
   @Override
   public void initSendable(SendableBuilder builder)
   {
     builder.setSmartDashboardType("Collector");
-    builder.addDoubleProperty("Speed", this::getCollectorSpeed, this::setCollectorSpeed);
+    builder.addDoubleProperty("Target Velocity", this::getTargetCollectorVelocity, null);
+    builder.addDoubleProperty("Actual Velocity", this::getActualCollectorVelocity, null);
+    builder.addDoubleProperty("Actual Position", this::getActualCollectorPosition, null);
     builder.addDoubleProperty("tof1Range", this::getRange1, null);
     // builder.addBooleanProperty("ok", this::isOK, null);
     // builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
     collectMotor.initSendable(builder);
   }
-
-  @Override
-  public void periodic() 
-  {
-    runCollectMotor(collectorSpeed);
-    tof1Freq = tof1DutyCycleInput.getFrequency();
-    tof1DutyCycle = tof1DutyCycleInput.getOutput();
-    tof1Range = tof1ScaleFactor * (tof1DutyCycle / tof1Freq - 0.001);
-  }
-
 
   @Override
   public boolean updateDiagnostics() 
