@@ -11,7 +11,9 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class OI extends DiagnosticsSubsystem {
+public class OI extends DiagnosticsSubsystem
+{
+
   // Declares our controller variable
   public static Joystick driverController;
 
@@ -27,7 +29,8 @@ public class OI extends DiagnosticsSubsystem {
   private double RIGHT_Y_ZERO;
 
   /** Creates a new OI. */
-  public OI() {
+  public OI() 
+  {
     // Sets the driver controller to a new joystick object at port 0
     driverController = new Joystick(0);
     zeroDriverController();
@@ -51,11 +54,14 @@ public class OI extends DiagnosticsSubsystem {
 
   /** This method will be called once per scheduler run */
   @Override
-  public void periodic() {
+  public void periodic() 
+  {
+
     // You can add more smartdashboard printouts here for additional joysticks or buttons
   }
 
-  public void zeroDriverController() {
+  public void zeroDriverController() 
+  {
     //Sets all the offsets to zero, then uses whatever value it returns as the new offset.
     LEFT_X_ZERO = 0;
     LEFT_Y_ZERO = 0;
@@ -68,49 +74,75 @@ public class OI extends DiagnosticsSubsystem {
   }
 
   /** The following methods return quality-controlled values from the driver controller */
-  public double getDriverLeftX() {
+  public double getDriverLeftX() 
+  {
     // "Clamping" the value makes sure that it's still between 1 and -1 even if we have added an offset to it
     return MathUtil.clamp(driverController.getRawAxis(0) - LEFT_X_ZERO, -1, 1);
   }
 
-  public double getDriverLeftY() {
+  public double getDriverLeftY() 
+  {
     return MathUtil.clamp(driverController.getRawAxis(1) - LEFT_Y_ZERO, -1, 1);
   }
 
-  public double getDriverRightX() {
+  public double getDriverRightX() 
+  {
     return MathUtil.clamp(driverController.getRawAxis(4) - RIGHT_X_ZERO, -1, 1);
   }
 
-  public double getDriverRightY() {
+  public double getDriverRightY() 
+  {
     return MathUtil.clamp(driverController.getRawAxis(5) - RIGHT_Y_ZERO, -1, 1);
   }
 
+  public double getDriverTranslateX()
+  {
+    return getDriverLeftX();
+  }
+
+  public double getDriverTranslateY()
+  {
+    return getDriverLeftY();
+  }
+
+  public double getDriverRotate()
+  {
+    return getDriverRightX();
+  }
+
   /** Returns a specified button from the driver controller */
-  public boolean getDriverRawButton(int i) {
+  public boolean getDriverRawButton(int i) 
+  {
     return driverController.getRawButton(i);
   }
 
-  public double getDriverRightTrigger(){
+  public double getDriverRightTrigger()
+  {
     return driverController.getRawAxis(3);
   }
 
-  public double getDriverLeftTrigger(){
+  public double getDriverLeftTrigger()
+  {
     return driverController.getRawAxis(2);
   }
 
-  public boolean getFieldCentricToggle(){
+  public boolean getFieldCentricToggle()
+  {
     return fieldCentricDebouncer.calculate(driverController.getRawButton(7));
   }
-
-  public boolean getLeftBumper(){
+  
+  public boolean getLeftBumper()
+  {
     return parkingBrakeDebouncer.calculate(driverController.getRawButton(5));
   }
 
-  public boolean getMenuButton(){
+  public boolean getMenuButton()
+  {
     return menuDriverButtonDebouncer.calculate(driverController.getRawButton(8));
   }
 
-  public boolean getAButton(){
+  public boolean getAButton()
+  {
     return aDriverButtonDebouncer.calculate(driverController.getRawButton(1));
   }
 }
