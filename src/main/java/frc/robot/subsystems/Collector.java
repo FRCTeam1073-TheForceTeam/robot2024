@@ -21,7 +21,7 @@ public class Collector extends DiagnosticsSubsystem {
   private TalonFX collectMotor = new TalonFX(14); // same thing
   private MotorFault collectMotorFault = new MotorFault(collectMotor, 14);
   private TalonFXConfiguration collectMotorConfigurator = new TalonFXConfiguration();
-  private double collectorVelocity;
+  private double targetCollectorVelocity = 1; //TODO: find appropriate speed for collector
   private DigitalInput tof1;
   private DutyCycle tof1DutyCycleInput;
   private double tof1DutyCycle;
@@ -43,7 +43,6 @@ public class Collector extends DiagnosticsSubsystem {
   /** Creates a new Collector. */
   public Collector(OI oi) {
     m_OI = oi;
-    collectorVelocity = 0;
 
     tof1 = new DigitalInput(0); 
     tof1DutyCycleInput = new DutyCycle(tof1);
@@ -55,11 +54,10 @@ public class Collector extends DiagnosticsSubsystem {
   @Override
   public void periodic() 
   {
-    if(m_OI)
+    if(m_OI.getOperatorRawButton(3))
     {
-
+      runCollectMotor(targetCollectorVelocity);
     }
-    runCollectMotor(collectorVelocity);
     tof1Freq = tof1DutyCycleInput.getFrequency();
     tof1DutyCycle = tof1DutyCycleInput.getOutput();
     tof1Range = tof1ScaleFactor * (tof1DutyCycle / tof1Freq - 0.001);
@@ -69,19 +67,14 @@ public class Collector extends DiagnosticsSubsystem {
 
   }
   
-  public void runCollectMotor(double collectorVelocity)
+  public void runCollectMotor(double targetCollectorVelocity)
   {
-    // collectMotor.setControl(new VelocityVoltage(collectorVelocity * collectorTicksPerMeter));
-  }
-
-  public void setTargetCollectorVelocity(double collectorVelocity)
-  {
-    this.collectorVelocity = collectorVelocity;
+    // collectMotor.setControl(new VelocityVoltage(targetCollectorVelocity * collectorTicksPerMeter));
   }
 
   public double getTargetCollectorVelocity()
   {
-    return collectorVelocity;
+    return targetCollectorVelocity;
   }
 
   public double getActualCollectorVelocity()
