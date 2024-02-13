@@ -14,6 +14,7 @@ import com.ctre.phoenix6.signals.System_StateValue;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Collector extends DiagnosticsSubsystem {
 
@@ -23,6 +24,8 @@ public class Collector extends DiagnosticsSubsystem {
   private MotorFault collectMotorFault = new MotorFault(collectMotor, 14);
   private TalonFXConfiguration collectMotorConfigurator = new TalonFXConfiguration();
   private double targetCollectorVelocity = 1; //TODO: find appropriate speed for collector
+  public VelocityVoltage collectorVelocityVoltage;
+
   private DigitalInput tof1;
   private DutyCycle tof1DutyCycleInput;
   private double tof1DutyCycle;
@@ -31,12 +34,12 @@ public class Collector extends DiagnosticsSubsystem {
   private final double tof1ScaleFactor = 100000; 
 
   private final double collectorTicksPerMeter = 1;
-  // private final double intakeGearRatio = 5.0;
-  // private final double intakeTicksPerRadian = 2048.0 * intakeGearRatio / (2.0 * Math.PI);
+  private final double collectorGearRatio = 12.0/18.0;
+  // private final double intakeTicksPerRadian = 2048.0 * collectorGearRatio / (2.0 * Math.PI);
   
   // fill in PID values
   
-  private double collect_kP = 0;
+  private double collect_kP = 3;
   private double collect_kI = 0;
   private double collect_kD = 0;
   private double collect_kF = 0;
@@ -49,12 +52,17 @@ public class Collector extends DiagnosticsSubsystem {
     tof1DutyCycleInput = new DutyCycle(tof1);
     tof1Freq = 0;
     tof1Range = 0;
+
+    collectorVelocityVoltage = new VelocityVoltage(0).withSlot(0);
+
     configureHardware();
   }
 
   @Override
   public void periodic() 
   {
+    SmartDashboard.putBoolean("Operator button 3", m_OI.getOperatorRawButton(3));
+    SmartDashboard.putNumber("Converted number", (targetCollectorVelocity / (collectorGearRatio * (2 * Math.PI * 0.0254))));
     if(m_OI.getOperatorRawButton(3))
     {
       runCollectMotor(targetCollectorVelocity);
@@ -63,14 +71,11 @@ public class Collector extends DiagnosticsSubsystem {
     tof1DutyCycle = tof1DutyCycleInput.getOutput();
     tof1Range = tof1ScaleFactor * (tof1DutyCycle / tof1Freq - 0.001);
   }
-
-  public void setUpMotors() {
-
-  }
   
   public void runCollectMotor(double targetCollectorVelocity)
   {
-    // collectMotor.setControl(new VelocityVoltage(targetCollectorVelocity * collectorTicksPerMeter));
+    System.out.println("RUNNING");
+    collectMotor.setControl(collectorVelocityVoltage.withVelocity(2));
   }
 
   public double getTargetCollectorVelocity()
@@ -80,12 +85,12 @@ public class Collector extends DiagnosticsSubsystem {
 
   public double getActualCollectorVelocity()
   {
-    return collectMotor.getVelocity().getValueAsDouble();
+    return -collectMotor.getVelocity().getValueAsDouble() * collectorGearRatio * (2 * Math.PI * 0.0254); //meters per second conversion
   }
 
   public double getActualCollectorPosition()
   {
-    return collectMotor.getPosition().getValueAsDouble();
+    return -collectMotor.getPosition().getValueAsDouble();
   }
 
   public double getRange1() {
@@ -105,8 +110,7 @@ public class Collector extends DiagnosticsSubsystem {
     collectMotorClosedLoopConfig.withKD(collect_kD);
     collectMotorClosedLoopConfig.withKV(collect_kF);
 
-    collectMotor.getConfigurator().apply(collectMotorClosedLoopConfig);
-    var error = collectMotor.getConfigurator().apply(new TalonFXConfiguration(), 0.5);
+    var error = collectMotor.getConfigurator().apply(collectMotorClosedLoopConfig, 0.5);
     if(!error.isOK()){
       System.err.print(String.format("Module %d COLLECT MOTOR ERROR: %s", error.toString()));
       setDiagnosticsFeedback(error.getDescription(), false);
