@@ -29,7 +29,9 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private TalonFX extendMotor;
   
   MotorFault liftMotorFault = new MotorFault(liftMotor, 15);
+
   MotorFault extendMotorFault = new MotorFault(extendMotor, 16);
+
   private TalonFXConfiguration liftMotorConfigurator = new TalonFXConfiguration();
   private TalonFXConfiguration extendMotorConfigurator = new TalonFXConfiguration();
   private final SlewRateLimiter liftFilter;
@@ -37,6 +39,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   InterpolatingTreeMap<Double, Double> armMap;
   
+  private static final String kCANbus = "CANivore";
+
   //TODO: Change all of these values
   private final double liftLength = 0;
   private final double armLength = 0;
@@ -83,7 +87,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
   /** Creates a new Arm. */
   public CollectorArm(OI oi) {
     m_OI = oi;
-    liftMotor = new TalonFX(15); // TODO: set device id
+    liftMotor = new TalonFX(15, kCANbus); // TODO: set device id
     extendMotor = new TalonFX(16); // TODO: set device id
     liftFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
     extendFilter = new SlewRateLimiter(0.5); 
@@ -104,7 +108,6 @@ public class CollectorArm extends DiagnosticsSubsystem {
     if(m_OI.getOperatorRawButton(4)) {
       runExtendMotor(targetExtendLength);
     }
-     
   }
 
 
@@ -135,11 +138,11 @@ public class CollectorArm extends DiagnosticsSubsystem {
   }
 
    public double getCurrentLiftVelocity() {
-    return targetLiftVelocity;
+    return currentLiftVelocity;
   }
 
   public double getCurrentExtendVelocity() {
-    return targetExtendVelocity;
+    return currentExtendVelocity;
   }
 
   public double getTargetLiftVelocity() {
@@ -158,7 +161,6 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   /** Takes a lift angle and calculates the target extend length */
   public double interpolateExtendPosition(double currentliftAngle){
-
     return armMap.get(currentLiftAngle);
   }
 
@@ -166,7 +168,6 @@ public class CollectorArm extends DiagnosticsSubsystem {
   public void runLiftMotor(double liftAngle)
   {
     //liftMotor.setControl(new PositionVoltage(liftFilter.calculate(liftAngle))); //TODO: conversions: Position to drive toward in rotations = revolutations = 2pi
-
   }
 
   public void runExtendMotor(double extendLength)

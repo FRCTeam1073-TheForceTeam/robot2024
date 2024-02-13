@@ -18,7 +18,8 @@ import edu.wpi.first.wpilibj.DutyCycle;
 public class Collector extends DiagnosticsSubsystem {
 
   private OI m_OI;
-  private TalonFX collectMotor = new TalonFX(14); // same thing
+  private final String kCANbus = "CANivore";
+  private TalonFX collectMotor = new TalonFX(14, kCANbus); // same thing
   private MotorFault collectMotorFault = new MotorFault(collectMotor, 14);
   private TalonFXConfiguration collectMotorConfigurator = new TalonFXConfiguration();
   private double targetCollectorVelocity = 1; //TODO: find appropriate speed for collector
