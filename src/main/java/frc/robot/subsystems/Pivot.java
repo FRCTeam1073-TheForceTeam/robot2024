@@ -78,7 +78,8 @@ public void setConfigsPivot(){
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    pivotMotor.setControl(pivotPositionVoltage.withPosition(pivotMotorFilter.calculate(-targetPivotMotorPositionRot)));
+    pivotMotorPosition = pivotMotorFilter.calculate(-targetPivotMotorPositionRot);
+    pivotMotor.setControl(pivotPositionVoltage.withPosition(pivotMotorPosition));
   }
 
   @Override
@@ -86,33 +87,6 @@ public void setConfigsPivot(){
   {
     builder.setSmartDashboardType("Pivot");
     builder.addDoubleProperty("Pivot Motor Velocity", this::getPivotMotorPositionRadians, this::setPivotMotorPositionRadians);
-    builder.addDoubleProperty("p", this::getP, this::setP);
-    builder.addDoubleProperty("i", this::getI, this::setI);
-    builder.addDoubleProperty("d", this::getD, this::setD);
-  }
-
-  public double getP(){
-    return p;
-  }
-
-  public void setP(double p){
-    this.p = p;
-  }
-
-  public double getI(){
-    return i;
-  }
-
-  public void setI(double i){
-    this.i = i;
-  }
-
-  public double getD(){
-    return d;
-  }
-
-  public void setD(double d){
-    this.d = d;
   }
 
   @Override

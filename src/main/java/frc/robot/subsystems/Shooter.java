@@ -26,7 +26,9 @@ public class Shooter extends DiagnosticsSubsystem{
   private final DigitalInput shooterBeamBreak;
   private double offset;
   private double targetTopShooterMotorVelocityRPS;
+  private double topShooterMotorVelocity;
   private double targetBottomShooterMotorVelocityRPS;
+  private double bottomShooterMotorVelocity;
   private final SlewRateLimiter topFlyWheelFilter;
   private final SlewRateLimiter bottomFlyWheelFilter;
     /* 1 motor rotation = 2 wheel rotations
@@ -63,9 +65,10 @@ public class Shooter extends DiagnosticsSubsystem{
   public void periodic() {
     // This method will be called once per scheduler run
     //System.out.println("TOF Running");
-
-    topShooterMotor.setControl(new VelocityVoltage(topFlyWheelFilter.calculate(-targetTopShooterMotorVelocityRPS)));
-    bottomShooterMotor.setControl(new VelocityVoltage(bottomFlyWheelFilter.calculate(targetBottomShooterMotorVelocityRPS)));
+    topShooterMotorVelocity = topFlyWheelFilter.calculate(-targetTopShooterMotorVelocityRPS);
+    topShooterMotor.setControl(new VelocityVoltage(topShooterMotorVelocity));
+    bottomShooterMotorVelocity = bottomFlyWheelFilter.calculate(targetBottomShooterMotorVelocityRPS);
+    bottomShooterMotor.setControl(new VelocityVoltage(bottomShooterMotorVelocity));
   }
 
 /* returns true if the beam has been broken, false if there's no note in the sensor */
@@ -98,35 +101,8 @@ public void initSendable(SendableBuilder builder)
   builder.setSmartDashboardType("Shooter");
   builder.addDoubleProperty("Top Motor Velocity", this::getTopShooterMotorVelocity, this::setTopShooterMotorVelocity);
   builder.addDoubleProperty("Bottom Motor Velocity", this::getBottomShooterMotorVelocity, this::setBottomShooterMotorVelocity);
-  builder.addDoubleProperty("p", this::getP, this::setP);
-  builder.addDoubleProperty("i", this::getI, this::setI);
-  builder.addDoubleProperty("d", this::getD, this::setD);
   builder.setSmartDashboardType("Tof");
 }
-
-  public double getP(){
-    return p;
-  }
-
-  public void setP(double p){
-    this.p = p;
-  }
-
-  public double getI(){
-    return i;
-  }
-
-  public void setI(double i){
-    this.i = i;
-  }
-
-  public double getD(){
-    return d;
-  }
-
-  public void setD(double d){
-    this.d = d;
-  }
 
   /* sets the desired top shooter motor velocity in rotations per second */
   public void setTopShooterMotorVelocity(double velocityMPS)
