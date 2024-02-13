@@ -5,17 +5,19 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-//import frc.robot.subsystems.Camera;
-//import frc.robot.commands.GetTagData;
-//import frc.robot.subsystems.SerialComms;
+import frc.robot.commands.GetTagData;
+import frc.robot.subsystems.Camera;
+import frc.robot.commands.GetTagData;
+import frc.robot.subsystems.SerialComms;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.OpenMV;
+import frc.robot.subsystems.Camera;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+//import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -26,10 +28,9 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   SerialPort.Port serial_port = SerialPort.Port.kUSB;
   // The robot's subsystems and commands are defined here...
-  //private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
-  private final OpenMV m_OpenMV = new OpenMV(serial_port);
-  //private final Camera m_camera1 = new Camera(m_serial, 1);  // camID is how SerialComms and the cameras themselves tells them apart
-  //private final GetTagData c_GetTagData = new GetTagData(m_camera1);
+  private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
+  private final Camera m_camera1 = new Camera(m_serial, 1);  // camID is how SerialComms and the cameras themselves tells them apart
+  private final GetTagData c_GetTagData = new GetTagData(m_camera1);
   private final OI m_OI = new OI();
   //private final Camera m_camera2 = new Camera(m_serial, 2);
   // and so on for however many cameras we have
@@ -42,7 +43,8 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-    //CommandScheduler.getInstance().setDefaultCommand(m_camera1, getTagData());
+
+    CommandScheduler.getInstance().setDefaultCommand(m_camera1, c_GetTagData);
     //CommandScheduler.getInstance().schedule(getTagData());;
     //Configure the trigger bindings
     configureBindings();
@@ -57,18 +59,18 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  public Command getTagData(){
-    System.out.println("XBUTTON");
-    //return c_GetTagData;
-    //return new GetTagData(m_camera1);
-    return null;
-  }
+  // public Command getTagData(){
+  //   System.out.println("XBUTTON");
+  //   //return c_GetTagData;
+  //   //return new GetTagData(m_camera1);
+  //   return null;
+  // }
 
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    System.out.println("Configuring buttons");
-    Trigger tagButton = new Trigger(m_OI::getXButton);
-    tagButton.onTrue(getTagData());
+    // System.out.println("Configuring buttons");
+    // Trigger tagButton = new Trigger(m_OI::getXButton);
+    // tagButton.onTrue(getTagData());
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
 
