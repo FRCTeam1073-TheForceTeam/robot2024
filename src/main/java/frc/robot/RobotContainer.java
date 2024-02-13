@@ -85,6 +85,6 @@ public class RobotContainer
   public Command getAutonomousCommand() 
   {
     // An example command will be run in autonomous
-    return SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(2.0, 0, new Rotation2d()), 0.5, 0.5), m_drivetrain);
+    return SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(2.0, 0, new Rotation2d(0)), 0.5, 0.5), m_drivetrain);
   }
 }

@@ -15,7 +15,7 @@ public class DriveToPointSchema extends MotionSchema
   /** Creates a new DriveToPoint. */
   
   double distanceTolerance = 0.1;
-  double angleTolerance = 0.05;
+  double angleTolerance = 0.1;
 
   Pose2d robotPose;
   Pose2d targetPose;
@@ -53,10 +53,10 @@ public class DriveToPointSchema extends MotionSchema
   public void execute() 
   {
     robotPose = drivetrain.getOdometry();
-    Transform2d difference = targetPose.minus(robotPose);
-    double xVelocity = - 0.8 * difference.getX();
-    double yVelocity = - 0.8 * difference.getY();
-    double angularVelocity = - 0.8 * difference.getRotation().getRadians();
+    Transform2d difference = robotPose.minus(targetPose);
+    double xVelocity = -0.8 * difference.getX();
+    double yVelocity = -0.8 * difference.getY();
+    double angularVelocity = 0.8 * difference.getRotation().getRadians();
     //tests if velocities are within the maximum and sets them to the max if they exceed
     if(xVelocity > maxLinearVelocity)
     {

@@ -117,6 +117,14 @@ public class SchemaArbiter extends Command
     @Override
     public boolean isFinished()
     {
+        //return false;
+        for(int i = 0; i < schema.size(); i++)
+        {
+            if (schema.get(i).isFinished())
+            {
+                return true;
+            }
+        }
         return false;
     }
 }
