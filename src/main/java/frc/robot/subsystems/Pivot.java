@@ -7,13 +7,9 @@ change methods to use pivot in radians */
 
 package frc.robot.subsystems;
 
-import javax.swing.text.Position;
-
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -34,7 +30,7 @@ public class Pivot extends DiagnosticsSubsystem {
   private double d = 0.0001;
 
   public Pivot() {
-    pivotMotor = new TalonFX(21); //Falcon  
+    pivotMotor = new TalonFX(21, "CANivore"); //Falcon  
     pivotMotorFault = new MotorFault(pivotMotor, 21);
     pivotMotorFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
     pivotPositionVoltage = new PositionVoltage(0);

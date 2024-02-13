@@ -6,22 +6,24 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.TeleopDrive;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.OI;
-import frc.robot.subsystems.SwerveModuleConfig;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.*;
 import frc.robot.commands.PivotTestCommand;
 import frc.robot.commands.ShooterTestCommand;
 import frc.robot.commands.FeederTestCommand;
+import frc.robot.commands.LoadTrigger;
+import frc.robot.commands.RunTrigger;
+import frc.robot.commands.SetShooterAngle;
+import frc.robot.commands.RunShooter;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 
 /**
@@ -38,9 +40,14 @@ public class RobotContainer {
   private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(pivot);
   private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(shooter);
   private final FeederTestCommand m_feederTestCommand = new FeederTestCommand(feeder);
+  private final LoadTrigger m_loadTrigger = new LoadTrigger(shooter);
+  private final RunTrigger m_runTrigger = new RunTrigger();
+  private final SetShooterAngle m_setShooterAngle = new SetShooterAngle(shooter, 0);
+  private final RunShooter m_runShooter = new RunShooter(shooter, 0, 0, 0);
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
+  SequentialCommandGroup fullAuto;
   
   
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -91,8 +98,12 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return null;
+  public Command getAutonomousCommand(){
+    return fullAuto = 
+    new SequentialCommandGroup(m_runTrigger, m_loadTrigger, m_setShooterAngle, m_runShooter);
   }
+  // public Command getAutonomousCommand() {
+  //   // An example command will be run in autonomous
+  //   return null;
+  // }
 }

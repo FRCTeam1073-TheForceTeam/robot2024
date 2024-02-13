@@ -45,8 +45,8 @@ public class Shooter extends DiagnosticsSubsystem{
   /** Creates a new Shooter. **/
   public Shooter() {
     //one motor might be a follower
-    topShooterMotor = new TalonFX(17); // Kracken 
-    bottomShooterMotor = new TalonFX(18); //Kracken 
+    topShooterMotor = new TalonFX(17, "CANivore"); // Kracken 
+    bottomShooterMotor = new TalonFX(18, "CANivore"); //Kracken 
     shooterBeamBreak = new DigitalInput(2);
     topShooterMotorFault = new MotorFault(topShooterMotor, 17);
     bottomShooterMotorFault = new MotorFault(bottomShooterMotor, 18);

@@ -11,11 +11,10 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 
 public class Feeder extends DiagnosticsSubsystem {
   private final TalonFX feederMotor;
@@ -41,7 +40,7 @@ public class Feeder extends DiagnosticsSubsystem {
   private final DutyCycle toffeeder1DutyCycleInput;
   /** Creates a new Trigger. */
   public Feeder() {
-    feederMotor = new TalonFX(19); //Falcon
+    feederMotor = new TalonFX(19, "CANivore"); //Falcon
     toffeeder1 = new DigitalInput(1);
     feederMotorFault = new MotorFault(feederMotor, 19);
     
