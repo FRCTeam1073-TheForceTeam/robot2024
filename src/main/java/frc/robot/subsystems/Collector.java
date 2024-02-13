@@ -15,9 +15,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 
 public class Collector extends DiagnosticsSubsystem {
-
-  TalonFX collectMotor = new TalonFX(14); // same thing
-  MotorFault collectMotorFault = new MotorFault(collectMotor, 0);
   private double collectorSpeed;
   private DigitalInput tof1;
   private DutyCycle tof1DutyCycleInput;
@@ -25,6 +22,11 @@ public class Collector extends DiagnosticsSubsystem {
   private double tof1Freq;
   private double tof1Range;
   private final double tof1ScaleFactor = 100000; 
+  private final String kCANbus = "CAVivore";
+
+  TalonFX collectMotor = new TalonFX(14, kCANbus); // same thing
+  MotorFault collectMotorFault = new MotorFault(collectMotor, 0);
+
 
 
   private final double collectorTicksPerMeter = 1;
