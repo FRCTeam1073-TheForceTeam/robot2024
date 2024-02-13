@@ -137,8 +137,8 @@ public class Drivetrain extends DiagnosticsSubsystem
   public void initSendable(SendableBuilder builder){
     builder.setSmartDashboardType("Drivetrain");
     builder.addBooleanProperty("ParkingBrake", this::getParkingBrake, null);
-    builder.addDoubleProperty("Odo X", odometry.getPoseMeters()::getX, null);
-    builder.addDoubleProperty("Odo Y", odometry.getPoseMeters()::getY, null);
+    builder.addDoubleProperty("Odo X", this.getOdometry()::getX, null);
+    builder.addDoubleProperty("Odo Y", this.getOdometry()::getY, null);
     builder.addDoubleProperty("Odo Heading(DEG)", this::getHeadingDegrees, null);
     builder.addDoubleProperty("Odo Wrapped Heading", this::getWrappedHeadingDegrees, null);
     builder.addDoubleProperty("Target Vx", this::getTargetVx, null);
@@ -265,6 +265,7 @@ public class Drivetrain extends DiagnosticsSubsystem
     modules[1].samplePosition(modulePositions[1]);
     modules[2].samplePosition(modulePositions[2]);
     modules[3].samplePosition(modulePositions[3]);
+    
     odometry.update(Rotation2d.fromDegrees(getHeadingDegrees()), modulePositions);
   }
 
@@ -308,6 +309,9 @@ public class Drivetrain extends DiagnosticsSubsystem
     }
    
     updateOdometry();
+
+    SmartDashboard.putNumber("Odometry X", getOdometry().getX());
+    SmartDashboard.putNumber("Odometry Y", getOdometry().getY());
   }
 
 
