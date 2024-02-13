@@ -1,12 +1,20 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.subsystems.Drivetrain;
 
 public class SchemaDriveAuto 
 {
-    public static Command create()
+    private static SchemaArbiter arbiter;
+
+    public static Command create(DriveToPointSchema pointSchema, Drivetrain drivetrain)
     {
-        SchemaArbiter arbiter;
-        return null;
+        arbiter = new SchemaArbiter(drivetrain, false, true);
+        arbiter.addSchema(pointSchema);
+
+        
+
+        return arbiter;
     }
 }

@@ -5,13 +5,15 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.DriveToPointSchema;
+import frc.robot.commands.SchemaDriveAuto;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.SwerveModuleConfig;
 
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
-
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -24,7 +26,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
-public class RobotContainer {
+public class RobotContainer 
+{
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
@@ -36,7 +39,8 @@ public class RobotContainer {
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
+  public RobotContainer() 
+  {
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
@@ -54,7 +58,8 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() {
+  private void configureBindings() 
+  {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
   
 
@@ -63,7 +68,8 @@ public class RobotContainer {
 
   }
 
-  public static void initPreferences() {
+  public static void initPreferences() 
+  {
     System.out.println("RobotContainer: init Preferences.");
     SwerveModuleConfig.initPreferences();
     Drivetrain.initPreferences();
@@ -76,8 +82,9 @@ public class RobotContainer {
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
+  public Command getAutonomousCommand() 
+  {
     // An example command will be run in autonomous
-    return null;
+    return SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(2.0, 0, new Rotation2d()), 0.5, 0.5), m_drivetrain);
   }
 }
