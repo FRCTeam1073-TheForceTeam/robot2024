@@ -5,12 +5,15 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.DriveThroughTrajectorySchema;
 import frc.robot.commands.DriveToPointSchema;
 import frc.robot.commands.SchemaDriveAuto;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.SwerveModuleConfig;
+
+import java.util.ArrayList;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -85,6 +88,14 @@ public class RobotContainer
   public Command getAutonomousCommand() 
   {
     // An example command will be run in autonomous
-    return SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(2.0, 0, new Rotation2d(0)), 0.5, 0.5), m_drivetrain);
+    //return SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(2.0, 0, new Rotation2d(0)), 0.5, 0.5), m_drivetrain);
+
+    ArrayList<Pose2d> drivePoints = new ArrayList<>();
+
+    drivePoints.add(new Pose2d(1, 0, new Rotation2d(Math.PI)));
+    //drivePoints.add(new Pose2d(1, 1, new Rotation2d(Math.PI / 2)));
+    //drivePoints.add(new Pose2d(1, 1, new Rotation2d(0.9)));
+
+    return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, drivePoints, 0.5, 0.5, 0.5, 1.0), m_drivetrain);
   }
 }

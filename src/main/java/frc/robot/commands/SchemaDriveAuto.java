@@ -13,7 +13,12 @@ public class SchemaDriveAuto
         arbiter = new SchemaArbiter(drivetrain, false, true);
         arbiter.addSchema(pointSchema);
 
-        
+        return arbiter;
+    }
+
+    public static Command create(DriveThroughTrajectorySchema trajectorySchema, Drivetrain drivetrain){
+        arbiter = new SchemaArbiter(drivetrain, false, true);
+        arbiter.addSchema(trajectorySchema);
 
         return arbiter;
     }

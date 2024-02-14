@@ -115,17 +115,19 @@ public class DriveThroughTrajectorySchema extends MotionSchema {
       yTrajectory.get(currentTime).doubleValue()),
       Rotation2d.fromRadians(thetaTrajectory.get(currentTime).doubleValue()));
     Transform2d difference = new Transform2d(robotPose, state);
-    double xVelocity = alpha * difference.getX();
+    double xVelocity = -alpha * difference.getX();
     double yVelocity = alpha * difference.getY();
-    double angularVelocity = 0.6 * difference.getRotation().getRadians();
+    double angularVelocity = -0.6 * difference.getRotation().getRadians();
 
 
-    SmartDashboard.putNumber("Trajectory X", state.getX());
-    SmartDashboard.putNumber("Trajectory Y", state.getY());
-    SmartDashboard.putNumber("Trajectory theta", state.getRotation().getRadians());
+    SmartDashboard.putNumber("Robot pose x", robotPose.getX());
+    SmartDashboard.putNumber("Robot Pose y", robotPose.getY());
     SmartDashboard.putNumber("Difference X", difference.getX());
     SmartDashboard.putNumber("Difference y", difference.getY());
     SmartDashboard.putNumber("Trajectory Time", currentTime);
+    SmartDashboard.putNumber("state X", state.getX());
+    SmartDashboard.putNumber("state Y", state.getY());
+    SmartDashboard.putNumber("state Rotation", state.getRotation().getRadians());
 
     xVelocity = MathUtil.clamp(xVelocity, -maxVelocity, maxVelocity);
     yVelocity = MathUtil.clamp(yVelocity, -maxVelocity, maxVelocity);
@@ -166,7 +168,7 @@ public class DriveThroughTrajectorySchema extends MotionSchema {
   {
     var error = robotPose.minus(endPose);
      
-    if (error.getTranslation().getNorm()< distanceTolerance && Math.abs(error.getRotation().getRadians()) < angleTolerance) 
+    if (error.getTranslation().getNorm() < distanceTolerance && Math.abs(error.getRotation().getRadians()) < angleTolerance) 
     {
       System.out.println("DriveThroughTrajectory Is Finished");
       return true;
