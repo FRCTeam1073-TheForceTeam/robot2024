@@ -45,19 +45,28 @@ public class SerialComms extends SubsystemBase{
 
   
 
-  public static void send(byte[] message) {
-    System.out.println(message);
-    String dataString = new String(message, StandardCharsets.US_ASCII);
-    System.out.println(dataString);
-    serialPort.write(message, message.length);
+  public static void send(String message) {
+    //String dataString = new String(message, StandardCharsets.US_ASCII);
+    //System.out.println(dataString);
+    System.out.println(String.format("in send() message we're about to send as string: %s", message));
+    byte[] messageAsBytes = message.getBytes(StandardCharsets.US_ASCII);
+    System.out.println(String.format("message we're about to send as bytes: %s", messageAsBytes));
+    System.out.println(String.format("message we're about to send as bytes converted back to ASCII string: %s", new String(messageAsBytes, StandardCharsets.US_ASCII)));
+    for(int i=0; i < messageAsBytes.length; i++) {
+      byte[] arrayofone = {messageAsBytes[i]};
+      System.out.println(String.format("arrayofone: %s", arrayofone[0]));
+      System.out.println(String.format("i: %s", i));
+      serialPort.write(arrayofone, 1);
+    }
+    //serialPort.write(messageAsBytes, messageAsBytes.length);
     System.out.println("bottom of SerialComms.send()");
   }
 
-  public static ArrayList<Byte> recieve() {
+  public static String receive() {
     System.out.println("in receive");
     ArrayList<Byte> msg = new ArrayList<Byte>();
 
-    while(1 == 1){
+    while(true) {
       int recvd = serialPort.getBytesReceived();
 
       if(recvd != 0){
@@ -67,24 +76,31 @@ public class SerialComms extends SubsystemBase{
             System.out.println(data);
             msg.add(data[0]);
 
+            // dataString is the byte we just received cast to a String so we can compare to newline without hardcoding the ord() or something
             String dataString = new String(data, StandardCharsets.US_ASCII);
-            System.out.println("datastring");
+            System.out.println("byte we just received as string");
             System.out.println(dataString);
 
             if(dataString == "\n") {
-              return msg;
+              String msgAsString = msg.toString();
+              System.out.println("full msg we received as string:");
+              System.out.println(msgAsString);
+              return msgAsString;
             }
       }
     }
   }
 
-  public static ArrayList<Byte> getVisionData(byte[] message){
-    String messageAsASCII = new String(message, StandardCharsets.US_ASCII);
-    System.out.println("sending message, as ascii:");
-    System.out.println(messageAsASCII);
+  public static String getVisionData(String message){
+    //String messageAsASCII = new String(message, StandardCharsets.US_ASCII);
+    System.out.println(String.format("sending message, as a String: %s", message));
     send(message);
     // System.out.println("Vision Data doing its thingy");
-    return recieve();
+    // byte[] bytesReceived = recieve();
+    //String bytesReceivedAsString = bytesReceived.toString();
+    String receivedString = receive();
+    System.out.println(String.format("msg received as string: %s", receivedString));
+    return receivedString;
   }
 
 

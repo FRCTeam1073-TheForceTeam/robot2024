@@ -50,18 +50,13 @@ public class GetTagData extends Command {
   @Override
   public void execute() {
     System.out.println("DATA");
-    try {
-        byte[] payload = "1,b\n".getBytes("ASCII");
+        // byte[] payload = "1,b\n".getBytes("ASCII");
+        String payload = "1,b\n";
         System.out.println("payload");
         System.out.println(payload);
-        ArrayList<Byte> thedata = SerialComms.getVisionData(payload);
+        String thedata = SerialComms.getVisionData(payload);
         System.out.println(thedata);
-
-    } catch (UnsupportedEncodingException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
     }
-  }
 
   // Called once the command ends or is interrupted.
   /**

@@ -37,12 +37,12 @@ public class Camera extends SubsystemBase {
     System.out.println("camID in getAprilTag()");
     System.out.println(camID);
     // String cmdStr = "%s,a\n".formatted(camID); // NSARGENT: HARDCODED MSG HERE
-    String cmdStr = "1"; // NSARGENT: HARDCODED MSG HERE
-    byte[] cmdBytes = cmdStr.getBytes();
-    ArrayList<Byte> data = SerialComms.getVisionData(cmdBytes);
+    String cmdStr = "123abc\njkl\n"; // NSARGENT: HARDCODED MSG HERE
+    //byte[] cmdBytes = cmdStr.getBytes();
+    String data = SerialComms.getVisionData(cmdStr);
     System.out.println("gotAprilTag, data:");
     System.out.println(data);
-    String dataAsASCII = new String(data, StandardCharsets.US_ASCII);
+    //String dataAsASCII = new String(data, StandardCharsets.US_ASCII);
   }
 
 
