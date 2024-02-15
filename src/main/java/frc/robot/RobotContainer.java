@@ -51,6 +51,7 @@ public class RobotContainer {
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
     SmartDashboard.putData(m_collector);
+    SmartDashboard.putData(m_collectorArm);
     //SmartDashboard.putData(m_collectorArm);
 
     // Configure the trigger bindings

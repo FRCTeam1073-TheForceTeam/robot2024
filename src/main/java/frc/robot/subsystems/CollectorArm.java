@@ -61,33 +61,33 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private final double liftDriveRatio = 4.0;
   private final double extendGearRatio = 25.0;
   private final double extendPulleyRadius = 0.01375;
-  private final double liftRadiansPerRotation = (2*Math.PI)/(liftDriveRatio*liftGearRatio);
-  private final double extendMetersPerRotation = (2*Math.PI*extendPulleyRadius)/extendGearRatio;
+  private final double liftRadiansPerRotation = (-2*Math.PI)/(liftDriveRatio*liftGearRatio);
+  private final double extendMetersPerRotation = (-2*Math.PI*extendPulleyRadius)/extendGearRatio;
   
 
 
   // TODO: fill out values in radians
-  private final double minLiftAngle = 0;
+  private final double minLiftAngle = -2.09649;
   private final double maxLiftAngle = 0; 
 
   // TODO: fill out values (unit tbd)
-  private final double minExtend = 0;
-  private final double maxExtend = 0;
+  private final double minExtend = -0.10935;
+  private final double maxExtend = 0.0779;
 
-  private double currentLiftAngle;
-  private double currentExtendLength;
-  private double targetLiftAngle;
-  private double targetExtendLength;
-  private double currentLiftVelocity;
-  private double commandedLiftAngle;
-  private double commandedExtendLength;
-  private double currentExtendVelocity;
-  private double targetLiftVelocity;
-  private double targetExtendVelocity;
+  private double currentLiftAngle = 0;
+  private double currentExtendLength = 0;
+  private double targetLiftAngle = 0;
+  private double targetExtendLength = 0;
+  private double currentLiftVelocity = 0;
+  private double commandedLiftAngle = 0;
+  private double commandedExtendLength = 0;
+  private double currentExtendVelocity = 0;
+  // private double targetLiftVelocity;
+  // private double targetExtendVelocity;
 
   
   // fill in PID values
-  private double lift_kP = 0.3;
+  private double lift_kP = 1;
   private double lift_kI = 0;
   private double lift_kD = 0;
   private double lift_kF = 0;
@@ -121,7 +121,9 @@ public class CollectorArm extends DiagnosticsSubsystem {
     // targetExtendLength = m_OI.getOperatorLeftY();
     commandedExtendLength = extendLimiter.calculate(limitExtendLength(targetExtendLength));
     commandedLiftAngle = liftLimiter.calculate(limitLiftAngle(targetLiftAngle));
-    targetExtendLength = interpolateExtendPosition(currentLiftAngle);
+    runLiftMotor(commandedLiftAngle);
+    runExtendMotor(commandedExtendLength);
+    //targetExtendLength = interpolateExtendPosition(currentLiftAngle);
   }
 
 
@@ -137,7 +139,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
   }
 
   public double limitExtendLength(double extendLength) {
-    return MathUtil.clamp(extendLength, minExtend, minExtend);
+    return MathUtil.clamp(extendLength, minExtend, maxExtend);
   }
 
   public double getCurrentLiftAngle() {
@@ -149,11 +151,13 @@ public class CollectorArm extends DiagnosticsSubsystem {
   }
 
   public void setTargetLiftAngle(double target) {
-    targetLiftAngle = liftLimiter.calculate(limitLiftAngle(target));
+    targetLiftAngle = target;
+    //targetLiftAngle = liftLimiter.calculate(limitLiftAngle(target));
   }
 
   public void setTargetExtendLength(double target) {
-    targetExtendLength = liftLimiter.calculate(limitExtendLength(target));
+    targetExtendLength = target;
+    //targetExtendLength = liftLimiter.calculate(limitExtendLength(target));
   }
 
   public double getTargetLiftAngle() {
@@ -180,13 +184,13 @@ public class CollectorArm extends DiagnosticsSubsystem {
     return currentExtendVelocity;
   }
 
-  public double getTargetLiftVelocity() {
-    return targetLiftVelocity;
-  }
+  // public double getTargetLiftVelocity() {
+  //   return targetLiftVelocity;
+  // }
 
-  public double getTargetExtendVelocity() {
-    return targetExtendVelocity;
-  }
+  // public double getTargetExtendVelocity() {
+  //   return targetExtendVelocity;
+  // }
 
 
   public void setUpInterpolator() {

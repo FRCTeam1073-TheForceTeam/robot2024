@@ -15,8 +15,8 @@ public class CollectorArmTeleop extends Command {
 
   public CollectorArmTeleop(CollectorArm arm, OI oi) {
     // Use addRequirements() here to declare subsystem dependencies.
-    arm = arm;
-    oi = oi;
+    this.arm = arm;
+    this.oi = oi;
     addRequirements(arm);
   }
 
@@ -27,21 +27,21 @@ public class CollectorArmTeleop extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double commandedAngle = arm.getTargetLiftAngle();
-    double commandedLength = arm.getTargetExtendLength();
-    arm.updateCurrentPositions();
+    // double commandedAngle = arm.getTargetLiftAngle();
+    // double commandedLength = arm.getTargetExtendLength();
     // targetLiftAngle = m_OI.getOperatorRightY();
     // targetExtendLength = m_OI.getOperatorLeftY();
-    commandedAngle = oi.getOperatorRightY();
-    commandedLength = oi.getOperatorLeftY();
+    // commandedAngle = oi.getOperatorRightY();
+    // commandedLength = oi.getOperatorLeftY();
     
     if(oi.getOperatorRawButton(2)) {
-      arm.setTargetLiftAngle(commandedAngle);
+      arm.setTargetLiftAngle(0);
+      arm.setTargetExtendLength(0);
     }
 
-    double currentLiftAngle = arm.getCurrentLiftAngle();
     if(oi.getOperatorRawButton(4)) {
-      arm.setTargetExtendLength(commandedLength);
+      arm.setTargetLiftAngle(-1);
+      arm.setTargetExtendLength(0.04);
     }
   }
 
