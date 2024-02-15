@@ -2,6 +2,14 @@
 
 Team 1073's robot code for the 2024 FRC Season: Crecendo
 
+## Direction Conventions
+
+1. Collector movement is defined as meters/second in X axis (front of robot) direction. Therefore sucking a note into the robot is a negative collect velocity, spitting a note out is a positive collect velocity.
+2. Collector arm extension is defined as meters away from the pivot of the collector. This means that sticking the arm out further is positive meters and pulling it in closer is negative meters from the zero position.
+3. Collector arm rotation is defined based on rotation about the +Y axis of the robot chassis. It follows the right hand rule. Therefore, "raising up" the collector is a negative rotation about the Y axis of the robot and "lowering" the collector is a positive rotation about the Y axis.
+4. The launcher pivot is likewise defined based on rotation about the +Y axis of the robot chassis. It follows the right hand rule. This is based on where the launcher is aimed, so the aiming vector of the collector is moved upwards by negative rotation about the +Y axis and is moved downwards by a positive rotation about the +Y axis. 
+5. The launcher/trigger rollers are scaled to meters and/or meters/second and positive movement is moving the note along/out of the robot and negative movement would be backwards along the launcher/into the robot.
+
 ## Can ID
 
 The primary devices on the CANBus are 4 swerve modules with CANCoder feedback, a Pigeon 2 IMU for orientation, 3 motors for the collector and arm, 5 motors for the shooter/feeder, and 1 motor for the climber.
