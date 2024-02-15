@@ -3,15 +3,20 @@ package frc.robot.commands;
 import java.util.ArrayList;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.HolonomicDriveController;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 // import edu.wpi.first.util.InterpolatingTreeMap;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import frc.robot.subsystems.Drivetrain;
 
 public class DriveThroughTrajectorySchema extends MotionSchema {
@@ -30,6 +35,11 @@ public class DriveThroughTrajectorySchema extends MotionSchema {
   InterpolatingDoubleTreeMap xTrajectory;
   InterpolatingDoubleTreeMap yTrajectory;
   InterpolatingDoubleTreeMap thetaTrajectory;
+  HolonomicDriveController driveController;
+  PIDController xController;
+  PIDController yController;
+  ProfiledPIDController thetaController;
+  TrapezoidProfile.Constraints thetaConstraints;
   double currentTime;
   double maxVelocity;
   double maxAngularVelocity;
@@ -59,6 +69,29 @@ public class DriveThroughTrajectorySchema extends MotionSchema {
     xTrajectory = new InterpolatingDoubleTreeMap();
     yTrajectory = new InterpolatingDoubleTreeMap(); // TODO: fix this
     thetaTrajectory = new InterpolatingDoubleTreeMap();
+
+    xController = new PIDController(
+      0.8, 
+      0, 
+      0
+    );
+
+    yController = new PIDController(
+      0.8, 
+      0, 
+      0
+    );
+
+    thetaConstraints = new TrapezoidProfile.Constraints(maxAngularVelocity, maxAcceleration);
+    thetaController = new ProfiledPIDController(
+      0.09, 
+      0,
+      0, 
+      thetaConstraints
+    );
+
+    driveController = new HolonomicDriveController(xController, yController, thetaController);
+    driveController.setTolerance(new Pose2d(0.2, 0.2, new Rotation2d(0.1)));
   }
 
   /** Generates trajectory for robot to go through by creating different trajectory states for each waypoints
@@ -110,39 +143,42 @@ public class DriveThroughTrajectorySchema extends MotionSchema {
   public void execute() 
   {
     robotPose = drivetrain.getOdometry();
-    Pose2d state = new Pose2d(
-      new Translation2d(xTrajectory.get(currentTime).doubleValue(), 
-      yTrajectory.get(currentTime).doubleValue()),
-      Rotation2d.fromRadians(thetaTrajectory.get(currentTime).doubleValue()));
-    Transform2d difference = new Transform2d(robotPose, state);
-    double xVelocity = -alpha * difference.getX();
-    double yVelocity = alpha * difference.getY();
-    double angularVelocity = -0.6 * difference.getRotation().getRadians();
+    // Pose2d state = new Pose2d(
+    //   new Translation2d(xTrajectory.get(currentTime).doubleValue(), 
+    //   yTrajectory.get(currentTime).doubleValue()),
+    //   Rotation2d.fromRadians(thetaTrajectory.get(currentTime).doubleValue()));
+    Pose2d state = new Pose2d(-1,0, new Rotation2d(0));
+    // Transform2d difference = new Transform2d(robotPose, state);
+    // double xVelocity = -alpha * difference.getX();
+    // double yVelocity = alpha * difference.getY();
+    // double angularVelocity = -0.6 * difference.getRotation().getRadians();
+
+    speeds = driveController.calculate(robotPose, state, maxVelocity, state.getRotation());
 
 
     SmartDashboard.putNumber("Robot pose x", robotPose.getX());
     SmartDashboard.putNumber("Robot Pose y", robotPose.getY());
-    SmartDashboard.putNumber("Difference X", difference.getX());
-    SmartDashboard.putNumber("Difference y", difference.getY());
+    // SmartDashboard.putNumber("Difference X", difference.getX());
+    // SmartDashboard.putNumber("Difference y", difference.getY());
     SmartDashboard.putNumber("Trajectory Time", currentTime);
     SmartDashboard.putNumber("state X", state.getX());
     SmartDashboard.putNumber("state Y", state.getY());
     SmartDashboard.putNumber("state Rotation", state.getRotation().getRadians());
 
-    xVelocity = MathUtil.clamp(xVelocity, -maxVelocity, maxVelocity);
-    yVelocity = MathUtil.clamp(yVelocity, -maxVelocity, maxVelocity);
-    angularVelocity = MathUtil.clamp(angularVelocity, -maxAngularVelocity, maxAngularVelocity);
+    // xVelocity = MathUtil.clamp(xVelocity, -maxVelocity, maxVelocity);
+    // yVelocity = MathUtil.clamp(yVelocity, -maxVelocity, maxVelocity);
+    // angularVelocity = MathUtil.clamp(angularVelocity, -maxAngularVelocity, maxAngularVelocity);
 
-    SmartDashboard.putNumber("Trajectory Speed X", xVelocity);
-    SmartDashboard.putNumber("Trajectory Speed Y", yVelocity);
-    SmartDashboard.putNumber("Trajectory Angular Speed", angularVelocity);
+    SmartDashboard.putNumber("Trajectory Speed X", speeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("Trajectory Speed Y", speeds.vyMetersPerSecond);
+    SmartDashboard.putNumber("Trajectory Angular Speed", speeds.omegaRadiansPerSecond);
 
 
 //    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, angularVelocity, 
 //      Rotation2d.fromDegrees(drivetrain.getHeading()));
 
-    setTranslate(xVelocity, yVelocity, 1.0);
-    setRotate(angularVelocity, 1.0);
+    setTranslate(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 1.0);
+    setRotate(speeds.omegaRadiansPerSecond, 1.0);
     
     if(currentTime < endTime)
     {

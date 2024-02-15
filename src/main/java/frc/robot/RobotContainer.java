@@ -87,15 +87,18 @@ public class RobotContainer
    */
   public Command getAutonomousCommand() 
   {
-    // An example command will be run in autonomous
-    //return SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(2.0, 0, new Rotation2d(0)), 0.5, 0.5), m_drivetrain);
+    //An example command will be run in autonomous
+    return SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(1.0, 0, new Rotation2d(Math.PI / 2)), 0.5, 0.5), m_drivetrain);
+    //return new DriveToPointSchema(m_drivetrain, new Pose2d(1.0, 0, new Rotation2d(Math.PI / 2)), 0.5, 0.5);
 
-    ArrayList<Pose2d> drivePoints = new ArrayList<>();
+    // ArrayList<Pose2d> drivePoints = new ArrayList<>();
+    // drivePoints.clear();
 
-    drivePoints.add(new Pose2d(1, 0, new Rotation2d(Math.PI)));
+    // drivePoints.add(new Pose2d(-1, 0, new Rotation2d(0)));
+    //drivePoints.add(new Pose2d(1, 1, new Rotation2d(0)));
     //drivePoints.add(new Pose2d(1, 1, new Rotation2d(Math.PI / 2)));
     //drivePoints.add(new Pose2d(1, 1, new Rotation2d(0.9)));
 
-    return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, drivePoints, 0.5, 0.5, 0.5, 1.0), m_drivetrain);
+    //return SchemaDriveAuto.createTrajectory(new DriveThroughTrajectorySchema(m_drivetrain, drivePoints, 0.5, 0.5, 0.5, 1.0), m_drivetrain);
   }
 }

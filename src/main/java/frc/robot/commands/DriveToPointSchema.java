@@ -46,7 +46,7 @@ public class DriveToPointSchema extends MotionSchema
   {
     // Called every time the scheduler runs while the command is scheduled.
     System.out.println("DriveToPoint");
- }
+  }
 
   //Sets the speed and rotation proportional to the difference in current robot position and target position.
   @Override
@@ -54,8 +54,8 @@ public class DriveToPointSchema extends MotionSchema
   {
     robotPose = drivetrain.getOdometry();
     Transform2d difference = robotPose.minus(targetPose);
-    double xVelocity = -0.8 * difference.getX();
-    double yVelocity = -0.8 * difference.getY();
+    double xVelocity = -0.5 * difference.getX();
+    double yVelocity = -0.5 * difference.getY();
     double angularVelocity = 0.8 * difference.getRotation().getRadians();
     //tests if velocities are within the maximum and sets them to the max if they exceed
     if(xVelocity > maxLinearVelocity)

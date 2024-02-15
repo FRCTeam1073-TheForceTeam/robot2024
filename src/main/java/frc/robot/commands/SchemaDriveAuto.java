@@ -16,7 +16,7 @@ public class SchemaDriveAuto
         return arbiter;
     }
 
-    public static Command create(DriveThroughTrajectorySchema trajectorySchema, Drivetrain drivetrain){
+    public static Command createTrajectory(DriveThroughTrajectorySchema trajectorySchema, Drivetrain drivetrain){
         arbiter = new SchemaArbiter(drivetrain, false, true);
         arbiter.addSchema(trajectorySchema);
 
