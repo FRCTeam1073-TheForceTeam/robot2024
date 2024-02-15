@@ -25,7 +25,6 @@ public class CollectorArm extends DiagnosticsSubsystem {
     SCORE
   }
 
-  private OI m_OI;
   private TalonFX liftMotor;
   private TalonFX extendMotor;
   
@@ -58,8 +57,12 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   private final double liftAbsoluteOffset = 0;
   private final double extendAbsoluteOffset = 0;
-  private final double liftPerRotation = -20.656*4*2048/(2*Math.PI);
-  private final double extendPerRotation = 20.656*4*2048/(2*Math.PI);
+  private final double liftGearRatio = 25.0;
+  private final double liftDriveRatio = 4.0;
+  private final double extendGearRatio = 25.0;
+  private final double extendPulleyRadius = 0.01375;
+  private final double liftRadiansPerRotation = (2*Math.PI)/(liftDriveRatio*liftGearRatio);
+  private final double extendMetersPerRotation = (2*Math.PI*extendPulleyRadius)/extendGearRatio;
   
 
 
@@ -84,19 +87,18 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   
   // fill in PID values
-  private double lift_kP = 0;
+  private double lift_kP = 0.3;
   private double lift_kI = 0;
   private double lift_kD = 0;
   private double lift_kF = 0;
 
-  private double extend_kP = 0;
+  private double extend_kP = 0.3;
   private double extend_kI = 0;
   private double extend_kD = 0;
   private double extend_kF = 0;
 
   /** Creates a new Arm. */
-  public CollectorArm(OI oi) {
-    m_OI = oi;
+  public CollectorArm() {
     liftMotor = new TalonFX(15, kCANbus); // TODO: set device id
     extendMotor = new TalonFX(16,kCANbus); // TODO: set device id
     liftMotorFault = new MotorFault(liftMotor, 15);
@@ -119,23 +121,15 @@ public class CollectorArm extends DiagnosticsSubsystem {
     // targetExtendLength = m_OI.getOperatorLeftY();
     commandedExtendLength = extendLimiter.calculate(limitExtendLength(targetExtendLength));
     commandedLiftAngle = liftLimiter.calculate(limitLiftAngle(targetLiftAngle));
-    commandedExtendLength = m_OI.getOperatorRightY();
-    commandedLiftAngle = m_OI.getOperatorLeftY();
-    if(m_OI.getOperatorRawButton(2)) {
-      runLiftMotor(commandedLiftAngle);
-    }
     targetExtendLength = interpolateExtendPosition(currentLiftAngle);
-    if(m_OI.getOperatorRawButton(4)) {
-      runExtendMotor(commandedExtendLength);
-    }
-
   }
 
 
-  private void updateCurrentPositions() {
+
+  public void updateCurrentPositions() {
     // Sensor angles should be divided by the appropriate ticks per radian
-    currentLiftAngle = liftMotor.getPosition().getValue() * liftPerRotation - liftAbsoluteOffset; //Todo: conversions
-    currentExtendLength = extendMotor.getPosition().getValue() * extendPerRotation - extendAbsoluteOffset;
+    currentLiftAngle = liftMotor.getPosition().getValue() * liftRadiansPerRotation - liftAbsoluteOffset; //Todo: conversions
+    currentExtendLength = extendMotor.getPosition().getValue() * extendMetersPerRotation - extendAbsoluteOffset;
   }
 
   public double limitLiftAngle(double liftAngle) {
@@ -155,11 +149,11 @@ public class CollectorArm extends DiagnosticsSubsystem {
   }
 
   public void setTargetLiftAngle(double target) {
-    targetLiftAngle = limitLiftAngle(target);
+    targetLiftAngle = liftLimiter.calculate(limitLiftAngle(target));
   }
 
   public void setTargetExtendLength(double target) {
-    targetExtendLength = limitExtendLength(target);
+    targetExtendLength = liftLimiter.calculate(limitExtendLength(target));
   }
 
   public double getTargetLiftAngle() {
@@ -196,25 +190,27 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
 
   public void setUpInterpolator() {
-    armMap.put(Double.valueOf(0.0), Double.valueOf(2.0)); 
+    //armMap = new InterpolatingTreeMap<Double, Double>();
+    //armMap.put(Double.valueOf(0.0), Double.valueOf(2.0)); 
     //TODO: fill out the rest of the table (angle, extendLength)
   }
 
   /** Takes a lift angle and calculates the target extend length */
   public double interpolateExtendPosition(double currentliftAngle){
-    return armMap.get(currentLiftAngle);
+    //return armMap.get(currentLiftAngle);
+    return 0;
   }
 
 
   public void runLiftMotor(double liftAngle)
   {
-    double liftAngleRotations = (liftAngle + liftAbsoluteOffset) / liftPerRotation;
+    double liftAngleRotations = (liftAngle + liftAbsoluteOffset) / liftRadiansPerRotation;
     liftMotor.setControl(liftPositionVoltage.withPosition(liftAngleRotations)); //TODO: conversions: Position to drive toward in rotations = revolutations = 2pi
   }
 
   public void runExtendMotor(double extendLength)
   {
-    double extendLengthRotations = (extendLength + extendAbsoluteOffset) / extendPerRotation;
+    double extendLengthRotations = (extendLength + extendAbsoluteOffset) / extendMetersPerRotation;
     extendMotor.setControl(extendPositionVoltage.withPosition(extendLengthRotations)); 
   }
 
@@ -230,6 +226,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   public void configureHardware(){
     //PID loop setting for lift motor
+    liftMotor.setPosition(0);
+    extendMotor.setPosition(0);
     var liftMotorClosedLoopConfig = new Slot0Configs();
 
     liftMotorClosedLoopConfig.withKP(lift_kP);
@@ -257,6 +255,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
       System.err.print(String.format("Module %d EXTEND MOTOR ERROR: %s", error2.toString()));
       setDiagnosticsFeedback(error2.getDescription(), false);
     }
+    
   }
 
   @Override
