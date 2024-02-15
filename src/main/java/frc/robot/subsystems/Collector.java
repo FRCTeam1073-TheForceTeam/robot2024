@@ -114,7 +114,6 @@ public class Collector extends DiagnosticsSubsystem {
   private void configureHardware(){
     //PID loop setting for collect motor
     var collectMotorClosedLoopConfig = new Slot0Configs();
-
     collectMotorClosedLoopConfig.withKP(collect_kP);
     collectMotorClosedLoopConfig.withKI(collect_kI);
     collectMotorClosedLoopConfig.withKD(collect_kD);
@@ -122,7 +121,7 @@ public class Collector extends DiagnosticsSubsystem {
 
     var error = collectMotor.getConfigurator().apply(collectMotorClosedLoopConfig, 0.5);
     if(!error.isOK()){
-      System.err.print(String.format("Module %d COLLECT MOTOR ERROR: %s", error.toString()));
+      System.err.print(String.format("COLLECT MOTOR ERROR: %s", error.toString()));
       setDiagnosticsFeedback(error.getDescription(), false);
     }
   }

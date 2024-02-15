@@ -25,24 +25,26 @@ public class CollectorArm extends DiagnosticsSubsystem {
     SCORE
   }
 
+  // Motors:
   private TalonFX liftMotor;
   private TalonFX extendMotor;
   
+  // Motor Fault Trackers:
   MotorFault liftMotorFault;
   MotorFault extendMotorFault;
 
-  private TalonFXConfiguration liftMotorConfigurator = new TalonFXConfiguration();
-  private TalonFXConfiguration extendMotorConfigurator = new TalonFXConfiguration();
+  // Rate Limiters For Each Axis
   private final SlewRateLimiter liftLimiter;
   private final SlewRateLimiter extendLimiter;
 
+  // Command For Each Axis
   public PositionVoltage liftPositionVoltage;
   public PositionVoltage extendPositionVoltage;
-  public VelocityVoltage liftVelocityVoltage;
-  public VelocityVoltage extendVelocityVoltage;
 
+  // Map for profiled motion
   InterpolatingTreeMap<Double, Double> armMap;
   
+  // CANBus for this subsystem
   private static final String kCANbus = "CANivore";
 
   //TODO: Change all of these values
@@ -55,6 +57,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private final double gravityCompensationLiftGain = 0.0125; // 1/80 gear ratio
   private final double gravityCompensationExtendGain = 0.025;     // 1/40 gear ratio
 
+  // Axis scaling and offset:
   private final double liftAbsoluteOffset = 0;
   private final double extendAbsoluteOffset = 0;
   private final double liftGearRatio = 25.0;
@@ -63,52 +66,57 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private final double extendPulleyRadius = 0.01375;
   private final double liftRadiansPerRotation = (-2*Math.PI)/(liftDriveRatio*liftGearRatio);
   private final double extendMetersPerRotation = (-2*Math.PI*extendPulleyRadius)/extendGearRatio;
-  
 
 
-  // TODO: fill out values in radians
+  // TODO: update values in radians
   private final double minLiftAngle = -2.09649;
   private final double maxLiftAngle = 0; 
 
-  // TODO: fill out values (unit tbd)
+  // TODO: update values (in meters)
   private final double minExtend = -0.10935;
   private final double maxExtend = 0.0779;
 
+  // Internal lift state variables:
   private double currentLiftAngle = 0;
-  private double currentExtendLength = 0;
-  private double targetLiftAngle = 0;
-  private double targetExtendLength = 0;
   private double currentLiftVelocity = 0;
   private double commandedLiftAngle = 0;
-  private double commandedExtendLength = 0;
+  private double targetLiftAngle = 0;
+
+
+  // Internal extension state variables:
+  private double currentExtendLength = 0;
   private double currentExtendVelocity = 0;
-  // private double targetLiftVelocity;
-  // private double targetExtendVelocity;
+  private double commandedExtendLength = 0;
+  private double targetExtendLength = 0;
 
   
-  // fill in PID values
+  // PID gains for lift controller.
   private double lift_kP = 1;
   private double lift_kI = 0;
   private double lift_kD = 0;
   private double lift_kF = 0;
 
+  // PID gains for extension controller.
   private double extend_kP = 0.3;
   private double extend_kI = 0;
   private double extend_kD = 0;
   private double extend_kF = 0;
 
-  /** Creates a new Arm. */
+  /** Creates a new CollectorArm. */
   public CollectorArm() {
-    liftMotor = new TalonFX(15, kCANbus); // TODO: set device id
-    extendMotor = new TalonFX(16,kCANbus); // TODO: set device id
+    liftMotor = new TalonFX(15, kCANbus); 
+    extendMotor = new TalonFX(16, kCANbus);
     liftMotorFault = new MotorFault(liftMotor, 15);
     extendMotorFault = new MotorFault(extendMotor, 16);
-    liftLimiter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
+
+    // Rate limiter between target value and commanded value for smooth motion.
+    liftLimiter = new SlewRateLimiter(0.5); 
     extendLimiter = new SlewRateLimiter(0.5); 
-    liftVelocityVoltage = new VelocityVoltage(0).withSlot(0);
-    extendVelocityVoltage = new VelocityVoltage(0).withSlot(0);
+
+    // Position-based command.
     liftPositionVoltage = new PositionVoltage(0).withSlot(0);
     extendPositionVoltage = new PositionVoltage(0).withSlot(0);
+
     configureHardware();
     setUpInterpolator();
   }
@@ -116,9 +124,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
   @Override
   public void periodic() 
   {
-    updateCurrentPositions();
-    // targetLiftAngle = m_OI.getOperatorRightY();
-    // targetExtendLength = m_OI.getOperatorLeftY();
+    updateFeedback();
     commandedExtendLength = extendLimiter.calculate(limitExtendLength(targetExtendLength));
     commandedLiftAngle = liftLimiter.calculate(limitLiftAngle(targetLiftAngle));
     runLiftMotor(commandedLiftAngle);
@@ -127,11 +133,12 @@ public class CollectorArm extends DiagnosticsSubsystem {
   }
 
 
-
-  public void updateCurrentPositions() {
+  private void updateFeedback() {
     // Sensor angles should be divided by the appropriate ticks per radian
-    currentLiftAngle = liftMotor.getPosition().getValue() * liftRadiansPerRotation - liftAbsoluteOffset; //Todo: conversions
-    currentExtendLength = extendMotor.getPosition().getValue() * extendMetersPerRotation - extendAbsoluteOffset;
+    currentLiftAngle = liftMotor.getPosition().refresh().getValue() * liftRadiansPerRotation - liftAbsoluteOffset;
+    currentLiftVelocity = liftMotor.getVelocity().refresh().getValueAsDouble() * liftRadiansPerRotation;
+    currentExtendLength = extendMotor.getPosition().refresh().getValue() * extendMetersPerRotation - extendAbsoluteOffset;
+    currentExtendVelocity = extendMotor.getVelocity().refresh().getValueAsDouble() * extendMetersPerRotation;
   }
 
   public double limitLiftAngle(double liftAngle) {
@@ -152,12 +159,10 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   public void setTargetLiftAngle(double target) {
     targetLiftAngle = target;
-    //targetLiftAngle = liftLimiter.calculate(limitLiftAngle(target));
   }
 
   public void setTargetExtendLength(double target) {
     targetExtendLength = target;
-    //targetExtendLength = liftLimiter.calculate(limitExtendLength(target));
   }
 
   public double getTargetLiftAngle() {
@@ -184,14 +189,6 @@ public class CollectorArm extends DiagnosticsSubsystem {
     return currentExtendVelocity;
   }
 
-  // public double getTargetLiftVelocity() {
-  //   return targetLiftVelocity;
-  // }
-
-  // public double getTargetExtendVelocity() {
-  //   return targetExtendVelocity;
-  // }
-
 
   public void setUpInterpolator() {
     //armMap = new InterpolatingTreeMap<Double, Double>();
@@ -206,44 +203,37 @@ public class CollectorArm extends DiagnosticsSubsystem {
   }
 
 
-  public void runLiftMotor(double liftAngle)
+  private void runLiftMotor(double liftAngle)
   {
+    // conversions: Position to drive toward in rotations = revolutations = 2pi
     double liftAngleRotations = (liftAngle + liftAbsoluteOffset) / liftRadiansPerRotation;
-    liftMotor.setControl(liftPositionVoltage.withPosition(liftAngleRotations)); //TODO: conversions: Position to drive toward in rotations = revolutations = 2pi
+    liftMotor.setControl(liftPositionVoltage.withPosition(liftAngleRotations)); 
   }
 
-  public void runExtendMotor(double extendLength)
+  private void runExtendMotor(double extendLength)
   {
     double extendLengthRotations = (extendLength + extendAbsoluteOffset) / extendMetersPerRotation;
     extendMotor.setControl(extendPositionVoltage.withPosition(extendLengthRotations)); 
   }
 
-  public void runLiftMotorAtVelocity(double liftVelocity)
-  {
-    // liftMotor.setControl(new VelocityVoltage(Velocity * liftTicksPerMeter));
-  }
+ 
 
-  public void runExtendMotorAtVelocity(double extendVelocity)
-  {
-    // extendMotor.setControl(new VelocityVoltage(Velocity * extendTicksPerMeter));
-  }
+  private void configureHardware(){
 
-  public void configureHardware(){
-    //PID loop setting for lift motor
+    // Zero motor positions at start: Robot must be in hard-stop pose.
     liftMotor.setPosition(0);
     extendMotor.setPosition(0);
-    var liftMotorClosedLoopConfig = new Slot0Configs();
 
+    // PID loop setting for lift motor
+    var liftMotorClosedLoopConfig = new Slot0Configs();
     liftMotorClosedLoopConfig.withKP(lift_kP);
     liftMotorClosedLoopConfig.withKI(lift_kI);
     liftMotorClosedLoopConfig.withKD(lift_kD);
     liftMotorClosedLoopConfig.withKV(lift_kF);
 
-    liftMotor.getConfigurator().apply(liftMotorClosedLoopConfig);
 
-    //PID loop setting for collect motor
+    //PID loop setting for extend motor
     var extendMotorClosedLoopConfig = new Slot0Configs();
-
     extendMotorClosedLoopConfig.withKP(extend_kP);
     extendMotorClosedLoopConfig.withKI(extend_kI);
     extendMotorClosedLoopConfig.withKD(extend_kD);
@@ -251,12 +241,12 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
     var error1 = liftMotor.getConfigurator().apply(liftMotorClosedLoopConfig, 0.5);
     if(!error1.isOK()){
-      System.err.print(String.format("Module %d LIFT MOTOR ERROR: %s", error1.toString()));
+      System.err.print(String.format("LIFT MOTOR ERROR: %s", error1.toString()));
       setDiagnosticsFeedback(error1.getDescription(), false);
     }
     var error2 = extendMotor.getConfigurator().apply(extendMotorClosedLoopConfig, 0.5);
     if(!error2.isOK()){
-      System.err.print(String.format("Module %d EXTEND MOTOR ERROR: %s", error2.toString()));
+      System.err.print(String.format("EXTEND MOTOR ERROR: %s", error2.toString()));
       setDiagnosticsFeedback(error2.getDescription(), false);
     }
     
@@ -274,8 +264,6 @@ public class CollectorArm extends DiagnosticsSubsystem {
     builder.addDoubleProperty("Commanded Extend Length", this::getCommandedExtendLength, null);
     builder.addDoubleProperty("Current Lift Velocity", this::getCurrentLiftVelocity, null);
     builder.addDoubleProperty("Current Extend Velocity", this::getCurrentExtendVelocity, null);
-    // builder.addDoubleProperty("Target Lift Velocity", this::getTargetLiftVelocity, null);
-    // builder.addDoubleProperty("Target Extend Velocity", this::getTargetExtendVelocity, null);
     
 
     //builder.addBooleanProperty("ok", this::isOK, null);
