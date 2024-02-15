@@ -5,6 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.CollectorTeleop;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
@@ -31,8 +32,9 @@ public class RobotContainer {
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
-  private final Collector m_collector = new Collector(m_OI);
-  private final CollectorArm m_collectorArm = new CollectorArm(m_OI);
+  private final Collector m_collector = new Collector();
+  private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_drivetrain, m_OI);
+  //private final CollectorArm m_collectorArm = new CollectorArm(m_OI);
   
   
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -42,10 +44,11 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
+    CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand);
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
     SmartDashboard.putData(m_collector);
-    SmartDashboard.putData(m_collectorArm);
+    //SmartDashboard.putData(m_collectorArm);
 
     // Configure the trigger bindings
     configureBindings();
