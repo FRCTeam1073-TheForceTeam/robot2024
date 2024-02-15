@@ -41,6 +41,6 @@ public class SetShooterAngle extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (pivot.getPivotMotorPositionRadians() >= targetPositionRotations * 0.98);
+    return (pivot.getActualPivotMotorPositionRadians() >= targetPositionRotations * 0.98);
   }
 }

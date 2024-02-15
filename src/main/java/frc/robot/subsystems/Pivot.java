@@ -20,17 +20,19 @@ public class Pivot extends DiagnosticsSubsystem {
   private final TalonFX pivotMotor;
   private final MotorFault pivotMotorFault;
   private final SlewRateLimiter pivotMotorFilter;
+  private final String kCANbus = "CANivore";
   private double pivotMotorPosition;
   private double targetPivotMotorPositionRot;
+  private double actualPivotMotorPositionRot;
   private double pivotRotationsPerRadian = 20.0; //TODO: get this from EM
   private PositionVoltage pivotPositionVoltage;
 
-  private double p = 0.11;
-  private double i = 0.5;
-  private double d = 0.0001;
+  private double p = 0.0;
+  private double i = 0.0;
+  private double d = 0.0;
 
   public Pivot() {
-    pivotMotor = new TalonFX(21, "CANivore"); //Falcon  
+    pivotMotor = new TalonFX(21, kCANbus); //Falcon  
     pivotMotorFault = new MotorFault(pivotMotor, 21);
     pivotMotorFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
     pivotPositionVoltage = new PositionVoltage(0);
@@ -67,7 +69,7 @@ public void setConfigsPivot(){
     targetPivotMotorPositionRot  = pivotMotorPositionRad * pivotRotationsPerRadian;
   }
   /* returns the position value */
-  public double getPivotMotorPositionRadians(){
+  public double getActualPivotMotorPositionRadians(){
     return pivotMotor.getPosition().getValue() / pivotRotationsPerRadian;
   }
     
@@ -82,7 +84,7 @@ public void setConfigsPivot(){
   public void initSendable(SendableBuilder builder)
   {
     builder.setSmartDashboardType("Pivot");
-    builder.addDoubleProperty("Pivot Motor Velocity", this::getPivotMotorPositionRadians, this::setPivotMotorPositionRadians);
+    builder.addDoubleProperty("Pivot Motor Velocity", this::getActualPivotMotorPositionRadians, this::setPivotMotorPositionRadians);
   }
 
   @Override

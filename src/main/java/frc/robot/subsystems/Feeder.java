@@ -20,6 +20,7 @@ public class Feeder extends DiagnosticsSubsystem {
   private final TalonFX feederMotor;
   private final MotorFault feederMotorFault;
   private final DigitalInput toffeeder1;
+  private final String kCANbus = "CANivore";
   private SlewRateLimiter feederMotorFilter;
   /* 1 motor rotation = 2 wheel rotations
    * Diameter of the wheel is 2"
@@ -29,18 +30,19 @@ public class Feeder extends DiagnosticsSubsystem {
   private double feederMetersPerRotation = 4 * Math.PI * 0.0254; // 0.0254 meters/inch
   
   private double targetFeederMotorVelocityRPS;
-  private double feederMotorVelocityRPS;
+  private double commandedFeederMotorVelocityRPS;
+  private double actualFeederMotorVelocityRPS;
   private double toffeeder1Freq;
   private double toffeeder1Range;
   private double toffeeder1DutyCycle;
-  private double p = 0.11;
-  private double i = 0.5;
-  private double d = 0.0001;
+  private double p = 0.0;
+  private double i = 0.0;
+  private double d = 0.0;
   private final double toffeeder1ScaleFactor = 3000000/4; // for 50cm (irs16a): 3/4 million || for 130 cm (irs17a): 2 million || for 300 cm (irs17a): 4 million
   private final DutyCycle toffeeder1DutyCycleInput;
   /** Creates a new Trigger. */
   public Feeder() {
-    feederMotor = new TalonFX(19, "CANivore"); //Falcon
+    feederMotor = new TalonFX(19, kCANbus); //Falcon
     toffeeder1 = new DigitalInput(1);
     feederMotorFault = new MotorFault(feederMotor, 19);
     
@@ -49,6 +51,7 @@ public class Feeder extends DiagnosticsSubsystem {
     toffeeder1Range = 0;    
 
     targetFeederMotorVelocityRPS = 0;
+    actualFeederMotorVelocityRPS = 0;
     
     setConfigsTrigger();
   }
@@ -83,8 +86,8 @@ public void setConfigsTrigger(){
     toffeeder1Range = (toffeeder1ScaleFactor * (toffeeder1DutyCycle / toffeeder1Freq - 0.001)) / 1000;
     System.out.println(toffeeder1Range);
 
-    feederMotorVelocityRPS = feederMotorFilter.calculate(targetFeederMotorVelocityRPS);
-    feederMotor.setControl(new VelocityVoltage(feederMotorVelocityRPS));
+    commandedFeederMotorVelocityRPS = feederMotorFilter.calculate(targetFeederMotorVelocityRPS);
+    feederMotor.setControl(new VelocityVoltage(commandedFeederMotorVelocityRPS));
    }
 
   @Override
@@ -102,8 +105,12 @@ public void setFeederMotorVelocity(double feederMotorMPS){
  }
 
 /* gets the value of the trigger motor velocity */
-public double getFeederMotorVelocityRPS(){
+public double getTargetFeederMotorVelocityRPS(){
   return targetFeederMotorVelocityRPS;
+}
+
+public double getFeederMotorVelocityRPS(){
+  return feederMotor.getVelocity().getValue();
 }
 
 public double getRangeTrigger1(){

@@ -24,13 +24,17 @@ public class Shooter extends DiagnosticsSubsystem{
   private final MotorFault topShooterMotorFault;
   private final MotorFault bottomShooterMotorFault;
   private final DigitalInput shooterBeamBreak;
+  private final String kCANbus = "CANivore";
   private double offset;
   private double targetTopShooterMotorVelocityRPS;
+  private double currentTopShooterMotorVelocity;
+  private double commandedTopShooterMotorVelocity;
   private double topShooterMotorVelocity;
   private double targetBottomShooterMotorVelocityRPS;
-  private double bottomShooterMotorVelocity;
-  private final SlewRateLimiter topFlyWheelFilter;
-  private final SlewRateLimiter bottomFlyWheelFilter;
+  private double commandedBottomShooterMotorVelocity;
+  private double currentBottomShooterMotorVelocity;
+  private final SlewRateLimiter topFlyWheelLimiter;
+  private final SlewRateLimiter bottomFlyWheelLimiter;
     /* 1 motor rotation = 2 wheel rotations
    * Diameter of the wheel is 4"
    * Wheel circumference is 4π (πd)
@@ -45,18 +49,20 @@ public class Shooter extends DiagnosticsSubsystem{
   /** Creates a new Shooter. **/
   public Shooter() {
     //one motor might be a follower
-    topShooterMotor = new TalonFX(17, "CANivore"); // Kracken 
-    bottomShooterMotor = new TalonFX(18, "CANivore"); //Kracken 
+
+    topShooterMotor = new TalonFX(17, kCANbus); // Kracken 
+    bottomShooterMotor = new TalonFX(18, kCANbus); //Kracken 
     shooterBeamBreak = new DigitalInput(2);
     topShooterMotorFault = new MotorFault(topShooterMotor, 17);
     bottomShooterMotorFault = new MotorFault(bottomShooterMotor, 18);
-    topFlyWheelFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
-    bottomFlyWheelFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
+    topFlyWheelLimiter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
+    bottomFlyWheelLimiter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
 
 
     targetTopShooterMotorVelocityRPS = 0;
     targetBottomShooterMotorVelocityRPS = 0;
     offset = 0;
+    commandedTopShooterMotorVelocity = 0;
 
     setConfigsShooter();
 }
@@ -65,10 +71,10 @@ public class Shooter extends DiagnosticsSubsystem{
   public void periodic() {
     // This method will be called once per scheduler run
     //System.out.println("TOF Running");
-    topShooterMotorVelocity = topFlyWheelFilter.calculate(-targetTopShooterMotorVelocityRPS);
-    topShooterMotor.setControl(new VelocityVoltage(topShooterMotorVelocity));
-    bottomShooterMotorVelocity = bottomFlyWheelFilter.calculate(targetBottomShooterMotorVelocityRPS);
-    bottomShooterMotor.setControl(new VelocityVoltage(bottomShooterMotorVelocity));
+    commandedTopShooterMotorVelocity = topFlyWheelLimiter.calculate(-targetTopShooterMotorVelocityRPS);
+    topShooterMotor.setControl(new VelocityVoltage(commandedTopShooterMotorVelocity));
+    commandedBottomShooterMotorVelocity = bottomFlyWheelLimiter.calculate(targetBottomShooterMotorVelocityRPS);
+    bottomShooterMotor.setControl(new VelocityVoltage(commandedBottomShooterMotorVelocity));
   }
 
 /* returns true if the beam has been broken, false if there's no note in the sensor */
@@ -82,9 +88,9 @@ public void setConfigsShooter(){
   configs.Voltage.PeakForwardVoltage = 8;
   configs.Voltage.PeakReverseVoltage = -8;
 
-  configs.Slot1.kP = 5;
-  configs.Slot1.kI = 0.1;
-  configs.Slot1.kD = 0.001;
+  configs.Slot1.kP = 0.0;
+  configs.Slot1.kI = 0.0;
+  configs.Slot1.kD = 0.0;
 
   configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
   configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
@@ -99,7 +105,7 @@ public void setConfigsShooter(){
 public void initSendable(SendableBuilder builder)
 {
   builder.setSmartDashboardType("Shooter");
-  builder.addDoubleProperty("Top Motor Velocity", this::getTopShooterMotorVelocity, this::setTopShooterMotorVelocity);
+  builder.addDoubleProperty("Top Motor Velocity", this::getTargetTopShooterMotorVelocity, this::setTopShooterMotorVelocity);
   builder.addDoubleProperty("Bottom Motor Velocity", this::getBottomShooterMotorVelocity, this::setBottomShooterMotorVelocity);
   builder.setSmartDashboardType("Tof");
 }
@@ -123,8 +129,16 @@ public void initSendable(SendableBuilder builder)
   }
 
 /* gets the value of the velocity that the top shooter motor is at */
-public double getTopShooterMotorVelocity(){
+public double getTargetTopShooterMotorVelocity(){
   return targetTopShooterMotorVelocityRPS;
+}
+
+public double getActualTopShooterMotorVelocity(){
+  return topShooterMotor.getVelocity().getValue();
+}
+
+public double getActualBottomShooterMotorVelocity(){
+  return bottomShooterMotor.getVelocity().getValue();
 }
 
 /* gets the value of the velocity that the bottom shooter motor is at */
