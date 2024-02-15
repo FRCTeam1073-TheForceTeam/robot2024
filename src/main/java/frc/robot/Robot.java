@@ -55,7 +55,7 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    coopTime = MathUtil.clamp(45 - Timer.getMatchTime(), 0, 45);
+    coopTime = MathUtil.clamp(Timer.getMatchTime() - 90, 0, 45);
     SmartDashboard.putNumber("Remaining Coopertition Time", coopTime);
   }
 
