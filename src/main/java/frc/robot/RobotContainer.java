@@ -9,6 +9,8 @@ import frc.robot.commands.TeleopDrive;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.SwerveModuleConfig;
+import frc.robot.subsystems.Collector;
+import frc.robot.subsystems.CollectorArm;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 
@@ -29,6 +31,8 @@ public class RobotContainer {
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
+  private final Collector m_collector = new Collector(m_OI);
+  private final CollectorArm m_collectorArm = new CollectorArm(m_OI);
   
   
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -40,6 +44,8 @@ public class RobotContainer {
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
+    SmartDashboard.putData(m_collector);
+    SmartDashboard.putData(m_collectorArm);
 
     // Configure the trigger bindings
     configureBindings();
