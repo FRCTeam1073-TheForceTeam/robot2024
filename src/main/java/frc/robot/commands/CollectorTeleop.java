@@ -15,12 +15,15 @@ public class CollectorTeleop extends Command {
   Collector m_collector;
   Drivetrain m_drivetrain;
   OI m_OI;
+  double minRange;
+
 
   public CollectorTeleop(Collector collector, Drivetrain ds, OI oi) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_collector = collector;
     m_drivetrain = ds;
     m_OI = oi;
+    minRange = 10;
 
     addRequirements(collector);
   }
@@ -32,9 +35,11 @@ public class CollectorTeleop extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
- 
-    //SmartDashboard.putBoolean("Operator button 5", m_OI.getOperatorRawButton(3));
-    // SmartDashboard.putNumber("Converted number", (targetCollectorVelocity / (collectorGearRatio * (2 * Mat//h.PI * 0.0254))));
+
+    if(m_collector.getRangeTOF() < minRange){
+      m_collector.setTargetCollectorVelocity(0);
+    }
+
     if(m_OI.getOperatorRawButton(5))
     {
       m_collector.setTargetCollectorVelocity(3); //meters per sec

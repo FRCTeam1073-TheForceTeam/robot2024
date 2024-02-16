@@ -103,11 +103,11 @@ public class Collector extends DiagnosticsSubsystem {
     return -collectMotor.getPosition().getValueAsDouble();
   }
 
-  public double getRange1() {
+  public double getRangeTOF() {
     return tof1Range;
   }
 
-  public void setRange1(double tof1Range) {
+  public void setRangeTOF(double tof1Range) {
     this.tof1Range = tof1Range;
   }
 
@@ -134,7 +134,7 @@ public class Collector extends DiagnosticsSubsystem {
     builder.addDoubleProperty("Target Velocity", this::getTargetCollectorVelocity, null);
     builder.addDoubleProperty("Actual Velocity", this::getActualCollectorVelocity, null);
     builder.addDoubleProperty("Commanded Velocity", this::getCommandedCollectorVelocity, null);
-    builder.addDoubleProperty("tof1Range", this::getRange1, null);
+    builder.addDoubleProperty("tofCollectorRange", this::getRangeTOF, null);
     //builder.addBooleanProperty("ok", this::isOK, null);
     //builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
     collectMotor.initSendable(builder);
