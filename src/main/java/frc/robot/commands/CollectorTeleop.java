@@ -23,7 +23,7 @@ public class CollectorTeleop extends Command {
     m_collector = collector;
     m_drivetrain = ds;
     m_OI = oi;
-    minRange = 10;
+    minRange = 2;
 
     addRequirements(collector);
   }
