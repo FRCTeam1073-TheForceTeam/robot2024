@@ -36,13 +36,14 @@ public class CollectorTeleop extends Command {
   @Override
   public void execute() {
 
-    if(m_collector.getRangeTOF() < minRange){
-      m_collector.setTargetCollectorVelocity(0);
-    }
-
     if(m_OI.getOperatorRawButton(5))
     {
-      m_collector.setTargetCollectorVelocity(3); //meters per sec
+      if(m_collector.getRangeTOF() < minRange){
+        m_collector.setTargetCollectorVelocity(0);
+      }
+      else {
+        m_collector.setTargetCollectorVelocity(3); //meters per sec
+      }
     }
     else if(m_OI.getOperatorRawButton(6))
     {
