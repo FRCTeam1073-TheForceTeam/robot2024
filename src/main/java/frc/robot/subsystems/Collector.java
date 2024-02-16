@@ -5,17 +5,14 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.SoftwareLimitSwitchConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.System_StateValue;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Collector extends DiagnosticsSubsystem {
 
@@ -33,7 +30,8 @@ public class Collector extends DiagnosticsSubsystem {
   private double tof1DutyCycle;
   private double tof1Freq;
   private double tof1Range;
-  private final double tof1ScaleFactor = 100000;
+  private final double tofCollectorScaleFactor = 3000000/4; // for 50cm (irs16a): 3/4 million || for 130 cm (irs17a): 2 million || for 300 cm (irs17a): 4 million
+
 
   private final double collectorGearRatio = 12.0/18.0;
   private final double collectorWheelRadius = 0.0254; //meters
@@ -72,7 +70,8 @@ public class Collector extends DiagnosticsSubsystem {
     runCollectMotor(commandedCollectorVelocity);
     tof1Freq = tof1DutyCycleInput.getFrequency();
     tof1DutyCycle = tof1DutyCycleInput.getOutput();
-    tof1Range = tof1ScaleFactor * (tof1DutyCycle / tof1Freq - 0.001);
+    tof1Range = tofCollectorScaleFactor * (tof1DutyCycle / tof1Freq - 0.001) / 1000; //supposedly in meters
+
   }
   
   private void runCollectMotor(double vel)
@@ -103,11 +102,11 @@ public class Collector extends DiagnosticsSubsystem {
     return -collectMotor.getPosition().getValueAsDouble();
   }
 
-  public double getRange1() {
+  public double getRangeTOF() {
     return tof1Range;
   }
 
-  public void setRange1(double tof1Range) {
+  public void setRangeTOF(double tof1Range) {
     this.tof1Range = tof1Range;
   }
 
@@ -133,7 +132,7 @@ public class Collector extends DiagnosticsSubsystem {
     builder.addDoubleProperty("Target Velocity", this::getTargetCollectorVelocity, null);
     builder.addDoubleProperty("Actual Velocity", this::getActualCollectorVelocity, null);
     builder.addDoubleProperty("Commanded Velocity", this::getCommandedCollectorVelocity, null);
-    builder.addDoubleProperty("tof1Range", this::getRange1, null);
+    builder.addDoubleProperty("tofCollectorRange", this::getRangeTOF, null);
     //builder.addBooleanProperty("ok", this::isOK, null);
     //builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
     collectMotor.initSendable(builder);
