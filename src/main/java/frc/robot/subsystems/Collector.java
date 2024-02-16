@@ -30,7 +30,7 @@ public class Collector extends DiagnosticsSubsystem {
   private double tof1DutyCycle;
   private double tof1Freq;
   private double tof1Range;
-  private final double tofCollectorScaleFactor = 3000000/4; // for 50cm (irs16a): 3/4 million || for 130 cm (irs17a): 2 million || for 300 cm (irs17a): 4 million
+  private final double tof1ScaleFactor = 3000000/4; // for 50cm (irs16a): 3/4 million || for 130 cm (irs17a): 2 million || for 300 cm (irs17a): 4 million
 
 
   private final double collectorGearRatio = 12.0/18.0;
@@ -70,7 +70,7 @@ public class Collector extends DiagnosticsSubsystem {
     runCollectMotor(commandedCollectorVelocity);
     tof1Freq = tof1DutyCycleInput.getFrequency();
     tof1DutyCycle = tof1DutyCycleInput.getOutput();
-    tof1Range = tofCollectorScaleFactor * (tof1DutyCycle / tof1Freq - 0.001) / 1000; //supposedly in meters
+    tof1Range = tof1ScaleFactor * (tof1DutyCycle / tof1Freq - 0.001) / 1000; //supposedly in meters
 
   }
   
