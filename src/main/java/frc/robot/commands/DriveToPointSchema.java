@@ -3,7 +3,6 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -15,7 +14,7 @@ public class DriveToPointSchema extends MotionSchema
   /** Creates a new DriveToPoint. */
   
   double distanceTolerance = 0.1;
-  double angleTolerance = 0.1;
+  double angleTolerance = 0.025;
 
   Pose2d robotPose;
   Pose2d targetPose;
@@ -53,18 +52,23 @@ public class DriveToPointSchema extends MotionSchema
   public void execute() 
   {
     robotPose = drivetrain.getOdometry();
-    Transform2d difference = robotPose.minus(targetPose);
-    double xVelocity = -0.5 * difference.getX();
-    double yVelocity = -0.5 * difference.getY();
-    double angularVelocity = 0.8 * difference.getRotation().getRadians();
+
+    double xVelocity = -(robotPose.getX() - targetPose.getX());
+    double yVelocity = -(robotPose.getY() - targetPose.getY());
+    double angularVelocity = 0.8 * (robotPose.getRotation().getRadians() - targetPose.getRotation().getRadians());
+    
+    // Transform2d difference = robotPose.minus(targetPose);
+    // double xVelocity = -0.5 * difference.getX();
+    // double yVelocity = -0.5 * difference.getY(); 
+    // double angularVelocity = wrapAngleRadians(0.8 * difference.getRotation().getRadians());
     //tests if velocities are within the maximum and sets them to the max if they exceed
     if(xVelocity > maxLinearVelocity)
     {
       xVelocity = maxLinearVelocity;
     }
-    if(xVelocity < - maxLinearVelocity)
+    if(xVelocity < -maxLinearVelocity)
     {
-      xVelocity = - maxLinearVelocity;
+      xVelocity = -maxLinearVelocity;
     }
     if(yVelocity > maxLinearVelocity)
     {
@@ -87,6 +91,20 @@ public class DriveToPointSchema extends MotionSchema
     setTranslate(xVelocity, yVelocity, 1.0); // TODO: set the weight to an actual value
     setRotate(angularVelocity, 1.0);
     
+  }
+
+  private double wrapAngleRadians(double angle)
+  {
+    while (angle > Math.PI * 2)
+    {
+      angle -= Math.PI * 2;
+    }
+    while (angle < 0)
+    {
+      angle += Math.PI * 2;
+    }
+    System.out.println("Angle " + angle);
+    return angle;
   }
 
   // Called once the command ends or is interrupted.

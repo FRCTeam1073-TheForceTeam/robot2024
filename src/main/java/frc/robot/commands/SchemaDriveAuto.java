@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.Drivetrain;
 
 public class SchemaDriveAuto 
@@ -16,7 +15,7 @@ public class SchemaDriveAuto
         return arbiter;
     }
 
-    public static Command createTrajectory(DriveThroughTrajectorySchema trajectorySchema, Drivetrain drivetrain){
+    public static Command create(DriveThroughTrajectorySchema trajectorySchema, Drivetrain drivetrain){
         arbiter = new SchemaArbiter(drivetrain, false, true);
         arbiter.addSchema(trajectorySchema);
 

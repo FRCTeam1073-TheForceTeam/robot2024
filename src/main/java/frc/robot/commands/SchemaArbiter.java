@@ -95,13 +95,13 @@ public class SchemaArbiter extends Command
         }
         else
         {
-            drivetrain.setTargetChassisSpeeds(
-                new ChassisSpeeds(
-                    totalTranslate.vx, 
-                    totalTranslate.vy, 
-                    totalRotate.omega
-                )
-            );
+            // drivetrain.setTargetChassisSpeeds(
+            //     new ChassisSpeeds(
+            //         totalTranslate.vx, 
+            //         totalTranslate.vy, 
+            //         totalRotate.omega
+            //     )
+            // );
         }
     }
 
