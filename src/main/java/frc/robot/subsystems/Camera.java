@@ -36,8 +36,8 @@ public class Camera extends SubsystemBase {
     System.out.println("in getAprilTag()");
     System.out.println("camID in getAprilTag()");
     System.out.println(camID);
-    // String cmdStr = "%s,a\n".formatted(camID); // NSARGENT: HARDCODED MSG HERE
-    String cmdStr = "123abc\njkl\n"; // NSARGENT: HARDCODED MSG HERE
+    String cmdStr = "ti\n"; // NSARGENT: HARDCODED MSG HERE
+    // a = autonomous init, t = teleop init, s = stop recording
     //byte[] cmdBytes = cmdStr.getBytes();
     String data = SerialComms.getVisionData(cmdStr);
     System.out.println("gotAprilTag, data:");
@@ -46,35 +46,8 @@ public class Camera extends SubsystemBase {
   }
 
 
-  // public void sendAprilTag() {
-  //   byte[] cmdBytes = "1,a\n".getBytes();
-  //   int bytesWritten = port.write(cmdBytes, cmdBytes.length);
-  // }
-
-
-  // NSARGENT: getAprilTag() looks better
-  // public ArrayList<Byte> getMsg()
-  // {
-  //   ArrayList<Byte> msg = new ArrayList<Byte>();
-  //   byte[] oneByte = serialComms.getVisionData();
-  //   if (oneByte == "\n".getBytes()) {
-  //     return msg;
-  //   }
-  //   else {
-  //     byte oneActualByte = oneByte[0];
-  //     msg.add(oneActualByte);
-  //   }
-  // }
-
-
   @Override
   public void periodic() {
-    //int bytesWaiting = port.getBytesReceived();  // returns the number of bytes waiting to be read, without actually reading them
-    // byte[] cmdBytes = "2,g,0,1,2,3,4,5,6,7,8,9\n".getBytes("ASCII");
-    //int cmdBytesLen = cmdBytes.length;
-    //Integer wrote = port.write(cmdBytes, cmdBytesLen); // second arg is maximum bytes to write, which isn't a big deal for us
-    //System.out.println(String.format("just wrote this many bytes: %d", wrote));
-    // ArrayList<Byte> aprilTag = getAprilTag()
     System.out.println("getting apriltag data");
     getAprilTag();
     try {
@@ -83,12 +56,6 @@ public class Camera extends SubsystemBase {
     catch (final InterruptedException e) {
       throw new RuntimeException(e);
     }
-    //ArrayList<Byte> msg = getMsg();
-    //this.msg = getMsg();
-    //String msgString = msg.toString();
-    // char cmdChar = (char)msg[2];
-    // if (cmdChar == 'a') {
-    //   //do whatever apriltags do
   }
 }
 

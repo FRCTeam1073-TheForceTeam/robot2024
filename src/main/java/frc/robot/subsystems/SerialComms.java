@@ -23,15 +23,6 @@ public class SerialComms extends SubsystemBase{
 
   public SerialComms(SerialPort.Port portUSB) {
     this.portUSB = portUSB;
-  //   try {
-  //     SerialPort serialPort = new SerialPort(1000000,port,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne)
-  //     serialPort.setFlowControl(SerialPort.FlowControl.kNone);
-  //   }
-  //   catch (Exception e) {
-  //     System.out.println("Could not open serial port!");
-  //     port = null;
-  //   }
-  // }
     try {
       serialPort = new SerialPort(2000000, portUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
       serialPort.setFlowControl(SerialPort.FlowControl.kNone);
@@ -72,15 +63,12 @@ public class SerialComms extends SubsystemBase{
       if(recvd != 0){
             System.out.println("recvd was not zero");
             byte[] data = serialPort.read(1);
-            System.out.println("byte data recvd");
-            System.out.println(data);
+            System.out.println(String.format("byte data recvd: %s", data));
             msg.add(data[0]);
 
             // dataString is the byte we just received cast to a String so we can compare to newline without hardcoding the ord() or something
             String dataString = new String(data, StandardCharsets.US_ASCII);
-            System.out.println("byte we just received as string");
-            System.out.println(dataString);
-
+            System.out.println(String.format("byte we just received as string: %s", dataString));
             if(dataString == "\n") {
               String msgAsString = msg.toString();
               System.out.println("full msg we received as string:");
@@ -103,27 +91,6 @@ public class SerialComms extends SubsystemBase{
     return receivedString;
   }
 
-
-// this one reads 1,a from openmv
-// keep around for a bit as an example of basic serial usage
-  // @Override
-  // public void periodic() {
-  //   int recvd = 0;
-  //   recvd = port.getBytesReceived();
-  //   if( recvd != 0) {
-  //     String incoming = port.readString();
-  //     System.out.println(String.format("incoming: %s", incoming));
-  //   } 
-  // }
-  // public void parseMessage(String s){
-  //     System.out.println(String.format("OpenMV Parse Message %s", s));
-  //     String[] fields = s.split("[,]");
-  //     if (fields.length % 5 != 0){  // clever use of modulo, I like it
-  //       System.out.println("Invalid OpenMV Message");
-  //     }else {
-  //       System.out.println("Valid OpenMV Message");
-  //     } 
-  //   }
 
   @Override
   public void periodic() {
