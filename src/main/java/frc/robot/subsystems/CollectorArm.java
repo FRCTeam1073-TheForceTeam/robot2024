@@ -14,6 +14,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
@@ -43,7 +44,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
   public PositionVoltage extendPositionVoltage;
 
   // Map for profiled motion
-  InterpolatingTreeMap<Double, Double> armMap;
+  private InterpolatingDoubleTreeMap armMap;
   
   // CANBus for this subsystem
   private static final String kCANbus = "CANivore";
@@ -127,8 +128,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
   {
     updateFeedback();
     commandedExtendLength = extendLimiter.calculate(limitExtendLength(targetExtendLength));
-    //commandedLiftAngle = liftLimiter.calculate(limitLiftAngle(targetLiftAngle));
-    //runLiftMotor(commandedLiftAngle);
+    commandedLiftAngle = liftLimiter.calculate(limitLiftAngle(targetLiftAngle));
+    runLiftMotor(commandedLiftAngle);
     runExtendMotor(commandedExtendLength);
     //targetExtendLength = interpolateExtendPosition(currentLiftAngle);
   }
@@ -158,26 +159,30 @@ public class CollectorArm extends DiagnosticsSubsystem {
     return currentExtendLength;
   }
 
-  // public void setTargetLiftAngle(double target) {
-  //   targetLiftAngle = target;
-  // }
-
-  public void setTargetExtendLength(double target) {
-    targetExtendLength = target;
+  public void setTargetLiftAngle(double target) {
+    targetLiftAngle = limitLiftAngle(target);
   }
 
+  public void setTargetExtendLength(double target) {
+    targetExtendLength = limitExtendLength(target);
+  }
+
+  // Returns target lift angle in radians
   public double getTargetLiftAngle() {
     return targetLiftAngle;
   }
 
+  // Returns target extend length in meters
   public double getTargetExtendLength() {
     return targetExtendLength;
   }
 
+  // Returns currently commanded lift angle (limited, rate limited) in radians.
   public double getCommandedLiftAngle() {
     return commandedLiftAngle;
   }
 
+  // Returns currenyl commanded extend length (limited, rate limited) in meters.
   public double getCommandedExtendLength() {
     return commandedExtendLength;
   }
@@ -192,15 +197,19 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
 
   public void setUpInterpolator() {
-    //armMap = new InterpolatingTreeMap<Double, Double>();
-    //armMap.put(Double.valueOf(0.0), Double.valueOf(2.0)); 
+    armMap = new InterpolatingDoubleTreeMap();
+
+    // Keys are lift angles, values are extension distances.
+    armMap.put(Double.valueOf(0.0), Double.valueOf(0.0)); 
+    armMap.put(Double.valueOf(-0.2), Double.valueOf(0.0));
+    armMap.put(Double.valueOf(-0.5), Double.valueOf(0.05));
+
     //TODO: fill out the rest of the table (angle, extendLength)
   }
 
   /** Takes a lift angle and calculates the target extend length */
   public double interpolateExtendPosition(double currentliftAngle){
-    //return armMap.get(currentLiftAngle);
-    return 0;
+    return armMap.get(currentLiftAngle);
   }
 
 
@@ -221,33 +230,33 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   private void configureHardware(){
 
-    // var error = liftMotor.getConfigurator().apply(new TalonFXConfiguration(), 0.5);
-    // if (!error.isOK()) 
-    // {
-    //     System.err.print(String.format("Module %d STEER MOTOR ERROR: %s", error.toString()));
-    //     setDiagnosticsFeedback(error.getDescription(), false);
-    // }
-
-    var error = extendMotor.getConfigurator().apply(new TalonFXConfiguration(), 0.5);
+    var error = liftMotor.getConfigurator().apply(new TalonFXConfiguration(), 0.5);
     if (!error.isOK()) 
     {
-        System.err.println(String.format("Module %d DRIVE MOTOR ERROR: %s", error.toString()));
+        System.err.print(String.format("Lift Motor ERROR: %s", error.toString()));
+        setDiagnosticsFeedback(error.getDescription(), false);
+    }
+
+    error = extendMotor.getConfigurator().apply(new TalonFXConfiguration(), 0.5);
+    if (!error.isOK()) 
+    {
+        System.err.println(String.format("Extend MOTOR ERROR: %s", error.toString()));
         setDiagnosticsFeedback(error.getDescription(), false);
     }
 
     // Zero motor positions at start: Robot must be in hard-stop pose.
-    // liftMotor.setPosition(0);
+    liftMotor.setPosition(0);
     extendMotor.setPosition(0);
 
-    // liftMotor.setNeutralMode(NeutralModeValue.Brake);
+    liftMotor.setNeutralMode(NeutralModeValue.Brake);
     extendMotor.setNeutralMode(NeutralModeValue.Coast);
 
     // PID loop setting for lift motor
-    // var liftMotorClosedLoopConfig = new Slot0Configs();
-    // liftMotorClosedLoopConfig.withKP(lift_kP);
-    // liftMotorClosedLoopConfig.withKI(lift_kI);
-    // liftMotorClosedLoopConfig.withKD(lift_kD);
-    // liftMotorClosedLoopConfig.withKV(lift_kF);
+    var liftMotorClosedLoopConfig = new Slot0Configs();
+    liftMotorClosedLoopConfig.withKP(lift_kP);
+    liftMotorClosedLoopConfig.withKI(lift_kI);
+    liftMotorClosedLoopConfig.withKD(lift_kD);
+    liftMotorClosedLoopConfig.withKV(lift_kF);
 
 
     //PID loop setting for extend motor
@@ -257,11 +266,12 @@ public class CollectorArm extends DiagnosticsSubsystem {
     extendMotorClosedLoopConfig.withKD(extend_kD);
     extendMotorClosedLoopConfig.withKV(extend_kF);
 
-    // var error1 = liftMotor.getConfigurator().apply(liftMotorClosedLoopConfig, 0.5);
-    // if(!error1.isOK()){
-    //   System.err.print(String.format("LIFT MOTOR ERROR: %s", error1.toString()));
-    //   setDiagnosticsFeedback(error1.getDescription(), false);
-    // }
+    var error1 = liftMotor.getConfigurator().apply(liftMotorClosedLoopConfig, 0.5);
+    if(!error1.isOK()){
+      System.err.print(String.format("LIFT MOTOR ERROR: %s", error1.toString()));
+      setDiagnosticsFeedback(error1.getDescription(), false);
+    }
+    
     var error2 = extendMotor.getConfigurator().apply(extendMotorClosedLoopConfig, 0.5);
     if(!error2.isOK()){
       System.err.print(String.format("EXTEND MOTOR ERROR: %s", error2.toString()));
