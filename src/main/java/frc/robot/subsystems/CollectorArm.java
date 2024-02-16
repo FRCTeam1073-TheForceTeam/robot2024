@@ -10,6 +10,7 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -73,8 +74,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private final double maxLiftAngle = 0; 
 
   // TODO: update values (in meters)
-  private final double minExtend = -0.10935;
-  private final double maxExtend = 0.0779;
+  private final double minExtend = -0.1;
+  private final double maxExtend = 0.08;
 
   // Internal lift state variables:
   private double currentLiftAngle = 0;
@@ -91,7 +92,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   
   // PID gains for lift controller.
-  private double lift_kP = 1;
+  private double lift_kP = 0.7;
   private double lift_kI = 0;
   private double lift_kD = 0;
   private double lift_kF = 0;
@@ -110,8 +111,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     extendMotorFault = new MotorFault(extendMotor, 16);
 
     // Rate limiter between target value and commanded value for smooth motion.
-    liftLimiter = new SlewRateLimiter(0.5); 
-    extendLimiter = new SlewRateLimiter(0.5); 
+    liftLimiter = new SlewRateLimiter(0.01); 
+    extendLimiter = new SlewRateLimiter(0.01); 
 
     // Position-based command.
     liftPositionVoltage = new PositionVoltage(0).withSlot(0);
@@ -126,8 +127,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
   {
     updateFeedback();
     commandedExtendLength = extendLimiter.calculate(limitExtendLength(targetExtendLength));
-    commandedLiftAngle = liftLimiter.calculate(limitLiftAngle(targetLiftAngle));
-    runLiftMotor(commandedLiftAngle);
+    //commandedLiftAngle = liftLimiter.calculate(limitLiftAngle(targetLiftAngle));
+    //runLiftMotor(commandedLiftAngle);
     runExtendMotor(commandedExtendLength);
     //targetExtendLength = interpolateExtendPosition(currentLiftAngle);
   }
@@ -157,9 +158,9 @@ public class CollectorArm extends DiagnosticsSubsystem {
     return currentExtendLength;
   }
 
-  public void setTargetLiftAngle(double target) {
-    targetLiftAngle = target;
-  }
+  // public void setTargetLiftAngle(double target) {
+  //   targetLiftAngle = target;
+  // }
 
   public void setTargetExtendLength(double target) {
     targetExtendLength = target;
@@ -220,9 +221,26 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   private void configureHardware(){
 
+    var error = liftMotor.getConfigurator().apply(new TalonFXConfiguration(), 0.5);
+    if (!error.isOK()) 
+    {
+        System.err.print(String.format("Module %d STEER MOTOR ERROR: %s", error.toString()));
+        setDiagnosticsFeedback(error.getDescription(), false);
+    }
+
+    error = extendMotor.getConfigurator().apply(new TalonFXConfiguration(), 0.5);
+    if (!error.isOK()) 
+    {
+        System.err.println(String.format("Module %d DRIVE MOTOR ERROR: %s", error.toString()));
+        setDiagnosticsFeedback(error.getDescription(), false);
+    }
+
     // Zero motor positions at start: Robot must be in hard-stop pose.
     liftMotor.setPosition(0);
     extendMotor.setPosition(0);
+
+    liftMotor.setNeutralMode(NeutralModeValue.Brake);
+    extendMotor.setNeutralMode(NeutralModeValue.Coast);
 
     // PID loop setting for lift motor
     var liftMotorClosedLoopConfig = new Slot0Configs();
@@ -248,8 +266,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     if(!error2.isOK()){
       System.err.print(String.format("EXTEND MOTOR ERROR: %s", error2.toString()));
       setDiagnosticsFeedback(error2.getDescription(), false);
-    }
-    
+    } 
   }
 
   @Override
