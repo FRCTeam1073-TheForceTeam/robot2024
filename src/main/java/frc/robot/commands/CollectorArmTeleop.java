@@ -42,7 +42,7 @@ public class CollectorArmTeleop extends Command {
     }
     // Y Button
     if(oi.getOperatorRawButton(4)) {
-      arm.setTargetExtendLength(0.05);
+      arm.setTargetExtendLength(-0.05);
       arm.setTargetLiftAngle(2);
 
     }

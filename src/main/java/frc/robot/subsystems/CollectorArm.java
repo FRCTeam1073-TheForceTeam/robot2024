@@ -101,11 +101,12 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private double lift_kI = 0.5;
   private double lift_kD = 0.5;
   private double lift_kF = 0;
+  private double lift_kG = 0.7;
 
   // PID gains for extension controller.
-  private double extend_kP = 16;
-  private double extend_kI = 0.5;
-  private double extend_kD = 0.5;
+  private double extend_kP = 45;
+  private double extend_kI = 2;
+  private double extend_kD = 4;
   private double extend_kF = 0;
 
   /** Creates a new CollectorArm. */
@@ -117,7 +118,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
     // Rate limiter between target value and commanded value for smooth motion.
     liftLimiter = new SlewRateLimiter(0.5); 
-    extendLimiter = new SlewRateLimiter(0.5); 
+    extendLimiter = new SlewRateLimiter(1); 
 
     // Position-based command.
     liftPositionVoltage = new PositionVoltage(0).withSlot(0);
@@ -226,8 +227,9 @@ public class CollectorArm extends DiagnosticsSubsystem {
     // conversions: Position to drive toward in rotations = revolutations = 2pi
     //double liftAngleRotations = (liftAngle + liftAbsoluteOffset) / liftRadiansPerRotation;
     double liftAngleRotations = liftAngle;
+    double liftFeedForward = lift_kG * Math.cos(currentLiftAngle);
     SmartDashboard.putNumber("Commanded Motor LiftAngleRotations", liftAngleRotations);
-    liftMotor.setControl(liftPositionVoltage.withPosition(liftAngleRotations)); 
+    liftMotor.setControl(liftPositionVoltage.withPosition(liftAngleRotations).withFeedForward(liftFeedForward));
   }
 
   private void runExtendMotor(double extendLength)
@@ -259,9 +261,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
         setDiagnosticsFeedback(error.getDescription(), false);
     }
 
-    liftMotor.setNeutralMode(NeutralModeValue.Coast);
-    extendMotor.setNeutralMode(NeutralModeValue.Coast);
-
+    
     liftConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     // // liftConfigs.Feedback.RotorToSensorRatio = (150.0 / 7.0);
      liftConfigs.Feedback.SensorToMechanismRatio = 1 / liftRadiansPerRotation;  // This should be used for remote CANCoder with continuous wrap.
@@ -269,6 +269,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     // liftConfigs.ClosedLoopGeneral.ContinuousWrap = true;
     liftMotor.getConfigurator().apply(liftConfigs);
     liftMotor.setPosition(0);
+
+    liftMotor.setNeutralMode(NeutralModeValue.Brake);
 
     // PID loop setting for lift motor
     var liftMotorClosedLoopConfig = new Slot0Configs();
@@ -285,6 +287,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     extendMotor.getConfigurator().apply(extendConfigs);
     extendMotor.setPosition(0);
     
+    extendMotor.setNeutralMode(NeutralModeValue.Coast);
+
     //PID loop setting for extend motor
     var extendMotorClosedLoopConfig = new Slot0Configs();
     extendMotorClosedLoopConfig.withKP(extend_kP);
