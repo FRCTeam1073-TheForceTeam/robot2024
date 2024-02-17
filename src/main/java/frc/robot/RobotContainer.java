@@ -6,13 +6,16 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.Bling;
+import frc.robot.subsystems.Camera;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
+import frc.robot.subsystems.SerialComms;
 import frc.robot.subsystems.SwerveModuleConfig;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 
+import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,6 +33,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
+  private final SerialComms m_serial = new SerialComms(Port.kUSB1);
+  private final Camera m_cammera = new Camera(m_serial, 1);
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private static final String kNoAuto = "No Autonomous";
