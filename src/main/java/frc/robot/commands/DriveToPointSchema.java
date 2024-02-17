@@ -55,7 +55,7 @@ public class DriveToPointSchema extends MotionSchema
 
     double xVelocity = -(robotPose.getX() - targetPose.getX());
     double yVelocity = -(robotPose.getY() - targetPose.getY());
-    double angularVelocity = 0.8 * (robotPose.getRotation().getRadians() - targetPose.getRotation().getRadians());
+    double angularVelocity = 0.8 * wrapAngleRadians(robotPose.getRotation().getRadians() - targetPose.getRotation().getRadians());
     
     // Transform2d difference = robotPose.minus(targetPose);
     // double xVelocity = -0.5 * difference.getX();
@@ -119,7 +119,8 @@ public class DriveToPointSchema extends MotionSchema
   public boolean isFinished() 
   {
     var error = targetPose.minus(robotPose);
-    if (error.getTranslation().getNorm() < distanceTolerance && error.getRotation().getRadians() < angleTolerance) 
+    if ((error.getTranslation().getNorm() < distanceTolerance || maxLinearVelocity == 0) && 
+      (error.getRotation().getRadians() < angleTolerance || maxRotationVelocity == 0)) 
     {
       System.out.println("DriveToPoint Is Finished");
       return true;

@@ -17,9 +17,11 @@ import java.util.ArrayList;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -35,6 +37,12 @@ public class RobotContainer
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
+
+  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+  private static final String kNoAuto = "No Autonomous";
+  private static final String kSnowPlowAuto = "Snowplow Auto";
+  private static final String kLeaveAuto = "Leave Auto";
   
   
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -48,6 +56,12 @@ public class RobotContainer
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
 
+    m_chooser.setDefaultOption("No Autonomous", kNoAuto);
+    m_chooser.addOption("Snowplow Auto", kSnowPlowAuto);
+    m_chooser.addOption("Leave Auto", kLeaveAuto);
+
+
+    SmartDashboard.putData("Auto Chooser", m_chooser);
     // Configure the trigger bindings
     configureBindings();
   }
@@ -87,8 +101,20 @@ public class RobotContainer
    */
   public Command getAutonomousCommand() 
   {
+    switch (m_chooser.getSelected())
+    {
+      case kNoAuto:
+        return null; 
+      case kSnowPlowAuto: 
+        return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7, 0, new Rotation2d(0)), 5, 0), m_drivetrain),
+          SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7.0, 5.5, new Rotation2d(0)), 5, 0.5), m_drivetrain));
+      case kLeaveAuto:
+        return SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(1.5, 0.0, new Rotation2d()), 1.5, 0), m_drivetrain);
+      default:
+        return null;
+    }
     //An example command will be run in autonomous
-    return SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7, 0, new Rotation2d(0)), 0.5, 0.5), m_drivetrain);
+    
     //return SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(-1.0, -1.0, new Rotation2d(0)), 0.5, 0.5), m_drivetrain);
     //return new DriveToPointSchema(m_drivetrain, new Pose2d(1.0, 0, new Rotation2d(Math.PI / 2)), 0.5, 0.5);
 
