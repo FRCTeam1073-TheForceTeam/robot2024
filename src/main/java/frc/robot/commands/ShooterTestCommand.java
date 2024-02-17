@@ -32,13 +32,13 @@ public class ShooterTestCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(oi.getDriverRawButton(1)){
-      shooter.setTopShooterMotorVelocity(topShooterMotorVelocity); //in MPS
-      shooter.setBottomShooterMotorVelocity(bottomShooterMotorVelocity); //in MPS
-    }
-    if(oi.getDriverRawButton(2)){
+    if(oi.getOperatorRawButton(1)){
       shooter.setTopShooterMotorVelocity(0); //in MPS
       shooter.setBottomShooterMotorVelocity(0); //in MPS
+    }
+    if(oi.getOperatorRawButton(2)){
+      shooter.setTopShooterMotorVelocity(10); //in MPS
+      shooter.setBottomShooterMotorVelocity(10); //in MPS
     }
     
     // if(getShooterOn()){

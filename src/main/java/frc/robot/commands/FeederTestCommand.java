@@ -26,17 +26,20 @@ public class FeederTestCommand extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    System.out.println("FEEDER TEST COMMAND STARTED");
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    feederMotorVelocityMPS = SmartDashboard.getNumber("Feeder Motor Velocity MPS", 0.0); //in MPS
-    if(oi.getDriverRawButton(3)){
-      feeder.setTargetFeederMotorVelocity(feederMotorVelocityMPS);
+    if(oi.getOperatorRawButton(3)){
+      feeder.setTargetFeederMotorVelocity(0);
+      System.out.println("TARGET FEEDER VELOCITY 0");
     }
-    if(oi.getDriverRawButton(4)){
-      feeder.setTargetFeederMotorVelocity(0); //in MPS
+    else if(oi.getOperatorRawButton(4)){
+      feeder.setTargetFeederMotorVelocity(10); //in MPS
+      System.out.println("TARGET FEEDER VELOCITY .5");
     }
     // if(getFeederOn()){
     //   feeder.setTargetFeederMotorVelocity(feederMotorVelocityMPS);

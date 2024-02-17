@@ -5,33 +5,33 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.Bling;
-import frc.robot.subsystems.Camera;
-import frc.robot.commands.TeleopDrive;
-import frc.robot.subsystems.Drivetrain;
+// import frc.robot.subsystems.Bling;
+// import frc.robot.subsystems.Camera;
+// import frc.robot.commands.TeleopDrive;
+// import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
-import frc.robot.subsystems.SerialComms;
-import frc.robot.subsystems.SwerveModuleConfig;
+// import frc.robot.subsystems.SerialComms;
+// import frc.robot.subsystems.SwerveModuleConfig;
 
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
+// import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 
-import edu.wpi.first.wpilibj.SerialPort.Port;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+// import edu.wpi.first.wpilibj.SerialPort.Port;
+// import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+// import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.*;
-import frc.robot.commands.PivotTestCommand;
+// import frc.robot.commands.PivotTestCommand;
 import frc.robot.commands.ShooterTestCommand;
 import frc.robot.commands.FeederTestCommand;
-import frc.robot.commands.LoadTrigger;
-import frc.robot.commands.RunTrigger;
-import frc.robot.commands.SetShooterAngle;
-import frc.robot.commands.RunShooter;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+// import frc.robot.commands.LoadTrigger;
+// import frc.robot.commands.RunTrigger;
+// import frc.robot.commands.SetShooterAngle;
+// import frc.robot.commands.RunShooter;
+// import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 
 /**
@@ -42,32 +42,32 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final Pivot pivot = new Pivot();
+  // private final Pivot pivot = new Pivot();
   private final Shooter m_shooter = new Shooter();
   private final Feeder m_feeder = new Feeder(); 
-  private final Drivetrain m_drivetrain = new Drivetrain();
+  // private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
   
   // private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(pivot);
   private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(m_shooter, m_OI);
   private final FeederTestCommand m_feederTestCommand = new FeederTestCommand(m_feeder, m_OI);
-  private final LoadTrigger m_loadTrigger = new LoadTrigger(m_shooter);
-  private final RunTrigger m_runTrigger = new RunTrigger();
-  private final SetShooterAngle m_setShooterAngle = new SetShooterAngle(m_shooter, 0);
-  private final RunShooter m_runShooter = new RunShooter(m_shooter, 0, 0, 0);
-  private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
-  SequentialCommandGroup fullAuto;
-  private final SerialComms m_serial = new SerialComms(Port.kUSB1);
-  private final Camera m_cammera = new Camera(m_serial, 1);
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  private static final String kNoAuto = "No Autonomous";
+  // private final LoadTrigger m_loadTrigger = new LoadTrigger(m_shooter);
+  // private final RunTrigger m_runTrigger = new RunTrigger();
+  // private final SetShooterAngle m_setShooterAngle = new SetShooterAngle(m_shooter, 0);
+  // private final RunShooter m_runShooter = new RunShooter(m_shooter, 0, 0, 0);
+  // private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
+  // SequentialCommandGroup fullAuto;
+  // private final SerialComms m_serial = new SerialComms(Port.kUSB1);
+  // private final Camera m_cammera = new Camera(m_serial, 1);
+  // private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  // private static final String kNoAuto = "No Autonomous";
   // ex: private static final String auto1 = "auto 1";
   
   
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
-  private final Bling m_bling = new Bling();
+  // private final Bling m_bling = new Bling();
     
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -75,15 +75,15 @@ public class RobotContainer {
     // CommandScheduler.getInstance().setDefaultCommand(pivot, m_pivotTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_shooterTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
-    CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
-    SmartDashboard.putData(m_drivetrain);
+    // CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
+    // SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
     SmartDashboard.putData(m_shooter);
     SmartDashboard.putData(m_feeder);
 
-    m_chooser.setDefaultOption("No Autonomous", kNoAuto);
+    // m_chooser.setDefaultOption("No Autonomous", kNoAuto);
     //ex: m_chooser.addOption("Auto1", auto1);
-    SmartDashboard.putData("Autonomous Chooser", m_chooser);
+    // SmartDashboard.putData("Autonomous Chooser", m_chooser);
 
     // Configure the trigger bindings
     configureBindings();
@@ -110,8 +110,8 @@ public class RobotContainer {
 
   public static void initPreferences() {
     System.out.println("RobotContainer: init Preferences.");
-    SwerveModuleConfig.initPreferences();
-    Drivetrain.initPreferences();
+    // SwerveModuleConfig.initPreferences();
+    // Drivetrain.initPreferences();
     //OI.initPreferences();
     //SwerveModule.initPreferences();
   }
@@ -122,8 +122,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand(){
-    return fullAuto = 
-    new SequentialCommandGroup(m_runTrigger, m_loadTrigger, m_setShooterAngle, m_runShooter);
+    return null;
+    // fullauto = new SequentialCommandGroup(m_runTrigger, m_loadTrigger, m_setShooterAngle, m_runShooter);
   }
   // public Command getAutonomousCommand() {
   //   // An example command will be run in autonomous

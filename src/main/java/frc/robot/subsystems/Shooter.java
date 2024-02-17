@@ -45,21 +45,23 @@ public class Shooter extends DiagnosticsSubsystem{
   // private double p = 0.11;
   // private double i = 0.5;
   // private double d = 0.0001;
-    private double p = 0.3;
+  private double p = 0.3;
   private double i = 0;
-  private double d = 0;
+  private double d = 0.003;
 
   /** Creates a new Shooter. **/
   public Shooter() {
     //one motor might be a follower
 
-    topShooterMotor = new TalonFX(17, kCANbus); // Kracken 
-    bottomShooterMotor = new TalonFX(18, kCANbus); //Kracken 
+    // topShooterMotor = new TalonFX(17, kCANbus); // Kracken 
+    // bottomShooterMotor = new TalonFX(18, kCANbus); //Kracken 
+    topShooterMotor = new TalonFX(17); 
+    bottomShooterMotor = new TalonFX(18); 
     shooterBeamBreak = new DigitalInput(2);
     topShooterMotorFault = new MotorFault(topShooterMotor, 17);
     bottomShooterMotorFault = new MotorFault(bottomShooterMotor, 18);
-    topFlyWheelLimiter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
-    bottomFlyWheelLimiter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
+    topFlyWheelLimiter = new SlewRateLimiter(1.5); //limits the rate of change to 0.5 units per seconds
+    bottomFlyWheelLimiter = new SlewRateLimiter(1.5); //limits the rate of change to 0.5 units per seconds
 
 
     targetTopShooterMotorVelocityRPS = 0;
@@ -91,9 +93,9 @@ public void setConfigsShooter(){
   configs.Voltage.PeakForwardVoltage = 8;
   configs.Voltage.PeakReverseVoltage = -8;
 
-  configs.Slot1.kP = 0.0;
-  configs.Slot1.kI = 0.0;
-  configs.Slot1.kD = 0.0;
+  // configs.Slot1.kP = 0.0;
+  // configs.Slot1.kI = 0.0;
+  // configs.Slot1.kD = 0.0;
 
   configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
   configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
@@ -111,7 +113,7 @@ public void setConfigsShooter(){
   /* sets the desired bottom shooter motor velocity in rotations per second */
   public void setBottomShooterMotorVelocity(double velocityMPS)
   {
-    targetBottomShooterMotorVelocityRPS = velocityMPS / shooterMetersPerRotation;
+    targetBottomShooterMotorVelocityRPS = -(velocityMPS / shooterMetersPerRotation);
   }
 
 
