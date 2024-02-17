@@ -18,7 +18,7 @@ public class PivotTestCommand extends Command {
   public PivotTestCommand(Pivot pivot) {
     this.pivot = pivot;
     // Use addRequirements() here to declare subsystem dependencies.
-
+    addRequirements(pivot);
   }
 
   // Called when the command is initially scheduled.
@@ -28,10 +28,10 @@ public class PivotTestCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    pivotMotorPosition = SmartDashboard.getNumber("Pivot Motor Rotations", 0.0);    
-    if(getPivotOn()){
-      pivot.setPivotMotorPositionRadians(pivotMotorPosition);
-    }
+    // pivotMotorPosition = SmartDashboard.getNumber("Pivot Motor Rotations", 0.0);    
+    // if(getPivotOn()){
+    //   pivot.setPivotMotorPositionRadians(pivotMotorPosition);
+    // }
   }
 
   // Called once the command ends or is interrupted.

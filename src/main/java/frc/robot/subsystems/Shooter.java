@@ -42,9 +42,12 @@ public class Shooter extends DiagnosticsSubsystem{
    */
   private double shooterMetersPerRotation = 8 * Math.PI * 0.0254; // 0.0254 meters/inch
 
-  private double p = 0.11;
-  private double i = 0.5;
-  private double d = 0.0001;
+  // private double p = 0.11;
+  // private double i = 0.5;
+  // private double d = 0.0001;
+    private double p = 0.3;
+  private double i = 0;
+  private double d = 0;
 
   /** Creates a new Shooter. **/
   public Shooter() {
@@ -99,17 +102,6 @@ public void setConfigsShooter(){
   bottomShooterMotor.getConfigurator().apply(configs);
 }
 
-
-
-@Override
-public void initSendable(SendableBuilder builder)
-{
-  builder.setSmartDashboardType("Shooter");
-  builder.addDoubleProperty("Top Motor Velocity", this::getTargetTopShooterMotorVelocity, this::setTopShooterMotorVelocity);
-  builder.addDoubleProperty("Bottom Motor Velocity", this::getBottomShooterMotorVelocity, this::setBottomShooterMotorVelocity);
-  builder.setSmartDashboardType("Tof");
-}
-
   /* sets the desired top shooter motor velocity in rotations per second */
   public void setTopShooterMotorVelocity(double velocityMPS)
   {
@@ -128,34 +120,43 @@ public void initSendable(SendableBuilder builder)
     return shooterBeamBreak.get();
   }
 
-/* gets the value of the velocity that the top shooter motor is at */
-public double getTargetTopShooterMotorVelocity(){
-  return targetTopShooterMotorVelocityRPS;
-}
-
-public double getActualTopShooterMotorVelocity(){
-  return topShooterMotor.getVelocity().getValue();
-}
-
-public double getActualBottomShooterMotorVelocity(){
-  return bottomShooterMotor.getVelocity().getValue();
-}
-
-/* gets the value of the velocity that the bottom shooter motor is at */
-public double getBottomShooterMotorVelocity(){ 
-  return targetBottomShooterMotorVelocityRPS;
-}
-
-@Override
-public boolean updateDiagnostics(){
-  String result = "";
-  boolean ok = true;
-  if (topShooterMotorFault.hasFaults()||
-  bottomShooterMotorFault.hasFaults());{
-    ok = false;
+  /* gets the value of the velocity that the top shooter motor is at */
+  public double getTargetTopShooterMotorVelocity(){
+    return targetTopShooterMotorVelocityRPS;
   }
-  result = topShooterMotorFault.getFaults() +  bottomShooterMotorFault.getFaults();
-  return setDiagnosticsFeedback(result, ok);
-}
 
+  public double getActualTopShooterMotorVelocity(){
+    return topShooterMotor.getVelocity().getValue();
+  }
+
+  public double getActualBottomShooterMotorVelocity(){
+    return bottomShooterMotor.getVelocity().getValue();
+  }
+
+  /* gets the value of the velocity that the bottom shooter motor is at */
+  public double getBottomShooterMotorVelocity(){ 
+    return targetBottomShooterMotorVelocityRPS;
+  }
+
+  @Override
+  public boolean updateDiagnostics(){
+    String result = "";
+    boolean ok = true;
+    if (topShooterMotorFault.hasFaults()||
+    bottomShooterMotorFault.hasFaults());{
+      ok = false;
+    }
+    result = topShooterMotorFault.getFaults() +  bottomShooterMotorFault.getFaults();
+    return setDiagnosticsFeedback(result, ok);
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder)
+  {
+    builder.setSmartDashboardType("Shooter");
+    builder.addDoubleProperty("Top Motor Target Velocity", this::getTargetTopShooterMotorVelocity, null);
+    builder.addDoubleProperty("Bottom Motor Target Velocity", this::getBottomShooterMotorVelocity, null);
+    builder.addDoubleProperty("Top Motor Actual Velocity", this::getActualTopShooterMotorVelocity, null);
+    builder.addDoubleProperty("Bottom Motor Actual Velocity", this::getActualBottomShooterMotorVelocity, null);
+  }
 }

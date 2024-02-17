@@ -35,17 +35,18 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Pivot pivot = new Pivot();
-  private final Shooter shooter = new Shooter();
-  private final Feeder feeder = new Feeder(); 
-  private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(pivot);
-  private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(shooter);
-  private final FeederTestCommand m_feederTestCommand = new FeederTestCommand(feeder);
-  private final LoadTrigger m_loadTrigger = new LoadTrigger(shooter);
-  private final RunTrigger m_runTrigger = new RunTrigger();
-  private final SetShooterAngle m_setShooterAngle = new SetShooterAngle(shooter, 0);
-  private final RunShooter m_runShooter = new RunShooter(shooter, 0, 0, 0);
+  private final Shooter m_shooter = new Shooter();
+  private final Feeder m_feeder = new Feeder(); 
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
+  
+  // private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(pivot);
+  private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(m_shooter, m_OI);
+  private final FeederTestCommand m_feederTestCommand = new FeederTestCommand(m_feeder, m_OI);
+  private final LoadTrigger m_loadTrigger = new LoadTrigger(m_shooter);
+  private final RunTrigger m_runTrigger = new RunTrigger();
+  private final SetShooterAngle m_setShooterAngle = new SetShooterAngle(m_shooter, 0);
+  private final RunShooter m_runShooter = new RunShooter(m_shooter, 0, 0, 0);
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
   SequentialCommandGroup fullAuto;
   
@@ -56,12 +57,14 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    CommandScheduler.getInstance().setDefaultCommand(pivot, m_pivotTestCommand);
-    CommandScheduler.getInstance().setDefaultCommand(shooter, m_shooterTestCommand);
-    CommandScheduler.getInstance().setDefaultCommand(feeder, m_feederTestCommand);
+    // CommandScheduler.getInstance().setDefaultCommand(pivot, m_pivotTestCommand);
+    CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_shooterTestCommand);
+    CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
+    SmartDashboard.putData(m_shooter);
+    SmartDashboard.putData(m_feeder);
 
     // Configure the trigger bindings
     configureBindings();

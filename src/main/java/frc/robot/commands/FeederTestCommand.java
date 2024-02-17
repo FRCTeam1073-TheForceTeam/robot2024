@@ -8,15 +8,20 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.OI;
 
 public class FeederTestCommand extends Command {
   /** Creates a new TriggerTestCommand. */
   private Feeder feeder;
+  private OI oi;
   private double feederMotorVelocityMPS;
-  private boolean isTriggerOn;
-  public FeederTestCommand(Feeder feeder) {
+  private boolean isFeederOn;
+
+  public FeederTestCommand(Feeder feeder, OI oi) {
     this.feeder = feeder;
+    this.oi = oi;
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(feeder);
   }
 
   // Called when the command is initially scheduled.
@@ -27,26 +32,33 @@ public class FeederTestCommand extends Command {
   @Override
   public void execute() {
     feederMotorVelocityMPS = SmartDashboard.getNumber("Feeder Motor Velocity MPS", 0.0); //in MPS
-    if(getTriggerOn()){
-      feeder.setFeederMotorVelocity(feederMotorVelocityMPS);
-    }}
+    if(oi.getDriverRawButton(3)){
+      feeder.setTargetFeederMotorVelocity(feederMotorVelocityMPS);
+    }
+    if(oi.getDriverRawButton(4)){
+      feeder.setTargetFeederMotorVelocity(0); //in MPS
+    }
+    // if(getFeederOn()){
+    //   feeder.setTargetFeederMotorVelocity(feederMotorVelocityMPS);
+    // }
+  }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {}
 
-  public boolean getTriggerOn(){
-    return isTriggerOn;
-  }
+  // public boolean getFeederOn(){
+  //   return isFeederOn;
+  // }
 
-  public void setTriggerOn(boolean triggeron){
-    isTriggerOn = triggeron;
-  }
+  // public void setFeederOn(boolean feederon){
+  //   isFeederOn = feederon;
+  // }
 
 
   public void initSendable(SendableBuilder builder){
-    builder.setSmartDashboardType("Trigger Test Command");
-    builder.addBooleanProperty("Toggle Trigger", this::getTriggerOn, this::setTriggerOn);
+    builder.setSmartDashboardType("Feeder Test Command");
+    // builder.addBooleanProperty("Toggle Feeder", this::getFeederOn, this::setFeederOn);
   }
 
   // Returns true when the command should end.

@@ -4,11 +4,11 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.Shooter;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ShooterTestCommand extends Command {
   /** Creates a new ShooterTestCommand. */
@@ -17,9 +17,12 @@ public class ShooterTestCommand extends Command {
   private double topShooterMotorVelocity;
   private double bottomShooterMotorVelocity;
   private boolean isShooterOn;
-  public ShooterTestCommand(Shooter shooter) {
+
+  public ShooterTestCommand(Shooter shooter, OI oi) {
     this.shooter = shooter;
-    // Use addRequirements() here to declare subsystem dependencies.
+    this.oi = oi;
+  // Use addRequirements() here to declare subsystem dependencies.
+  addRequirements(shooter);
   }
 
   // Called when the command is initially scheduled.
@@ -29,12 +32,19 @@ public class ShooterTestCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    topShooterMotorVelocity = SmartDashboard.getNumber("Top Shooter Motor Velocity MPS", 0.0); //in MPS
-    bottomShooterMotorVelocity = SmartDashboard.getNumber("Bottom Shooter Motor Velocity MPS", 0.0); //in MPS
-    if(getShooterOn()){
-      shooter.setTopShooterMotorVelocity(topShooterMotorVelocity);
-      shooter.setBottomShooterMotorVelocity(bottomShooterMotorVelocity);
+    if(oi.getDriverRawButton(1)){
+      shooter.setTopShooterMotorVelocity(topShooterMotorVelocity); //in MPS
+      shooter.setBottomShooterMotorVelocity(bottomShooterMotorVelocity); //in MPS
     }
+    if(oi.getDriverRawButton(2)){
+      shooter.setTopShooterMotorVelocity(0); //in MPS
+      shooter.setBottomShooterMotorVelocity(0); //in MPS
+    }
+    
+    // if(getShooterOn()){
+    //   shooter.setTopShooterMotorVelocity(topShooterMotorVelocity);
+    //   shooter.setBottomShooterMotorVelocity(bottomShooterMotorVelocity);
+    // }
     
   }
 
@@ -42,13 +52,13 @@ public class ShooterTestCommand extends Command {
   @Override
   public void end(boolean interrupted) {}
 
-  public boolean getShooterOn(){
-    return isShooterOn;
-  }
+  // public boolean getShooterOn(){
+  //   return isShooterOn;
+  // }
 
-  public void setShooterOn(boolean shooteron){
-    isShooterOn = shooteron;
-  }
+  // public void setShooterOn(boolean shooteron){
+  //   isShooterOn = shooteron;
+  // }
   
 
   // Returns true when the command should end.

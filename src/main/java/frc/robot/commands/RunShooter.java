@@ -16,11 +16,10 @@ public class RunShooter extends Command {
   private double shooterTopMPS;
   private double shooterBottomMPS;
   private double feederMotorMPS;
+  
   /* Creates a new RunShooter. */
   public RunShooter(Shooter shooter, double shootortopRPS, double shootorbottomRPS, double feederMotorMPS) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.shooterTopMPS = shooterTopMPS;
-    this.shooterBottomMPS = shooterBottomMPS;
     this.feederMotorMPS = feederMotorMPS;
     this.shooter = shooter;
     addRequirements(shooter);
@@ -41,7 +40,7 @@ public class RunShooter extends Command {
     /* if shooter motors are up to speed, then turn on trigger motors */
     /* might need to adjust the numbers depending on what % we want the power at */
     if ((shooter.getTargetTopShooterMotorVelocity() >= 0.98 * shooterTopMPS) && (shooter.getBottomShooterMotorVelocity() >= 0.98 * shooterBottomMPS)){
-      feeder.setFeederMotorVelocity(feederMotorMPS);
+      feeder.setTargetFeederMotorVelocity(feederMotorMPS);
     }
   }
 
@@ -50,7 +49,7 @@ public class RunShooter extends Command {
   public void end(boolean interrupted) {
     shooter.setTopShooterMotorVelocity(0);
     shooter.setBottomShooterMotorVelocity(0);
-    feeder.setFeederMotorVelocity(0); 
+    feeder.setTargetFeederMotorVelocity(0); 
   }
 
   // Returns true when the command should end.

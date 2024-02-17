@@ -23,7 +23,7 @@ public class LoadTrigger extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    feeder.setFeederMotorVelocity(5);
+    feeder.setTargetFeederMotorVelocity(5);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -33,7 +33,7 @@ public class LoadTrigger extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    feeder.setFeederMotorVelocity(0);
+    feeder.setTargetFeederMotorVelocity(0);
   }
 
   // Returns true when the command should end.

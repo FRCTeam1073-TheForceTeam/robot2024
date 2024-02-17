@@ -45,7 +45,7 @@ public class Feeder extends DiagnosticsSubsystem {
     feederMotor = new TalonFX(19, kCANbus); //Falcon
     toffeeder1 = new DigitalInput(1);
     feederMotorFault = new MotorFault(feederMotor, 19);
-    
+    feederMotorFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
     toffeeder1DutyCycleInput = new DutyCycle(toffeeder1);
     toffeeder1Freq = 0;
     toffeeder1Range = 0;    
@@ -90,59 +90,61 @@ public void setConfigsTrigger(){
     feederMotor.setControl(new VelocityVoltage(commandedFeederMotorVelocityRPS));
    }
 
-  @Override
-public void initSendable(SendableBuilder builder)
-{
-  builder.setSmartDashboardType("Shooter");
-  builder.setSmartDashboardType("Tof");
-  builder.addDoubleProperty("Range", this::getRangeTrigger1, null);
-  builder.addDoubleProperty("Freq", this::getFreqTrigger1, null);
-}
 
   /* sets the desired top trigger motor velocity in rotations per second */
-public void setFeederMotorVelocity(double feederMotorMPS){
-  targetFeederMotorVelocityRPS = feederMotorMPS / feederMetersPerRotation;
- }
-
-/* gets the value of the trigger motor velocity */
-public double getTargetFeederMotorVelocityRPS(){
-  return targetFeederMotorVelocityRPS;
-}
-
-public double getFeederMotorVelocityRPS(){
-  return feederMotor.getVelocity().getValue();
-}
-
-public double getRangeTrigger1(){
-  return toffeeder1Range;
-}
-
-public double getFreqTrigger1(){
-  return toffeeder1Freq;
-}
-
-
-/* uses the beam break sensor to detect if the note has entered the trigger */
-public boolean noteIsInTrigger(){
-  if (toffeeder1Range < 12){
-
-  }
-  return false;
-  // return triggerBeamBreak.get();
-}
-
-@Override
-public boolean updateDiagnostics(){
-  String result = "";
-  boolean ok = true;
-  if (feederMotorFault.hasFaults());{
-    ok = false;
+  public void setTargetFeederMotorVelocity(double feederMotorMPS){
+    targetFeederMotorVelocityRPS = feederMotorMPS / feederMetersPerRotation;
   }
 
-  if(toffeeder1DutyCycleInput.getFrequency()<2){
-    result += String.format("toffeeder1 not working");
+  /* gets the value of the trigger motor velocity */
+  public double getTargetFeederMotorVelocityRPS(){
+    return targetFeederMotorVelocityRPS;
   }
-  result = feederMotorFault.getFaults();
-  return setDiagnosticsFeedback(result, ok);
-}
+
+  public double getFeederMotorVelocityRPS(){
+    return feederMotor.getVelocity().getValue();
+  }
+
+  public double getRangeTrigger1(){
+    return toffeeder1Range;
+  }
+
+  public double getFreqTrigger1(){
+    return toffeeder1Freq;
+  }
+
+
+  /* uses the beam break sensor to detect if the note has entered the trigger */
+  public boolean noteIsInTrigger(){
+    if (toffeeder1Range < 12){
+
+    }
+    return false;
+    // return triggerBeamBreak.get();
+  }
+
+  @Override
+  public boolean updateDiagnostics(){
+    String result = "";
+    boolean ok = true;
+    if (feederMotorFault.hasFaults());{
+      ok = false;
+    }
+
+    if(toffeeder1DutyCycleInput.getFrequency()<2){
+      result += String.format("toffeeder1 not working");
+    }
+    result = feederMotorFault.getFaults();
+    return setDiagnosticsFeedback(result, ok);
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder)
+  {
+    builder.setSmartDashboardType("Shooter");
+    builder.addDoubleProperty("Tof Range", this::getRangeTrigger1, null);
+    builder.addDoubleProperty("Tof Freq", this::getFreqTrigger1, null);
+    builder.addDoubleProperty("Target Feeder Velocity", this::getTargetFeederMotorVelocityRPS, this::setTargetFeederMotorVelocity);
+    builder.addDoubleProperty("Actual Feeder Velocity", this::getFeederMotorVelocityRPS, null);
+  }
 }
