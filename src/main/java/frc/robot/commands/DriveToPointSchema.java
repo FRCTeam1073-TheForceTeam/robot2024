@@ -5,8 +5,6 @@
 package frc.robot.commands;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class DriveToPointSchema extends MotionSchema 
@@ -14,7 +12,7 @@ public class DriveToPointSchema extends MotionSchema
   /** Creates a new DriveToPoint. */
   
   double distanceTolerance = 0.1;
-  double angleTolerance = 0.025;
+  double angleTolerance = 0.05;
 
   Pose2d robotPose;
   Pose2d targetPose;
@@ -56,11 +54,10 @@ public class DriveToPointSchema extends MotionSchema
     double xVelocity = -(robotPose.getX() - targetPose.getX());
     double yVelocity = -(robotPose.getY() - targetPose.getY());
     double angularVelocity = 0.8 * wrapAngleRadians(robotPose.getRotation().getRadians() - targetPose.getRotation().getRadians());
+    System.out.println("Robot angle: " + robotPose.getRotation().getRadians());
+    System.out.println("Target angle: " + targetPose.getRotation().getRadians());
+    System.out.println("Angle Difference: " + wrapAngleRadians(robotPose.getRotation().getRadians() - targetPose.getRotation().getRadians()));
     
-    // Transform2d difference = robotPose.minus(targetPose);
-    // double xVelocity = -0.5 * difference.getX();
-    // double yVelocity = -0.5 * difference.getY(); 
-    // double angularVelocity = wrapAngleRadians(0.8 * difference.getRotation().getRadians());
     //tests if velocities are within the maximum and sets them to the max if they exceed
     if(xVelocity > maxLinearVelocity)
     {
@@ -95,15 +92,14 @@ public class DriveToPointSchema extends MotionSchema
 
   private double wrapAngleRadians(double angle)
   {
-    while (angle > Math.PI * 2)
+    while (angle > Math.PI)
     {
       angle -= Math.PI * 2;
     }
-    while (angle < 0)
+    while (angle < -Math.PI)
     {
       angle += Math.PI * 2;
     }
-    System.out.println("Angle " + angle);
     return angle;
   }
 
@@ -118,9 +114,9 @@ public class DriveToPointSchema extends MotionSchema
   @Override
   public boolean isFinished() 
   {
-    var error = targetPose.minus(robotPose);
-    if ((error.getTranslation().getNorm() < distanceTolerance || maxLinearVelocity == 0) && 
-      (error.getRotation().getRadians() < angleTolerance || maxRotationVelocity == 0)) 
+    var error = robotPose.minus(targetPose);
+    if ((Math.abs(error.getTranslation().getNorm()) < distanceTolerance || maxLinearVelocity == 0) && 
+      (Math.abs(error.getRotation().getRadians()) < angleTolerance || maxRotationVelocity == 0)) 
     {
       System.out.println("DriveToPoint Is Finished");
       return true;

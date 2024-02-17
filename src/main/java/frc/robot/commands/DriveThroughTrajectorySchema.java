@@ -67,7 +67,7 @@ public class DriveThroughTrajectorySchema extends MotionSchema {
     this.maxAngularVelocity = maxAngularVelocity;
     this.alpha = alpha;
     xTrajectory = new InterpolatingDoubleTreeMap();
-    yTrajectory = new InterpolatingDoubleTreeMap(); // TODO: fix this
+    yTrajectory = new InterpolatingDoubleTreeMap(); 
     thetaTrajectory = new InterpolatingDoubleTreeMap();
 
     xController = new PIDController(
@@ -107,7 +107,6 @@ public class DriveThroughTrajectorySchema extends MotionSchema {
     thetaTrajectory.clear();
     for(int i = 0; i < wayPoints.size(); i++)
     {
-
       xTrajectory.put(trajectoryTime, wayPoints.get(i).getX());
       yTrajectory.put(trajectoryTime, wayPoints.get(i).getY());
       thetaTrajectory.put(trajectoryTime, wayPoints.get(i).getRotation().getRadians());
@@ -143,11 +142,10 @@ public class DriveThroughTrajectorySchema extends MotionSchema {
   public void execute() 
   {
     robotPose = drivetrain.getOdometry();
-    // Pose2d state = new Pose2d(
-    //   new Translation2d(xTrajectory.get(currentTime).doubleValue(), 
-    //   yTrajectory.get(currentTime).doubleValue()),
-    //   Rotation2d.fromRadians(thetaTrajectory.get(currentTime).doubleValue()));
-    Pose2d state = new Pose2d(-1,0, new Rotation2d(0));
+    Pose2d state = new Pose2d(
+      xTrajectory.get(currentTime).doubleValue(), yTrajectory.get(currentTime).doubleValue(),
+      Rotation2d.fromRadians(thetaTrajectory.get(currentTime).doubleValue()));
+    //Pose2d state = new Pose2d(-1,0, new Rotation2d(0));
     // Transform2d difference = new Transform2d(robotPose, state);
     // double xVelocity = -alpha * difference.getX();
     // double yVelocity = alpha * difference.getY();
@@ -204,7 +202,8 @@ public class DriveThroughTrajectorySchema extends MotionSchema {
   {
     var error = robotPose.minus(endPose);
      
-    if (error.getTranslation().getNorm() < distanceTolerance && Math.abs(error.getRotation().getRadians()) < angleTolerance) 
+    if (Math.abs(error.getTranslation().getNorm()) < distanceTolerance || maxVelocity == 0
+      && Math.abs(error.getRotation().getRadians()) < angleTolerance || maxAngularVelocity == 0) 
     {
       System.out.println("DriveThroughTrajectory Is Finished");
       return true;

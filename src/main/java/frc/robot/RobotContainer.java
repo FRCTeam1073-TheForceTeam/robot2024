@@ -43,6 +43,7 @@ public class RobotContainer
   private static final String kNoAuto = "No Autonomous";
   private static final String kSnowPlowAuto = "Snowplow Auto";
   private static final String kLeaveAuto = "Leave Auto";
+  private static final String kTestAuto = "Test Auto";
   
   
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -59,6 +60,7 @@ public class RobotContainer
     m_chooser.setDefaultOption("No Autonomous", kNoAuto);
     m_chooser.addOption("Snowplow Auto", kSnowPlowAuto);
     m_chooser.addOption("Leave Auto", kLeaveAuto);
+    m_chooser.addOption("Test Auto", kTestAuto);
 
 
     SmartDashboard.putData("Auto Chooser", m_chooser);
@@ -94,6 +96,14 @@ public class RobotContainer
     //SwerveModule.initPreferences();
   }
 
+  public Command testAuto()
+  {
+    ArrayList<Pose2d> pointList = new ArrayList<Pose2d>();
+    pointList.add(new Pose2d(1.0, 0.0, new Rotation2d(Math.PI / 2)));
+    pointList.add(new Pose2d(2.0, 2.0, new Rotation2d(Math.PI / 2)));
+    return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, pointList, 1.0, 1.0, 1.0, 1.0), m_drivetrain);
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -106,10 +116,12 @@ public class RobotContainer
       case kNoAuto:
         return null; 
       case kSnowPlowAuto: 
-        return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7, 0, new Rotation2d(0)), 5, 0), m_drivetrain),
-          SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7.0, 5.5, new Rotation2d(0)), 5, 0.5), m_drivetrain));
+        return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7, 0, new Rotation2d(0)), 5, 1), m_drivetrain),
+          SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7.0, 5.5, new Rotation2d(0)), 5, 1), m_drivetrain));
       case kLeaveAuto:
         return SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(1.5, 0.0, new Rotation2d()), 1.5, 0), m_drivetrain);
+      case kTestAuto:
+        return testAuto();
       default:
         return null;
     }
