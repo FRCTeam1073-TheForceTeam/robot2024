@@ -10,6 +10,8 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
@@ -17,6 +19,8 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class CollectorArm extends DiagnosticsSubsystem {
   
@@ -66,17 +70,17 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private final double liftDriveRatio = 4.0;
   private final double extendGearRatio = 25.0;
   private final double extendPulleyRadius = 0.01375;
-  private final double liftRadiansPerRotation = (-2*Math.PI)/(liftDriveRatio*liftGearRatio);
-  private final double extendMetersPerRotation = (-2*Math.PI*extendPulleyRadius)/extendGearRatio;
+  private final double liftRadiansPerRotation = (2*Math.PI)/(liftDriveRatio*liftGearRatio);
+  private final double extendMetersPerRotation = (2*Math.PI*extendPulleyRadius)/extendGearRatio;
 
 
   // TODO: update values in radians
-  private final double minLiftAngle = -2.09649;
-  private final double maxLiftAngle = 0; 
+  private final double minLiftAngle = 0;
+  private final double maxLiftAngle = 2.09649; 
 
   // TODO: update values (in meters)
-  private final double minExtend = -0.1;
-  private final double maxExtend = 0.08;
+  private final double minExtend = -0.08;
+  private final double maxExtend = 0.1;
 
   // Internal lift state variables:
   private double currentLiftAngle = 0;
@@ -93,26 +97,26 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   
   // PID gains for lift controller.
-  private double lift_kP = 0.7;
-  private double lift_kI = 0;
-  private double lift_kD = 0;
+  private double lift_kP = 4;
+  private double lift_kI = 0.5;
+  private double lift_kD = 0.25;
   private double lift_kF = 0;
 
   // PID gains for extension controller.
-  private double extend_kP = 0.3;
+  private double extend_kP = 1.4;
   private double extend_kI = 0;
   private double extend_kD = 0;
   private double extend_kF = 0;
 
   /** Creates a new CollectorArm. */
   public CollectorArm() {
-    liftMotor = new TalonFX(15, kCANbus); 
-    extendMotor = new TalonFX(16, kCANbus);
-    liftMotorFault = new MotorFault(liftMotor, 15);
-    extendMotorFault = new MotorFault(extendMotor, 16);
+    liftMotor = new TalonFX(13, kCANbus); 
+    extendMotor = new TalonFX(15, kCANbus);
+    liftMotorFault = new MotorFault(liftMotor, 13);
+    extendMotorFault = new MotorFault(extendMotor, 15);
 
     // Rate limiter between target value and commanded value for smooth motion.
-    liftLimiter = new SlewRateLimiter(0.01); 
+    liftLimiter = new SlewRateLimiter(0.5); 
     extendLimiter = new SlewRateLimiter(0.01); 
 
     // Position-based command.
@@ -137,9 +141,13 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   private void updateFeedback() {
     // Sensor angles should be divided by the appropriate ticks per radian
-    currentLiftAngle = liftMotor.getPosition().refresh().getValue() * liftRadiansPerRotation - liftAbsoluteOffset;
+    //currentLiftAngle = liftMotor.getPosition().refresh().getValue() * liftRadiansPerRotation - liftAbsoluteOffset;
+    currentLiftAngle = liftMotor.getPosition().refresh().getValue();
+    SmartDashboard.putNumber("lift motor position rotations", liftMotor.getPosition().refresh().getValue());
     currentLiftVelocity = liftMotor.getVelocity().refresh().getValueAsDouble() * liftRadiansPerRotation;
     currentExtendLength = extendMotor.getPosition().refresh().getValue() * extendMetersPerRotation - extendAbsoluteOffset;
+    currentExtendLength = extendMotor.getPosition().refresh().getValue();
+    SmartDashboard.putNumber("Extend motor position rotations", extendMotor.getPosition().refresh().getValue());
     currentExtendVelocity = extendMotor.getVelocity().refresh().getValueAsDouble() * extendMetersPerRotation;
   }
 
@@ -216,19 +224,26 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private void runLiftMotor(double liftAngle)
   {
     // conversions: Position to drive toward in rotations = revolutations = 2pi
-    double liftAngleRotations = (liftAngle + liftAbsoluteOffset) / liftRadiansPerRotation;
+    //double liftAngleRotations = (liftAngle + liftAbsoluteOffset) / liftRadiansPerRotation;
+    double liftAngleRotations = liftAngle;
+    SmartDashboard.putNumber("Commanded Motor LiftAngleRotations", liftAngleRotations);
     liftMotor.setControl(liftPositionVoltage.withPosition(liftAngleRotations)); 
   }
 
   private void runExtendMotor(double extendLength)
   {
-    double extendLengthRotations = (extendLength + extendAbsoluteOffset) / extendMetersPerRotation;
+    //double extendLengthRotations = (extendLength + extendAbsoluteOffset) / extendMetersPerRotation;
+    double extendLengthRotations = extendLength;
+    SmartDashboard.putNumber("Commanded Motor ExtendLengthRotations", extendLengthRotations);
     extendMotor.setControl(extendPositionVoltage.withPosition(extendLengthRotations)); 
   }
 
  
 
   private void configureHardware(){
+
+    TalonFXConfiguration extendConfigs = new TalonFXConfiguration();
+    TalonFXConfiguration liftConfigs = new TalonFXConfiguration();
 
     var error = liftMotor.getConfigurator().apply(new TalonFXConfiguration(), 0.5);
     if (!error.isOK()) 
@@ -245,11 +260,19 @@ public class CollectorArm extends DiagnosticsSubsystem {
     }
 
     // Zero motor positions at start: Robot must be in hard-stop pose.
-    liftMotor.setPosition(0);
-    extendMotor.setPosition(0);
+    // liftMotor.setPosition(0);
+    // extendMotor.setPosition(0);
 
-    liftMotor.setNeutralMode(NeutralModeValue.Brake);
+    liftMotor.setNeutralMode(NeutralModeValue.Coast);
     extendMotor.setNeutralMode(NeutralModeValue.Coast);
+
+    liftConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    // // liftConfigs.Feedback.RotorToSensorRatio = (150.0 / 7.0);
+     liftConfigs.Feedback.SensorToMechanismRatio = 1 / liftRadiansPerRotation;  // This should be used for remote CANCoder with continuous wrap.
+    // liftConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    // liftConfigs.ClosedLoopGeneral.ContinuousWrap = true;
+    liftMotor.getConfigurator().apply(liftConfigs);
+    liftMotor.setPosition(0);
 
     // PID loop setting for lift motor
     var liftMotorClosedLoopConfig = new Slot0Configs();
@@ -258,7 +281,14 @@ public class CollectorArm extends DiagnosticsSubsystem {
     liftMotorClosedLoopConfig.withKD(lift_kD);
     liftMotorClosedLoopConfig.withKV(lift_kF);
 
-
+    extendConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    //extendConfigs.Feedback.RotorToSensorRatio = (150.0 / 7.0);
+    extendConfigs.Feedback.SensorToMechanismRatio = 1 / extendMetersPerRotation;  // This should be used for remote CANCoder with continuous wrap.
+    //extendConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    //extendConfigs.ClosedLoopGeneral.ContinuousWrap = true;
+    extendMotor.getConfigurator().apply(extendConfigs);
+    extendMotor.setPosition(0);
+    
     //PID loop setting for extend motor
     var extendMotorClosedLoopConfig = new Slot0Configs();
     extendMotorClosedLoopConfig.withKP(extend_kP);
@@ -292,11 +322,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     builder.addDoubleProperty("Current Lift Velocity", this::getCurrentLiftVelocity, null);
     builder.addDoubleProperty("Current Extend Velocity", this::getCurrentExtendVelocity, null);
     
-
     //builder.addBooleanProperty("ok", this::isOK, null);
     //builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
-    extendMotor.initSendable(builder);
-    liftMotor.initSendable(builder);
   }
 
   @Override
@@ -304,7 +331,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
   {
     String result = "";
     boolean OK = true;
-
+    
     if(liftMotorFault.hasFaults() || extendMotorFault.hasFaults()){
         OK = false;
     }

@@ -300,9 +300,6 @@ public class SwerveModule extends DiagnosticsBase implements Sendable
         builder.addDoubleProperty(String.format("Target Drive V %d", cfg.moduleNumber), this::getTargetDriveVelocity, null);
         builder.addDoubleProperty(String.format("Steer R %d", cfg.moduleNumber), this::getSteerRotations, null);
         builder.addDoubleProperty(String.format("Drive V %d", cfg.moduleNumber), this::getDriveVelocity, null);
-    //   steerEncoder.initSendable(builder);
-    //   steerMotor.initSendable(builder);
-    //   driveMotor.initSendable(builder);
     }
 
     /**

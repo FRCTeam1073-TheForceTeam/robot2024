@@ -135,7 +135,6 @@ public class Collector extends DiagnosticsSubsystem {
     builder.addDoubleProperty("tofCollectorRange", this::getRangeTOF, null);
     //builder.addBooleanProperty("ok", this::isOK, null);
     //builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
-    collectMotor.initSendable(builder);
   }
 
   @Override
