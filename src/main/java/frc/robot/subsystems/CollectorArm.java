@@ -97,15 +97,15 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   
   // PID gains for lift controller.
-  private double lift_kP = 4;
+  private double lift_kP = 8;
   private double lift_kI = 0.5;
-  private double lift_kD = 0.25;
+  private double lift_kD = 0.5;
   private double lift_kF = 0;
 
   // PID gains for extension controller.
-  private double extend_kP = 1.4;
-  private double extend_kI = 0;
-  private double extend_kD = 0;
+  private double extend_kP = 16;
+  private double extend_kI = 0.5;
+  private double extend_kD = 0.5;
   private double extend_kF = 0;
 
   /** Creates a new CollectorArm. */
@@ -117,7 +117,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
     // Rate limiter between target value and commanded value for smooth motion.
     liftLimiter = new SlewRateLimiter(0.5); 
-    extendLimiter = new SlewRateLimiter(0.01); 
+    extendLimiter = new SlewRateLimiter(0.5); 
 
     // Position-based command.
     liftPositionVoltage = new PositionVoltage(0).withSlot(0);
@@ -258,10 +258,6 @@ public class CollectorArm extends DiagnosticsSubsystem {
         System.err.println(String.format("Extend MOTOR ERROR: %s", error.toString()));
         setDiagnosticsFeedback(error.getDescription(), false);
     }
-
-    // Zero motor positions at start: Robot must be in hard-stop pose.
-    // liftMotor.setPosition(0);
-    // extendMotor.setPosition(0);
 
     liftMotor.setNeutralMode(NeutralModeValue.Coast);
     extendMotor.setNeutralMode(NeutralModeValue.Coast);
