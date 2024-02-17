@@ -57,7 +57,7 @@ public class Collector extends DiagnosticsSubsystem {
     tof1Range = 0;
 
     collectorVelocityVoltage = new VelocityVoltage(0).withSlot(0);
-    collectorLimiter = new SlewRateLimiter(1);
+    collectorLimiter = new SlewRateLimiter(3);
 
     configureHardware();
   }
