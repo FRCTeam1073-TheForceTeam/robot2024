@@ -24,11 +24,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class CollectorArm extends DiagnosticsSubsystem {
   
-  enum POSE{
+  public static enum POSE{
     START,
     STOW,
-    COLLECT,
-    SCORE
+    HANDOFF,
+    AMP
   }
 
   // Motors:
@@ -109,6 +109,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private double extend_kD = 4;
   private double extend_kF = 0;
 
+  private POSE currentPose;
+
   /** Creates a new CollectorArm. */
   public CollectorArm() {
     liftMotor = new TalonFX(13, kCANbus); 
@@ -123,6 +125,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     // Position-based command.
     liftPositionVoltage = new PositionVoltage(0).withSlot(0);
     extendPositionVoltage = new PositionVoltage(0).withSlot(0);
+
+    currentPose = POSE.START;
 
     configureHardware();
     setUpInterpolator();
@@ -176,6 +180,10 @@ public class CollectorArm extends DiagnosticsSubsystem {
     targetExtendLength = limitExtendLength(target);
   }
 
+  public void setPoseName(POSE pose) {
+    currentPose = pose;
+  }
+
   // Returns target lift angle in radians
   public double getTargetLiftAngle() {
     return targetLiftAngle;
@@ -202,6 +210,10 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   public double getCurrentExtendVelocity() {
     return currentExtendVelocity;
+  }
+
+  public POSE getPoseName() {
+    return currentPose;
   }
 
 

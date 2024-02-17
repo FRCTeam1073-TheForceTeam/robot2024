@@ -7,25 +7,31 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Collector;
+import frc.robot.subsystems.CollectorArm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
+import frc.robot.subsystems.CollectorArm.POSE;
 
 public class CollectorTeleop extends Command {
   /** Creates a new CollectorTeleop. */
   Collector m_collector;
+  CollectorArm m_collectorArm;
   Drivetrain m_drivetrain;
   OI m_OI;
   double minRange;
   double maxRange;
+  double vel;
 
 
-  public CollectorTeleop(Collector collector, Drivetrain ds, OI oi) {
+  public CollectorTeleop(Collector collector, CollectorArm collectorArm, Drivetrain ds, OI oi) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_collector = collector;
+    m_collectorArm = collectorArm;
     m_drivetrain = ds;
     m_OI = oi;
     minRange = 0.4;
     maxRange = 0.72;
+    vel = 0;
 
     addRequirements(collector);
   }
@@ -39,19 +45,25 @@ public class CollectorTeleop extends Command {
   public void execute() {
 
 
-    if(m_OI.getOperatorRawButton(5))
+    if(m_OI.getOperatorRawButton(5)) //outtake
     {
-      m_collector.setTargetCollectorVelocity(3); //meters per sec
+      vel = 3;
+      m_collector.setTargetCollectorVelocity(vel); //meters per sec
       if(m_collector.getRangeTOF() > maxRange){
         m_collector.setTargetCollectorVelocity(0);
       }
     }
     else if(m_OI.getOperatorRawButton(6)) //intake
     {
-      double vel = 1.5 * (m_drivetrain.getChassisSpeeds().vxMetersPerSecond + 1);
+      vel = 1.2 * (Math.abs(m_drivetrain.getChassisSpeeds().vxMetersPerSecond) + 2);
       m_collector.setTargetCollectorVelocity(-vel); //meters per sec      
       if(m_collector.getRangeTOF() < minRange){
-        m_collector.setTargetCollectorVelocity(0);
+        if(m_collectorArm.getPoseName() == POSE.AMP){
+          m_collector.setTargetCollectorVelocity(-vel);
+        }
+        else{
+          m_collector.setTargetCollectorVelocity(0);
+        }
       }
     }
     else {

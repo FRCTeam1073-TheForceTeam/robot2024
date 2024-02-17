@@ -45,7 +45,7 @@ public class Collector extends DiagnosticsSubsystem {
   
   private double collect_kP = 0.3;
   private double collect_kI = 0;
-  private double collect_kD = 0;
+  private double collect_kD = 0.0005;
   private double collect_kF = 0;
 
   /** Creates a new Collector. */
@@ -57,7 +57,7 @@ public class Collector extends DiagnosticsSubsystem {
     tof1Range = 0;
 
     collectorVelocityVoltage = new VelocityVoltage(0).withSlot(0);
-    collectorLimiter = new SlewRateLimiter(3);
+    collectorLimiter = new SlewRateLimiter(22);
 
     configureHardware();
   }
