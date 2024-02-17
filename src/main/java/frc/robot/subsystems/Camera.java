@@ -45,11 +45,23 @@ public class Camera extends SubsystemBase {
     //String dataAsASCII = new String(data, StandardCharsets.US_ASCII);
   }
 
+  public void startRecordingTeleop(){
+    serialComms.send("ti");
+  }
+
+  public void startRecordingAuto(){
+    serialComms.send("ai");
+  }
+
+  public void stopRecording(){
+    serialComms.send("di");
+  }
+
 
   @Override
   public void periodic() {
-    System.out.println("getting apriltag data");
-    getAprilTag();
+    // System.out.println("getting apriltag data");
+    // getAprilTag();
     try {
       Thread.sleep(1000);
     }

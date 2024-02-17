@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.GetTagData;
+import frc.robot.commands.StartCamera;
 import frc.robot.subsystems.Camera;
 import frc.robot.commands.GetTagData;
 import frc.robot.subsystems.SerialComms;
@@ -30,11 +31,11 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
   private final Camera m_camera1 = new Camera(m_serial, 1);  // camID is how SerialComms and the cameras themselves tells them apart
-  private final GetTagData c_GetTagData = new GetTagData(m_camera1);
-  private final OI m_OI = new OI();
-  //private final Camera m_camera2 = new Camera(m_serial, 2);
+  //private final GetTagData c_GetTagData = new GetTagData(m_camera1);
+  private final StartCamera c_startRecordingAutonomous = new StartCamera(m_camera1);
   // and so on for however many cameras we have
 
+  private final OI m_OI = new OI();
   // NSargent: the stuff below was already here
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -44,8 +45,7 @@ public class RobotContainer {
   public RobotContainer() {
 
 
-    CommandScheduler.getInstance().setDefaultCommand(m_camera1, c_GetTagData);
-    //CommandScheduler.getInstance().schedule(getTagData());;
+    CommandScheduler.getInstance().setDefaultCommand(m_camera1, c_startRecordingAutonomous);
     //Configure the trigger bindings
     configureBindings();
   }

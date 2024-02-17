@@ -91,6 +91,11 @@ public class SerialComms extends SubsystemBase{
     return receivedString;
   }
 
+  public static void sendMessage(String message){
+    System.out.println(String.format("sending message, as a String: %s", message));
+    send(message);
+  }
+
 
   @Override
   public void periodic() {
