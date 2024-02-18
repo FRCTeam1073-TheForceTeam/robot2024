@@ -5,7 +5,6 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.GetTagData;
 import frc.robot.commands.StartRecordingAutonomous;
 import frc.robot.commands.StartRecordingTeleop;
 import frc.robot.commands.StopRecording;
@@ -34,7 +33,6 @@ public class RobotContainer {
   //private final GetTagData c_GetTagData = new GetTagData(m_camera1);
   private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_camera1);
   private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_camera1);
-
   private final StopRecording c_stopRecording = new StopRecording(m_camera1);
   // and so on for however many cameras we have
 

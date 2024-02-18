@@ -29,7 +29,7 @@ public class StartRecordingTeleop extends Command {
     this.weAreFinished = false;
     System.out.println("in startCamera.java execute(), starting teleop recording");
     camera.startRecordingTeleop();
-    // ideally listen for a reponse here, maybe retry
+    // TODO: listen for a reponse before finishing, ideally retry
     this.weAreFinished = true;
   }
 

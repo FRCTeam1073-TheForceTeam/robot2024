@@ -11,12 +11,9 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
-
 public class SerialComms extends SubsystemBase{
-
-  private SerialPort.Port portUSB;
   private static SerialPort serialPort;
-
+  private SerialPort.Port portUSB;
 
   public SerialComms(SerialPort.Port portUSB) {
     this.portUSB = portUSB;
@@ -32,8 +29,7 @@ public class SerialComms extends SubsystemBase{
   }
 
   public static void send(String message) {
-    //String dataString = new String(message, StandardCharsets.US_ASCII);
-    //System.out.println(dataString);
+    message = message.concat("\n");
     System.out.println(String.format("in send() message we're about to send as string: %s", message));
     byte[] messageAsBytes = message.getBytes(StandardCharsets.US_ASCII);
     System.out.println(String.format("message we're about to send as bytes: %s", messageAsBytes));
@@ -44,7 +40,7 @@ public class SerialComms extends SubsystemBase{
       System.out.println(String.format("i: %s", i));
       serialPort.write(arrayofone, 1);
     }
-    //serialPort.write(messageAsBytes, messageAsBytes.length);
+
     System.out.println("bottom of SerialComms.send()");
   }
 
@@ -75,21 +71,12 @@ public class SerialComms extends SubsystemBase{
   }
 
   public static String transact(String message){
-    //String messageAsASCII = new String(message, StandardCharsets.US_ASCII);
     System.out.println(String.format("sending message, as a String: %s", message));
     send(message);
-    // System.out.println("Vision Data doing its thingy");
-    // byte[] bytesReceived = recieve();
-    //String bytesReceivedAsString = bytesReceived.toString();
     String receivedString = receive();
     System.out.println(String.format("msg received as string: %s", receivedString));
     return receivedString;
   }
-
-  // public static void sendMessage(String message){
-  //   System.out.println(String.format("sending message, as a String: %s", message));
-  //   send(message);
-  // }
 
   @Override
   public void periodic() {
