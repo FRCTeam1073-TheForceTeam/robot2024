@@ -40,4 +40,9 @@ public class StopRecording extends Command {
     System.out.println("in StopRecording.java isFinished()");
     return true;
   }
+
+  @Override
+  public boolean runsWhenDisabled(){
+    return true;
+  }
 }
