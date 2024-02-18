@@ -51,8 +51,8 @@ public class ArmPoseCommand extends Command {
     // Y Button AMP
     if(oi.getOperatorRawButton(4)) {
       arm.setPoseName(POSE.AMP);
-      arm.setTargetExtendLength(-0.04565429687);
-      arm.setTargetLiftAngle(1.98388671875);
+      arm.setTargetExtendLength(0.0966796875);
+      arm.setTargetLiftAngle(1.9453125);
     }
   }
 

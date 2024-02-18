@@ -20,7 +20,13 @@ public class CollectorTeleop extends Command {
   OI m_OI;
   double minRange;
   double maxRange;
+  double intakeRateThreshold;
   double vel;
+  boolean isCollecting;
+  double startCollectValue;
+
+  double tofCurrentValue;
+  double tofOldValue;
 
 
   public CollectorTeleop(Collector collector, CollectorArm collectorArm, Drivetrain ds, OI oi) {
@@ -31,7 +37,13 @@ public class CollectorTeleop extends Command {
     m_OI = oi;
     minRange = 0.4;
     maxRange = 0.72;
+    intakeRateThreshold = 0.001;
     vel = 0;
+    isCollecting = true;
+    startCollectValue = 0;
+
+    tofCurrentValue = 0;
+    tofOldValue = 0;
 
     addRequirements(collector);
   }
@@ -44,32 +56,52 @@ public class CollectorTeleop extends Command {
   @Override
   public void execute() {
 
+    double rate = 0;
+    if(isCollecting){
+      tofCurrentValue = m_collector.getRangeTOF(); 
+      rate = (tofCurrentValue - tofOldValue) / 0.02; // calculating the rate of change of the TOF range
+      
+      if(rate < intakeRateThreshold){
+        isCollecting = false;
+      }
+    }
 
+    if(m_collector.getRangeTOF() > maxRange){
+      isCollecting = true;
+    }
+    
     if(m_OI.getOperatorRawButton(5)) //outtake
     {
       vel = 3;
       m_collector.setTargetCollectorVelocity(vel); //meters per sec
+
       if(m_collector.getRangeTOF() > maxRange){
         m_collector.setTargetCollectorVelocity(0);
       }
     }
     else if(m_OI.getOperatorRawButton(6)) //intake
     {
-      vel = 1.2 * (Math.abs(m_drivetrain.getChassisSpeeds().vxMetersPerSecond) + 2);
-      m_collector.setTargetCollectorVelocity(-vel); //meters per sec      
-      if(m_collector.getRangeTOF() < minRange){
+      vel = (0.5 * Math.abs(m_drivetrain.getChassisSpeeds().vxMetersPerSecond)) + 2;
+      m_collector.setTargetCollectorVelocity(-vel); //meters per sec
+      
+      //if(m_collector.getRangeTOF() < minRange){
+      if(!isCollecting){ // use the rate to decide when to stop
         if(m_collectorArm.getPoseName() == POSE.AMP){
           m_collector.setTargetCollectorVelocity(-vel);
+          
         }
         else{
           m_collector.setTargetCollectorVelocity(0);
+          
         }
       }
     }
     else {
       m_collector.setTargetCollectorVelocity(0);
+      
     }
 
+    tofOldValue = tofCurrentValue;
   }
 
   // Called once the command ends or is interrupted.
