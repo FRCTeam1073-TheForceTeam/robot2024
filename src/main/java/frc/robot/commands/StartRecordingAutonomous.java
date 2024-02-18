@@ -7,13 +7,15 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Camera;
 
-public class StopCamera extends Command {
+public class StartRecordingAutonomous extends Command {
   Camera camera;
-  /** Creates a new StopCamera. */
-  public StopCamera(Camera camera) {
-    // Use addRequirements() here to declare subsystem dependencies.
+  Boolean weAreFinished;
+  /** Creates a new StartCamera. */
+  public StartRecordingAutonomous(Camera camera) {
     this.camera = camera;
     addRequirements(camera);
+    this.weAreFinished = false;
+    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
@@ -24,17 +26,23 @@ public class StopCamera extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("Camera stopped!");
-    camera.stopRecording();
+    this.weAreFinished = false;
+    System.out.println("in StartRecordingAutonomous.java execute(), starting autonomous recording");
+    camera.startRecordingAutonomous();
+    // ideally listen for a reponse here, maybe retry
+    this.weAreFinished = true;
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    System.out.println("in StartRecordingAutonomous.java end(), setting weAreFinished to true");
+    this.weAreFinished = true;
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return this.weAreFinished;
   }
 }

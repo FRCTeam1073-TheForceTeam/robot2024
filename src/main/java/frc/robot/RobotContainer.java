@@ -6,20 +6,18 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.GetTagData;
-import frc.robot.commands.StartCamera;
-import frc.robot.commands.StopCamera;
+import frc.robot.commands.StartRecordingAutonomous;
+import frc.robot.commands.StartRecordingTeleop;
+import frc.robot.commands.StopRecording;
 import frc.robot.subsystems.Camera;
-import frc.robot.commands.GetTagData;
 import frc.robot.subsystems.SerialComms;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.OpenMV;
-import frc.robot.subsystems.Camera;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-//import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
@@ -34,8 +32,10 @@ public class RobotContainer {
   private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
   private final Camera m_camera1 = new Camera(m_serial, 1);  // camID is how SerialComms and the cameras themselves tells them apart
   //private final GetTagData c_GetTagData = new GetTagData(m_camera1);
-  private final StartCamera c_startRecordingAutonomous = new StartCamera(m_camera1);
-  private final StopCamera c_stopRecording = new StopCamera(m_camera1);
+  private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_camera1);
+  private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_camera1);
+
+  private final StopRecording c_stopRecording = new StopRecording(m_camera1);
   // and so on for however many cameras we have
 
   private final OI m_OI = new OI();
@@ -78,15 +78,12 @@ public class RobotContainer {
 
   }
 
-  // NSargent: commandScheduler.getInstance.setDefaultCommand(m_camera1, getTagdata())
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
     return c_startRecordingAutonomous;
+  }
+
+  public Command getTeleopCommand(){
+    return c_startRecordingTeleop;
   }
 
   // NSargent: commandScheduler.getInstance.setDefaultCommand(m_camera1, getTagdata())
