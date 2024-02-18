@@ -32,13 +32,12 @@ public class Shooter extends DiagnosticsSubsystem{
   private final SlewRateLimiter bottomFlyWheelLimiter;
 
   // Velocity variables
-  // Target is in meters per second, commanded and current are in rotations per second
-  private double targetTopMotorVelocity;
-  private double targetBottomMotorVelocity;
-  private double commandedTopMotorVelocity;
-  private double commandedBottomMotorVelocity;
-  private double currentTopMotorVelocity;
-  private double currentBottomMotorVelocity;
+  private double targetTopVelocityMPS;
+  private double targetBottomVelocityMPS;
+  private double commandedTopVelocityMPS;
+  private double commandedBottomVelocityMPS;
+  private double currentTopVelocityMPS;
+  private double currentBottomVelocityMPS;
 
   // Beam break sensor
   private final DigitalInput shooterBeamBreak;
@@ -65,8 +64,8 @@ public class Shooter extends DiagnosticsSubsystem{
     topFlyWheelLimiter = new SlewRateLimiter(1.5); //limits the rate of change to 1.5 units per seconds
     bottomFlyWheelLimiter = new SlewRateLimiter(1.5); //limits the rate of change to 1.5 units per seconds
 
-    targetTopMotorVelocity = 0;
-    targetBottomMotorVelocity = 0;
+    targetTopVelocityMPS = 0;
+    targetBottomVelocityMPS = 0;
 
     configureHardware();
 }
@@ -75,51 +74,51 @@ public class Shooter extends DiagnosticsSubsystem{
   public void periodic() {
     updateFeedback();
     // Calculate ratelimited commanded velocities in rotations/second based on meters/second target velocity
-    commandedTopMotorVelocity = topFlyWheelLimiter.calculate(-targetTopMotorVelocity / shooterMetersPerRotation);
-    commandedBottomMotorVelocity = bottomFlyWheelLimiter.calculate(-targetBottomMotorVelocity / shooterMetersPerRotation);
+    commandedTopVelocityMPS = topFlyWheelLimiter.calculate(-targetTopVelocityMPS);
+    commandedBottomVelocityMPS = bottomFlyWheelLimiter.calculate(-targetBottomVelocityMPS);
     
     // Run the motors at the current commanded velocity
-    topShooterMotor.setControl(new VelocityVoltage(commandedTopMotorVelocity));
-    bottomShooterMotor.setControl(new VelocityVoltage(commandedBottomMotorVelocity));
+    topShooterMotor.setControl(new VelocityVoltage(commandedTopVelocityMPS / shooterMetersPerRotation));
+    bottomShooterMotor.setControl(new VelocityVoltage(commandedBottomVelocityMPS / shooterMetersPerRotation));
   }
 
   /* Updates the current motor velocities */
   public void updateFeedback(){
-    currentTopMotorVelocity = topShooterMotor.getVelocity().getValue();
-    currentBottomMotorVelocity = bottomShooterMotor.getVelocity().getValue();
+    currentTopVelocityMPS = topShooterMotor.getVelocity().getValue();
+    currentBottomVelocityMPS = bottomShooterMotor.getVelocity().getValue();
   }
 
   /* Sets the desired motor velocites in meters per second */
-  public void setTargetTopMotorVelocity(double velocityMPS){
-    targetTopMotorVelocity = velocityMPS;
+  public void setTargetTopVelocityInMPS(double velocityMPS){
+    targetTopVelocityMPS = velocityMPS;
   }
-  public void setTargetBottomMotorVelocity(double velocityMPS)
+  public void setTargetBottomVelocityInMPS(double velocityMPS)
   {
-    targetBottomMotorVelocity = velocityMPS;
+    targetBottomVelocityMPS = velocityMPS;
   }
 
   /* Gets the target velocities for the motors in meters per second */
-  public double getTargetTopMotorVelocity(){
-    return targetTopMotorVelocity;
+  public double getTargetTopVelocityInMPS(){
+    return targetTopVelocityMPS ;
   }
-  public double getTargetBottomMotorVelocity(){ 
-    return targetBottomMotorVelocity;
+  public double getTargetBottomVelocityInMPS(){ 
+    return targetBottomVelocityMPS;
   }
 
   /* Gets the ratelimited commanded velocities for the motors in rotations per second */
-  public double getCommandedTopMotorVelocity(){ 
-    return commandedTopMotorVelocity;
+  public double getCommandedTopVelocityInMPS(){ 
+    return commandedTopVelocityMPS;
   }
-  public double getCommandedBottomMotorVelocity(){ 
-    return commandedBottomMotorVelocity;
+  public double getCommandedBottomVelocityInMPS(){ 
+    return commandedBottomVelocityMPS;
   }
 
   /* Gets the actual reported velocities of the motors in rotations per second */
-  public double getCurrentTopMotorVelocity(){
-    return currentTopMotorVelocity;
+  public double getCurrentTopVelocityInMPS(){
+    return currentTopVelocityMPS;
   }
-  public double getCurrentBottomMotorVelocity(){
-    return currentBottomMotorVelocity;
+  public double getCurrentBottomVelocityInMPS(){
+    return currentBottomVelocityMPS;
   }
 
   /* Uses the beam break sensor to detect if the note has entered the shooter */
@@ -142,27 +141,25 @@ public class Shooter extends DiagnosticsSubsystem{
     var error = topShooterMotor.getConfigurator().apply(configs);
     if (!error.isOK()) 
     {
-        System.err.println(String.format("TOP SHOOTER MOTOR ERROR: %s", error.toString()));
-        setDiagnosticsFeedback(error.getDescription(), false);
+      System.err.println(String.format("TOP SHOOTER MOTOR ERROR: %s", error.toString()));
+      setDiagnosticsFeedback(error.getDescription(), false);
     }
 
     error = bottomShooterMotor.getConfigurator().apply(configs);
     if (!error.isOK()) 
     {
-        System.err.println(String.format("BOTTOM SHOOTER MOTOR ERROR: %s", error.toString()));
-        setDiagnosticsFeedback(error.getDescription(), false);
+      System.err.println(String.format("BOTTOM SHOOTER MOTOR ERROR: %s", error.toString()));
+      setDiagnosticsFeedback(error.getDescription(), false);
     }
   }
 
   @Override
   public boolean updateDiagnostics(){
-    String result = "";
-    boolean ok = true;
+    String result = getDiagnosticsDetails();
+    boolean ok = diagnosticsOk();
     if (topShooterMotorFault.hasFaults()||
     bottomShooterMotorFault.hasFaults());{
       ok = false;
-    }
-    if(!ok){
       result = topShooterMotorFault.getFaults() +  bottomShooterMotorFault.getFaults();
     }
     return setDiagnosticsFeedback(result, ok);
@@ -172,11 +169,11 @@ public class Shooter extends DiagnosticsSubsystem{
   public void initSendable(SendableBuilder builder)
   {
     builder.setSmartDashboardType("Shooter");
-    builder.addDoubleProperty("Target Top Motor Velocity", this::getTargetTopMotorVelocity, null);
-    builder.addDoubleProperty("Target Bottom Motor Velocity", this::getTargetBottomMotorVelocity, null);
-    builder.addDoubleProperty("Commanded Top Motor Velocity", this::getCommandedTopMotorVelocity, null);
-    builder.addDoubleProperty("Commanded Bottom Motor Velocity", this::getCommandedBottomMotorVelocity, null);
-    builder.addDoubleProperty("Actual Top Motor Velocity", this::getCurrentTopMotorVelocity, null);
-    builder.addDoubleProperty("Actual Bottom Motor Velocity", this::getCurrentBottomMotorVelocity, null);
+    builder.addDoubleProperty("Target Top Motor Velocity", this::getTargetTopVelocityInMPS, null);
+    builder.addDoubleProperty("Target Bottom Motor Velocity", this::getTargetBottomVelocityInMPS, null);
+    builder.addDoubleProperty("Commanded Top Motor Velocity", this::getCommandedTopVelocityInMPS, null);
+    builder.addDoubleProperty("Commanded Bottom Motor Velocity", this::getCommandedBottomVelocityInMPS, null);
+    builder.addDoubleProperty("Actual Top Motor Velocity", this::getCurrentTopVelocityInMPS, null);
+    builder.addDoubleProperty("Actual Bottom Motor Velocity", this::getCurrentBottomVelocityInMPS, null);
   }
 }

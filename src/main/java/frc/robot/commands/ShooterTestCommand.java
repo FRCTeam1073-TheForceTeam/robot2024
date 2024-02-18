@@ -29,12 +29,12 @@ public class ShooterTestCommand extends Command {
   @Override
   public void execute() {
     if(oi.getOperatorRawButton(1)){
-      shooter.setTargetTopMotorVelocity(0); //in MPS
-      shooter.setTargetBottomMotorVelocity(0); //in MPS
+      shooter.setTargetTopVelocityInMPS(0); //in MPS
+      shooter.setTargetBottomVelocityInMPS(0); //in MPS
     }
     if(oi.getOperatorRawButton(2)){
-      shooter.setTargetTopMotorVelocity(10); //in MPS
-      shooter.setTargetBottomMotorVelocity(10); //in MPS
+      shooter.setTargetTopVelocityInMPS(10); //in MPS
+      shooter.setTargetBottomVelocityInMPS(10); //in MPS
     }
     
     // if(getShooterOn()){
@@ -53,7 +53,10 @@ public class ShooterTestCommand extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    shooter.setTargetTopVelocityInMPS(0); //in MPS
+    shooter.setTargetBottomVelocityInMPS(0); //in MPS
+  }
 
   // Returns true when the command should end.
   @Override

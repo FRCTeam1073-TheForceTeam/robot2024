@@ -25,7 +25,7 @@ public class SetShooterAngle extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    pivot.setPivotMotorPositionRadians(targetPositionRotations);
+    pivot.setTargetPivotPositionInRad(targetPositionRotations);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -41,6 +41,6 @@ public class SetShooterAngle extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (pivot.getActualPivotMotorPositionRadians() >= targetPositionRotations * 0.98);
+    return (pivot.getCurrentPositionInRad() >= targetPositionRotations * 0.98);
   }
 }

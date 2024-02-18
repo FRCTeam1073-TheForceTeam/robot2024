@@ -30,10 +30,10 @@ public class FeederTestCommand extends Command {
   @Override
   public void execute() {
     if(oi.getOperatorRawButton(3)){
-      feeder.setTargetFeederVelocity(0);
+      feeder.setTargetVelocityInMPS(0);
     }
     else if(oi.getOperatorRawButton(4)){
-      feeder.setTargetFeederVelocity(10); //in MPS
+      feeder.setTargetVelocityInMPS(10); //in MPS
     }
     // if(getFeederOn()){
     //   feeder.setTargetFeederMotorVelocity(feederMotorVelocityMPS);
@@ -50,7 +50,9 @@ public class FeederTestCommand extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+      feeder.setTargetVelocityInMPS(0);
+  }
 
   // Returns true when the command should end.
   @Override

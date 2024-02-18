@@ -29,8 +29,8 @@ public class RunShooter extends Command {
   /* start shooter wheels to get them up to speed */
   @Override
   public void initialize() {
-    shooter.setTargetTopMotorVelocity(shooterTopMPS);
-    shooter.setTargetBottomMotorVelocity(shooterBottomMPS);
+    shooter.setTargetTopVelocityInMPS(shooterTopMPS);
+    shooter.setTargetBottomVelocityInMPS(shooterBottomMPS);
 
   }
 
@@ -39,17 +39,17 @@ public class RunShooter extends Command {
   public void execute() {
     /* if shooter motors are up to speed, then turn on trigger motors */
     /* might need to adjust the numbers depending on what % we want the power at */
-    if ((shooter.getCurrentTopMotorVelocity() >= 0.98 * shooterTopMPS) && (shooter.getCurrentBottomMotorVelocity() >= 0.98 * shooterBottomMPS)){
-      feeder.setTargetFeederVelocity(feederMotorMPS);
+    if ((shooter.getCurrentTopVelocityInMPS() >= 0.98 * shooterTopMPS) && (shooter.getCurrentBottomVelocityInMPS() >= 0.98 * shooterBottomMPS)){
+      feeder.setTargetVelocityInMPS(feederMotorMPS);
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.setTargetTopMotorVelocity(0);
-    shooter.setTargetBottomMotorVelocity(0);
-    feeder.setTargetFeederVelocity(0); 
+    shooter.setTargetTopVelocityInMPS(0);
+    shooter.setTargetBottomVelocityInMPS(0);
+    feeder.setTargetVelocityInMPS(0); 
   }
 
   // Returns true when the command should end.

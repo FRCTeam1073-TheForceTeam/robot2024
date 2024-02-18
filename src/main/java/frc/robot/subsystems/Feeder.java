@@ -24,11 +24,10 @@ public class Feeder extends DiagnosticsSubsystem {
   private SlewRateLimiter feederMotorLimiter;
 
   // Motor scale factor
-  private double feederMetersPerRotation = 4 * Math.PI * 0.0254; // 0.0254 meters/inch
-    /* 1 motor rotation = 2 wheel rotations
-     * Diameter of the wheel is 2"
-     * Wheel circumference is 2π (πd)
-     * Therefore, the velocity = 4π inches/rotation
+  private double feederMetersPerRotation = Math.PI * 0.0254; // 0.0254 meters/inch
+    /* 1 wheelrot   2pi inches   0.0254 meters   0.0254pi meters
+     * ---------- * ---------- * ------------- = ---------------
+     * 2 motorrot   1 wheelrot        inch          motorrot
      */
 
   // Motor pid values
@@ -37,10 +36,9 @@ public class Feeder extends DiagnosticsSubsystem {
   private double d = 0.003;
 
   // Velocity variables
-  // Target is in meters per second, commanded and current are in rotations per second
-  private double targetFeederVelocity;
-  private double commandedFeederVelocity;
-  private double currentFeederVelocity;
+  private double targetVelocityMPS;
+  private double commandedVelocityMPS;
+  private double currentVelocityMPS;
 
   // Time of flight sensor
   private final DigitalInput feederTof;
@@ -66,8 +64,8 @@ public class Feeder extends DiagnosticsSubsystem {
     feederTofFreq = 0;
     feederTofRange = 0;
 
-    targetFeederVelocity = 0;
-    currentFeederVelocity = 0;
+    targetVelocityMPS = 0;
+    currentVelocityMPS = 0;
     
     configureHardware();
   }
@@ -83,33 +81,33 @@ public class Feeder extends DiagnosticsSubsystem {
     feederTofRange = (feederTofScaleFactor * (feederTofDutyCycle / feederTofFreq - 0.001)) / 1000;
 
     // Calculates ratelimited velocity in rotations per second based on meters/second target velocity and runs the motor
-    commandedFeederVelocity = (feederMotorLimiter.calculate(-targetFeederVelocity / feederMetersPerRotation));
-    feederMotor.setControl(new VelocityVoltage(commandedFeederVelocity));
+    commandedVelocityMPS = (feederMotorLimiter.calculate(-targetVelocityMPS));
+    feederMotor.setControl(new VelocityVoltage(commandedVelocityMPS / feederMetersPerRotation));
   }
 
   /* Updates the current motor velocity */
   public void updateFeedback(){
-    currentFeederVelocity = feederMotor.getVelocity().getValue();
+    currentVelocityMPS = feederMotor.getVelocity().getValue();
   }
 
-  /* Sets the desired motor velocity in meters per second */
-  public void setTargetFeederVelocity(double feederMotorMPS){
-    targetFeederVelocity = feederMotorMPS / feederMetersPerRotation;
+  /* Sets the target motor velocity given in meters per second */
+  public void setTargetVelocityInMPS(double feederMotorMPS){
+    targetVelocityMPS = feederMotorMPS;
   }
 
   /* Gets the target velocity for the motor in meters per second */
-  public double getTargetFeederVelocity(){
-    return targetFeederVelocity;
+  public double getTargetVelocityInMPS(){
+    return targetVelocityMPS;
   }
 
   /* Gets the ratelimited commanded velocity for the motor in rotations per second */
-  public double getCommandedFeederVelocity(){
-    return commandedFeederVelocity;
+  public double getCommandedVelocityInMPS(){
+    return commandedVelocityMPS;
   }
 
   /* Gets the actual reported velocity of the motor in rotations per second */
-  public double getCurrentFeederVelocity(){
-    return currentFeederVelocity;
+  public double getCurrentVelocityInMPS(){
+    return currentVelocityMPS;
   }
 
   /* Gets the time of flight range */
@@ -146,15 +144,15 @@ public class Feeder extends DiagnosticsSubsystem {
     var error = feederMotor.getConfigurator().apply(configs);
     if (!error.isOK()) 
     {
-        System.err.println(String.format("FEEDER MOTOR ERROR: %s", error.toString()));
-        setDiagnosticsFeedback(error.getDescription(), false);
+      System.err.println(String.format("FEEDER MOTOR ERROR: %s", error.toString()));
+      setDiagnosticsFeedback(error.getDescription(), false);
     }
   }
 
   @Override
   public boolean updateDiagnostics(){
-    String result = "";
-    boolean ok = true;
+    String result = getDiagnosticsDetails();
+    boolean ok = diagnosticsOk();
     if (feederMotorFault.hasFaults());{
       ok = false;
     }
@@ -176,8 +174,8 @@ public class Feeder extends DiagnosticsSubsystem {
     builder.setSmartDashboardType("Shooter");
     builder.addDoubleProperty("Tof Range", this::getTofRange, null);
     builder.addDoubleProperty("Tof Freq", this::getTofFreq, null);
-    builder.addDoubleProperty("Target Feeder Velocity", this::getTargetFeederVelocity, null);
-    builder.addDoubleProperty("Commanded Feeder Velocity", this::getCommandedFeederVelocity, null);
-    builder.addDoubleProperty("Actual Feeder Velocity", this::getCurrentFeederVelocity, null);
+    builder.addDoubleProperty("Target Feeder Velocity", this::getTargetVelocityInMPS, null);
+    builder.addDoubleProperty("Commanded Feeder Velocity", this::getCommandedVelocityInMPS, null);
+    builder.addDoubleProperty("Actual Feeder Velocity", this::getCurrentVelocityInMPS, null);
   }
 }

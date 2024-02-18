@@ -24,7 +24,7 @@ public class LoadFeeder extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    feeder.setTargetFeederVelocity(5);
+    feeder.setTargetVelocityInMPS(5);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -34,7 +34,7 @@ public class LoadFeeder extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    feeder.setTargetFeederVelocity(0);
+    feeder.setTargetVelocityInMPS(0);
   }
 
   // Returns true when the command should end.
