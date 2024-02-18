@@ -96,11 +96,6 @@ public class Pivot extends DiagnosticsSubsystem {
     return currentPositionRad;
   }
 
-  /* Gets the actual reported rotation of the motor in rotations */
-  public double getCurrentPositionInRot(){
-    return currentPositionRad * pivotRotationsPerRadian;
-  }
-
   public void configureHardware(){
     TalonFXConfiguration configs = new TalonFXConfiguration();
     configs.Slot0.kP = p;
@@ -141,6 +136,5 @@ public class Pivot extends DiagnosticsSubsystem {
     builder.addDoubleProperty("Target Pivot Motor Position", this::getTargetPositionInRad, this::setTargetPositionInRad);
     builder.addDoubleProperty("Commanded Pivot Motor Position", this::getCommandedPositionInRad, null);
     builder.addDoubleProperty("Actual Pivot Motor Position", this::getCurrentPositionInRad, null);
-    builder.addDoubleProperty("Current Position In Rotations", this::getCurrentPositionInRot, null);
   }
 }
