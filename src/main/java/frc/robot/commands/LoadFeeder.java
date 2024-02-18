@@ -10,11 +10,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Feeder;
 
-public class LoadTrigger extends Command {
+public class LoadFeeder extends Command {
   private Shooter shooter;
   private Feeder feeder;
+  
   /** Creates a new LoadTrigger. */
-  public LoadTrigger(Shooter shooter) {
+  public LoadFeeder(Shooter shooter) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.shooter = shooter;
     addRequirements(shooter);

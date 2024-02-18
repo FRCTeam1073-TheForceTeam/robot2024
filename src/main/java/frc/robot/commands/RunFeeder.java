@@ -7,9 +7,9 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
 
-public class RunTrigger extends Command {
-  /** Creates a new RunTrigger. */
-  public RunTrigger() {
+public class RunFeeder extends Command {
+  /** Creates a new RunFeeder. */
+  public RunFeeder() {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 

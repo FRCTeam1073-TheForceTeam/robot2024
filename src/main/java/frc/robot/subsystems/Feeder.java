@@ -17,111 +17,132 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 
 public class Feeder extends DiagnosticsSubsystem {
+
+  // Motor and related objects
   private final TalonFX feederMotor;
   private final MotorFault feederMotorFault;
-  private final DigitalInput toffeeder1;
-  // private final String kCANbus = "CANivore";
-  private SlewRateLimiter feederMotorFilter;
-  /* 1 motor rotation = 2 wheel rotations
-   * Diameter of the wheel is 2"
-   * Wheel circumference is 2π (πd)
-   * Therefore, the velocity = 4π inches/rotation
-   */
+  private SlewRateLimiter feederMotorLimiter;
+
+  // Motor scale factor
   private double feederMetersPerRotation = 4 * Math.PI * 0.0254; // 0.0254 meters/inch
-  
-  private double targetFeederMotorVelocityRPS;
-  private double commandedFeederMotorVelocityRPS;
-  private double actualFeederMotorVelocityRPS;
-  private double toffeeder1Freq;
-  private double toffeeder1Range;
-  private double toffeeder1DutyCycle;
+    /* 1 motor rotation = 2 wheel rotations
+     * Diameter of the wheel is 2"
+     * Wheel circumference is 2π (πd)
+     * Therefore, the velocity = 4π inches/rotation
+     */
+
+  // Motor pid values
   private double p = 0.4;
   private double i = 0.0;
   private double d = 0.003;
-  private final double toffeeder1ScaleFactor = 3000000/4; // for 50cm (irs16a): 3/4 million || for 130 cm (irs17a): 2 million || for 300 cm (irs17a): 4 million
-  private final DutyCycle toffeeder1DutyCycleInput;
+
+  // Velocity variables
+  // Target is in meters per second, commanded and current are in rotations per second
+  private double targetFeederMotorVelocity;
+  private double commandedFeederMotorVelocity;
+  private double currentFeederMotorVelocity;
+
+  // Time of flight sensor
+  private final DigitalInput feederTof;
+  private final DutyCycle feederTofDutyCycleInput;
+  private final double feederTofScaleFactor = 3000000/4;
+    // Scale factor: for 50cm (irs16a): 3/4 million || for 130 cm (irs17a): 2 million || for 300 cm (irs17a): 4 million
+  private double feederTofFreq;
+  private double feederTofRange;
+  private double feederTofDutyCycle;
+
+  // CANbus for this subsystem
+  private final String kCANbus = "CANivore";
+
   /** Creates a new Trigger. */
   public Feeder() {
     //feederMotor = new TalonFX(19, kCANbus); //Falcon
     feederMotor = new TalonFX(19);
-    toffeeder1 = new DigitalInput(1);
     feederMotorFault = new MotorFault(feederMotor, 19);
-    feederMotorFilter = new SlewRateLimiter(1.5); //limits the rate of change to 0.5 units per seconds
-    toffeeder1DutyCycleInput = new DutyCycle(toffeeder1);
-    toffeeder1Freq = 0;
-    toffeeder1Range = 0;    
+    feederMotorLimiter = new SlewRateLimiter(1.5); //limits the rate of change to 0.5 units per seconds
 
-    targetFeederMotorVelocityRPS = 0;
-    actualFeederMotorVelocityRPS = 0;
+    feederTof = new DigitalInput(1);
+    feederTofDutyCycleInput = new DutyCycle(feederTof);
+    feederTofFreq = 0;
+    feederTofRange = 0;
+
+    targetFeederMotorVelocity = 0;
+    currentFeederMotorVelocity = 0;
     
-    setConfigsTrigger();
+    configureHardware();
   }
-
-
-public void setConfigsTrigger(){
-  TalonFXConfiguration configs = new TalonFXConfiguration();
-  configs.Slot0.kP = p;
-  configs.Slot0.kI = i;
-  configs.Slot0.kD = d;
-  configs.Slot0.kV = 0.12;
-  configs.Voltage.PeakForwardVoltage = 8;
-  configs.Voltage.PeakReverseVoltage = -8;
-
-  // configs.Slot1.kP = 5;
-  // configs.Slot1.kI = 0.1;
-  // configs.Slot1.kD = 0.001;
-
-  configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
-  configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
-
-  feederMotor.getConfigurator().apply(configs);
-}
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    toffeeder1Freq = toffeeder1DutyCycleInput.getFrequency();
-    // System.out.println(toffeeder1Freq);
-    toffeeder1DutyCycle = toffeeder1DutyCycleInput.getOutput();
-    toffeeder1Range = toffeeder1DutyCycleInput.getOutput();
-    toffeeder1Range = (toffeeder1ScaleFactor * (toffeeder1DutyCycle / toffeeder1Freq - 0.001)) / 1000;
-    // System.out.println(toffeeder1Range);
+    feederTofFreq = feederTofDutyCycleInput.getFrequency();
+    feederTofDutyCycle = feederTofDutyCycleInput.getOutput();
+    feederTofRange = feederTofDutyCycleInput.getOutput();
+    feederTofRange = (feederTofScaleFactor * (feederTofDutyCycle / feederTofFreq - 0.001)) / 1000;
 
-    commandedFeederMotorVelocityRPS = -(feederMotorFilter.calculate(targetFeederMotorVelocityRPS));
-    feederMotor.setControl(new VelocityVoltage(commandedFeederMotorVelocityRPS));
+    // Calculates ratelimited velocity in rotations per second based on meters/second target velocity and runs the motor
+    commandedFeederMotorVelocity = (feederMotorLimiter.calculate(-targetFeederMotorVelocity / feederMetersPerRotation));
+    feederMotor.setControl(new VelocityVoltage(commandedFeederMotorVelocity));
    }
 
 
-  /* sets the desired top trigger motor velocity in rotations per second */
+  /* Sets the desired motor velocity in meters per second */
   public void setTargetFeederMotorVelocity(double feederMotorMPS){
-    targetFeederMotorVelocityRPS = feederMotorMPS / feederMetersPerRotation;
+    targetFeederMotorVelocity = feederMotorMPS / feederMetersPerRotation;
   }
 
-  /* gets the value of the trigger motor velocity */
-  public double getTargetFeederMotorVelocityRPS(){
-    return targetFeederMotorVelocityRPS;
+  /* Gets the target velocity for the motor in meters per second */
+  public double getTargetFeederMotorVelocity(){
+    return targetFeederMotorVelocity;
   }
 
-  public double getFeederMotorVelocityRPS(){
+  /* Gets the ratelimited commanded velocity for the motor in rotations per second */
+  public double getCommandedFeederMotorVelocity(){
+    return commandedFeederMotorVelocity;
+  }
+
+  /* Gets the actual reported velocity of the motor in rotations per second */
+  public double getCurrentFeederMotorVelocity(){
     return feederMotor.getVelocity().getValue();
   }
 
-  public double getRangeTrigger1(){
-    return toffeeder1Range;
+  /* Gets the time of flight range */
+  public double getTofRange(){
+    return feederTofRange;
   }
 
-  public double getFreqTrigger1(){
-    return toffeeder1Freq;
+  /* Gets the time of flight frequency */
+  public double getTofFreq(){
+    return feederTofFreq;
   }
 
-
-  /* uses the beam break sensor to detect if the note has entered the trigger */
+  /* Uses the beam break sensor to detect if the note has entered the trigger */
   public boolean noteIsInTrigger(){
-    if (toffeeder1Range < 12){
+    if (feederTofRange < 12){
 
     }
     return false;
     // return triggerBeamBreak.get();
+  }
+
+  public void configureHardware(){
+    TalonFXConfiguration configs = new TalonFXConfiguration();
+    configs.Slot0.kP = p;
+    configs.Slot0.kI = i;
+    configs.Slot0.kD = d;
+    configs.Slot0.kV = 0.12;
+    configs.Voltage.PeakForwardVoltage = 8;
+    configs.Voltage.PeakReverseVoltage = -8;
+
+    configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
+    configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
+
+    var error = feederMotor.getConfigurator().apply(configs);
+    if (!error.isOK()) 
+    {
+        System.err.println(String.format("FEEDER MOTOR ERROR: %s", error.toString()));
+        setDiagnosticsFeedback(error.getDescription(), false);
+    }
   }
 
   @Override
@@ -131,11 +152,15 @@ public void setConfigsTrigger(){
     if (feederMotorFault.hasFaults());{
       ok = false;
     }
+    if(!ok){
+      result = feederMotorFault.getFaults();
+    }
 
-    if(toffeeder1DutyCycleInput.getFrequency()<2){
+    if(feederTofDutyCycleInput.getFrequency()<2){
+      ok = false;
       result += String.format("toffeeder1 not working");
     }
-    result = feederMotorFault.getFaults();
+
     return setDiagnosticsFeedback(result, ok);
   }
 
@@ -143,9 +168,10 @@ public void setConfigsTrigger(){
   public void initSendable(SendableBuilder builder)
   {
     builder.setSmartDashboardType("Shooter");
-    builder.addDoubleProperty("Tof Range", this::getRangeTrigger1, null);
-    builder.addDoubleProperty("Tof Freq", this::getFreqTrigger1, null);
-    builder.addDoubleProperty("Target Feeder Velocity", this::getTargetFeederMotorVelocityRPS, null);
-    builder.addDoubleProperty("Actual Feeder Velocity", this::getFeederMotorVelocityRPS, null);
+    builder.addDoubleProperty("Tof Range", this::getTofRange, null);
+    builder.addDoubleProperty("Tof Freq", this::getTofFreq, null);
+    builder.addDoubleProperty("Target Feeder Velocity", this::getTargetFeederMotorVelocity, null);
+    builder.addDoubleProperty("Commanded Feeder Velocity", this::getCommandedFeederMotorVelocity, null);
+    builder.addDoubleProperty("Actual Feeder Velocity", this::getCurrentFeederMotorVelocity, null);
   }
 }

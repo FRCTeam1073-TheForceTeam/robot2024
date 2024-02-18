@@ -28,7 +28,7 @@ import frc.robot.subsystems.*;
 import frc.robot.commands.ShooterTestCommand;
 import frc.robot.commands.FeederTestCommand;
 // import frc.robot.commands.LoadTrigger;
-// import frc.robot.commands.RunTrigger;
+// import frc.robot.commands.RunFeeder;
 // import frc.robot.commands.SetShooterAngle;
 // import frc.robot.commands.RunShooter;
 // import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;

@@ -5,7 +5,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.OI;
@@ -14,8 +13,6 @@ public class FeederTestCommand extends Command {
   /** Creates a new TriggerTestCommand. */
   private Feeder feeder;
   private OI oi;
-  private double feederMotorVelocityMPS;
-  private boolean isFeederOn;
 
   public FeederTestCommand(Feeder feeder, OI oi) {
     this.feeder = feeder;
@@ -27,7 +24,6 @@ public class FeederTestCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("FEEDER TEST COMMAND STARTED");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -35,20 +31,14 @@ public class FeederTestCommand extends Command {
   public void execute() {
     if(oi.getOperatorRawButton(3)){
       feeder.setTargetFeederMotorVelocity(0);
-      System.out.println("TARGET FEEDER VELOCITY 0");
     }
     else if(oi.getOperatorRawButton(4)){
       feeder.setTargetFeederMotorVelocity(10); //in MPS
-      System.out.println("TARGET FEEDER VELOCITY .5");
     }
     // if(getFeederOn()){
     //   feeder.setTargetFeederMotorVelocity(feederMotorVelocityMPS);
     // }
   }
-
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
 
   // public boolean getFeederOn(){
   //   return isFeederOn;
@@ -58,11 +48,9 @@ public class FeederTestCommand extends Command {
   //   isFeederOn = feederon;
   // }
 
-
-  public void initSendable(SendableBuilder builder){
-    builder.setSmartDashboardType("Feeder Test Command");
-    // builder.addBooleanProperty("Toggle Feeder", this::getFeederOn, this::setFeederOn);
-  }
+  // Called once the command ends or is interrupted.
+  @Override
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
