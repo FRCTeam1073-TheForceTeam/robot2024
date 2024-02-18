@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.GetTagData;
 import frc.robot.commands.StartCamera;
+import frc.robot.commands.StopCamera;
 import frc.robot.subsystems.Camera;
 import frc.robot.commands.GetTagData;
 import frc.robot.subsystems.SerialComms;
@@ -19,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 //import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -33,6 +35,7 @@ public class RobotContainer {
   private final Camera m_camera1 = new Camera(m_serial, 1);  // camID is how SerialComms and the cameras themselves tells them apart
   //private final GetTagData c_GetTagData = new GetTagData(m_camera1);
   private final StartCamera c_startRecordingAutonomous = new StartCamera(m_camera1);
+  private final StopCamera c_stopRecording = new StopCamera(m_camera1);
   // and so on for however many cameras we have
 
   private final OI m_OI = new OI();
@@ -43,9 +46,8 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-
-
-    CommandScheduler.getInstance().setDefaultCommand(m_camera1, c_startRecordingAutonomous);
+    //CommandScheduler.getInstance().setDefaultCommand(m_camera1, c_startRecordingAutonomous);
+    //CommandScheduler.getInstance().schedule(c_startRecordingAutonomous);
     //Configure the trigger bindings
     configureBindings();
   }
@@ -84,8 +86,17 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return null;
+    return c_startRecordingAutonomous;
   }
 
-
+  // NSargent: commandScheduler.getInstance.setDefaultCommand(m_camera1, getTagdata())
+  /**
+   * Use this to pass the autonomous command to the main {@link Robot} class.
+   *
+   * @return the command to run in autonomous
+   */
+  public Command getDisabledCommand() {
+    // An example command will be run in autonomous
+    return c_stopRecording;
+  }
 }

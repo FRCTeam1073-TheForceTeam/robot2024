@@ -7,30 +7,30 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Camera;
 
-public class StartCamera extends Command {
+public class StopCamera extends Command {
   Camera camera;
-  /** Creates a new StartCamera. */
-  public StartCamera(Camera camera) {
+  /** Creates a new StopCamera. */
+  public StopCamera(Camera camera) {
+    // Use addRequirements() here to declare subsystem dependencies.
     this.camera = camera;
     addRequirements(camera);
-    // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("Camera auto started!");
-    camera.startRecordingTeleop();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    System.out.println("Camera stopped!");
+    camera.stopRecording();
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
   @Override
