@@ -24,11 +24,13 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.*;
-// import frc.robot.commands.PivotTestCommand;
+import frc.robot.commands.PivotTestCommand;
 import frc.robot.commands.ShooterTestCommand;
 import frc.robot.commands.FeederTestCommand;
 // import frc.robot.commands.LoadTrigger;
 // import frc.robot.commands.RunFeeder;
+
+
 // import frc.robot.commands.SetShooterAngle;
 // import frc.robot.commands.RunShooter;
 // import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -42,13 +44,13 @@ import frc.robot.commands.FeederTestCommand;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  // private final Pivot pivot = new Pivot();
+  private final Pivot m_pivot = new Pivot();
   private final Shooter m_shooter = new Shooter();
   private final Feeder m_feeder = new Feeder(); 
   // private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
   
-  // private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(pivot);
+  private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(m_pivot);
   private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(m_shooter, m_OI);
   private final FeederTestCommand m_feederTestCommand = new FeederTestCommand(m_feeder, m_OI);
   // private final LoadTrigger m_loadTrigger = new LoadTrigger(m_shooter);
@@ -72,7 +74,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // CommandScheduler.getInstance().setDefaultCommand(pivot, m_pivotTestCommand);
+    // CommandScheduler.getInstance().setDefaultCommand(m_pivot, m_pivotTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_shooterTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
     // CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
@@ -80,6 +82,7 @@ public class RobotContainer {
     SmartDashboard.putData(m_OI);
     SmartDashboard.putData(m_shooter);
     SmartDashboard.putData(m_feeder);
+    SmartDashboard.putData(m_pivot);
 
     // m_chooser.setDefaultOption("No Autonomous", kNoAuto);
     //ex: m_chooser.addOption("Auto1", auto1);

@@ -42,6 +42,9 @@ public class Shooter extends DiagnosticsSubsystem{
   // Beam break sensor
   private final DigitalInput shooterBeamBreak;
 
+  // VelocityVoltage object
+  private VelocityVoltage shooterVelocityVoltage = new VelocityVoltage(0);
+
   // CANbus for this subsystem
   private final String kCANbus = "CANivore";
 
@@ -78,8 +81,8 @@ public class Shooter extends DiagnosticsSubsystem{
     commandedBottomVelocityMPS = bottomFlyWheelLimiter.calculate(-targetBottomVelocityMPS);
     
     // Run the motors at the current commanded velocity
-    topShooterMotor.setControl(new VelocityVoltage(commandedTopVelocityMPS / shooterMetersPerRotation));
-    bottomShooterMotor.setControl(new VelocityVoltage(commandedBottomVelocityMPS / shooterMetersPerRotation));
+    topShooterMotor.setControl(shooterVelocityVoltage.withVelocity(commandedTopVelocityMPS / shooterMetersPerRotation));
+    bottomShooterMotor.setControl(shooterVelocityVoltage.withVelocity(commandedBottomVelocityMPS / shooterMetersPerRotation));
   }
 
   /* Updates the current motor velocities */

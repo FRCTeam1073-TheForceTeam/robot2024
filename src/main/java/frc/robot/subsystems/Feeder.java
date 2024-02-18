@@ -49,6 +49,9 @@ public class Feeder extends DiagnosticsSubsystem {
   private double feederTofRange;
   private double feederTofDutyCycle;
 
+  // VelocityVoltage object
+  private VelocityVoltage feederVelocityVoltage = new VelocityVoltage(0);
+
   // CANbus for this subsystem
   private final String kCANbus = "CANivore";
 
@@ -82,7 +85,7 @@ public class Feeder extends DiagnosticsSubsystem {
 
     // Calculates ratelimited velocity in rotations per second based on meters/second target velocity and runs the motor
     commandedVelocityMPS = (feederMotorLimiter.calculate(-targetVelocityMPS));
-    feederMotor.setControl(new VelocityVoltage(commandedVelocityMPS / feederMetersPerRotation));
+    feederMotor.setControl(feederVelocityVoltage.withVelocity(commandedVelocityMPS / feederMetersPerRotation));
   }
 
   /* Updates the current motor velocity */

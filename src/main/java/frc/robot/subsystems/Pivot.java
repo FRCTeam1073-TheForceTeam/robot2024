@@ -11,6 +11,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
@@ -25,10 +26,14 @@ public class Pivot extends DiagnosticsSubsystem {
   private final double pivotGearRatio = 8.0/1.0;
   private final double pivotWheelRadius = 0.1429; //meters
   private final double pivotMeterPerRotations = pivotWheelRadius * 2 * Math.PI * pivotGearRatio;
-  private double pivotRotationsPerRadian = 8.181818 / (2 * Math.PI);
+  private double pivotRotationsPerRadian = 8 / (2 * Math.PI);
+
+  // Pivot limits
+  private final double minAngleRad = -.88;
+  private final double maxAngleRad = 0;
 
   // Motor pid values
-  private double p = 0.0;
+  private double p = 8;
   private double i = 0.0;
   private double d = 0.0;
 
@@ -36,6 +41,9 @@ public class Pivot extends DiagnosticsSubsystem {
   private double targetPositionRad;
   private double commandedPositionRad;
   private double currentPositionRad;
+
+  // PositionVoltage object
+  private PositionVoltage pivotPositionVoltage = new PositionVoltage(0).withSlot(0);
 
   // CANbus for this subsystem
   private final String kCANbus = "CANivore";
@@ -57,8 +65,8 @@ public class Pivot extends DiagnosticsSubsystem {
   public void periodic() {
     updateFeedback();
     // This method will be called once per scheduler run
-    commandedPositionRad = pivotMotorFilter.calculate(-targetPositionRad);
-    pivotMotor.setControl(new PositionVoltage(commandedPositionRad * pivotRotationsPerRadian));
+    commandedPositionRad = pivotMotorFilter.calculate(MathUtil.clamp(targetPositionRad, minAngleRad, maxAngleRad));
+    pivotMotor.setControl(pivotPositionVoltage.withPosition(commandedPositionRad * pivotRotationsPerRadian));
   }
 
   /* Updates the current motor position */
@@ -67,7 +75,7 @@ public class Pivot extends DiagnosticsSubsystem {
   }
 
   /* Sets the desired motor position in radians */
-  public void setTargetPivotPositionInRad(double pivotMotorPositionRad)
+  public void setTargetPositionInRad(double pivotMotorPositionRad)
   {
     targetPositionRad  = pivotMotorPositionRad;
   }
@@ -88,21 +96,22 @@ public class Pivot extends DiagnosticsSubsystem {
     return currentPositionRad;
   }
 
+  /* Gets the actual reported rotation of the motor in rotations */
+  public double getCurrentPositionInRot(){
+    return currentPositionRad * pivotRotationsPerRadian;
+  }
+
   public void configureHardware(){
     TalonFXConfiguration configs = new TalonFXConfiguration();
     configs.Slot0.kP = p;
     configs.Slot0.kI = i;
     configs.Slot0.kD = d;
-    configs.Slot0.kV = 0.12;
-    configs.Voltage.PeakForwardVoltage = 8;
-    configs.Voltage.PeakReverseVoltage = -8;
+    // configs.Slot0.kV = 0.12;
+    configs.Voltage.PeakForwardVoltage = 12;
+    configs.Voltage.PeakReverseVoltage = -12;
 
-    configs.Slot1.kP = 5;
-    configs.Slot1.kI = 0.1;
-    configs.Slot1.kD = 0.001;
-
-    configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
-    configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
+    // configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
+    // configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
     //configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
     var error = pivotMotor.getConfigurator().apply(configs);
@@ -129,8 +138,9 @@ public class Pivot extends DiagnosticsSubsystem {
   public void initSendable(SendableBuilder builder)
   {
     builder.setSmartDashboardType("Pivot");
-    builder.addDoubleProperty("Target Pivot Motor Position", this::getTargetPositionInRad, null);
+    builder.addDoubleProperty("Target Pivot Motor Position", this::getTargetPositionInRad, this::setTargetPositionInRad);
     builder.addDoubleProperty("Commanded Pivot Motor Position", this::getCommandedPositionInRad, null);
     builder.addDoubleProperty("Actual Pivot Motor Position", this::getCurrentPositionInRad, null);
+    builder.addDoubleProperty("Current Position In Rotations", this::getCurrentPositionInRot, null);
   }
 }

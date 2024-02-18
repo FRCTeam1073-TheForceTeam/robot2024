@@ -25,7 +25,7 @@ public class SetShooterAngle extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    pivot.setTargetPivotPositionInRad(targetPositionRotations);
+    pivot.setTargetPositionInRad(targetPositionRotations);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
