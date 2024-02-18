@@ -30,10 +30,10 @@ public class FeederTestCommand extends Command {
   @Override
   public void execute() {
     if(oi.getOperatorRawButton(3)){
-      feeder.setTargetFeederMotorVelocity(0);
+      feeder.setTargetFeederVelocity(0);
     }
     else if(oi.getOperatorRawButton(4)){
-      feeder.setTargetFeederMotorVelocity(10); //in MPS
+      feeder.setTargetFeederVelocity(10); //in MPS
     }
     // if(getFeederOn()){
     //   feeder.setTargetFeederMotorVelocity(feederMotorVelocityMPS);

@@ -38,9 +38,9 @@ public class Feeder extends DiagnosticsSubsystem {
 
   // Velocity variables
   // Target is in meters per second, commanded and current are in rotations per second
-  private double targetFeederMotorVelocity;
-  private double commandedFeederMotorVelocity;
-  private double currentFeederMotorVelocity;
+  private double targetFeederVelocity;
+  private double commandedFeederVelocity;
+  private double currentFeederVelocity;
 
   // Time of flight sensor
   private final DigitalInput feederTof;
@@ -66,8 +66,8 @@ public class Feeder extends DiagnosticsSubsystem {
     feederTofFreq = 0;
     feederTofRange = 0;
 
-    targetFeederMotorVelocity = 0;
-    currentFeederMotorVelocity = 0;
+    targetFeederVelocity = 0;
+    currentFeederVelocity = 0;
     
     configureHardware();
   }
@@ -75,35 +75,41 @@ public class Feeder extends DiagnosticsSubsystem {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    updateFeedback();
+
     feederTofFreq = feederTofDutyCycleInput.getFrequency();
     feederTofDutyCycle = feederTofDutyCycleInput.getOutput();
     feederTofRange = feederTofDutyCycleInput.getOutput();
     feederTofRange = (feederTofScaleFactor * (feederTofDutyCycle / feederTofFreq - 0.001)) / 1000;
 
     // Calculates ratelimited velocity in rotations per second based on meters/second target velocity and runs the motor
-    commandedFeederMotorVelocity = (feederMotorLimiter.calculate(-targetFeederMotorVelocity / feederMetersPerRotation));
-    feederMotor.setControl(new VelocityVoltage(commandedFeederMotorVelocity));
-   }
+    commandedFeederVelocity = (feederMotorLimiter.calculate(-targetFeederVelocity / feederMetersPerRotation));
+    feederMotor.setControl(new VelocityVoltage(commandedFeederVelocity));
+  }
 
+  /* Updates the current motor velocity */
+  public void updateFeedback(){
+    currentFeederVelocity = feederMotor.getVelocity().getValue();
+  }
 
   /* Sets the desired motor velocity in meters per second */
-  public void setTargetFeederMotorVelocity(double feederMotorMPS){
-    targetFeederMotorVelocity = feederMotorMPS / feederMetersPerRotation;
+  public void setTargetFeederVelocity(double feederMotorMPS){
+    targetFeederVelocity = feederMotorMPS / feederMetersPerRotation;
   }
 
   /* Gets the target velocity for the motor in meters per second */
-  public double getTargetFeederMotorVelocity(){
-    return targetFeederMotorVelocity;
+  public double getTargetFeederVelocity(){
+    return targetFeederVelocity;
   }
 
   /* Gets the ratelimited commanded velocity for the motor in rotations per second */
-  public double getCommandedFeederMotorVelocity(){
-    return commandedFeederMotorVelocity;
+  public double getCommandedFeederVelocity(){
+    return commandedFeederVelocity;
   }
 
   /* Gets the actual reported velocity of the motor in rotations per second */
-  public double getCurrentFeederMotorVelocity(){
-    return feederMotor.getVelocity().getValue();
+  public double getCurrentFeederVelocity(){
+    return currentFeederVelocity;
   }
 
   /* Gets the time of flight range */
@@ -170,8 +176,8 @@ public class Feeder extends DiagnosticsSubsystem {
     builder.setSmartDashboardType("Shooter");
     builder.addDoubleProperty("Tof Range", this::getTofRange, null);
     builder.addDoubleProperty("Tof Freq", this::getTofFreq, null);
-    builder.addDoubleProperty("Target Feeder Velocity", this::getTargetFeederMotorVelocity, null);
-    builder.addDoubleProperty("Commanded Feeder Velocity", this::getCommandedFeederMotorVelocity, null);
-    builder.addDoubleProperty("Actual Feeder Velocity", this::getCurrentFeederMotorVelocity, null);
+    builder.addDoubleProperty("Target Feeder Velocity", this::getTargetFeederVelocity, null);
+    builder.addDoubleProperty("Commanded Feeder Velocity", this::getCommandedFeederVelocity, null);
+    builder.addDoubleProperty("Actual Feeder Velocity", this::getCurrentFeederVelocity, null);
   }
 }

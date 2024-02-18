@@ -40,7 +40,7 @@ public class RunShooter extends Command {
     /* if shooter motors are up to speed, then turn on trigger motors */
     /* might need to adjust the numbers depending on what % we want the power at */
     if ((shooter.getCurrentTopMotorVelocity() >= 0.98 * shooterTopMPS) && (shooter.getCurrentBottomMotorVelocity() >= 0.98 * shooterBottomMPS)){
-      feeder.setTargetFeederMotorVelocity(feederMotorMPS);
+      feeder.setTargetFeederVelocity(feederMotorMPS);
     }
   }
 
@@ -49,7 +49,7 @@ public class RunShooter extends Command {
   public void end(boolean interrupted) {
     shooter.setTargetTopMotorVelocity(0);
     shooter.setTargetBottomMotorVelocity(0);
-    feeder.setTargetFeederMotorVelocity(0); 
+    feeder.setTargetFeederVelocity(0); 
   }
 
   // Returns true when the command should end.
