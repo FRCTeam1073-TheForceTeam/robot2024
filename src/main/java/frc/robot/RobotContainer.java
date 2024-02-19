@@ -19,6 +19,14 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.StartRecordingAutonomous;
+import frc.robot.commands.StartRecordingTeleop;
+import frc.robot.commands.StopRecording;
+import frc.robot.subsystems.Camera;
+import frc.robot.subsystems.SerialComms;
+import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.SerialPort.Port;
+import frc.robot.subsystems.OpenMV;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -31,8 +39,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
-public class RobotContainer 
-{
+public class RobotContainer {
+  SerialPort.Port serial_port = SerialPort.Port.kUSB;
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
@@ -45,10 +53,16 @@ public class RobotContainer
   private static final String kLeaveAuto = "Leave Auto";
   private static final String kTestAuto = "Test Auto";
   
-  
+  private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
+  private final Camera m_camera1 = new Camera(m_serial, 1);  // camID is how SerialComms and the cameras themselves tells them apart
+  //private final GetTagData c_GetTagData = new GetTagData(m_camera1);
+  private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_camera1);
+  private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_camera1);
+  private final StopRecording c_stopRecording = new StopRecording(m_camera1);
+  // and so on for however many cameras we have
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() 
@@ -77,17 +91,18 @@ public class RobotContainer
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() 
+  private void configureBindings() // TODO: NSARGENT: is this legit? configureBindings() call up on line 82
   {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-  
-
+    // System.out.println("Configuring buttons");
+    // Trigger tagButton = new Trigger(m_OI::getXButton);
+    // tagButton.onTrue(getTagData());
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
 
   }
 
-  public static void initPreferences() 
+  public static void initPreferences()
   {
     System.out.println("RobotContainer: init Preferences.");
     SwerveModuleConfig.initPreferences();
@@ -104,12 +119,22 @@ public class RobotContainer
     return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, pointList, 1.0, 1.0, 1.0, 1.0), m_drivetrain);
   }
 
+  // TODO: add to preexisting getAutonomousCommand
+  // public Command getAutonomousCommand() {
+  //   return c_startRecordingAutonomous;
+  // }
+
+  public Command getTeleopCommand(){
+    return c_startRecordingTeleop;
+  }
+
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() 
+  public Command getAutonomousCommand()  
   {
     switch (m_chooser.getSelected())
     {

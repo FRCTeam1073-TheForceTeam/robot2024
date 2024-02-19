@@ -4,6 +4,11 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.IntegerArrayPublisher;
+import edu.wpi.first.networktables.IntegerArraySubscriber;
+import edu.wpi.first.networktables.IntegerArrayTopic;
+import edu.wpi.first.networktables.PubSubOption;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
@@ -377,3 +382,14 @@ public class Drivetrain extends DiagnosticsSubsystem
   }
 
 }
+
+// class AprilTagSubscriber {
+//   // the publisher is an instance variable so its lifetime matches that of the class
+//   IntegerArraySubscriber intArraySub;
+  
+//   public void GetAprilTag(IntegerArrayTopic intArrayTopic) {
+//       // start publishing; the return value must be retained (in this case, via
+//       // an instance variable)
+//       intArraySub = intArrayTopic.subscribe();
+//     }
+//   }
