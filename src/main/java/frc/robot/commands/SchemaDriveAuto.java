@@ -15,6 +15,7 @@ public class SchemaDriveAuto
         return arbiter;
     }
 
+    // TODO: are there supposed to be two of these? which one wins, the one on the bottom?
     public static Command create(DriveThroughTrajectorySchema trajectorySchema, Drivetrain drivetrain){
         arbiter = new SchemaArbiter(drivetrain, false, true);
         arbiter.addSchema(trajectorySchema);

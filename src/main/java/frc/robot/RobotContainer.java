@@ -25,8 +25,6 @@ import frc.robot.commands.StopRecording;
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.SerialComms;
 import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.SerialPort.Port;
-import frc.robot.subsystems.OpenMV;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -119,16 +117,11 @@ public class RobotContainer {
     return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, pointList, 1.0, 1.0, 1.0, 1.0), m_drivetrain);
   }
 
-  // TODO: add to preexisting getAutonomousCommand
-  // public Command getAutonomousCommand() {
-  //   return c_startRecordingAutonomous;
-  // }
-
   public Command getTeleopCommand(){
     return c_startRecordingTeleop;
   }
 
-
+// TODO: add c_startRecordingAutonomous; to preexisting getAutonomousCommand
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -164,5 +157,9 @@ public class RobotContainer {
     //drivePoints.add(new Pose2d(1, 1, new Rotation2d(0.9)));
 
     //return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, drivePoints, 0.5, 0.5, 0.5, 1.0), m_drivetrain);
+  }
+
+  public Command getDisabledCommand(){
+    return c_stopRecording;
   }
 }
