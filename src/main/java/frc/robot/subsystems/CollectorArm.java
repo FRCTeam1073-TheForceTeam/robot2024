@@ -4,9 +4,11 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -40,12 +42,12 @@ public class CollectorArm extends DiagnosticsSubsystem {
   MotorFault extendMotorFault;
 
   // Rate Limiters For Each Axis
-  private final SlewRateLimiter liftLimiter;
-  private final SlewRateLimiter extendLimiter;
+  // private final SlewRateLimiter liftLimiter;
+  // private final SlewRateLimiter extendLimiter;
 
   // Command For Each Axis
-  public PositionVoltage liftPositionVoltage;
-  public PositionVoltage extendPositionVoltage;
+  public MotionMagicVoltage liftPositionVoltage;
+  public MotionMagicVoltage extendPositionVoltage;
 
   // Map for profiled motion
   private InterpolatingDoubleTreeMap armMap;
@@ -119,12 +121,12 @@ public class CollectorArm extends DiagnosticsSubsystem {
     extendMotorFault = new MotorFault(extendMotor, 15);
 
     // Rate limiter between target value and commanded value for smooth motion.
-    liftLimiter = new SlewRateLimiter(0.5); 
-    extendLimiter = new SlewRateLimiter(1); 
+    // liftLimiter = new SlewRateLimiter(0.5); 
+    // extendLimiter = new SlewRateLimiter(1); 
 
     // Position-based command.
-    liftPositionVoltage = new PositionVoltage(0).withSlot(0);
-    extendPositionVoltage = new PositionVoltage(0).withSlot(0);
+    liftPositionVoltage = new MotionMagicVoltage(0).withSlot(0);
+    extendPositionVoltage = new MotionMagicVoltage(0).withSlot(0);
 
     currentPose = POSE.START;
 
@@ -136,8 +138,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
   public void periodic() 
   {
     updateFeedback();
-    commandedExtendLength = extendLimiter.calculate(limitExtendLength(targetExtendLength));
-    commandedLiftAngle = liftLimiter.calculate(limitLiftAngle(targetLiftAngle));
+    commandedExtendLength = limitExtendLength(targetExtendLength);
+    commandedLiftAngle = limitLiftAngle(targetLiftAngle);
     runLiftMotor(commandedLiftAngle);
     runExtendMotor(commandedExtendLength);
     //targetExtendLength = interpolateExtendPosition(currentLiftAngle);
@@ -279,6 +281,11 @@ public class CollectorArm extends DiagnosticsSubsystem {
      liftConfigs.Feedback.SensorToMechanismRatio = 1 / liftRadiansPerRotation;  // This should be used for remote CANCoder with continuous wrap.
     // liftConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     // liftConfigs.ClosedLoopGeneral.ContinuousWrap = true;
+
+    liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 1;
+    liftConfigs.MotionMagic.MotionMagicAcceleration = 1;
+    liftConfigs.MotionMagic.MotionMagicJerk = 0;
+
     liftMotor.getConfigurator().apply(liftConfigs);
     liftMotor.setPosition(0);
 
@@ -296,6 +303,11 @@ public class CollectorArm extends DiagnosticsSubsystem {
     extendConfigs.Feedback.SensorToMechanismRatio = 1 / extendMetersPerRotation;  // This should be used for remote CANCoder with continuous wrap.
     //extendConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     //extendConfigs.ClosedLoopGeneral.ContinuousWrap = true;
+
+    extendConfigs.MotionMagic.MotionMagicCruiseVelocity = 1;
+    extendConfigs.MotionMagic.MotionMagicAcceleration = 1;
+    extendConfigs.MotionMagic.MotionMagicJerk = 0;
+
     extendMotor.getConfigurator().apply(extendConfigs);
     extendMotor.setPosition(0);
     
