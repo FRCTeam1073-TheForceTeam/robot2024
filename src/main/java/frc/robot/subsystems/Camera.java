@@ -11,35 +11,25 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Camera extends SubsystemBase {
   /** Creates a new Camera. */
   private SerialComms serialComms;
-  private int camID;
+  private String camID;
   
-  public Camera(SerialComms serialComms, int camID) {
+  public Camera(SerialComms serialComms, String camID) {
     System.out.println("in camera constructor");
     this.serialComms = serialComms;
-    System.out.println("camID in constructor");
-    System.out.println(camID);
+    this.camID = camID;
+    System.out.println(String.format("camID: %s", camID));
   }
 
-  // public void getAprilTag(){
-  //   System.out.println("in getAprilTag()");
-  //   System.out.println("camID in getAprilTag()");
-  //   System.out.println(camID);
-  //   String cmdStr = "ti\n";
-  //   String data = SerialComms.transact(cmdStr);
-  //   System.out.println("gotAprilTag, data:");
-  //   System.out.println(data);
-  // }
-
   public void startRecordingTeleop(){
-    serialComms.send("ti");
+    serialComms.send(String.format("%s,ti", this.camID));
   }
 
   public void startRecordingAutonomous(){
-    serialComms.send("ai");
+    serialComms.send(String.format("%s,ai", this.camID));
   }
 
   public void stopRecording(){
-    serialComms.send("di");
+    serialComms.send(String.format("%s,di", this.camID));
   }
 
   @Override

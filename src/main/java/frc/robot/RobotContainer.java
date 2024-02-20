@@ -52,11 +52,15 @@ public class RobotContainer {
   private static final String kTestAuto = "Test Auto";
   
   private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
-  private final Camera m_camera1 = new Camera(m_serial, 1);  // camID is how SerialComms and the cameras themselves tells them apart
-  //private final GetTagData c_GetTagData = new GetTagData(m_camera1);
-  private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_camera1);
-  private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_camera1);
-  private final StopRecording c_stopRecording = new StopRecording(m_camera1);
+  private final Camera m_camera1 = new Camera(m_serial, "1");  // camID is how SerialComms and the cameras themselves tells them apart
+  private final Camera m_camera2 = new Camera(m_serial, "2");
+  // private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_camera1);
+  // private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_camera1);
+  // private final StopRecording c_stopRecording = new StopRecording(m_camera1);
+  
+  private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_camera2);
+  private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_camera2);
+  private final StopRecording c_stopRecording = new StopRecording(m_camera2);
   // and so on for however many cameras we have
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
