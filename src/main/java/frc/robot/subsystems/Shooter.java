@@ -87,8 +87,8 @@ public class Shooter extends DiagnosticsSubsystem{
 
   /* Updates the current motor velocities */
   public void updateFeedback(){
-    currentTopVelocityMPS = topShooterMotor.getVelocity().getValue();
-    currentBottomVelocityMPS = bottomShooterMotor.getVelocity().getValue();
+    currentTopVelocityMPS = topShooterMotor.getVelocity().getValue() * shooterMetersPerRotation;
+    currentBottomVelocityMPS = bottomShooterMotor.getVelocity().getValue() * shooterMetersPerRotation;
   }
 
   /* Sets the desired motor velocites in meters per second */

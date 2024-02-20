@@ -23,17 +23,17 @@ public class Pivot extends DiagnosticsSubsystem {
   private final SlewRateLimiter pivotMotorFilter;
 
   // Motor scale factors
-  private final double pivotGearRatio = 8.0/1.0;
+  private final double pivotGearRatio = 16 * 8.18 / 1;
   private final double pivotWheelRadius = 0.1429; //meters
   private final double pivotMeterPerRotations = pivotWheelRadius * 2 * Math.PI * pivotGearRatio;
-  private double pivotRotationsPerRadian = 8 / (2 * Math.PI);
+  private double pivotRotationsPerRadian = pivotGearRatio / (2 * Math.PI);
 
   // Pivot limits
   private final double minAngleRad = -.88;
   private final double maxAngleRad = 0;
 
   // Motor pid values
-  private double p = 8;
+  private double p = 1;
   private double i = 0.0;
   private double d = 0.0;
 
@@ -71,7 +71,7 @@ public class Pivot extends DiagnosticsSubsystem {
 
   /* Updates the current motor position */
   public void updateFeedback(){
-    currentPositionRad = pivotMotor.getPosition().getValue();
+    currentPositionRad = pivotMotor.getPosition().getValue() / pivotRotationsPerRadian;
   }
 
   /* Sets the desired motor position in radians */

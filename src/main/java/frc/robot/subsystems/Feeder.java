@@ -31,7 +31,7 @@ public class Feeder extends DiagnosticsSubsystem {
      */
 
   // Motor pid values
-  private double p = 0.4;
+  private double p = 0.2;
   private double i = 0.0;
   private double d = 0.003;
 
@@ -60,7 +60,7 @@ public class Feeder extends DiagnosticsSubsystem {
     //feederMotor = new TalonFX(19, kCANbus); //Falcon
     feederMotor = new TalonFX(19);
     feederMotorFault = new MotorFault(feederMotor, 19);
-    feederMotorLimiter = new SlewRateLimiter(1.5); //limits the rate of change to 0.5 units per seconds
+    feederMotorLimiter = new SlewRateLimiter(5); //limits the rate of change to 0.5 units per seconds
 
     feederTof = new DigitalInput(1);
     feederTofDutyCycleInput = new DutyCycle(feederTof);
@@ -90,7 +90,7 @@ public class Feeder extends DiagnosticsSubsystem {
 
   /* Updates the current motor velocity */
   public void updateFeedback(){
-    currentVelocityMPS = feederMotor.getVelocity().getValue();
+    currentVelocityMPS = feederMotor.getVelocity().getValue() * feederMetersPerRotation;
   }
 
   /* Sets the target motor velocity given in meters per second */

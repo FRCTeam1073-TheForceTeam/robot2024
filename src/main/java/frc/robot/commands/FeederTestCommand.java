@@ -29,6 +29,7 @@ public class FeederTestCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    feeder.setTargetVelocityInMPS(0);
     if(oi.getOperatorRawButton(3)){
       feeder.setTargetVelocityInMPS(0);
     }
