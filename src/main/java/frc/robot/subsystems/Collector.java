@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -23,7 +24,7 @@ public class Collector extends DiagnosticsSubsystem {
   private double targetCollectorVelocity = 0; //TODO: find appropriate speed for collector
   private double currentCollectorVelocity = 0;
   private double commandedCollectorVelocity = 0;
-  public VelocityVoltage collectorVelocityVoltage;
+  public MotionMagicVelocityVoltage collectorVelocityVoltage;
 
   private DigitalInput tof1;
   private DutyCycle tof1DutyCycleInput;
@@ -37,7 +38,7 @@ public class Collector extends DiagnosticsSubsystem {
   private final double collectorWheelRadius = 0.0254; //meters
   private final double collectorMeterPerRotations = collectorWheelRadius * 2 * Math.PI * collectorGearRatio;
 
-  private final SlewRateLimiter collectorLimiter;
+  //private final SlewRateLimiter collectorLimiter;
 
   // private final double intakeTicksPerRadian = 2048.0 * collectorGearRatio / (2.0 * Math.PI);
   
@@ -56,8 +57,8 @@ public class Collector extends DiagnosticsSubsystem {
     tof1Freq = 0;
     tof1Range = 0;
 
-    collectorVelocityVoltage = new VelocityVoltage(0).withSlot(0);
-    collectorLimiter = new SlewRateLimiter(24);
+    collectorVelocityVoltage = new MotionMagicVelocityVoltage(0).withSlot(0); 
+    //collectorLimiter = new SlewRateLimiter(24);
 
     configureHardware();
   }
@@ -65,7 +66,7 @@ public class Collector extends DiagnosticsSubsystem {
   @Override
   public void periodic() 
   {
-    commandedCollectorVelocity = collectorLimiter.calculate(targetCollectorVelocity);
+    //commandedCollectorVelocity = collectorLimiter.calculate(targetCollectorVelocity);
     currentCollectorVelocity = collectMotor.getVelocity().getValueAsDouble() * collectorMeterPerRotations; //meters per second 
     runCollectMotor(commandedCollectorVelocity);
     tof1Freq = tof1DutyCycleInput.getFrequency();
@@ -123,6 +124,12 @@ public class Collector extends DiagnosticsSubsystem {
       System.err.print(String.format("COLLECT MOTOR ERROR: %s", error.toString()));
       setDiagnosticsFeedback(error.getDescription(), false);
     }
+
+    TalonFXConfiguration collectConfigs = new TalonFXConfiguration();
+    collectConfigs.MotionMagic.MotionMagicCruiseVelocity = 1;
+    collectConfigs.MotionMagic.MotionMagicAcceleration = 1;
+    collectConfigs.MotionMagic.MotionMagicJerk = 0;
+    collectMotor.getConfigurator().apply(collectConfigs, 0.5);
   }
 
   @Override
