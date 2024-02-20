@@ -1,8 +1,9 @@
 package frc.robot.subsystems;
 
+/* The diagnostics base for non-subsystem classes */
 public class DiagnosticsBase implements Diagnostics {
-    private boolean diagnosticsOk = false;
-    private String diagnosticsDetails = "I was too lazy to implement diagnotics!";
+    private boolean diagnosticsOk = true;
+    private String diagnosticsDetails = "";
   
     /** Creates a new Diagnostics. */
     public DiagnosticsBase() {
@@ -10,7 +11,9 @@ public class DiagnosticsBase implements Diagnostics {
     }
   
     @Override
-    public boolean updateDiagnostics() { return false;}
+    public boolean updateDiagnostics() { 
+      return false;
+    }
   
     @Override 
     public boolean diagnosticsOk() {
@@ -23,8 +26,10 @@ public class DiagnosticsBase implements Diagnostics {
     }
   
     public boolean setDiagnosticsFeedback(String diagnosticDetails, boolean ok){
-      this.diagnosticsDetails = diagnosticDetails;
-      this.diagnosticsOk = ok;
+      this.diagnosticsDetails += diagnosticDetails;
+      if(this.diagnosticsOk){
+        this.diagnosticsOk = ok;
+      }
       return this.diagnosticsOk;
     }   
     

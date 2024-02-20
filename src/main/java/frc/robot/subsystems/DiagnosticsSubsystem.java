@@ -6,9 +6,10 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+/* The diagnostics base for subsystems */
 public class DiagnosticsSubsystem extends SubsystemBase implements Diagnostics {
-  private boolean diagnosticsOk = false;
-  private String diagnosticsDetails = "I was too lazy to implement diagnotics!";
+  private boolean diagnosticsOk = true;
+  private String diagnosticsDetails = "";
 
   /** Creates a new Diagnostics. */
   public DiagnosticsSubsystem() {
@@ -16,7 +17,9 @@ public class DiagnosticsSubsystem extends SubsystemBase implements Diagnostics {
   }
 
   @Override
-  public boolean updateDiagnostics() { return false;}
+  public boolean updateDiagnostics() { 
+    return false;
+  }
 
   @Override 
   public boolean diagnosticsOk() {
@@ -29,8 +32,10 @@ public class DiagnosticsSubsystem extends SubsystemBase implements Diagnostics {
   }
 
   public boolean setDiagnosticsFeedback(String diagnosticDetails, boolean ok) {
-    this.diagnosticsDetails = diagnosticDetails;
-    this.diagnosticsOk = ok;
+    this.diagnosticsDetails += diagnosticDetails;
+    if(this.diagnosticsOk){
+      this.diagnosticsOk = ok;
+    }
     return this.diagnosticsOk;
   }
 }
