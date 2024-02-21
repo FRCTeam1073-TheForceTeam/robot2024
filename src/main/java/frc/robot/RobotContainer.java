@@ -48,8 +48,6 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
-  private final SerialComms m_serial = new SerialComms(Port.kUSB1);
-  private final Camera m_cammera = new Camera(m_serial, 1);
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -65,7 +63,7 @@ public class RobotContainer {
   // private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_camera1);
   // private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_camera1);
   // private final StopRecording c_stopRecording = new StopRecording(m_camera1);
-  
+  // redeclare for camera 2 until we figure out how to do more than one at a time
   private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_camera2);
   private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_camera2);
   private final StopRecording c_stopRecording = new StopRecording(m_camera2);
