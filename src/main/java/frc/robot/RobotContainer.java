@@ -5,18 +5,24 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+
 import frc.robot.commands.DriveThroughTrajectorySchema;
 import frc.robot.commands.DriveToPointSchema;
 import frc.robot.commands.SchemaDriveAuto;
+import frc.robot.subsystems.Bling;
+import frc.robot.subsystems.Camera;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
+import frc.robot.subsystems.SerialComms;
 import frc.robot.subsystems.SwerveModuleConfig;
 
 import java.util.ArrayList;
 
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.StartRecordingAutonomous;
@@ -42,6 +48,8 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
+  private final SerialComms m_serial = new SerialComms(Port.kUSB1);
+  private final Camera m_cammera = new Camera(m_serial, 1);
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -64,7 +72,9 @@ public class RobotContainer {
   // and so on for however many cameras we have
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController = new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final CommandXboxController m_driverController =
+      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  private final Bling m_bling = new Bling();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() 
@@ -80,6 +90,7 @@ public class RobotContainer {
 
 
     SmartDashboard.putData("Auto Chooser", m_chooser);
+
     // Configure the trigger bindings
     configureBindings();
   }
@@ -103,6 +114,7 @@ public class RobotContainer {
     // cancelling on release.
 
   }
+
 
   public static void initPreferences()
   {
@@ -163,7 +175,8 @@ public class RobotContainer {
     //return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, drivePoints, 0.5, 0.5, 0.5, 1.0), m_drivetrain);
   }
 
-  public Command getDisabledCommand(){
+  public Command getDisabledCommand() {
     return c_stopRecording;
+
   }
 }
