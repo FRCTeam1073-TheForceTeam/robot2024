@@ -3,11 +3,8 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Drivetrain;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class DriveToPointSchema extends MotionSchema 
@@ -46,25 +43,29 @@ public class DriveToPointSchema extends MotionSchema
   {
     // Called every time the scheduler runs while the command is scheduled.
     System.out.println("DriveToPoint");
- }
+  }
 
   //Sets the speed and rotation proportional to the difference in current robot position and target position.
   @Override
   public void execute() 
   {
     robotPose = drivetrain.getOdometry();
-    Transform2d difference = targetPose.minus(robotPose);
-    double xVelocity = - 0.8 * difference.getX();
-    double yVelocity = - 0.8 * difference.getY();
-    double angularVelocity = - 0.8 * difference.getRotation().getRadians();
+
+    double xVelocity = -(robotPose.getX() - targetPose.getX());
+    double yVelocity = -(robotPose.getY() - targetPose.getY());
+    double angularVelocity = 0.8 * wrapAngleRadians(robotPose.getRotation().getRadians() - targetPose.getRotation().getRadians());
+    System.out.println("Robot angle: " + robotPose.getRotation().getRadians());
+    System.out.println("Target angle: " + targetPose.getRotation().getRadians());
+    System.out.println("Angle Difference: " + wrapAngleRadians(robotPose.getRotation().getRadians() - targetPose.getRotation().getRadians()));
+    
     //tests if velocities are within the maximum and sets them to the max if they exceed
     if(xVelocity > maxLinearVelocity)
     {
       xVelocity = maxLinearVelocity;
     }
-    if(xVelocity < - maxLinearVelocity)
+    if(xVelocity < -maxLinearVelocity)
     {
-      xVelocity = - maxLinearVelocity;
+      xVelocity = -maxLinearVelocity;
     }
     if(yVelocity > maxLinearVelocity)
     {
@@ -89,6 +90,19 @@ public class DriveToPointSchema extends MotionSchema
     
   }
 
+  private double wrapAngleRadians(double angle)
+  {
+    while (angle > Math.PI)
+    {
+      angle -= Math.PI * 2;
+    }
+    while (angle < -Math.PI)
+    {
+      angle += Math.PI * 2;
+    }
+    return angle;
+  }
+
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) 
@@ -100,8 +114,9 @@ public class DriveToPointSchema extends MotionSchema
   @Override
   public boolean isFinished() 
   {
-    var error = targetPose.minus(robotPose);
-    if (error.getTranslation().getNorm()< distanceTolerance && error.getRotation().getRadians() < angleTolerance) 
+    var error = robotPose.minus(targetPose);
+    if ((Math.abs(error.getTranslation().getNorm()) < distanceTolerance || maxLinearVelocity == 0) && 
+      (Math.abs(error.getRotation().getRadians()) < angleTolerance || maxRotationVelocity == 0)) 
     {
       System.out.println("DriveToPoint Is Finished");
       return true;

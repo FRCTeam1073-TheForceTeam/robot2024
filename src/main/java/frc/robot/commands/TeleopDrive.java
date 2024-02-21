@@ -47,7 +47,7 @@ public class TeleopDrive extends SchemaArbiter
   /** Creates a new Teleop. */
   public TeleopDrive(Drivetrain ds, OI oi) 
   {
-    super(ds, true);
+    super(ds, true, false);
     super.setName("Teleop Drive");
     m_drivetrain = ds;
     m_OI = oi;
