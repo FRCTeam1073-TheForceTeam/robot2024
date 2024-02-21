@@ -81,7 +81,7 @@ public class CollectorTeleop extends Command {
     }
     else if(m_OI.getOperatorRawButton(6)) //intake
     {
-      vel = (0.5 * Math.abs(m_drivetrain.getChassisSpeeds().vxMetersPerSecond)) + 2;
+      vel = (0.05 * Math.abs(m_drivetrain.getChassisSpeeds().vxMetersPerSecond)) + 3;
       m_collector.setTargetCollectorVelocity(-vel); //meters per sec
       
       //if(m_collector.getRangeTOF() < minRange){

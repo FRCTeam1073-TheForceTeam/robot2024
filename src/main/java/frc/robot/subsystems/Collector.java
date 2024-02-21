@@ -9,6 +9,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -68,7 +69,7 @@ public class Collector extends DiagnosticsSubsystem {
   {
     //commandedCollectorVelocity = collectorLimiter.calculate(targetCollectorVelocity);
     currentCollectorVelocity = collectMotor.getVelocity().getValueAsDouble() * collectorMeterPerRotations; //meters per second 
-    runCollectMotor(commandedCollectorVelocity);
+    runCollectMotor(targetCollectorVelocity);
     tof1Freq = tof1DutyCycleInput.getFrequency();
     tof1DutyCycle = tof1DutyCycleInput.getOutput();
     tof1Range = tofCollectorScaleFactor * (tof1DutyCycle / tof1Freq - 0.001) / 1000; //supposedly in meters
@@ -78,6 +79,7 @@ public class Collector extends DiagnosticsSubsystem {
   private void runCollectMotor(double vel)
   {
     collectMotor.setControl(collectorVelocityVoltage.withVelocity(vel / collectorMeterPerRotations)); //meters per 
+    //collectMotor.setControl(collectorVelocityVoltage.withVelocity(vel)); //meters per 
   }
 
   public void setTargetCollectorVelocity(double velocity){
@@ -112,6 +114,13 @@ public class Collector extends DiagnosticsSubsystem {
   }
 
   private void configureHardware(){
+    TalonFXConfiguration collectConfigs = new TalonFXConfiguration();
+    collectConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
+    collectConfigs.MotionMagic.MotionMagicCruiseVelocity = 20;
+    collectConfigs.MotionMagic.MotionMagicAcceleration = 8500;
+    collectConfigs.MotionMagic.MotionMagicJerk = 8500;
+    collectMotor.getConfigurator().apply(collectConfigs, 0.5);
+
     //PID loop setting for collect motor
     var collectMotorClosedLoopConfig = new Slot0Configs();
     collectMotorClosedLoopConfig.withKP(collect_kP);
@@ -125,11 +134,6 @@ public class Collector extends DiagnosticsSubsystem {
       setDiagnosticsFeedback(error.getDescription(), false);
     }
 
-    TalonFXConfiguration collectConfigs = new TalonFXConfiguration();
-    collectConfigs.MotionMagic.MotionMagicCruiseVelocity = 1;
-    collectConfigs.MotionMagic.MotionMagicAcceleration = 1;
-    collectConfigs.MotionMagic.MotionMagicJerk = 0;
-    collectMotor.getConfigurator().apply(collectConfigs, 0.5);
   }
 
   @Override
