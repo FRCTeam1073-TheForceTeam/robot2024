@@ -15,6 +15,7 @@ import frc.robot.subsystems.SwerveModuleConfig;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -73,12 +74,22 @@ public class RobotContainer {
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
   
-
+    
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
 
   }
 
+  public void printAllFalseDiagnostics(){
+    boolean isDisabled = DriverStation.isDisabled();
+    //TODO: Add each subsystem
+    if(// Run the printDiagnostics method for each subsystem here, separated by && eg. m_subsystem.printDiagnostics(isDisabled);
+      true
+    )
+    {
+
+    }
+  }
 
   public static void initPreferences() {
     System.out.println("RobotContainer: init Preferences.");

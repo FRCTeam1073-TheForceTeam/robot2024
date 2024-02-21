@@ -38,4 +38,11 @@ public class DiagnosticsSubsystem extends SubsystemBase implements Diagnostics {
     }
     return this.diagnosticsOk;
   }
+
+  public boolean printDiagnostics(boolean disabled){
+    if(!this.diagnosticsOk && disabled){
+      System.out.println(this.diagnosticsDetails);
+    }
+    return this.diagnosticsOk;
+  }
 }
