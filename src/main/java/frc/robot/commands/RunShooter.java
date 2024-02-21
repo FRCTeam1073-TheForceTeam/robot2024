@@ -8,19 +8,16 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.Feeder;
 
 public class RunShooter extends Command {
   private Shooter shooter;
-  private Feeder feeder;
   private double shooterTopMPS;
   private double shooterBottomMPS;
-  private double feederMotorMPS;
   
   /* Creates a new RunShooter. */
-  public RunShooter(Shooter shooter, double shootortopRPS, double shootorbottomRPS, double feederMotorMPS) {
+
+  public RunShooter(Shooter shooter, double shootortopRPS, double shootorbottomRPS) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.feederMotorMPS = feederMotorMPS;
     this.shooter = shooter;
     addRequirements(shooter);
   }
@@ -29,8 +26,8 @@ public class RunShooter extends Command {
   /* start shooter wheels to get them up to speed */
   @Override
   public void initialize() {
-    shooter.setTargetTopVelocityInMPS(10);
-    shooter.setTargetBottomVelocityInMPS(10);
+    shooter.setTargetTopVelocityInMPS(shooterTopMPS);
+    shooter.setTargetBottomVelocityInMPS(shooterBottomMPS);
 
   }
 
@@ -39,9 +36,9 @@ public class RunShooter extends Command {
   public void execute() {
     /* if shooter motors are up to speed, then turn on trigger motors */
     /* might need to adjust the numbers depending on what % we want the power at */
-    if ((shooter.getCurrentTopVelocityInMPS() >= 0.98 * shooterTopMPS) && (shooter.getCurrentBottomVelocityInMPS() >= 0.98 * shooterBottomMPS)){
-      feeder.setTargetVelocityInMPS(feederMotorMPS);
-    }
+    // if ((shooter.getCurrentTopVelocityInMPS() >= 0.98 * shooterTopMPS) && (shooter.getCurrentBottomVelocityInMPS() >= 0.98 * shooterBottomMPS)){
+    //   feeder.setTargetVelocityInMPS(feederMotorMPS);
+    // }
   }
 
   // Called once the command ends or is interrupted.

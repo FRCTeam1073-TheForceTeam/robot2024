@@ -5,11 +5,6 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-// import frc.robot.subsystems.Bling;
-// import frc.robot.subsystems.Camera;
-// import frc.robot.commands.TeleopDrive;
-// import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.OI;
 // import frc.robot.subsystems.SerialComms;
 // import frc.robot.subsystems.SwerveModuleConfig;
 import edu.wpi.first.wpilibj.Preferences;
@@ -21,12 +16,17 @@ import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 // import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+// import frc.robot.subsystems.Bling;
+// import frc.robot.subsystems.Camera;
+// import frc.robot.commands.TeleopDrive;
+// import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.*;
 import frc.robot.commands.PivotTestCommand;
 import frc.robot.commands.ShooterTestCommand;
@@ -105,9 +105,11 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+    //Trigger.getOperatorRawButton1.toggleOnTrue(loadNoteToFeeder());
+    
     Trigger loadNoteToFeeder = new Trigger(m_OI::getOperatorRawButton1);
     loadNoteToFeeder.onTrue(loadNoteToFeeder());
-
+    
     Trigger launchFeederToSpeaker = new Trigger(m_OI::getOperatorRawButton2);
     launchFeederToSpeaker.onTrue(launchFeederToSpeaker());
 
@@ -139,17 +141,18 @@ public class RobotContainer {
   //   return null;
   // }
   public Command loadNoteToFeeder(){
-    return new SequentialCommandGroup(      
-      new LoadFeeder(m_feeder, Preferences.getDouble("Feeder Target Max Speed", 0.3))
-    );
+    System.out.println("load motor is doing");
+    return new LoadFeeder(m_feeder);
   }
+
   public Command launchFeederToSpeaker(){
     return new SequentialCommandGroup(
-      new RunShooter(m_shooter, Preferences.getDouble("Shooter Target Max Speed", 0.3), 0, 0),
+      new RunShooter(m_shooter, 10, 10),
       new ParallelCommandGroup(
-        new RunFeeder(m_feeder, Preferences.getDouble("Feeder Target Max Speed", 0.3)), 
-        new WaitCommand(1)
-      )
+        new RunFeeder(m_feeder, 10), 
+        new WaitCommand(1)),
+      new RunShooter(m_shooter, 0, 0),
+      new RunFeeder(m_feeder, 0)
     );
   }
     // public Command launchNoteToSpeaker(){
