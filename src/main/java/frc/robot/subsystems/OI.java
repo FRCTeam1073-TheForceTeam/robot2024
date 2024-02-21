@@ -170,6 +170,14 @@ public class OI extends DiagnosticsSubsystem
     return operatorController.getRawButton(i);
   }
 
+  public boolean getOperatorRawButton1() {
+    return operatorController.getRawButton(1);
+  }
+
+  public boolean getOperatorRawButton2() {
+    return operatorController.getRawButton(2);
+  }
+
   @Override
   public void initSendable(SendableBuilder builder){
     builder.setSmartDashboardType("OI");

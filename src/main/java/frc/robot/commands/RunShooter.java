@@ -25,12 +25,12 @@ public class RunShooter extends Command {
     addRequirements(shooter);
   }
 
-  // Called when the command is initially scheduled.
+// Called when the command is initially scheduled.
   /* start shooter wheels to get them up to speed */
   @Override
   public void initialize() {
-    shooter.setTargetTopVelocityInMPS(shooterTopMPS);
-    shooter.setTargetBottomVelocityInMPS(shooterBottomMPS);
+    shooter.setTargetTopVelocityInMPS(10);
+    shooter.setTargetBottomVelocityInMPS(10);
 
   }
 
@@ -47,15 +47,21 @@ public class RunShooter extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shooter.setTargetTopVelocityInMPS(0);
-    shooter.setTargetBottomVelocityInMPS(0);
-    feeder.setTargetVelocityInMPS(0); 
+
   }
 
   // Returns true when the command should end.
   /* return true when the note is not in the trigger/shooter */
   @Override
   public boolean isFinished() {
-    return !shooter.noteIsInShooter() && !feeder.noteIsInTrigger();
+    if((shooter.getCurrentTopVelocityInMPS() >= shooter.getTargetTopVelocityInMPS()) && 
+    (shooter.getCurrentBottomVelocityInMPS() >= shooter.getTargetBottomVelocityInMPS())){
+      return true;
+    }
+    else{
+      return false;
+    }
+    
+    //return !shooter.noteIsInShooter() && !feeder.noteIsInTrigger();
   }
 }

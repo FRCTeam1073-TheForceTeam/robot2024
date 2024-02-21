@@ -5,21 +5,35 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Shooter;
 
 public class RunFeeder extends Command {
+  private Feeder feeder;
+    double minRange;
+    double maxRange;
+
   /** Creates a new RunFeeder. */
-  public RunFeeder() {
+  public RunFeeder(Feeder feeder) {
+    this.feeder = feeder;
     // Use addRequirements() here to declare subsystem dependencies.
+    minRange = 0.2;
+    maxRange = 0.72;
   }
 
-  // Called when the command is initially scheduled.
+  public RunFeeder(Feeder m_feeder, double double1) {
+    //TODO Auto-generated constructor stub
+}
+
+// Called when the command is initially scheduled.
   @Override
   public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    feeder.setTargetVelocityInMPS(10);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -28,6 +42,11 @@ public class RunFeeder extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    if((feeder.getTofRange() >= maxRange)){
+      return true;
+    }
+    else{
+      return false;
+    }
   }
 }

@@ -12,6 +12,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.OI;
 // import frc.robot.subsystems.SerialComms;
 // import frc.robot.subsystems.SwerveModuleConfig;
+import edu.wpi.first.wpilibj.Preferences;
 
 // import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 
@@ -20,6 +21,9 @@ import frc.robot.subsystems.OI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 // import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -27,12 +31,10 @@ import frc.robot.subsystems.*;
 import frc.robot.commands.PivotTestCommand;
 import frc.robot.commands.ShooterTestCommand;
 import frc.robot.commands.FeederTestCommand;
-// import frc.robot.commands.LoadTrigger;
-// import frc.robot.commands.RunFeeder;
-
-
-// import frc.robot.commands.SetShooterAngle;
-// import frc.robot.commands.RunShooter;
+import frc.robot.commands.LoadFeeder;
+import frc.robot.commands.RunFeeder;
+import frc.robot.commands.SetShooterAngle;
+import frc.robot.commands.RunShooter;
 // import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 
@@ -53,10 +55,10 @@ public class RobotContainer {
   private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(m_pivot);
   private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(m_shooter, m_OI);
   private final FeederTestCommand m_feederTestCommand = new FeederTestCommand(m_feeder, m_OI);
-  // private final LoadTrigger m_loadTrigger = new LoadTrigger(m_shooter);
-  // private final RunTrigger m_runTrigger = new RunTrigger();
-  // private final SetShooterAngle m_setShooterAngle = new SetShooterAngle(m_shooter, 0);
-  // private final RunShooter m_runShooter = new RunShooter(m_shooter, 0, 0, 0);
+  // private final LoadFeeder loadFeeder = new LoadFeeder(m_feeder);
+  // private final RunFeeder runFeeder = new RunFeeder(m_feeder);
+  // private final SetShooterAngle setShooterAngle = new SetShooterAngle(m_feeder, 0);
+  // private final RunShooter runShooter = new RunShooter(m_shooter, 0, 0, 0);
   // private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
   // SequentialCommandGroup fullAuto;
   // private final SerialComms m_serial = new SerialComms(Port.kUSB1);
@@ -74,9 +76,9 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // CommandScheduler.getInstance().setDefaultCommand(m_pivot, m_pivotTestCommand);
-    CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_shooterTestCommand);
-    CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
+    CommandScheduler.getInstance().setDefaultCommand(m_pivot, m_pivotTestCommand);
+    // CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_shooterTestCommand);
+    // CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
     // CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     // SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
@@ -103,7 +105,11 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-  
+    Trigger loadNoteToFeeder = new Trigger(m_OI::getOperatorRawButton1);
+    loadNoteToFeeder.onTrue(loadNoteToFeeder());
+
+    Trigger launchFeederToSpeaker = new Trigger(m_OI::getOperatorRawButton2);
+    launchFeederToSpeaker.onTrue(launchFeederToSpeaker());
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
@@ -126,10 +132,32 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand(){
     return null;
-    // fullauto = new SequentialCommandGroup(m_runTrigger, m_loadTrigger, m_setShooterAngle, m_runShooter);
+    // fullauto = new SequentialCommandGroup(m_loadTrigger, setShooterAngle, m_runTrigger, runShooter);
   }
   // public Command getAutonomousCommand() {
   //   // An example command will be run in autonomous
   //   return null;
   // }
+  public Command loadNoteToFeeder(){
+    return new SequentialCommandGroup(      
+      new LoadFeeder(m_feeder, Preferences.getDouble("Feeder Target Max Speed", 0.3))
+    );
+  }
+  public Command launchFeederToSpeaker(){
+    return new SequentialCommandGroup(
+      new RunShooter(m_shooter, Preferences.getDouble("Shooter Target Max Speed", 0.3), 0, 0),
+      new ParallelCommandGroup(
+        new RunFeeder(m_feeder, Preferences.getDouble("Feeder Target Max Speed", 0.3)), 
+        new WaitCommand(1)
+      )
+    );
+  }
+    // public Command launchNoteToSpeaker(){
+    // return new SequentialCommandGroup(      
+    //   new LoadFeeder(m_feeder, Preferences.getDouble("Feeder Target Max Speed", 0.3)),
+    //   //new SetShooterAngle(m_shooter, Preferences.getDouble("Shooter Target Angle", 0.3)),
+    //   new RunShooter(m_shooter, Preferences.getDouble("Shooter Target Max Speed", 0.3), 0, 0),   
+    //   new RunFeeder(m_feeder, Preferences.getDouble("Feeder Target Max Speed", 0.3)));
+  //}
+
 }
