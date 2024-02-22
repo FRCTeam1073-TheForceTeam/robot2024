@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
@@ -22,6 +23,7 @@ public class Collector extends DiagnosticsSubsystem {
   private TalonFX collectMotor = new TalonFX(14, kCANbus); // same thing
   private MotorFault collectMotorFault = new MotorFault(collectMotor, 14);
   private TalonFXConfiguration collectMotorConfigurator = new TalonFXConfiguration();
+  private StatusCode configError;
   private double targetCollectorVelocity = 0; //TODO: find appropriate speed for collector
   private double currentCollectorVelocity = 0;
   private double commandedCollectorVelocity = 0;
@@ -74,6 +76,7 @@ public class Collector extends DiagnosticsSubsystem {
     tof1DutyCycle = tof1DutyCycleInput.getOutput();
     tof1Range = tofCollectorScaleFactor * (tof1DutyCycle / tof1Freq - 0.001) / 1000; //supposedly in meters
 
+    updateDiagnostics();
   }
   
   private void runCollectMotor(double vel)
@@ -128,12 +131,7 @@ public class Collector extends DiagnosticsSubsystem {
     collectMotorClosedLoopConfig.withKD(collect_kD);
     collectMotorClosedLoopConfig.withKV(collect_kF);
 
-    var error = collectMotor.getConfigurator().apply(collectMotorClosedLoopConfig, 0.5);
-    if(!error.isOK()){
-      System.err.print(String.format("COLLECT MOTOR ERROR: %s", error.toString()));
-      setDiagnosticsFeedback(error.getDescription(), false);
-    }
-
+    configError = collectMotor.getConfigurator().apply(collectMotorClosedLoopConfig, 0.5);
   }
 
   @Override
@@ -153,6 +151,12 @@ public class Collector extends DiagnosticsSubsystem {
   {
     String result = "";
     boolean OK = true;
+
+    if(!configError.isOK()){
+      System.err.print(String.format("COLLECT MOTOR ERROR: %s", configError.toString()));
+      result += configError.getDescription();
+      OK = false;
+    }
 
     if(tof1DutyCycleInput.getFrequency()< 2 || collectMotorFault.hasFaults()){
       result += String.format("tof1 not working");

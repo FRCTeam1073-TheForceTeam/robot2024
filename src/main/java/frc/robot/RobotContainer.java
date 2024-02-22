@@ -137,6 +137,8 @@ public class RobotContainer {
     // Set allOK to the results of the printDiagnostics method for each subsystem, separated by &&
     allOK = true
       // ex. && m_subsystem.printDiagnostics(isDisabled)
+      && m_collector.printDiagnostics(isDisabled)
+      && m_collectorArm.printDiagnostics(isDisabled)
     ;
     //TODO: Add each subsystem
     SmartDashboard.putBoolean("Engine light", allOK);

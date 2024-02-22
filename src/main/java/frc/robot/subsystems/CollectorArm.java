@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -54,6 +55,9 @@ public class CollectorArm extends DiagnosticsSubsystem {
   
   // CANBus for this subsystem
   private static final String kCANbus = "CANivore";
+
+  private StatusCode configError_Extend;
+  private StatusCode configError_Lift;
 
   //TODO: Change all of these values
   private final double liftLength = 0;
@@ -143,6 +147,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     runLiftMotor(commandedLiftAngle);
     runExtendMotor(commandedExtendLength);
     //targetExtendLength = interpolateExtendPosition(currentLiftAngle);
+
+    updateDiagnostics();
   }
 
 
@@ -261,20 +267,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     TalonFXConfiguration extendConfigs = new TalonFXConfiguration();
     TalonFXConfiguration liftConfigs = new TalonFXConfiguration();
 
-    var error = liftMotor.getConfigurator().apply(new TalonFXConfiguration(), 0.5);
-    if (!error.isOK()) 
-    {
-        System.err.print(String.format("Lift Motor ERROR: %s", error.toString()));
-        setDiagnosticsFeedback(error.getDescription(), false);
-    }
-
-    error = extendMotor.getConfigurator().apply(new TalonFXConfiguration(), 0.5);
-    if (!error.isOK()) 
-    {
-        System.err.println(String.format("Extend MOTOR ERROR: %s", error.toString()));
-        setDiagnosticsFeedback(error.getDescription(), false);
-    }
-
+    configError_Lift = liftMotor.getConfigurator().apply(new TalonFXConfiguration(), 0.5);
+    configError_Extend = extendMotor.getConfigurator().apply(new TalonFXConfiguration(), 0.5);
     
     liftConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     // // liftConfigs.Feedback.RotorToSensorRatio = (150.0 / 7.0);
@@ -356,7 +350,22 @@ public class CollectorArm extends DiagnosticsSubsystem {
     String result = "";
     boolean OK = true;
     
-    if(liftMotorFault.hasFaults() || extendMotorFault.hasFaults()){
+    if(liftMotorFault.hasFaults() || extendMotorFault.hasFaults())
+    {
+        OK = false;
+    }
+
+    if (!configError_Lift.isOK()) 
+    {
+        System.err.print(String.format("Lift Motor ERROR: %s", configError_Lift.toString()));
+        result += configError_Lift.getDescription();
+        OK = false;
+    }
+
+    if (!configError_Extend.isOK()) 
+    {
+        System.err.println(String.format("Extend MOTOR ERROR: %s", configError_Extend.toString()));
+        result += configError_Extend.getDescription();
         OK = false;
     }
     
