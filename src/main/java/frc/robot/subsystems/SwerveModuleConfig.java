@@ -12,9 +12,11 @@ import edu.wpi.first.wpilibj.Preferences;
 public class SwerveModuleConfig 
 {
     public int moduleNumber = -1;
+    public double gearRatio = 6.75;
+    public double wheelDiameterMeters = 0.1016;
     public Translation2d position = new Translation2d(0,0);
     //public double tickPerMeter = 1000;
-    public double rotationsPerMeter = 6.75 / (0.1016 * Math.PI);
+    public double rotationsPerMeter = gearRatio / (wheelDiameterMeters * Math.PI);
     public double radiansPerRotation = (150.0 / 7.0) / (Math.PI * 2);
     //public double tickPerRadian = 1000;
     //public double steerRotationOffset = 0;
