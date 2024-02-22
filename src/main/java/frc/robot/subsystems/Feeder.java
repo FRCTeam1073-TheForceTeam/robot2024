@@ -36,7 +36,7 @@ public class Feeder extends DiagnosticsSubsystem {
   private double d = 0.003;
 
   // Velocity variables
-  private double targetVelocityMPS;
+  private double targetFeederVelocityMPS;
   private double commandedVelocityMPS;
   private double currentVelocityMPS;
 
@@ -67,7 +67,7 @@ public class Feeder extends DiagnosticsSubsystem {
     feederTofFreq = 0;
     feederTofRange = 0;
 
-    targetVelocityMPS = 0;
+    targetFeederVelocityMPS = 0;
     currentVelocityMPS = 0;
     
     configureHardware();
@@ -84,7 +84,7 @@ public class Feeder extends DiagnosticsSubsystem {
     feederTofRange = (feederTofScaleFactor * (feederTofDutyCycle / feederTofFreq - 0.001)) / 1000;
 
     // Calculates ratelimited velocity in rotations per second based on meters/second target velocity and runs the motor
-    commandedVelocityMPS = (feederMotorLimiter.calculate(-targetVelocityMPS));
+    commandedVelocityMPS = (feederMotorLimiter.calculate(-targetFeederVelocityMPS));
     feederMotor.setControl(feederVelocityVoltage.withVelocity(commandedVelocityMPS / feederMetersPerRotation));
   }
 
@@ -95,12 +95,12 @@ public class Feeder extends DiagnosticsSubsystem {
 
   /* Sets the target motor velocity given in meters per second */
   public void setTargetVelocityInMPS(double feederMotorMPS){
-    targetVelocityMPS = feederMotorMPS;
+    targetFeederVelocityMPS = feederMotorMPS;
   }
 
   /* Gets the target velocity for the motor in meters per second */
   public double getTargetVelocityInMPS(){
-    return targetVelocityMPS;
+    return targetFeederVelocityMPS;
   }
 
   /* Gets the ratelimited commanded velocity for the motor in rotations per second */

@@ -102,26 +102,26 @@ public class Shooter extends DiagnosticsSubsystem{
 
   /* Gets the target velocities for the motors in meters per second */
   public double getTargetTopVelocityInMPS(){
-    return targetTopVelocityMPS ;
+    return Math.abs(targetTopVelocityMPS);
   }
   public double getTargetBottomVelocityInMPS(){ 
-    return targetBottomVelocityMPS;
+    return Math.abs(targetBottomVelocityMPS);
   }
 
   /* Gets the ratelimited commanded velocities for the motors in rotations per second */
   public double getCommandedTopVelocityInMPS(){ 
-    return commandedTopVelocityMPS;
+    return Math.abs(commandedTopVelocityMPS);
   }
   public double getCommandedBottomVelocityInMPS(){ 
-    return commandedBottomVelocityMPS;
+    return Math.abs(commandedBottomVelocityMPS);
   }
 
   /* Gets the actual reported velocities of the motors in rotations per second */
   public double getCurrentTopVelocityInMPS(){
-    return currentTopVelocityMPS;
+    return Math.abs(currentTopVelocityMPS);
   }
   public double getCurrentBottomVelocityInMPS(){
-    return currentBottomVelocityMPS;
+    return Math.abs(currentBottomVelocityMPS);
   }
 
   /* Uses the beam break sensor to detect if the note has entered the shooter */

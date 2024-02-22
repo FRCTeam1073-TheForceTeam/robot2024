@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 // import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -78,7 +79,7 @@ public class RobotContainer {
   public RobotContainer() {
     CommandScheduler.getInstance().setDefaultCommand(m_pivot, m_pivotTestCommand);
     // CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_shooterTestCommand);
-    // CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
+    CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
     // CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     // SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
@@ -147,10 +148,10 @@ public class RobotContainer {
 
   public Command launchFeederToSpeaker(){
     return new SequentialCommandGroup(
-      new RunShooter(m_shooter, 10, 10),
-      new ParallelCommandGroup(
-        new RunFeeder(m_feeder, 10), 
-        new WaitCommand(1)),
+      new RunShooter(m_shooter, 7, 7),
+     new ParallelRaceGroup(
+       new RunFeeder(m_feeder, 7), 
+       new WaitCommand(3)),
       new RunShooter(m_shooter, 0, 0),
       new RunFeeder(m_feeder, 0)
     );

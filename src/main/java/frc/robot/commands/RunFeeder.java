@@ -16,19 +16,22 @@ public class RunFeeder extends Command {
   /** Creates a new RunFeeder. */
   public RunFeeder(Feeder feeder, double feederTargetVelocityMPS) {
     this.feeder = feeder;
+    this.feederTargetVelocityMPS = feederTargetVelocityMPS;
     // Use addRequirements() here to declare subsystem dependencies.
     minRange = 0.2;
-    maxRange = 0.72;
+    maxRange = 0.3;
   }
 
 // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    feeder.setTargetVelocityInMPS(feederTargetVelocityMPS);
+      feeder.setTargetVelocityInMPS(feederTargetVelocityMPS);
+
   }
 
   // Called once the command ends or is interrupted.
@@ -38,11 +41,12 @@ public class RunFeeder extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if((feeder.getTofRange() >= maxRange)){
-      return true;
-    }
-    else{
-      return false;
-    }
+    return false;
+    // if((feeder.getTofRange() >= maxRange)){
+    //   return true;
+    // }
+    // else{
+    //   return false;
+    // }
   }
 }

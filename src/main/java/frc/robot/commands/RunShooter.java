@@ -16,9 +16,11 @@ public class RunShooter extends Command {
   
   /* Creates a new RunShooter. */
 
-  public RunShooter(Shooter shooter, double shootortopRPS, double shootorbottomRPS) {
+  public RunShooter(Shooter shooter, double topShootorMPS, double bottomShooterMPS) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.shooter = shooter;
+    this.shooterTopMPS = topShootorMPS;
+    this.shooterBottomMPS = bottomShooterMPS;
     addRequirements(shooter);
   }
 
@@ -34,31 +36,25 @@ public class RunShooter extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    /* if shooter motors are up to speed, then turn on trigger motors */
-    /* might need to adjust the numbers depending on what % we want the power at */
-    // if ((shooter.getCurrentTopVelocityInMPS() >= 0.98 * shooterTopMPS) && (shooter.getCurrentBottomVelocityInMPS() >= 0.98 * shooterBottomMPS)){
-    //   feeder.setTargetVelocityInMPS(feederMotorMPS);
-    // }
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    // shooter.setTargetTopVelocityInMPS(0);
+    // shooter.setTargetBottomVelocityInMPS(0);
   }
 
   // Returns true when the command should end.
-  /* return true when the note is not in the trigger/shooter */
   @Override
   public boolean isFinished() {
-    if((shooter.getCurrentTopVelocityInMPS() >= shooter.getTargetTopVelocityInMPS()) && 
-    (shooter.getCurrentBottomVelocityInMPS() >= shooter.getTargetBottomVelocityInMPS())){
+    if((shooter.getCurrentTopVelocityInMPS() >= (0.95 * shooterTopMPS)) && 
+    (shooter.getCurrentBottomVelocityInMPS() >= (0.95 * shooterBottomMPS))){
       return true;
     }
     else{
       return false;
     }
-    
-    //return !shooter.noteIsInShooter() && !feeder.noteIsInTrigger();
   }
 }
