@@ -19,6 +19,7 @@ import frc.robot.subsystems.SwerveModuleConfig;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.wpilibj.DriverStation;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -113,6 +114,16 @@ public class RobotContainer {
 
   }
 
+  public void printAllFalseDiagnostics(){
+    boolean isDisabled = DriverStation.isDisabled();
+    boolean allOK = true;
+    // Set allOK to the results of the printDiagnostics method for each subsystem, separated by &&
+    allOK = true
+      // ex. && m_subsystem.printDiagnostics(isDisabled)
+    ;
+    //TODO: Add each subsystem
+    SmartDashboard.putBoolean("Engine light", allOK);
+  }
 
   public static void initPreferences()
   {
