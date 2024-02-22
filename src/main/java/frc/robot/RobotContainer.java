@@ -83,9 +83,11 @@ public class RobotContainer {
   public void printAllFalseDiagnostics(){
     boolean isDisabled = DriverStation.isDisabled();
     boolean allOK = true;
-    // Set allOK to the results of the printDiagnostics method for each subsystem, separated by &&, eg. "&& m_subsystem.printDiagnostics(isDisabled)"
-    allOK = true;
-        //TODO: Add each subsystem
+    // Set allOK to the results of the printDiagnostics method for each subsystem, separated by &&
+    allOK = true
+      // ex. && m_subsystem.printDiagnostics(isDisabled)
+    ;
+    //TODO: Add each subsystem
     SmartDashboard.putBoolean("Engine light", allOK);
   }
 
