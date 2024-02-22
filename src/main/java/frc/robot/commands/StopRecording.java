@@ -8,12 +8,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Camera;
 
 public class StopRecording extends Command {
-  Camera camera;
+  Camera[] cameras;
   /** Creates a new StopCamera. */
-  public StopRecording(Camera camera) {
+  public StopRecording(Camera[] cameras) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.camera = camera;
-    addRequirements(camera);
+    this.cameras = cameras;
+    addRequirements(cameras);
   }
 
   // Called when the command is initially scheduled.
@@ -26,8 +26,11 @@ public class StopRecording extends Command {
   @Override
   public void execute() {
     System.out.println("in StopRecording.java exec()");
-    camera.stopRecording();
+    for (int i = 0; i < cameras.length; i++){
+
+    cameras[i].stopRecording();
   }
+}
 
   // Called once the command ends or is interrupted.
   @Override
