@@ -22,11 +22,15 @@ public class CollectorTeleop extends Command {
   double maxRange;
   double intakeRateThreshold;
   double vel;
-  boolean isCollecting;
+  boolean isCollectable;
+  boolean isCollected;
   double startCollectValue;
 
   double tofCurrentValue;
   double tofOldValue;
+
+  double count = 0;
+
 
 
   public CollectorTeleop(Collector collector, CollectorArm collectorArm, Drivetrain ds, OI oi) {
@@ -39,7 +43,7 @@ public class CollectorTeleop extends Command {
     maxRange = 0.72;
     intakeRateThreshold = 0.001;
     vel = 0;
-    isCollecting = true;
+    isCollectable = true;
     startCollectValue = 0;
 
     tofCurrentValue = 0;
@@ -57,17 +61,17 @@ public class CollectorTeleop extends Command {
   public void execute() {
 
     double rate = 0;
-    if(isCollecting){
-      tofCurrentValue = m_collector.getRangeTOF(); 
+    tofCurrentValue = m_collector.getRangeTOF(); 
+    if(isCollectable){
       rate = (tofCurrentValue - tofOldValue) / 0.02; // calculating the rate of change of the TOF range
-      
+
       if(rate < intakeRateThreshold){
-        isCollecting = false;
+        isCollectable = false;
       }
     }
 
-    if(m_collector.getRangeTOF() > maxRange){
-      isCollecting = true;
+    if(tofCurrentValue > maxRange){
+      isCollectable = true;
     }
     
     if(m_OI.getOperatorRawButton(5)) //outtake
@@ -75,7 +79,7 @@ public class CollectorTeleop extends Command {
       vel = 3;
       m_collector.setTargetCollectorVelocity(vel); //meters per sec
 
-      if(m_collector.getRangeTOF() > maxRange){
+      if(tofCurrentValue > maxRange){
         m_collector.setTargetCollectorVelocity(0);
       }
     }
@@ -83,23 +87,33 @@ public class CollectorTeleop extends Command {
     {
       vel = (0.05 * Math.abs(m_drivetrain.getChassisSpeeds().vxMetersPerSecond)) + 3;
       m_collector.setTargetCollectorVelocity(-vel); //meters per sec
+
+      if(tofCurrentValue > maxRange){
+        isCollected = false;
+        count = 0;
+      }
       
       //if(m_collector.getRangeTOF() < minRange){
-      if(!isCollecting){ // use the rate to decide when to stop
+      if(!isCollectable){ // use the rate to decide when to stop
         if(m_collectorArm.getPoseName() == POSE.AMP){
           m_collector.setTargetCollectorVelocity(-vel);
-          
         }
         else{
           m_collector.setTargetCollectorVelocity(0);
-          
+          isCollected = true;
         }
       }
     }
     else {
       m_collector.setTargetCollectorVelocity(0);
-      
     }
+
+    if((isCollected && (count < 20) && (m_collectorArm.getPoseName() == POSE.STOW))){ // check if it is collected and at the stow position and run for 50 loops
+      m_collector.setTargetCollectorVelocity(0.5);
+      count++;
+    }
+
+    SmartDashboard.putBoolean("isCollected", isCollected);
 
     tofOldValue = tofCurrentValue;
   }

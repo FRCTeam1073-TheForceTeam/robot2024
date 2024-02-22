@@ -45,9 +45,9 @@ public class Collector extends DiagnosticsSubsystem {
   
   // fill in PID values
   
-  private double collect_kP = 0.3;
+  private double collect_kP = 0.27;
   private double collect_kI = 0;
-  private double collect_kD = 0;
+  private double collect_kD = 0.001;
   private double collect_kF = 0;
 
   /** Creates a new Collector. */
@@ -117,8 +117,8 @@ public class Collector extends DiagnosticsSubsystem {
     TalonFXConfiguration collectConfigs = new TalonFXConfiguration();
     collectConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     collectConfigs.MotionMagic.MotionMagicCruiseVelocity = 20;
-    collectConfigs.MotionMagic.MotionMagicAcceleration = 8500;
-    collectConfigs.MotionMagic.MotionMagicJerk = 8500;
+    collectConfigs.MotionMagic.MotionMagicAcceleration = 9000;
+    collectConfigs.MotionMagic.MotionMagicJerk = 9000;
     collectMotor.getConfigurator().apply(collectConfigs, 0.5);
 
     //PID loop setting for collect motor
