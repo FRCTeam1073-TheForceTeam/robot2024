@@ -148,9 +148,9 @@ public class RobotContainer {
 
   public Command launchFeederToSpeaker(){
     return new SequentialCommandGroup(
-      new RunShooter(m_shooter, 7, 7),
+      new RunShooter(m_shooter, 22, 22),
      new ParallelRaceGroup(
-       new RunFeeder(m_feeder, 7), 
+       new RunFeeder(m_feeder, 22), 
        new WaitCommand(3)),
       new RunShooter(m_shooter, 0, 0),
       new RunFeeder(m_feeder, 0)
