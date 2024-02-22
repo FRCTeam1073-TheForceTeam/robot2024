@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.MathUtils;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
@@ -53,10 +54,10 @@ public class DriveToPointSchema extends MotionSchema
 
     double xVelocity = -(robotPose.getX() - targetPose.getX());
     double yVelocity = -(robotPose.getY() - targetPose.getY());
-    double angularVelocity = 0.8 * wrapAngleRadians(robotPose.getRotation().getRadians() - targetPose.getRotation().getRadians());
-    System.out.println("Robot angle: " + robotPose.getRotation().getRadians());
-    System.out.println("Target angle: " + targetPose.getRotation().getRadians());
-    System.out.println("Angle Difference: " + wrapAngleRadians(robotPose.getRotation().getRadians() - targetPose.getRotation().getRadians()));
+    double angularVelocity = 0.8 * MathUtils.wrapAngleRadians(robotPose.getRotation().getRadians() - targetPose.getRotation().getRadians());
+    // System.out.println("Robot angle: " + robotPose.getRotation().getRadians());
+    // System.out.println("Target angle: " + targetPose.getRotation().getRadians());
+    // System.out.println("Angle Difference: " + wrapAngleRadians(robotPose.getRotation().getRadians() - targetPose.getRotation().getRadians()));
     
     //tests if velocities are within the maximum and sets them to the max if they exceed
     if(xVelocity > maxLinearVelocity)
@@ -90,18 +91,7 @@ public class DriveToPointSchema extends MotionSchema
     
   }
 
-  private double wrapAngleRadians(double angle)
-  {
-    while (angle > Math.PI)
-    {
-      angle -= Math.PI * 2;
-    }
-    while (angle < -Math.PI)
-    {
-      angle += Math.PI * 2;
-    }
-    return angle;
-  }
+  
 
   // Called once the command ends or is interrupted.
   @Override

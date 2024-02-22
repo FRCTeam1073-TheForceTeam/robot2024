@@ -191,17 +191,12 @@ public class Drivetrain extends DiagnosticsSubsystem
   // Wraps the heading in degrees:
   public double getWrappedHeadingDegrees()
   {
-    double heading = getHeadingDegrees() % 360;
+    return MathUtils.wrapAngleDegrees(getHeadingDegrees());
+  }
 
-    if(heading >= 0)
-    {
-      return heading;
-    }
-
-    else
-    {
-      return 360 + heading;
-    }
+  public double getWrappedHeadingRadians()
+  {
+    return MathUtils.wrapAngleRadians(getHeadingDegrees() * Math.PI / 180);
   }
 
   public double getPitch()
@@ -281,7 +276,7 @@ public class Drivetrain extends DiagnosticsSubsystem
 
   public Pose2d getOdometry()
   {
-    return new Pose2d(odometry.getPoseMeters().getX(), odometry.getPoseMeters().getY(), Rotation2d.fromDegrees(getHeadingDegrees()));
+    return new Pose2d(odometry.getPoseMeters().getX(), odometry.getPoseMeters().getY(), Rotation2d.fromDegrees(MathUtils.wrapAngleDegrees(getHeadingDegrees())));
   }
 
   public Pose3d get3dOdometry()
@@ -317,6 +312,8 @@ public class Drivetrain extends DiagnosticsSubsystem
 
     SmartDashboard.putNumber("Odometry X", getOdometry().getX());
     SmartDashboard.putNumber("Odometry Y", getOdometry().getY());
+    SmartDashboard.putNumber("Wrapped Heading Degrees", getWrappedHeadingDegrees());
+    SmartDashboard.putNumber("Wrapped Heading Radians", getWrappedHeadingRadians());
   }
 
 

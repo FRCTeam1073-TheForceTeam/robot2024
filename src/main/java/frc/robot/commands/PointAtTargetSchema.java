@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.MathUtils;
 
 public class PointAtTargetSchema extends MotionSchema
 {
@@ -44,15 +45,16 @@ public class PointAtTargetSchema extends MotionSchema
         {
             desiredAngle = 0;
         }
-        double angleDifference = desiredAngle - currentPose.getRotation().getRadians();
-        if (angleDifference > Math.PI)
-        {
-            angleDifference = 2 * Math.PI - angleDifference;
-        }
-        else if (angleDifference < -Math.PI)
-        {
-            angleDifference += 2 * Math.PI;
-        }
+        double angleDifference = desiredAngle - MathUtils.wrapAngleRadians(currentPose.getRotation().getRadians());
+        // if (angleDifference > Math.PI)
+        // {
+        //     angleDifference = 2 * Math.PI - angleDifference;
+        // }
+        // else if (angleDifference < -Math.PI)
+        // {
+        //     angleDifference += 2 * Math.PI;
+        // }
+        angleDifference = MathUtils.wrapAngleRadians(angleDifference);
         double angularVelocity = angleDifference * alpha;
         SmartDashboard.putNumber("Angle Difference", angleDifference);
         SmartDashboard.putNumber("Target Schema Angular Velocity", angularVelocity);
