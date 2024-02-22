@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /* The diagnostics base for subsystems */
@@ -41,7 +42,7 @@ public class DiagnosticsSubsystem extends SubsystemBase implements Diagnostics {
 
   public boolean printDiagnostics(boolean disabled){
     if(!this.diagnosticsOk && disabled){
-      System.out.println(this.diagnosticsDetails);
+      DriverStation.reportError(this.diagnosticsDetails, false);
     }
     return this.diagnosticsOk;
   }
