@@ -4,7 +4,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -16,8 +19,12 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  */
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
+  private Command m_teleopCommand;
+  private Command m_disabledCommand;
 
   private RobotContainer m_robotContainer;
+
+  double coopTime;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -50,11 +57,20 @@ public class Robot extends TimedRobot {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
     m_robotContainer.printAllFalseDiagnostics();
+
+    coopTime = MathUtil.clamp(Timer.getMatchTime() - 90, 0, 45);
+    SmartDashboard.putNumber("Remaining Coopertition Time", coopTime);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    m_disabledCommand = m_robotContainer.getDisabledCommand();
+    // schedule the disabled command (example)
+    if (m_disabledCommand != null) {
+      m_disabledCommand.schedule();
+    }
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -82,6 +98,10 @@ public class Robot extends TimedRobot {
     // this line or comment it out.
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
+    }
+    m_teleopCommand = m_robotContainer.getTeleopCommand();
+    if (m_teleopCommand != null) {
+      m_teleopCommand.schedule();
     }
   }
 
