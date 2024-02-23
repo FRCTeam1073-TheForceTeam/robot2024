@@ -31,15 +31,15 @@ public class Camera extends SubsystemBase {
   // }
 
   public void startRecordingTeleop(){
-    serialComms.send("ti");
+    serialComms.send("2,ti");
   }
 
   public void startRecordingAutonomous(){
-    serialComms.send("ai");
+    serialComms.send("2,ai");
   }
 
   public void stopRecording(){
-    serialComms.send("di");
+    serialComms.send("2,di");
   }
 
   @Override

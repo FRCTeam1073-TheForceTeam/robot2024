@@ -29,7 +29,7 @@ public class RobotContainer {
   SerialPort.Port serial_port = SerialPort.Port.kUSB;
   // The robot's subsystems and commands are defined here...
   private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
-  private final Camera m_camera1 = new Camera(m_serial, 1);  // camID is how SerialComms and the cameras themselves tells them apart
+  private final Camera m_camera1 = new Camera(m_serial, 2);  // camID is how SerialComms and the cameras themselves tells them apart
   //private final GetTagData c_GetTagData = new GetTagData(m_camera1);
   private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_camera1);
   private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_camera1);
