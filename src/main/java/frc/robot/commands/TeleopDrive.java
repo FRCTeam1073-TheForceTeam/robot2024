@@ -64,7 +64,7 @@ public class TeleopDrive extends SchemaArbiter
     translateSchema = new TeleopTranslateSchema(m_OI, maximumLinearVelocity);
     rotateSchema = new TeleopRotateSchema(m_OI, maximumRotationVelocity);
     holdSchema = new TeleopHeadingHoldSchema(m_OI);
-    targetSchema = new PointAtTargetSchema(maximumRotationVelocity, new Pose2d(2.5, 0.0, new Rotation2d()), 1.0);
+    targetSchema = new PointAtTargetSchema(maximumRotationVelocity, new Pose2d(2.5, 0.0, new Rotation2d()), 1.75);
     addSchema(translateSchema);
     addSchema(rotateSchema);
     addSchema(holdSchema);
