@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.MotionSchema.Rotate;
-import frc.robot.commands.MotionSchema.Translate;
 import frc.robot.subsystems.Drivetrain;
 
 public class SchemaArbiter extends Command
@@ -17,12 +17,14 @@ public class SchemaArbiter extends Command
     MotionSchema.Rotate totalRotate = new MotionSchema.Rotate(0, 0);
     boolean isFieldCentric;
     boolean stopOnEnd;
+    boolean auto;
 
-    public SchemaArbiter(Drivetrain drivetrain, boolean stopOnEnd)
+    public SchemaArbiter(Drivetrain drivetrain, boolean stopOnEnd, boolean auto)
     {
         this.drivetrain = drivetrain;
         isFieldCentric = true;
         this.stopOnEnd = stopOnEnd;
+        this.auto = auto;
         addRequirements(drivetrain);
     }
 
@@ -56,6 +58,14 @@ public class SchemaArbiter extends Command
         // clear total
         totalTranslate.zero();
         totalRotate.zero();
+
+        if (auto)
+        {
+            for (int i = 0; i < schema.size(); i++)
+            {
+                schema.get(i).execute();
+            }
+        }
         // loop over all schema
         for (int i = 0; i < schema.size(); i++)
         {
@@ -66,6 +76,11 @@ public class SchemaArbiter extends Command
         // safe divide total weight
         totalTranslate.resolve();
         totalRotate.resolve();
+
+        SmartDashboard.putNumber("Total X Translate", totalTranslate.vx);
+        SmartDashboard.putNumber("Total Y Translate", totalTranslate.vy);
+        SmartDashboard.putNumber("Total Rotate", totalRotate.omega);
+
         // send to drive subsystem
         if (isFieldCentric)
         {
@@ -80,13 +95,13 @@ public class SchemaArbiter extends Command
         }
         else
         {
-            drivetrain.setTargetChassisSpeeds(
-                new ChassisSpeeds(
-                    totalTranslate.vx, 
-                    totalTranslate.vy, 
-                    totalRotate.omega
-                )
-            );
+            // drivetrain.setTargetChassisSpeeds(
+            //     new ChassisSpeeds(
+            //         totalTranslate.vx, 
+            //         totalTranslate.vy, 
+            //         totalRotate.omega
+            //     )
+            // );
         }
     }
 
@@ -102,6 +117,14 @@ public class SchemaArbiter extends Command
     @Override
     public boolean isFinished()
     {
+        //return false;
+        for(int i = 0; i < schema.size(); i++)
+        {
+            if (schema.get(i).isFinished())
+            {
+                return true;
+            }
+        }
         return false;
     }
 }

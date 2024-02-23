@@ -4,9 +4,7 @@
 
 package frc.robot.subsystems;
 
-import java.io.UnsupportedEncodingException;
-import java.lang.Thread;  // might use sleeps at some point
-import java.lang.reflect.Array;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
@@ -14,12 +12,9 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
-
 public class SerialComms extends SubsystemBase{
-
-  private SerialPort.Port portUSB;
   private static SerialPort serialPort;
-
+  private SerialPort.Port portUSB;
 
   public SerialComms(SerialPort.Port portUSB) {
     this.portUSB = portUSB;
@@ -34,11 +29,8 @@ public class SerialComms extends SubsystemBase{
     }
   }
 
-  
-
   public static void send(String message) {
-    //String dataString = new String(message, StandardCharsets.US_ASCII);
-    //System.out.println(dataString);
+    message = message.concat("\n");
     System.out.println(String.format("in send() message we're about to send as string: %s", message));
     byte[] messageAsBytes = message.getBytes(StandardCharsets.US_ASCII);
     System.out.println(String.format("message we're about to send as bytes: %s", messageAsBytes));
@@ -49,7 +41,6 @@ public class SerialComms extends SubsystemBase{
       System.out.println(String.format("i: %s", i));
       serialPort.write(arrayofone, 1);
     }
-    //serialPort.write(messageAsBytes, messageAsBytes.length);
     System.out.println("bottom of SerialComms.send()");
   }
 
@@ -61,40 +52,35 @@ public class SerialComms extends SubsystemBase{
       int recvd = serialPort.getBytesReceived();
 
       if(recvd != 0){
-            System.out.println("recvd was not zero");
-            byte[] data = serialPort.read(1);
-            System.out.println(String.format("byte data recvd: %s", data));
-            msg.add(data[0]);
+        System.out.println("recvd was not zero");
+        byte[] data = serialPort.read(1);
+        System.out.println(String.format("byte data recvd: %s", data));
+        msg.add(data[0]);
 
-            // dataString is the byte we just received cast to a String so we can compare to newline without hardcoding the ord() or something
-            String dataString = new String(data, StandardCharsets.US_ASCII);
-            System.out.println(String.format("byte we just received as string: %s", dataString));
-            if(dataString == "\n") {
-              String msgAsString = msg.toString();
-              System.out.println("full msg we received as string:");
-              System.out.println(msgAsString);
-              return msgAsString;
-            }
+        // dataString is the byte we just received cast to a String so we can compare to newline without hardcoding the ord() or something
+        String dataString = new String(data, StandardCharsets.US_ASCII);
+        System.out.println(String.format("byte we just received as string: %s", dataString));
+        if(dataString == "\n") {
+          String msgAsString = msg.toString();
+          System.out.println("full msg we received as string:");
+          System.out.println(msgAsString);
+          return msgAsString;
+        }
       }
     }
   }
 
-  public static String getVisionData(String message){
-    //String messageAsASCII = new String(message, StandardCharsets.US_ASCII);
+  public static String transact(String message){
     System.out.println(String.format("sending message, as a String: %s", message));
     send(message);
-    // System.out.println("Vision Data doing its thingy");
-    // byte[] bytesReceived = recieve();
-    //String bytesReceivedAsString = bytesReceived.toString();
+
     String receivedString = receive();
     System.out.println(String.format("msg received as string: %s", receivedString));
     return receivedString;
   }
 
-
   @Override
   public void periodic() {
-
-    //TODO: unclear how/if SerialComms will use periodic()
   }
 }
+

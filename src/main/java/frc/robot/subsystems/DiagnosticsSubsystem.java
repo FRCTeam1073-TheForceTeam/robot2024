@@ -4,11 +4,13 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+/* The diagnostics base for subsystems */
 public class DiagnosticsSubsystem extends SubsystemBase implements Diagnostics {
-  private boolean diagnosticsOk = false;
-  private String diagnosticsDetails = "I was too lazy to implement diagnotics!";
+  private boolean diagnosticsOk = true;
+  private String diagnosticsDetails = "";
 
   /** Creates a new Diagnostics. */
   public DiagnosticsSubsystem() {
@@ -16,7 +18,9 @@ public class DiagnosticsSubsystem extends SubsystemBase implements Diagnostics {
   }
 
   @Override
-  public boolean updateDiagnostics() { return false;}
+  public boolean updateDiagnostics() { 
+    return false;
+  }
 
   @Override 
   public boolean diagnosticsOk() {
@@ -28,9 +32,18 @@ public class DiagnosticsSubsystem extends SubsystemBase implements Diagnostics {
     return this.diagnosticsDetails;
   }
 
-  public boolean setDiagnosticsFeedback(String diagnosticDetails, boolean ok) {
+  /** This method should only be run from the subsystem's updateDiagnostics method! */
+  public boolean setDiagnosticsFeedback(String diagnosticDetails, boolean ok){
     this.diagnosticsDetails = diagnosticDetails;
     this.diagnosticsOk = ok;
+    return this.diagnosticsOk;
+  }
+
+  /** Run this method in RobotContainer's printAllFalseDiagnostics method to print error messages to the console. */
+  public boolean printDiagnostics(boolean disabled){
+    if(!this.diagnosticsOk && disabled){
+      DriverStation.reportError(this.diagnosticsDetails, false);
+    }
     return this.diagnosticsOk;
   }
 }
