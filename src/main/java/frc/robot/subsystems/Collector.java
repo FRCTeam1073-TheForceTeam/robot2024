@@ -153,7 +153,6 @@ public class Collector extends DiagnosticsSubsystem {
     boolean OK = true;
 
     if(!configError.isOK()){
-      System.err.print(String.format("COLLECT MOTOR ERROR: %s", configError.toString()));
       result += configError.getDescription();
       OK = false;
     }

@@ -31,27 +31,27 @@ public class ArmPoseCommand extends Command {
     // A Button: START
     if(oi.getOperatorRawButton(1)) {
       arm.setPoseName(POSE.START);
-      arm.setTargetExtendLength(0);
+      //arm.setTargetExtendLength(0);
       arm.setTargetLiftAngle(0);
     }
 
     // B Button STOW (lift)
-    if(oi.getOperatorRawButton(2)) {
-      arm.setTargetExtendLength(0);
-      arm.setTargetLiftAngle(0.23315429);
-    }
+    // if(oi.getOperatorRawButton(2)) {
+    //   //arm.setTargetExtendLength(0);
+    //   arm.setTargetLiftAngle(0.23315429);
+    // }
 
     // X Button STOW (extend)
     if(oi.getOperatorRawButton(3)) {
       arm.setPoseName(POSE.STOW);
-      arm.setTargetExtendLength(0.1047363281);
-      arm.setTargetLiftAngle(0.23315429);
+      //arm.setTargetExtendLength(0.1047363281);
+      arm.setTargetLiftAngle(0.2);
     }
 
     // Y Button AMP
     if(oi.getOperatorRawButton(4)) {
       arm.setPoseName(POSE.AMP);
-      arm.setTargetExtendLength(0.0966796875);
+      //arm.setTargetExtendLength(0.0966796875);
       arm.setTargetLiftAngle(1.9453125);
     }
   }

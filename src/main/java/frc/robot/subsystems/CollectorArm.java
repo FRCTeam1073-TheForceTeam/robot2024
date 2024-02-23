@@ -20,7 +20,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
-import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -107,12 +106,12 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private double lift_kI = 0.5;
   private double lift_kD = 0.5;
   private double lift_kF = 0;
-  private double lift_kG = 0.7;
+  private double lift_kG = 0.8;
 
   // PID gains for extension controller.
   private double extend_kP = 45;
-  private double extend_kI = 2;
-  private double extend_kD = 4;
+  private double extend_kI = 5;
+  private double extend_kD = 6;
   private double extend_kF = 0;
 
   private POSE currentPose;
@@ -135,6 +134,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     currentPose = POSE.START;
 
     configureHardware();
+
+    armMap = new InterpolatingDoubleTreeMap();
     setUpInterpolator();
   }
 
@@ -142,12 +143,11 @@ public class CollectorArm extends DiagnosticsSubsystem {
   public void periodic() 
   {
     updateFeedback();
+    targetExtendLength = interpolateExtendPosition(currentLiftAngle);
     commandedExtendLength = limitExtendLength(targetExtendLength);
     commandedLiftAngle = limitLiftAngle(targetLiftAngle);
     runLiftMotor(commandedLiftAngle);
     runExtendMotor(commandedExtendLength);
-    //targetExtendLength = interpolateExtendPosition(currentLiftAngle);
-
     updateDiagnostics();
   }
 
@@ -226,14 +226,22 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
 
   public void setUpInterpolator() {
-    armMap = new InterpolatingDoubleTreeMap();
+    armMap.clear();
 
     // Keys are lift angles, values are extension distances.
-    armMap.put(Double.valueOf(0.0), Double.valueOf(0.0)); 
-    armMap.put(Double.valueOf(-0.2), Double.valueOf(0.0));
-    armMap.put(Double.valueOf(-0.5), Double.valueOf(0.05));
+    // Fill out the rest of the table (angle, extendLength)
 
-    //TODO: fill out the rest of the table (angle, extendLength)
+    armMap.put(0.0, 0.0); 
+    armMap.put(0.076416015625, 0.0);
+    armMap.put(0.122802734375, -0.02);
+    armMap.put(0.162109375, 0.04); //STOW 
+    armMap.put(0.2, 0.104248046875);
+    armMap.put(0.2880859375, 0.104248046875);
+    armMap.put(0.400390625, 0.031005859375);
+    armMap.put(0.76171875, 0.1025390625);
+    armMap.put(1.313720703125, 0.030517578125);
+    armMap.put(1.9453125, 0.0966796875);
+    armMap.put(2.70654296875, 0.10986328125);
   }
 
   /** Takes a lift angle and calculates the target extend length */
@@ -276,8 +284,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     // liftConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     // liftConfigs.ClosedLoopGeneral.ContinuousWrap = true;
 
-    liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 1;
-    liftConfigs.MotionMagic.MotionMagicAcceleration = 0.8;
+    liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 1; 
+    liftConfigs.MotionMagic.MotionMagicAcceleration = 0.8; 
     liftConfigs.MotionMagic.MotionMagicJerk = 0;
 
     liftMotor.getConfigurator().apply(liftConfigs);
@@ -298,8 +306,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     //extendConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     //extendConfigs.ClosedLoopGeneral.ContinuousWrap = true;
 
-    extendConfigs.MotionMagic.MotionMagicCruiseVelocity = 1;
-    extendConfigs.MotionMagic.MotionMagicAcceleration = 0.8;
+    extendConfigs.MotionMagic.MotionMagicCruiseVelocity = 12;
+    extendConfigs.MotionMagic.MotionMagicAcceleration = 23;
     extendConfigs.MotionMagic.MotionMagicJerk = 0;
 
     extendMotor.getConfigurator().apply(extendConfigs);
@@ -357,14 +365,12 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
     if (!configError_Lift.isOK()) 
     {
-        System.err.print(String.format("Lift Motor ERROR: %s", configError_Lift.toString()));
         result += configError_Lift.getDescription();
         OK = false;
     }
 
     if (!configError_Extend.isOK()) 
     {
-        System.err.println(String.format("Extend MOTOR ERROR: %s", configError_Extend.toString()));
         result += configError_Extend.getDescription();
         OK = false;
     }
