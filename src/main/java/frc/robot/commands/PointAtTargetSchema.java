@@ -46,14 +46,6 @@ public class PointAtTargetSchema extends MotionSchema
             desiredAngle = 0;
         }
         double angleDifference = desiredAngle - MathUtils.wrapAngleRadians(currentPose.getRotation().getRadians());
-        // if (angleDifference > Math.PI)
-        // {
-        //     angleDifference = 2 * Math.PI - angleDifference;
-        // }
-        // else if (angleDifference < -Math.PI)
-        // {
-        //     angleDifference += 2 * Math.PI;
-        // }
         angleDifference = MathUtils.wrapAngleRadians(angleDifference);
         double angularVelocity = angleDifference * alpha;
         SmartDashboard.putNumber("Angle Difference", angleDifference);

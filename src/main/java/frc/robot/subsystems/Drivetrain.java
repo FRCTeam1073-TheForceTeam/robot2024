@@ -185,7 +185,7 @@ public class Drivetrain extends DiagnosticsSubsystem
   //Returns IMU heading in degrees
   public double getHeadingDegrees() 
   {
-    return -pigeon2.getAngle();
+    return pigeon2.getYaw().refresh().getValue();
   }
 
   // Wraps the heading in degrees:
