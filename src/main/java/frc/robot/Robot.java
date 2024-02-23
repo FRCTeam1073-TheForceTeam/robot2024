@@ -65,7 +65,7 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    m_disabledCommand = m_robotContainer.getDisabledCommand();
+    //m_disabledCommand = m_robotContainer.getDisabledCommand();
     // schedule the disabled command (example)
     if (m_disabledCommand != null) {
       m_disabledCommand.schedule();
@@ -87,10 +87,10 @@ public class Robot extends TimedRobot {
   }
 
   /** This function is called periodically during autonomous. */
-  @Override
-  public void autonomousPeriodic() {}
+  // @Override
+  // public void autonomousPeriodic() {}
 
-  @Override
+  // @Override
   public void teleopInit() {
     // This makes sure that the autonomous stops running when
     // teleop starts running. If you want the autonomous to

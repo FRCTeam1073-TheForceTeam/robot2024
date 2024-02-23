@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -26,6 +27,10 @@ public class Shooter extends DiagnosticsSubsystem{
   // Motor fault trackers
   private final MotorFault topShooterMotorFault;
   private final MotorFault bottomShooterMotorFault;
+
+  // Configurator erros
+  StatusCode topConfigError;
+  StatusCode bottomConfigError;
 
   // Motor rate limiters
   private final SlewRateLimiter topFlyWheelLimiter;
@@ -75,6 +80,7 @@ public class Shooter extends DiagnosticsSubsystem{
  
   @Override
   public void periodic() {
+    updateDiagnostics();
     updateFeedback();
     // Calculate ratelimited commanded velocities in rotations/second based on meters/second target velocity
     commandedTopVelocityMPS = topFlyWheelLimiter.calculate(-targetTopVelocityMPS);
@@ -141,29 +147,30 @@ public class Shooter extends DiagnosticsSubsystem{
     configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
     configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
 
-    var error = topShooterMotor.getConfigurator().apply(configs);
-    if (!error.isOK()) 
-    {
-      System.err.println(String.format("TOP SHOOTER MOTOR ERROR: %s", error.toString()));
-      setDiagnosticsFeedback(error.getDescription(), false);
-    }
-
-    error = bottomShooterMotor.getConfigurator().apply(configs);
-    if (!error.isOK()) 
-    {
-      System.err.println(String.format("BOTTOM SHOOTER MOTOR ERROR: %s", error.toString()));
-      setDiagnosticsFeedback(error.getDescription(), false);
-    }
+    topConfigError = topShooterMotor.getConfigurator().apply(configs);
+    bottomConfigError = bottomShooterMotor.getConfigurator().apply(configs);
   }
 
   @Override
   public boolean updateDiagnostics(){
-    String result = getDiagnosticsDetails();
-    boolean ok = diagnosticsOk();
+    String result = "";
+    boolean ok = false;
     if (topShooterMotorFault.hasFaults()||
     bottomShooterMotorFault.hasFaults());{
       ok = false;
-      result = topShooterMotorFault.getFaults() +  bottomShooterMotorFault.getFaults();
+      result += topShooterMotorFault.getFaults() +  bottomShooterMotorFault.getFaults();
+    }
+    if (!topConfigError.isOK()) 
+    {
+      System.err.println(String.format("TOP SHOOTER MOTOR ERROR: %s", topConfigError.toString()));
+      result +=topConfigError.getDescription();
+      ok = false;
+    }
+    if (!bottomConfigError.isOK()) 
+    {
+      System.err.println(String.format("BOTTOM SHOOTER MOTOR ERROR: %s", bottomConfigError.toString()));
+      result +=bottomConfigError.getDescription();
+      ok = false;
     }
     return setDiagnosticsFeedback(result, ok);
   }

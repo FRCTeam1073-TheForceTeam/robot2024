@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -22,6 +23,7 @@ public class Feeder extends DiagnosticsSubsystem {
   private final TalonFX feederMotor;
   private final MotorFault feederMotorFault;
   private SlewRateLimiter feederMotorLimiter;
+  private StatusCode configError;
 
   // Motor scale factor
   private double feederMetersPerRotation = Math.PI * 0.0254; // 0.0254 meters/inch
@@ -76,6 +78,7 @@ public class Feeder extends DiagnosticsSubsystem {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    updateDiagnostics();
     updateFeedback();
 
     feederTofFreq = feederTofDutyCycleInput.getFrequency();
@@ -144,30 +147,30 @@ public class Feeder extends DiagnosticsSubsystem {
     configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
     configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
 
-    var error = feederMotor.getConfigurator().apply(configs);
-    if (!error.isOK()) 
-    {
-      System.err.println(String.format("FEEDER MOTOR ERROR: %s", error.toString()));
-      setDiagnosticsFeedback(error.getDescription(), false);
-    }
+    configError = feederMotor.getConfigurator().apply(configs);
   }
 
   @Override
   public boolean updateDiagnostics(){
-    String result = getDiagnosticsDetails();
-    boolean ok = diagnosticsOk();
+    String result = "";
+    boolean ok = true;
     if (feederMotorFault.hasFaults());{
       ok = false;
     }
     if(!ok){
-      result = feederMotorFault.getFaults();
+      result += feederMotorFault.getFaults();
     }
 
     if(feederTofDutyCycleInput.getFrequency()<2){
       ok = false;
       result += String.format("toffeeder1 not working");
     }
-
+    if (!configError.isOK()) 
+    {
+      System.err.println(String.format("FEEDER MOTOR ERROR: %s", configError.toString()));
+      result += configError.getDescription();
+      ok = false;
+    }
     return setDiagnosticsFeedback(result, ok);
   }
 

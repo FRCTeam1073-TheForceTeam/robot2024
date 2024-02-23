@@ -8,19 +8,23 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.ShooterInterpolatorTable;
 
 public class RunShooter extends Command {
   private Shooter shooter;
+  private ShooterInterpolatorTable shooterInterpolatorTable;
   private double shooterTopMPS;
   private double shooterBottomMPS;
+  private double range;
   
   /* Creates a new RunShooter. */
 
-  public RunShooter(Shooter shooter, double topShootorMPS, double bottomShooterMPS) {
+  public RunShooter(Shooter shooter, double range) {
+    /* Range to calculate the speed needed */
     // Use addRequirements() here to declare subsystem dependencies.
     this.shooter = shooter;
-    this.shooterTopMPS = topShootorMPS;
-    this.shooterBottomMPS = bottomShooterMPS;
+    this.range = range;
+    this.shooterInterpolatorTable = shooterInterpolatorTable;
     addRequirements(shooter);
   }
 
@@ -28,6 +32,8 @@ public class RunShooter extends Command {
   /* start shooter wheels to get them up to speed */
   @Override
   public void initialize() {
+    shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(range);
+    shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(range);
     shooter.setTargetTopVelocityInMPS(shooterTopMPS);
     shooter.setTargetBottomVelocityInMPS(shooterBottomMPS);
 

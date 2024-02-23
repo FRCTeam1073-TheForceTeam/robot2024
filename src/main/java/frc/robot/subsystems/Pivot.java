@@ -7,6 +7,7 @@ change methods to use pivot in radians */
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -21,6 +22,7 @@ public class Pivot extends DiagnosticsSubsystem {
   private final TalonFX pivotMotor;
   private final MotorFault pivotMotorFault;
   private final SlewRateLimiter pivotMotorFilter;
+  private StatusCode configError;
 
   // Motor scale factors
   private final double pivotGearRatio = 16 * 8.18 / 1;
@@ -63,6 +65,7 @@ public class Pivot extends DiagnosticsSubsystem {
 
   @Override
   public void periodic() {
+    updateDiagnostics();
     updateFeedback();
     // This method will be called once per scheduler run
     commandedPositionRad = pivotMotorFilter.calculate(MathUtil.clamp(targetPositionRad, minAngleRad, maxAngleRad));
@@ -108,24 +111,24 @@ public class Pivot extends DiagnosticsSubsystem {
     // configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
     // configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
     //configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-
-    var error = pivotMotor.getConfigurator().apply(configs);
-    if (!error.isOK()) 
-    {
-      System.err.println(String.format("PIVOT MOTOR ERROR: %s", error.toString()));
-      setDiagnosticsFeedback(error.getDescription(), false);
-    }
+    configError = pivotMotor.getConfigurator().apply(configs);
   }
 
   @Override
   public boolean updateDiagnostics(){
-    String result = getDiagnosticsDetails();
-    boolean ok = diagnosticsOk();
+    String result = "";
+    boolean ok = true;
     if (
     pivotMotorFault.hasFaults());{
       ok = false;
+      result += pivotMotorFault.getFaults();
     }
-    result = pivotMotorFault.getFaults();
+    if (!configError.isOK()) 
+    {
+      System.err.println(String.format("PIVOT MOTOR ERROR: %s", configError.toString()));
+      result += configError.getDescription();
+      ok = false;
+    }
     return setDiagnosticsFeedback(result, ok);
   }
 
