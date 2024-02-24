@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class OI extends DiagnosticsSubsystem
 {
-
   // Declares our controller variable
   public static Joystick driverController;
   public static Joystick operatorController;
@@ -182,6 +181,15 @@ public class OI extends DiagnosticsSubsystem
   public boolean getOperatorYButton(){
     return getOperatorRawButton(4);
   }
+
+  public boolean getOperatorRightTrigger(){
+    return (operatorController.getRawAxis(3) > 0.5);
+  }
+
+  public boolean getOperatorLeftTrigger(){
+    return (operatorController.getRawAxis(2) > 0.5);
+  }
+
 
   @Override
   public void initSendable(SendableBuilder builder){
