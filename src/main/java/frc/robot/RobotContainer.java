@@ -13,6 +13,16 @@ import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.StartRecordingAutonomous;
+import frc.robot.commands.StartRecordingTeleop;
+import frc.robot.commands.StopRecording;
+import frc.robot.subsystems.Camera;
+import frc.robot.subsystems.SerialComms;
+import edu.wpi.first.wpilibj.SerialPort;
+import frc.robot.subsystems.RangeFinder;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -52,6 +62,7 @@ public class RobotContainer {
   // private final RunFeeder runFeeder = new RunFeeder(m_feeder);
   // private final SetShooterAngle setShooterAngle = new SetShooterAngle(m_feeder, 0);
   // private final RunShooter runShooter = new RunShooter(m_shooter, 0, 0, 0);
+  private final RangeFinder m_rangeFinder = new RangeFinder();
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
   
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -78,6 +89,7 @@ public class RobotContainer {
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final Bling m_bling = new Bling();
 
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() 
   { CommandScheduler.getInstance().setDefaultCommand(m_pivot, m_pivotTestCommand);
@@ -89,6 +101,7 @@ public class RobotContainer {
     SmartDashboard.putData(m_shooter);
     SmartDashboard.putData(m_feeder);
     SmartDashboard.putData(m_pivot);
+    SmartDashboard.putData(m_rangeFinder);
 
     m_chooser.setDefaultOption("No Autonomous", kNoAuto);
     m_chooser.addOption("Snowplow Auto", kSnowPlowAuto);
