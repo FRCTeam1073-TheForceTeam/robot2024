@@ -4,40 +4,31 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-
-import frc.robot.commands.DriveThroughTrajectorySchema;
-import frc.robot.commands.DriveToPointSchema;
-import frc.robot.commands.SchemaDriveAuto;
-import frc.robot.subsystems.Bling;
-import frc.robot.subsystems.Camera;
-import frc.robot.commands.TeleopDrive;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.OI;
-import frc.robot.subsystems.SerialComms;
-import frc.robot.subsystems.SwerveModuleConfig;
-
-import java.util.ArrayList;
-
-import edu.wpi.first.wpilibj.DriverStation;
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.SerialPort.Port;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.StartRecordingAutonomous;
-import frc.robot.commands.StartRecordingTeleop;
-import frc.robot.commands.StopRecording;
-import frc.robot.subsystems.Camera;
-import frc.robot.subsystems.SerialComms;
-import edu.wpi.first.wpilibj.SerialPort;
-import frc.robot.subsystems.RangeFinder;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.*;
+import frc.robot.subsystems.*;
+
+import java.util.ArrayList;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -47,15 +38,30 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   SerialPort.Port serial_port = SerialPort.Port.kUSB;
+
   // The robot's subsystems and commands are defined here...
+  private final Pivot m_pivot = new Pivot();
+  private final Shooter m_shooter = new Shooter();
+  private final Feeder m_feeder = new Feeder(); 
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
   private final RangeFinder m_rangeFinder = new RangeFinder();
+  private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
+  
+  private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(m_pivot);
+  // private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(m_shooter, m_OI);
+  // private final FeederTestCommand m_feederTestCommand = new FeederTestCommand(m_feeder, m_OI);
+  // private final LoadFeeder loadFeeder = new LoadFeeder(m_feeder);
+  // private final RunFeeder runFeeder = new RunFeeder(m_feeder);
+  // private final SetShooterAngle setShooterAngle = new SetShooterAngle(m_feeder, 0);
+  // private final RunShooter runShooter = new RunShooter(m_shooter, 0, 0, 0);
+
+  private final StopShooter m_stopShooter = new StopShooter(m_shooter);
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
-
+  
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-
   private static final String kNoAuto = "No Autonomous";
+  // ex: private static final String auto1 = "auto 1";
   private static final String kSnowPlowAuto = "Snowplow Auto";
   private static final String kLeaveAuto = "Leave Auto";
   private static final String kTestAuto = "Test Auto";
@@ -80,10 +86,15 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() 
-  {
+  { CommandScheduler.getInstance().setDefaultCommand(m_pivot, m_pivotTestCommand);
+    // CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_shooterTestCommand);
+    //CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
+    SmartDashboard.putData(m_shooter);
+    SmartDashboard.putData(m_feeder);
+    SmartDashboard.putData(m_pivot);
     SmartDashboard.putData(m_rangeFinder);
 
     m_chooser.setDefaultOption("No Autonomous", kNoAuto);
@@ -110,6 +121,14 @@ public class RobotContainer {
   private void configureBindings() // TODO: NSARGENT: is this legit? configureBindings() call up on line 82
   {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
+    //Trigger.getOperatorRawButton1.toggleOnTrue(loadNoteToFeeder());
+    
+    Trigger loadNoteToFeeder = new Trigger(m_OI::getOperatorLeftTrigger);
+    loadNoteToFeeder.onTrue(new LoadFeeder(m_feeder));
+    
+    Trigger launchFeederToSpeaker = new Trigger(m_OI::getOperatorRightTrigger);
+    launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder));
+
     // System.out.println("Configuring buttons");
     // Trigger tagButton = new Trigger(m_OI::getXButton);
     // tagButton.onTrue(getTagData());
@@ -124,6 +143,9 @@ public class RobotContainer {
     // Set allOK to the results of the printDiagnostics method for each subsystem, separated by &&
     allOK = true
       // ex. && m_subsystem.printDiagnostics(isDisabled)
+      && m_shooter.printDiagnostics(isDisabled) 
+      && m_pivot.printDiagnostics(isDisabled) 
+      && m_feeder.printDiagnostics(isDisabled)
     ;
     //TODO: Add each subsystem
     SmartDashboard.putBoolean("Engine light", allOK);
@@ -150,30 +172,30 @@ public class RobotContainer {
     return c_startRecordingTeleop;
   }
 
-// TODO: add c_startRecordingAutonomous; to preexisting getAutonomousCommand
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
+   * 
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand()  
-  {
-    switch (m_chooser.getSelected())
-    {
+  public Command getAutonomousCommand() {
+    //TODO: addc_startRecordingAutonomous; to preexisting getAutonomousCommand
+    
+    switch (m_chooser.getSelected()){
       case kNoAuto:
-        return null; 
-      case kSnowPlowAuto: 
+        return null;
+      case kSnowPlowAuto:
         return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7, 0, new Rotation2d(0)), 5, 1), m_drivetrain),
           SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7.0, 5.5, new Rotation2d(0)), 5, 1), m_drivetrain), c_startRecordingAutonomous);
       case kLeaveAuto:
-        return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(1.5, 0.0, new Rotation2d()), 1.5, 0), m_drivetrain), c_startRecordingAutonomous);
+        return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(1.5, 0.0, new Rotation2d()), 1.5, 0), m_drivetrain),
+          c_startRecordingAutonomous);
       case kTestAuto:
         return new SequentialCommandGroup(testAuto(), c_startRecordingAutonomous);
       default:
         return null;
     }
-    //An example command will be run in autonomous
-    
+    // An example command will be run in autonomous
+
     //return SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(-1.0, -1.0, new Rotation2d(0)), 0.5, 0.5), m_drivetrain);
     //return new DriveToPointSchema(m_drivetrain, new Pose2d(1.0, 0, new Rotation2d(Math.PI / 2)), 0.5, 0.5);
 
@@ -190,6 +212,17 @@ public class RobotContainer {
 
   public Command getDisabledCommand() {
     return c_stopRecording;
+  }
 
+  public Command launchFeederToSpeaker(){
+    return m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder);
+    // return new SequentialCommandGroup(
+    //   new RunShooter(m_shooter, 7.7), //, m_rangeFinder.getRange()),
+    //  new ParallelRaceGroup(
+    //    new RunFeeder(m_feeder, 30), 
+    //    new WaitCommand(1)),
+    //   new StopShooter(m_shooter),
+    //   new RunFeeder(m_feeder, 0)
+    // );
   }
 }

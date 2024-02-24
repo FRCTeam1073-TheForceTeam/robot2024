@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class OI extends DiagnosticsSubsystem
 {
-
   // Declares our controller variable
   public static Joystick driverController;
   public static Joystick operatorController;
@@ -34,7 +33,8 @@ public class OI extends DiagnosticsSubsystem
   {
     // Sets the driver controller to a new joystick object at port 0
     driverController = new Joystick(0);
-    operatorController = new Joystick(0);
+    operatorController = new Joystick(1);
+    
     zeroDriverController();
     zeroOperatorController();
   }
@@ -169,6 +169,22 @@ public class OI extends DiagnosticsSubsystem
   /** Returns a specified button from the operator controller */
   public boolean getOperatorRawButton(int i) {
     return operatorController.getRawButton(i);
+  }
+
+  public boolean getOperatorRightTrigger(){
+    return (driverController.getRawAxis(3) > 0.5);
+  }
+
+  public boolean getOperatorLeftTrigger(){
+    return (driverController.getRawAxis(2) > 0.5);
+  }
+
+  public boolean getOperatorRawButton1() {
+    return operatorController.getRawButton(1);
+  }
+
+  public boolean getOperatorRawButton2() {
+    return operatorController.getRawButton(2);
   }
 
   @Override
