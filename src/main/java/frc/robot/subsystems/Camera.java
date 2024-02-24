@@ -32,6 +32,7 @@ public class Camera extends SubsystemBase {
 
   public void startRecordingTeleop(){
     serialComms.send("2,ti");
+    System.out.println("printed ti");
   }
 
   public void startRecordingAutonomous(){
