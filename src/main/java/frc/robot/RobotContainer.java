@@ -45,7 +45,8 @@ public class RobotContainer {
   private final Feeder m_feeder = new Feeder(); 
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
-  private final RangeFinder m_rangefinder = new RangeFinder();
+  private final RangeFinder m_rangeFinder = new RangeFinder();
+  private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
   
   private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(m_pivot);
   // private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(m_shooter, m_OI);
@@ -94,7 +95,7 @@ public class RobotContainer {
     SmartDashboard.putData(m_shooter);
     SmartDashboard.putData(m_feeder);
     SmartDashboard.putData(m_pivot);
-    SmartDashboard.putData(m_rangefinder);
+    SmartDashboard.putData(m_rangeFinder);
 
     m_chooser.setDefaultOption("No Autonomous", kNoAuto);
     m_chooser.addOption("Snowplow Auto", kSnowPlowAuto);
@@ -122,11 +123,11 @@ public class RobotContainer {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
     //Trigger.getOperatorRawButton1.toggleOnTrue(loadNoteToFeeder());
     
-    Trigger loadNoteToFeeder = new Trigger(m_OI::getOperatorRawButton1);
-    loadNoteToFeeder.onTrue(loadNoteToFeeder());
+    Trigger loadNoteToFeeder = new Trigger(m_OI::getOperatorLeftTrigger);
+    loadNoteToFeeder.onTrue(new LoadFeeder(m_feeder));
     
-    Trigger launchFeederToSpeaker = new Trigger(m_OI::getOperatorRawButton2);
-    launchFeederToSpeaker.onTrue(launchFeederToSpeaker());
+    Trigger launchFeederToSpeaker = new Trigger(m_OI::getOperatorRightTrigger);
+    launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder));
 
     // System.out.println("Configuring buttons");
     // Trigger tagButton = new Trigger(m_OI::getXButton);
@@ -213,25 +214,15 @@ public class RobotContainer {
     return c_stopRecording;
   }
 
-  public Command loadNoteToFeeder(){
-    System.out.println("load motor is doing");
-    return new LoadFeeder(m_feeder);
-  }
-
   public Command launchFeederToSpeaker(){
-    return new SequentialCommandGroup(
-      new RunShooter(m_shooter, 7.7), //, m_rangefinder.getRange()),
-     new ParallelRaceGroup(
-       new RunFeeder(m_feeder, 30), 
-       new WaitCommand(1)),
-      new StopShooter(m_shooter),
-      new RunFeeder(m_feeder, 0)
-    );
-    // public Command launchNoteToSpeaker(){
-    // return new SequentialCommandGroup(      
-    //   new LoadFeeder(m_feeder, Preferences.getDouble("Feeder Target Max Speed", 0.3)),
-    //   //new SetShooterAngle(m_shooter, Preferences.getDouble("Shooter Target Angle", 0.3)),
-    //   new RunShooter(m_shooter, Preferences.getDouble("Shooter Target Max Speed", 0.3), 0, 0),   
-    //   new RunFeeder(m_feeder, Preferences.getDouble("Feeder Target Max Speed", 0.3)));
+    return m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder);
+    // return new SequentialCommandGroup(
+    //   new RunShooter(m_shooter, 7.7), //, m_rangeFinder.getRange()),
+    //  new ParallelRaceGroup(
+    //    new RunFeeder(m_feeder, 30), 
+    //    new WaitCommand(1)),
+    //   new StopShooter(m_shooter),
+    //   new RunFeeder(m_feeder, 0)
+    // );
   }
 }
