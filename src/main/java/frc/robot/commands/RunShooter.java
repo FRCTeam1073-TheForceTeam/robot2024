@@ -34,8 +34,8 @@ public class RunShooter extends Command {
   /* start shooter wheels to get them up to speed */
   @Override
   public void initialize() {
-    shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(range);
-    shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(range);
+    shooterTopMPS = shooter.getCommandedTopVelocityInMPS(); //shooterInterpolatorTable.interpolateShooterVelocity(range);
+    shooterBottomMPS = shooter.getCommandedTopVelocityInMPS(); //shooterInterpolatorTable.interpolateShooterVelocity(range);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
