@@ -32,6 +32,7 @@ import frc.robot.commands.StopRecording;
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.SerialComms;
 import edu.wpi.first.wpilibj.SerialPort;
+import frc.robot.subsystems.RangeFinder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -49,6 +50,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
+  private final RangeFinder m_rangeFinder = new RangeFinder();
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -75,12 +77,14 @@ public class RobotContainer {
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final Bling m_bling = new Bling();
 
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() 
   {
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
+    SmartDashboard.putData(m_rangeFinder);
 
     m_chooser.setDefaultOption("No Autonomous", kNoAuto);
     m_chooser.addOption("Snowplow Auto", kSnowPlowAuto);
