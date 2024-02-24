@@ -180,7 +180,7 @@ public class Feeder extends DiagnosticsSubsystem {
     builder.setSmartDashboardType("Shooter");
     builder.addDoubleProperty("Tof Range", this::getTofRange, null);
     builder.addDoubleProperty("Tof Freq", this::getTofFreq, null);
-    builder.addDoubleProperty("Target Feeder Velocity", this::getTargetVelocityInMPS, null);
+    builder.addDoubleProperty("Target Feeder Velocity", this::getTargetVelocityInMPS, this::setTargetVelocityInMPS);
     builder.addDoubleProperty("Commanded Feeder Velocity", this::getCommandedVelocityInMPS, null);
     builder.addDoubleProperty("Actual Feeder Velocity", this::getCurrentVelocityInMPS, null);
   }

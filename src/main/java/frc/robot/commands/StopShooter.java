@@ -12,16 +12,16 @@ import frc.robot.subsystems.ShooterInterpolatorTable;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
 
-public class RunShooter extends Command {
+public class StopShooter extends Command {
   private Shooter shooter;
   private ShooterInterpolatorTable shooterInterpolatorTable;
   private double shooterTopMPS;
   private double shooterBottomMPS;
   private double range;
   
-  /* Creates a new RunShooter. */
+  /* Creates a new StopShooter. */
 
-  public RunShooter(Shooter shooter, double range) {
+  public StopShooter(Shooter shooter) {
     /* Range to calculate the speed needed */
     // Use addRequirements() here to declare subsystem dependencies.
     this.shooter = shooter;
@@ -34,15 +34,14 @@ public class RunShooter extends Command {
   /* start shooter wheels to get them up to speed */
   @Override
   public void initialize() {
-    shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(range);
-    shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(range);
+    shooter.setTargetTopVelocityInMPS(0);
+    shooter.setTargetBottomVelocityInMPS(0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shooter.setTargetTopVelocityInMPS(shooterTopMPS);
-    shooter.setTargetBottomVelocityInMPS(shooterBottomMPS);
+
   }
 
   // Called once the command ends or is interrupted.

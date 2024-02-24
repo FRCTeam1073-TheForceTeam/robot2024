@@ -45,6 +45,7 @@ public class RobotContainer {
   private final Feeder m_feeder = new Feeder(); 
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
+  private final RangeFinder m_rangefinder = new RangeFinder();
   
   private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(m_pivot);
   // private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(m_shooter, m_OI);
@@ -53,7 +54,8 @@ public class RobotContainer {
   // private final RunFeeder runFeeder = new RunFeeder(m_feeder);
   // private final SetShooterAngle setShooterAngle = new SetShooterAngle(m_feeder, 0);
   // private final RunShooter runShooter = new RunShooter(m_shooter, 0, 0, 0);
-  private final RangeFinder m_rangeFinder = new RangeFinder();
+
+  private final StopShooter m_stopShooter = new StopShooter(m_shooter);
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
   
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -92,7 +94,7 @@ public class RobotContainer {
     SmartDashboard.putData(m_shooter);
     SmartDashboard.putData(m_feeder);
     SmartDashboard.putData(m_pivot);
-    SmartDashboard.putData(m_rangeFinder);
+    SmartDashboard.putData(m_rangefinder);
 
     m_chooser.setDefaultOption("No Autonomous", kNoAuto);
     m_chooser.addOption("Snowplow Auto", kSnowPlowAuto);
@@ -218,11 +220,11 @@ public class RobotContainer {
 
   public Command launchFeederToSpeaker(){
     return new SequentialCommandGroup(
-      new RunShooter(m_shooter, 25),
+      new RunShooter(m_shooter, 7.7), //, m_rangefinder.getRange()),
      new ParallelRaceGroup(
-       new RunFeeder(m_feeder, 25), 
-       new WaitCommand(3)),
-      new RunShooter(m_shooter, 0),
+       new RunFeeder(m_feeder, 30), 
+       new WaitCommand(1)),
+      new StopShooter(m_shooter),
       new RunFeeder(m_feeder, 0)
     );
     // public Command launchNoteToSpeaker(){

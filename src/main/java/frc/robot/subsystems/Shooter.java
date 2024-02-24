@@ -39,6 +39,8 @@ public class Shooter extends DiagnosticsSubsystem{
   // Velocity variables
   private double targetTopVelocityMPS;
   private double targetBottomVelocityMPS;
+  private double runShooterTargetTopVelocityInMPS;
+  private double runShooterTargetBottomVelocityInMPS;
   private double commandedTopVelocityMPS;
   private double commandedBottomVelocityMPS;
   private double currentTopVelocityMPS;
@@ -130,6 +132,22 @@ public class Shooter extends DiagnosticsSubsystem{
     return Math.abs(currentBottomVelocityMPS);
   }
 
+  public double getRunShooterTargetTopVelocityInMPS(){
+    return Math.abs(runShooterTargetTopVelocityInMPS);
+  }
+
+  public double getRunShooterTargetBottomVelocityInMPS(){
+    return Math.abs(runShooterTargetBottomVelocityInMPS);
+  }
+
+  public void setRunShooterTargetTopVelocityInMPS(double velocityMPS){
+    runShooterTargetTopVelocityInMPS = velocityMPS;
+  }
+
+  public void setRunShooterTargetBottomVelocityInMPS(double velocityMPS){
+    runShooterTargetBottomVelocityInMPS = velocityMPS;
+  }
+
   /* Uses the beam break sensor to detect if the note has entered the shooter */
   public boolean noteIsInShooter(){
     return shooterBeamBreak.get();
@@ -179,8 +197,12 @@ public class Shooter extends DiagnosticsSubsystem{
   public void initSendable(SendableBuilder builder)
   {
     builder.setSmartDashboardType("Shooter");
-    builder.addDoubleProperty("Target Top Motor Velocity", this::getTargetTopVelocityInMPS, null);
-    builder.addDoubleProperty("Target Bottom Motor Velocity", this::getTargetBottomVelocityInMPS, null);
+    builder.addDoubleProperty("Target Top Motor Velocity", this::getTargetTopVelocityInMPS, this::setTargetTopVelocityInMPS);
+    builder.addDoubleProperty("Target Bottom Motor Velocity", this::getTargetBottomVelocityInMPS, this::setTargetBottomVelocityInMPS);
+    
+    builder.addDoubleProperty("RunShooter Target Top Motor Velocity", this::getRunShooterTargetTopVelocityInMPS, this::setRunShooterTargetTopVelocityInMPS);
+    builder.addDoubleProperty("RunShooter Bottom Motor Velocity", this::getRunShooterTargetBottomVelocityInMPS, this::setRunShooterTargetBottomVelocityInMPS);
+    
     builder.addDoubleProperty("Commanded Top Motor Velocity", this::getCommandedTopVelocityInMPS, null);
     builder.addDoubleProperty("Commanded Bottom Motor Velocity", this::getCommandedBottomVelocityInMPS, null);
     builder.addDoubleProperty("Actual Top Motor Velocity", this::getCurrentTopVelocityInMPS, null);

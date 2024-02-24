@@ -17,8 +17,9 @@ public class ShooterInterpolatorTable {
         shooterVelocityTable = new InterpolatingDoubleTreeMap();
         //first value is the range, sceond value is the speed/velocity
         shooterVelocityTable.put(Double.valueOf(5.7), Double.valueOf(22)); //pivot angle: -0.7, feeder: 22
-        shooterVelocityTable.put(Double.valueOf(15), Double.valueOf(22));
-        shooterVelocityTable.put(Double.valueOf(10), Double.valueOf(25));
+        shooterVelocityTable.put(Double.valueOf(7.7), Double.valueOf(25)); //pivot angle: -0.7, feeder: 22
+        // ex: shooterVelocityTable.put(Double.valueOf(15), Double.valueOf(22));
+        // ex: shooterVelocityTable.put(Double.valueOf(10), Double.valueOf(25));
     }
 
     public void setUpFeederInterpolator(){
