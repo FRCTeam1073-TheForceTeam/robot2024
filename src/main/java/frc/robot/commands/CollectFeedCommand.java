@@ -26,6 +26,7 @@ public class CollectFeedCommand extends Command {
   public SequentialCommandGroup runCollectShootCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm, Pivot m_pivot, Feeder m_feeder, Shooter m_shooter) {
     return new SequentialCommandGroup(
       new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
+      new ArmPoseCommand(m_collectorArm, POSE.STOW, true),
       new ParallelCommandGroup(
         new ArmPoseCommand(m_collectorArm, POSE.HANDOFF, false),
         new SetPivotCommand(m_pivot, -0.7)
