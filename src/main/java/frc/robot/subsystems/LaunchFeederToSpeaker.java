@@ -6,8 +6,6 @@ package frc.robot.subsystems;
 
 import frc.robot.subsystems.*;
 
-import org.ejml.equation.IntegerSequence.Range;
-
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -17,7 +15,7 @@ import frc.robot.commands.*;
 public class LaunchFeederToSpeaker extends SequentialCommandGroup{
     
   public LaunchFeederToSpeaker(){ //Shooter shooter, Feeder feeder, RangeFinder rangefinder
-    
+
     }
 
   public SequentialCommandGroup runLaunchFeedertoSpeaker(Shooter m_shooter, Feeder m_feeder){
