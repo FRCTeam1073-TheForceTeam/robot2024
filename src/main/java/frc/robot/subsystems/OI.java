@@ -34,6 +34,7 @@ public class OI extends DiagnosticsSubsystem
     // Sets the driver controller to a new joystick object at port 0
     driverController = new Joystick(0);
     operatorController = new Joystick(1);
+    
     zeroDriverController();
     zeroOperatorController();
   }
