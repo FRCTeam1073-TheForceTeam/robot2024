@@ -109,11 +109,11 @@ public class TeleopDrive extends SchemaArbiter
     SmartDashboard.putBoolean("Field Centric", fieldCentric);
     SmartDashboard.putBoolean("Parking Brake", parked);
 
-    if(m_OI.getLeftBumper() && lastParkingBreakButton == false)
+    if(m_OI.getDriverLeftBumper() && lastParkingBreakButton == false)
     {
       parked = !parked;
     }
-    lastParkingBreakButton = m_OI.getLeftBumper();
+    lastParkingBreakButton = m_OI.getDriverLeftBumper();
     if(parked && !m_drivetrain.getParkingBrake())
     {
       m_drivetrain.parkingBrake(true);
@@ -152,11 +152,11 @@ public class TeleopDrive extends SchemaArbiter
     // }
     
     // Allow driver to zero the drive subsystem heading for field-centric control.
-    if(m_OI.getMenuButton()){
+    if(m_OI.getDriverMenuButton()){
       m_drivetrain.zeroHeading();
     }
 
-    if(m_OI.getAButton()){
+    if(m_OI.getDriverAButton()){
       Rotation2d zeroRotate = new Rotation2d();
       Pose2d zero = new Pose2d(0.0, 0.0, zeroRotate);
       m_drivetrain.resetOdometry(zero);

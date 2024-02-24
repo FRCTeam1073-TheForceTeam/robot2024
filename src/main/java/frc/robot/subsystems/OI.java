@@ -16,6 +16,7 @@ public class OI extends DiagnosticsSubsystem
 
   // Declares our controller variable
   public static Joystick driverController;
+  public static Joystick operatorController;
 
   public Debouncer fieldCentricDebouncer = new Debouncer(.05);
   public Debouncer parkingBrakeDebouncer = new Debouncer(0.05);
@@ -33,23 +34,15 @@ public class OI extends DiagnosticsSubsystem
   {
     // Sets the driver controller to a new joystick object at port 0
     driverController = new Joystick(0);
+    operatorController = new Joystick(0);
     zeroDriverController();
+    zeroOperatorController();
   }
 
   @Override
   public boolean updateDiagnostics() { 
     // TODO: Add proper diagnostics.
     return false;
-  }
-
-
-  @Override
-  public void initSendable(SendableBuilder builder){
-    builder.setSmartDashboardType("OI");
-    builder.addDoubleProperty("Driver Right Y", this::getDriverRightY, null);
-    builder.addDoubleProperty("Driver Right X", this::getDriverRightX, null);
-    builder.addDoubleProperty("Driver Left Y", this::getDriverLeftY, null);
-    builder.addDoubleProperty("Driver Left X", this::getDriverLeftX, null);
   }
 
   /** This method will be called once per scheduler run */
@@ -130,19 +123,64 @@ public class OI extends DiagnosticsSubsystem
   {
     return fieldCentricDebouncer.calculate(driverController.getRawButton(7));
   }
-  
-  public boolean getLeftBumper()
-  {
+
+  public boolean getDriverLeftBumper(){
     return parkingBrakeDebouncer.calculate(driverController.getRawButton(5));
   }
 
-  public boolean getMenuButton()
-  {
+  public boolean getDriverMenuButton(){
     return menuDriverButtonDebouncer.calculate(driverController.getRawButton(8));
   }
 
-  public boolean getAButton()
-  {
+  public boolean getDriverAButton(){
     return aDriverButtonDebouncer.calculate(driverController.getRawButton(1));
+  }
+
+  public void zeroOperatorController() {
+    //Sets all the offsets to zero, then uses whatever value it returns as the new offset.
+    LEFT_X_ZERO = 0;
+    LEFT_Y_ZERO = 0;
+    RIGHT_X_ZERO = 0;
+    RIGHT_Y_ZERO = 0;
+    LEFT_X_ZERO = getOperatorLeftX();
+    LEFT_Y_ZERO = getOperatorLeftY();
+    RIGHT_X_ZERO = getOperatorRightX();
+    RIGHT_Y_ZERO = getOperatorRightY();
+  }
+
+  /** The following methods return quality-controlled values from the operator controller */
+  public double getOperatorLeftX() {
+    // "Clamping" the value makes sure that it's still between 1 and -1 even if we have added an offset to it
+    return MathUtil.clamp(operatorController.getRawAxis(0) - LEFT_X_ZERO, -1, 1);
+  }
+
+  public double getOperatorLeftY() {
+    return MathUtil.clamp(operatorController.getRawAxis(1) - LEFT_Y_ZERO, -1, 1);
+  }
+
+  public double getOperatorRightX() {
+    return MathUtil.clamp(operatorController.getRawAxis(4) - RIGHT_X_ZERO, -1, 1);
+  }
+
+  public double getOperatorRightY() {
+    return MathUtil.clamp(operatorController.getRawAxis(5) - RIGHT_Y_ZERO, -1, 1);
+  }
+
+  /** Returns a specified button from the operator controller */
+  public boolean getOperatorRawButton(int i) {
+    return operatorController.getRawButton(i);
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder){
+    builder.setSmartDashboardType("OI");
+    builder.addDoubleProperty("Driver Right Y", this::getDriverRightY, null);
+    builder.addDoubleProperty("Driver Right X", this::getDriverRightX, null);
+    builder.addDoubleProperty("Driver Left Y", this::getDriverLeftY, null);
+    builder.addDoubleProperty("Driver Left X", this::getDriverLeftX, null);
+    builder.addDoubleProperty("Operator Right Y", this::getOperatorRightY, null);
+    builder.addDoubleProperty("Operator Right X", this::getOperatorRightX, null);
+    builder.addDoubleProperty("Operator Left Y", this::getOperatorLeftY, null);
+    builder.addDoubleProperty("Operator Left X", this::getOperatorLeftX, null);
   }
 }
