@@ -5,7 +5,9 @@
 package frc.robot.subsystems;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -46,7 +48,8 @@ public class SerialComms extends SubsystemBase{
 
   public static String receive() {
     System.out.println("in receive");
-    ArrayList<Byte> msg = new ArrayList<Byte>();
+    //ArrayList<Byte> msg = new ArrayList<Byte>();
+    String msgAsString = new String();
 
     while(true) {
       int recvd = serialPort.getBytesReceived();
@@ -54,16 +57,15 @@ public class SerialComms extends SubsystemBase{
       if(recvd != 0){
         //System.out.println("recvd was not zero");
         byte[] data = serialPort.read(1);
-        //System.out.println(String.format("byte data recvd: %s", data));
-        msg.add(data[0]);
+        String dataAsStr = new String(data, StandardCharsets.US_ASCII);
+        char dataAsChar = new String(data, StandardCharsets.US_ASCII).toCharArray()[0];
 
-        // dataString is the byte we just received cast to a String so we can compare to newline without hardcoding the ord() or something
-        String dataString = new String(data, StandardCharsets.US_ASCII);
-        System.out.println(String.format("byte we just received as string: %s", dataString));
-        if(dataString == "\n") {
-          String msgAsString = msg.toString();
-          System.out.println("full msg we received as string:");
-          System.out.println(msgAsString);
+        msgAsString = msgAsString.concat(dataAsStr);
+        System.out.println(String.format("msgAsString thus far: %s", msgAsString));
+        System.out.println(String.format("byte we just received as string: |%s|", dataAsStr));
+        if(dataAsChar == '\n') {
+          System.out.println("should have just gotten a newline");
+          System.out.println(String.format("full msg we received as string: %s", msgAsString));
           return msgAsString;
         }
       }

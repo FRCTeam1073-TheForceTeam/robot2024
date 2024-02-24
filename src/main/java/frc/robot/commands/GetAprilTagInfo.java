@@ -26,14 +26,14 @@ public class GetAprilTagInfo extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    serialComms.send("2,ap");
+    serialComms.send("1,ap");
     System.out.println("sent for april tag");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    //serialComms.receive();
+    serialComms.receive();
     this.weAreFinished = true;
   }
 
