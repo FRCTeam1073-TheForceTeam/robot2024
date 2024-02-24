@@ -9,7 +9,8 @@ import frc.robot.commands.CollectorTeleop;
 import frc.robot.commands.ArmPoseCommand;
 import frc.robot.commands.ArmPoseTeleop;
 import frc.robot.commands.CollectorArmTeleop;
-
+import frc.robot.commands.CollectorIntakeCommand;
+import frc.robot.commands.CollectorIntakeOutCommand;
 import frc.robot.commands.DriveThroughTrajectorySchema;
 import frc.robot.commands.DriveToPointSchema;
 import frc.robot.commands.SchemaDriveAuto;
@@ -93,7 +94,7 @@ public class RobotContainer {
   public RobotContainer() 
   {
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
-    CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand);
+    //CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_collectorArmTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
     SmartDashboard.putData(m_drivetrain);
@@ -133,7 +134,7 @@ public class RobotContainer {
     // cancelling on release.
 
     Trigger armStartPoseTrigger = new Trigger(m_OI::getOperatorAButton);
-    armStartPoseTrigger.onTrue(armTestCommand());
+    armStartPoseTrigger.onTrue(collectorScoreCommand());
 
     Trigger armAmpPoseTrigger = new Trigger(m_OI::getOperatorYButton);
     armAmpPoseTrigger.onTrue(armAmpPoseCommand());
@@ -229,6 +230,15 @@ public class RobotContainer {
     return new SequentialCommandGroup(
       new ArmPoseCommand(m_collectorArm, POSE.AMP),
       new WaitCommand(2),
+      new ArmPoseCommand(m_collectorArm, POSE.START)
+    );
+  }
+
+  public Command collectorScoreCommand(){
+    return new SequentialCommandGroup(
+      new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
+      new ArmPoseCommand(m_collectorArm, POSE.AMP),
+      new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain),
       new ArmPoseCommand(m_collectorArm, POSE.START)
     );
   }
