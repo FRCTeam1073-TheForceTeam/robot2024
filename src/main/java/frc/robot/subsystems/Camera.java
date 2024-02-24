@@ -14,10 +14,11 @@ public class Camera extends SubsystemBase {
   private int camID;
   
   public Camera(SerialComms serialComms, int camID) {
-    System.out.println("in camera constructor");
+    this.camID = camID;
+    //System.out.println("in camera constructor");
     this.serialComms = serialComms;
-    System.out.println("camID in constructor");
-    System.out.println(camID);
+    //System.out.println("camID in constructor");
+    //System.out.println(camID);
   }
 
   // public void getAprilTag(){
@@ -31,16 +32,15 @@ public class Camera extends SubsystemBase {
   // }
 
   public void startRecordingTeleop(){
-    serialComms.send("2,ti");
-    System.out.println("printed ti");
+    serialComms.send(this.camID + ",ti");
   }
 
   public void startRecordingAutonomous(){
-    serialComms.send("2,ai");
+    serialComms.send(this.camID + ",ai");
   }
 
   public void stopRecording(){
-    serialComms.send("2,di");
+    serialComms.send(this.camID + ",di");
   }
 
   @Override

@@ -30,18 +30,18 @@ public class SerialComms extends SubsystemBase{
 
   public static void send(String message) {
     message = message.concat("\n");
-    System.out.println(String.format("in send() message we're about to send as string: %s", message));
+    //System.out.println(String.format("in send() message we're about to send as string: %s", message));
     byte[] messageAsBytes = message.getBytes(StandardCharsets.US_ASCII);
-    System.out.println(String.format("message we're about to send as bytes: %s", messageAsBytes));
-    System.out.println(String.format("message we're about to send as bytes converted back to ASCII string: %s", new String(messageAsBytes, StandardCharsets.US_ASCII)));
+    //System.out.println(String.format("message we're about to send as bytes: %s", messageAsBytes));
+    //System.out.println(String.format("message we're about to send as bytes converted back to ASCII string: %s", new String(messageAsBytes, StandardCharsets.US_ASCII)));
     for(int i=0; i < messageAsBytes.length; i++) {
       byte[] arrayofone = {messageAsBytes[i]};
-      System.out.println(String.format("arrayofone: %s", arrayofone[0]));
-      System.out.println(String.format("i: %s", i));
+      //System.out.println(String.format("arrayofone: %s", arrayofone[0]));
+      //System.out.println(String.format("i: %s", i));
       serialPort.write(arrayofone, 1);
     }
 
-    System.out.println("bottom of SerialComms.send()");
+    //System.out.println("bottom of SerialComms.send()");
   }
 
   public static String receive() {

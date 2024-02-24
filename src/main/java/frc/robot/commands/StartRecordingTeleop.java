@@ -27,7 +27,7 @@ public class StartRecordingTeleop extends Command {
   @Override
   public void execute() {
     this.weAreFinished = false;
-    System.out.println("in startCamera.java execute(), starting teleop recording");
+    System.out.println("starting teleop recording");
     camera.startRecordingTeleop();
     // TODO: listen for a reponse before finishing, ideally retry
     this.weAreFinished = true;
@@ -36,7 +36,7 @@ public class StartRecordingTeleop extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    System.out.println("in StartCamera.java end(), setting weAreFinished to true");
+    //System.out.println("in StartCamera.java end(), setting weAreFinished to true");
     this.weAreFinished = true;
   }
 

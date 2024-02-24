@@ -27,25 +27,25 @@ public class StartRecordingAutonomous extends Command {
   public void initialize() {
     this.weAreFinished = false;
     this.initcounter += 1;
-    System.out.println(String.format("StartRecordingAutonomous.java init counter: %s", this.initcounter));
+    //System.out.println(String.format("StartRecordingAutonomous.java init counter: %s", this.initcounter));
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     this.weAreFinished = false;
-    System.out.println("in StartRecordingAutonomous.java execute(), starting autonomous recording");
+    System.out.println("starting autonomous recording");
     camera.startRecordingAutonomous();
     // TODO: listen for a reponse before finishing, ideally retry
     this.weAreFinished = true;
     this.execcounter += 1;
-    System.out.println(String.format("StartRecordingAutonomous.java exec counter: %s", this.execcounter));
+    //System.out.println(String.format("StartRecordingAutonomous.java exec counter: %s", this.execcounter));
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    System.out.println("in StartRecordingAutonomous.java end(), setting weAreFinished to true");
+    //System.out.println("in StartRecordingAutonomous.java end(), setting weAreFinished to true");
     this.weAreFinished = true;
   }
 

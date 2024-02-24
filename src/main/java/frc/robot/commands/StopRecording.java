@@ -19,14 +19,15 @@ public class StopRecording extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("in StopRecording.java initialize()");
+    //System.out.println("in StopRecording.java initialize()");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("in StopRecording.java exec()");
+    //System.out.println("in StopRecording.java exec()");
     camera.stopRecording();
+    System.out.println("stopping recording");
   }
 
   // Called once the command ends or is interrupted.
@@ -37,7 +38,7 @@ public class StopRecording extends Command {
   @Override
   public boolean isFinished() {
     // TODO: see if this works without the this.weAreFinished business
-    System.out.println("in StopRecording.java isFinished()");
+    //System.out.println("in StopRecording.java isFinished()");
     return true;
   }
 
