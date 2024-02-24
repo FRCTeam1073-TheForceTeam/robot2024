@@ -6,7 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.CollectorTeleop;
-import frc.robot.commands.ArmPoseCommand;
+import frc.robot.commands.ArmPoseTeleop;
 import frc.robot.commands.CollectorArmTeleop;
 
 import frc.robot.commands.DriveThroughTrajectorySchema;
@@ -59,7 +59,7 @@ public class RobotContainer {
   private final CollectorArm m_collectorArm = new CollectorArm();
   private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_collectorArm, m_drivetrain, m_OI);
   private final CollectorArmTeleop m_collectorArmTeleop = new CollectorArmTeleop(m_collectorArm, m_OI);
-  private final ArmPoseCommand m_armPoseCommand = new ArmPoseCommand(m_collectorArm, m_OI);
+  private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm, m_OI);
 
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -92,7 +92,7 @@ public class RobotContainer {
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_collectorArmTeleop);
-    CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseCommand);
+    CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
     SmartDashboard.putData(m_collector);

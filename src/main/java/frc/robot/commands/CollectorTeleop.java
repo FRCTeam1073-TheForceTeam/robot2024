@@ -113,8 +113,6 @@ public class CollectorTeleop extends Command {
       count++;
     }
 
-    SmartDashboard.putBoolean("isCollected", isCollected);
-
     tofOldValue = tofCurrentValue;
   }
 

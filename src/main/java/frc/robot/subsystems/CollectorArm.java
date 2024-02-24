@@ -237,11 +237,18 @@ public class CollectorArm extends DiagnosticsSubsystem {
     armMap.put(0.162109375, 0.04); //STOW 
     armMap.put(0.2, 0.104248046875);
     armMap.put(0.2880859375, 0.104248046875);
-    armMap.put(0.400390625, 0.031005859375);
-    armMap.put(0.76171875, 0.1025390625);
+    armMap.put(0.400390625, -0.041005859375);
+    armMap.put(0.76171875, -0.0425390625);
     armMap.put(1.313720703125, 0.030517578125);
     armMap.put(1.9453125, 0.0966796875);
     armMap.put(2.70654296875, 0.10986328125);
+
+    /*
+    Adding more points at a steeper slope near important positions will yield a
+    faster acceleration(limited by motion magic configs) to the target.
+    
+    Right now it is tuned to be relatively fast
+    */
   }
 
   /** Takes a lift angle and calculates the target extend length */
@@ -306,8 +313,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     //extendConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     //extendConfigs.ClosedLoopGeneral.ContinuousWrap = true;
 
-    extendConfigs.MotionMagic.MotionMagicCruiseVelocity = 12;
-    extendConfigs.MotionMagic.MotionMagicAcceleration = 23;
+    extendConfigs.MotionMagic.MotionMagicCruiseVelocity = 25;
+    extendConfigs.MotionMagic.MotionMagicAcceleration = 30;
     extendConfigs.MotionMagic.MotionMagicJerk = 0;
 
     extendMotor.getConfigurator().apply(extendConfigs);
