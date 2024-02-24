@@ -10,34 +10,42 @@ import frc.robot.subsystems.CollectorArm.POSE;
 
 public class ArmPoseCommand extends Command {
 
-  CollectorArm arm;
-  POSE pose;
+  CollectorArm m_arm;
+  POSE m_pose;
 
-  double targetLift;
-  double liftTolerence = 0.01;
+  double m_targetLift;
+  double m_targetExtend;
+  double m_liftTolerence = 0.01;
+
+  boolean m_extendFlag;
 
   /** Creates a new ArmPoseCommand. */
-  public ArmPoseCommand(CollectorArm arm, POSE pose) {
+  public ArmPoseCommand(CollectorArm arm, POSE pose, boolean extendInterpolateFlag) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.arm = arm;
-    this.pose = pose;
+    m_arm = arm;
+    m_pose = pose;
+    m_extendFlag = extendInterpolateFlag;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    switch (pose) {
+    switch (m_pose) {
       case START:
-        targetLift = 0.0;
+        m_targetLift = 0.0;
+        m_targetExtend = 0.0;
         break;
       case STOW:
-        targetLift = 0.2;
+        m_targetLift = 0.2;
+        m_targetExtend = 0.1047363281;
         break;
       case HANDOFF:
-        targetLift = 0.0;
+        m_targetLift = 0.0;
+        m_targetExtend = 0.0;
         break;
       case AMP:
-        targetLift = 1.9453125;
+        m_targetLift = 1.9453125;
+        m_targetExtend = 0.0966796875;
         break;
     }
   }
@@ -45,20 +53,23 @@ public class ArmPoseCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    arm.setTargetLiftAngle(targetLift);
+    m_arm.setTargetLiftAngle(m_targetLift);
+    if(!m_extendFlag){
+      m_arm.setTargetExtendLength(m_targetExtend);
+    }
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    arm.setPoseName(pose);
+    m_arm.setPoseName(m_pose);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    double error = Math.abs(arm.getCurrentLiftAngle() - targetLift);
-    if(error < liftTolerence){
+    double error = Math.abs(m_arm.getCurrentLiftAngle() - m_targetLift);
+    if(error < m_liftTolerence){
       return true;
     }
     else{

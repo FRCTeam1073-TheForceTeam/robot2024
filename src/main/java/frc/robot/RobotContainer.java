@@ -219,27 +219,27 @@ public class RobotContainer {
   }
 
   public Command armStartPoseCommand(){
-    return new ArmPoseCommand(m_collectorArm, POSE.START);
+    return new ArmPoseCommand(m_collectorArm, POSE.START, false);
   }
 
   public Command armAmpPoseCommand(){
-    return new ArmPoseCommand(m_collectorArm, POSE.AMP);
+    return new ArmPoseCommand(m_collectorArm, POSE.AMP, false);
   }
 
   public Command armTestCommand(){
     return new SequentialCommandGroup(
-      new ArmPoseCommand(m_collectorArm, POSE.AMP),
+      new ArmPoseCommand(m_collectorArm, POSE.AMP, false),
       new WaitCommand(2),
-      new ArmPoseCommand(m_collectorArm, POSE.START)
+      new ArmPoseCommand(m_collectorArm, POSE.START, false)
     );
   }
 
   public Command collectorScoreCommand(){
     return new SequentialCommandGroup(
       new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
-      new ArmPoseCommand(m_collectorArm, POSE.AMP),
+      new ArmPoseCommand(m_collectorArm, POSE.AMP, false),
       new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain),
-      new ArmPoseCommand(m_collectorArm, POSE.START)
+      new ArmPoseCommand(m_collectorArm, POSE.START, false)
     );
   }
 }

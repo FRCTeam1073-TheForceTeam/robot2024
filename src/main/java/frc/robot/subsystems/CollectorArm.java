@@ -116,6 +116,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   private POSE currentPose;
 
+  private boolean extendInterpolateFlag = true;
+
   /** Creates a new CollectorArm. */
   public CollectorArm() {
     liftMotor = new TalonFX(13, kCANbus); 
@@ -143,7 +145,9 @@ public class CollectorArm extends DiagnosticsSubsystem {
   public void periodic() 
   {
     updateFeedback();
-    targetExtendLength = interpolateExtendPosition(currentLiftAngle);
+    if(extendInterpolateFlag){
+      targetExtendLength = interpolateExtendPosition(currentLiftAngle);
+    }
     commandedExtendLength = limitExtendLength(targetExtendLength);
     commandedLiftAngle = limitLiftAngle(targetLiftAngle);
     runLiftMotor(commandedLiftAngle);
@@ -222,6 +226,10 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   public POSE getPoseName() {
     return currentPose;
+  }
+
+  public void setExtendInterpolateFlag(boolean flagValue){
+    extendInterpolateFlag = flagValue;
   }
 
 
