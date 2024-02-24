@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.CollectorTeleop;
+import frc.robot.commands.ArmPoseCommand;
 import frc.robot.commands.ArmPoseTeleop;
 import frc.robot.commands.CollectorArmTeleop;
 
@@ -19,6 +20,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.SerialComms;
 import frc.robot.subsystems.SwerveModuleConfig;
+import frc.robot.subsystems.CollectorArm.POSE;
 import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.CollectorArm;
 
@@ -40,6 +42,7 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -92,7 +95,7 @@ public class RobotContainer {
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_collectorArmTeleop);
-    CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
+    //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
     SmartDashboard.putData(m_collector);
@@ -128,6 +131,12 @@ public class RobotContainer {
     // tagButton.onTrue(getTagData());
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
+
+    Trigger armStartPoseTrigger = new Trigger(m_OI::getOperatorAButton);
+    armStartPoseTrigger.onTrue(armTestCommand());
+
+    Trigger armAmpPoseTrigger = new Trigger(m_OI::getOperatorYButton);
+    armAmpPoseTrigger.onTrue(armAmpPoseCommand());
 
   }
 
@@ -206,5 +215,21 @@ public class RobotContainer {
   public Command getDisabledCommand() {
     return c_stopRecording;
 
+  }
+
+  public Command armStartPoseCommand(){
+    return new ArmPoseCommand(m_collectorArm, POSE.START);
+  }
+
+  public Command armAmpPoseCommand(){
+    return new ArmPoseCommand(m_collectorArm, POSE.AMP);
+  }
+
+  public Command armTestCommand(){
+    return new SequentialCommandGroup(
+      new ArmPoseCommand(m_collectorArm, POSE.AMP),
+      new WaitCommand(2),
+      new ArmPoseCommand(m_collectorArm, POSE.START)
+    );
   }
 }
