@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Timer;
 public class RangeFinder extends DiagnosticsSubsystem {
     SerialPort serialPort = new SerialPort(115200, SerialPort.Port.kMXP, 8, SerialPort.Parity.kNone, SerialPort.StopBits.kOne);
     byte triggerCommand[] = new byte[4];
+    private final double elevationFactor = 0.9703; //compensating for the fact that it's not level
     double range = 0.0;
     double intensity = 0.0;
     double timestamp = 0.0;
@@ -57,7 +58,7 @@ public class RangeFinder extends DiagnosticsSubsystem {
 
         int dl = (message[2] & 0xFF);
         int dh = (message[3] & 0xFF);
-        range = (dl + 255 * dh) * 0.01;
+        range = ((dl + 255 * dh) * 0.01) * elevationFactor;
         
         int il = (message[4] & 0xFF);
         int ih = (message[5] & 0xFF);

@@ -13,21 +13,12 @@ import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.StartRecordingAutonomous;
-import frc.robot.commands.StartRecordingTeleop;
-import frc.robot.commands.StopRecording;
-import frc.robot.subsystems.Camera;
-import frc.robot.subsystems.SerialComms;
-import edu.wpi.first.wpilibj.SerialPort;
-import frc.robot.subsystems.RangeFinder;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -56,8 +47,8 @@ public class RobotContainer {
   private final OI m_OI = new OI();
   
   private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(m_pivot);
-  private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(m_shooter, m_OI);
-  private final FeederTestCommand m_feederTestCommand = new FeederTestCommand(m_feeder, m_OI);
+  // private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(m_shooter, m_OI);
+  // private final FeederTestCommand m_feederTestCommand = new FeederTestCommand(m_feeder, m_OI);
   // private final LoadFeeder loadFeeder = new LoadFeeder(m_feeder);
   // private final RunFeeder runFeeder = new RunFeeder(m_feeder);
   // private final SetShooterAngle setShooterAngle = new SetShooterAngle(m_feeder, 0);
@@ -94,7 +85,7 @@ public class RobotContainer {
   public RobotContainer() 
   { CommandScheduler.getInstance().setDefaultCommand(m_pivot, m_pivotTestCommand);
     // CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_shooterTestCommand);
-    CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
+    //CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
@@ -227,11 +218,11 @@ public class RobotContainer {
 
   public Command launchFeederToSpeaker(){
     return new SequentialCommandGroup(
-      new RunShooter(m_shooter, 12),
+      new RunShooter(m_shooter, 25),
      new ParallelRaceGroup(
-       new RunFeeder(m_feeder, 22), 
+       new RunFeeder(m_feeder, 25), 
        new WaitCommand(3)),
-      new RunShooter(m_shooter, 20),
+      new RunShooter(m_shooter, 0),
       new RunFeeder(m_feeder, 0)
     );
     // public Command launchNoteToSpeaker(){

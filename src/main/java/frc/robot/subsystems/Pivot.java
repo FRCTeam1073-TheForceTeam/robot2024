@@ -35,8 +35,8 @@ public class Pivot extends DiagnosticsSubsystem {
   private final double maxAngleRad = 0;
 
   // Motor pid values
-  private double p = 1;
-  private double i = 0.0;
+  private double p = 5;
+  private double i = 2;
   private double d = 0.0;
 
   // Position variables in rotations

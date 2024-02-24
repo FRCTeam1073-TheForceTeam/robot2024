@@ -41,12 +41,12 @@ public class RunFeeder extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
-    // if((feeder.getTofRange() >= maxRange)){
-    //   return true;
-    // }
-    // else{
-    //   return false;
-    // }
+    //return false;
+    if((feeder.getTofRange() >= maxRange)){
+      return true;
+    }
+    else{
+      return false;
+    }
   }
 }

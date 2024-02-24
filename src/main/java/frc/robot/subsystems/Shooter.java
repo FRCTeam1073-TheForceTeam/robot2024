@@ -69,8 +69,8 @@ public class Shooter extends DiagnosticsSubsystem{
     shooterBeamBreak = new DigitalInput(2);
     topShooterMotorFault = new MotorFault(topShooterMotor, 17);
     bottomShooterMotorFault = new MotorFault(bottomShooterMotor, 18);
-    topFlyWheelLimiter = new SlewRateLimiter(1.5); //limits the rate of change to 1.5 units per seconds
-    bottomFlyWheelLimiter = new SlewRateLimiter(1.5); //limits the rate of change to 1.5 units per seconds
+    topFlyWheelLimiter = new SlewRateLimiter(8); //limits the rate of change to 1.5 units per seconds
+    bottomFlyWheelLimiter = new SlewRateLimiter(8); //limits the rate of change to 1.5 units per seconds
 
     targetTopVelocityMPS = 0;
     targetBottomVelocityMPS = 0;
