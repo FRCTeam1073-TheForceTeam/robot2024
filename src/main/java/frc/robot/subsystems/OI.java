@@ -34,7 +34,6 @@ public class OI extends DiagnosticsSubsystem
     // Sets the driver controller to a new joystick object at port 0
     driverController = new Joystick(0);
     operatorController = new Joystick(1);
-    
     zeroDriverController();
     zeroOperatorController();
   }
@@ -171,21 +170,26 @@ public class OI extends DiagnosticsSubsystem
     return operatorController.getRawButton(i);
   }
 
+  public boolean getOperatorAButton(){
+    return getOperatorRawButton(1);
+  }
+
+  public boolean getOperatorXButton(){
+    return getOperatorRawButton(3);
+  }
+
+  public boolean getOperatorYButton(){
+    return getOperatorRawButton(4);
+  }
+
   public boolean getOperatorRightTrigger(){
-    return (driverController.getRawAxis(3) > 0.5);
+    return (operatorController.getRawAxis(3) > 0.5);
   }
 
   public boolean getOperatorLeftTrigger(){
-    return (driverController.getRawAxis(2) > 0.5);
+    return (operatorController.getRawAxis(2) > 0.5);
   }
 
-  public boolean getOperatorRawButton1() {
-    return operatorController.getRawButton(1);
-  }
-
-  public boolean getOperatorRawButton2() {
-    return operatorController.getRawButton(2);
-  }
 
   @Override
   public void initSendable(SendableBuilder builder){

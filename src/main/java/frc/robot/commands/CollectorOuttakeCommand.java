@@ -12,7 +12,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.CollectorArm.POSE;
 
-public class CollectorTeleop extends Command {
+public class CollectorOuttakeCommand extends Command {
   /** Creates a new CollectorTeleop. */
   Collector m_collector;
   CollectorArm m_collectorArm;
@@ -33,12 +33,11 @@ public class CollectorTeleop extends Command {
 
 
 
-  public CollectorTeleop(Collector collector, CollectorArm collectorArm, Drivetrain ds, OI oi) {
+  public CollectorOuttakeCommand(Collector collector, CollectorArm collectorArm, Drivetrain ds) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_collector = collector;
     m_collectorArm = collectorArm;
     m_drivetrain = ds;
-    m_OI = oi;
     minRange = 0.4;
     maxRange = 0.72;
     intakeRateThreshold = 0.001;
@@ -59,61 +58,16 @@ public class CollectorTeleop extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    double rate = 0;
     tofCurrentValue = m_collector.getRangeTOF(); 
-    if(isCollectable){
-      rate = (tofCurrentValue - tofOldValue) / 0.02; // calculating the rate of change of the TOF range
 
-      if(rate < intakeRateThreshold){
-        isCollectable = false;
-      }
-    }
-
-    if(tofCurrentValue > maxRange){
-      isCollectable = true;
-    }
-    
-    if(m_OI.getOperatorRawButton(5)) //outtake
-    {
+    //outtake
+    if(tofCurrentValue < maxRange){
       vel = 3;
       m_collector.setTargetCollectorVelocity(vel); //meters per sec
-
-      if(tofCurrentValue > maxRange){
-        m_collector.setTargetCollectorVelocity(0);
-      }
     }
-    else if(m_OI.getOperatorRawButton(6)) //intake
-    {
-      vel = (0.05 * Math.abs(m_drivetrain.getChassisSpeeds().vxMetersPerSecond)) + 3;
-      m_collector.setTargetCollectorVelocity(-vel); //meters per sec
-
-      if(tofCurrentValue > maxRange){
-        isCollected = false;
-        count = 0;
-      }
-      
-      //if(m_collector.getRangeTOF() < minRange){
-      if(!isCollectable){ // use the rate to decide when to stop
-        if(m_collectorArm.getPoseName() == POSE.AMP){
-          m_collector.setTargetCollectorVelocity(-vel);
-        }
-        else{
-          m_collector.setTargetCollectorVelocity(0);
-          isCollected = true;
-        }
-      }
-    }
-    else {
+    else{
       m_collector.setTargetCollectorVelocity(0);
     }
-
-    if((isCollected && (count < 20) && (m_collectorArm.getPoseName() == POSE.STOW))){ // check if it is collected and at the stow position and run for 50 loops
-      m_collector.setTargetCollectorVelocity(0.5);
-      count++;
-    }
-
-    tofOldValue = tofCurrentValue;
   }
 
   // Called once the command ends or is interrupted.
@@ -125,6 +79,11 @@ public class CollectorTeleop extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    if(tofCurrentValue > maxRange){
+      return true;
+    }
+    else{
+      return false;
+    }
   }
 }
