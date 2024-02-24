@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.Timer;
 
 
-public class RangeFinder extends Diagnostics {
+public class RangeFinder extends DiagnosticsSubsystem {
     SerialPort serialPort = new SerialPort(115200, SerialPort.Port.kMXP, 8, SerialPort.Parity.kNone, SerialPort.StopBits.kOne);
     byte triggerCommand[] = new byte[4];
     double range = 0.0;
@@ -102,15 +102,16 @@ public class RangeFinder extends Diagnostics {
     }
 
     @Override
-    public void runDiagnostics() {
+    public boolean updateDiagnostics() {
         double now = Timer.getFPGATimestamp();
-
+        boolean OK = true;
         if (now - timestamp > 2.0) {
-            setOK(false);
+            OK = false;
         }
 
         else {
-            setOK(false);
+            OK = false;
         }
+        return setDiagnosticsFeedback("", OK);
     }
 }
