@@ -15,7 +15,7 @@ public class PivotTestCommand extends Command {
   private double targetPositionRad;
   private boolean isPivotOn;
 
-  public PivotTestCommand(Pivot pivot, double pivotAngle) {
+  public PivotTestCommand(Pivot pivot) {
     this.pivot = pivot;
     targetPositionRad = pivot.getTestCommandTargetPositionInRad();
     // Use addRequirements() here to declare subsystem dependencies.
