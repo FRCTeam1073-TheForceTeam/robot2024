@@ -5,8 +5,10 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.GetAprilTagInfo;
 import frc.robot.commands.StartRecordingAutonomous;
 import frc.robot.commands.StartRecordingTeleop;
+import frc.robot.commands.GetAprilTagInfo;
 import frc.robot.commands.StopRecording;
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.SerialComms;
@@ -34,6 +36,7 @@ public class RobotContainer {
   private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_camera1);
   private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_camera1);
   private final StopRecording c_stopRecording = new StopRecording(m_camera1);
+  private final GetAprilTagInfo c_getAprilTagInfo = new GetAprilTagInfo(m_serial, m_camera1);
   // and so on for however many cameras we have
 
   private final OI m_OI = new OI();
@@ -81,7 +84,7 @@ public class RobotContainer {
   }
 
   public Command getTeleopCommand(){
-    return c_startRecordingTeleop;
+    return c_getAprilTagInfo;
   }
 
   // NSargent: commandScheduler.getInstance.setDefaultCommand(m_camera1, getTagdata())

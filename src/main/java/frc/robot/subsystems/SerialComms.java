@@ -52,9 +52,9 @@ public class SerialComms extends SubsystemBase{
       int recvd = serialPort.getBytesReceived();
 
       if(recvd != 0){
-        System.out.println("recvd was not zero");
+        //System.out.println("recvd was not zero");
         byte[] data = serialPort.read(1);
-        System.out.println(String.format("byte data recvd: %s", data));
+        //System.out.println(String.format("byte data recvd: %s", data));
         msg.add(data[0]);
 
         // dataString is the byte we just received cast to a String so we can compare to newline without hardcoding the ord() or something
@@ -69,8 +69,8 @@ public class SerialComms extends SubsystemBase{
       }
     }
   }
-
-  public static String transact(String message){
+  
+  static String transact(String message){
     System.out.println(String.format("sending message, as a String: %s", message));
     send(message);
     String receivedString = receive();
