@@ -4,6 +4,11 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.networktables.DoubleSubscriber;
+import edu.wpi.first.networktables.IntegerArrayPublisher;
+import edu.wpi.first.networktables.IntegerArraySubscriber;
+import edu.wpi.first.networktables.IntegerArrayTopic;
+import edu.wpi.first.networktables.PubSubOption;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
@@ -137,8 +142,8 @@ public class Drivetrain extends DiagnosticsSubsystem
   public void initSendable(SendableBuilder builder){
     builder.setSmartDashboardType("Drivetrain");
     builder.addBooleanProperty("ParkingBrake", this::getParkingBrake, null);
-    builder.addDoubleProperty("Odo X", odometry.getPoseMeters()::getX, null);
-    builder.addDoubleProperty("Odo Y", odometry.getPoseMeters()::getY, null);
+    builder.addDoubleProperty("Odo X", this.getOdometry()::getX, null);
+    builder.addDoubleProperty("Odo Y", this.getOdometry()::getY, null);
     builder.addDoubleProperty("Odo Heading(DEG)", this::getHeadingDegrees, null);
     builder.addDoubleProperty("Odo Wrapped Heading", this::getWrappedHeadingDegrees, null);
     builder.addDoubleProperty("Target Vx", this::getTargetVx, null);
@@ -265,6 +270,7 @@ public class Drivetrain extends DiagnosticsSubsystem
     modules[1].samplePosition(modulePositions[1]);
     modules[2].samplePosition(modulePositions[2]);
     modules[3].samplePosition(modulePositions[3]);
+    
     odometry.update(Rotation2d.fromDegrees(getHeadingDegrees()), modulePositions);
   }
 
@@ -308,6 +314,9 @@ public class Drivetrain extends DiagnosticsSubsystem
     }
    
     updateOdometry();
+
+    SmartDashboard.putNumber("Odometry X", getOdometry().getX());
+    SmartDashboard.putNumber("Odometry Y", getOdometry().getY());
   }
 
 
@@ -373,3 +382,14 @@ public class Drivetrain extends DiagnosticsSubsystem
   }
 
 }
+
+// class AprilTagSubscriber {
+//   // the publisher is an instance variable so its lifetime matches that of the class
+//   IntegerArraySubscriber intArraySub;
+  
+//   public void GetAprilTag(IntegerArrayTopic intArrayTopic) {
+//       // start publishing; the return value must be retained (in this case, via
+//       // an instance variable)
+//       intArraySub = intArrayTopic.subscribe();
+//     }
+//   }
