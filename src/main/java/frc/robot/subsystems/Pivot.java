@@ -40,6 +40,7 @@ public class Pivot extends DiagnosticsSubsystem {
   private double d = 0.0;
 
   // Position variables in rotations
+  private double testPositionRad;
   private double targetPositionRad;
   private double commandedPositionRad;
   private double currentPositionRad;
@@ -81,6 +82,11 @@ public class Pivot extends DiagnosticsSubsystem {
   public void setTargetPositionInRad(double pivotMotorPositionRad)
   {
     targetPositionRad  = pivotMotorPositionRad;
+  }
+
+  public double getTestCommandTargetPositionInRad()
+  {
+    return testPositionRad;
   }
 
   /* Gets the desired motor position in radians */
@@ -136,7 +142,8 @@ public class Pivot extends DiagnosticsSubsystem {
   public void initSendable(SendableBuilder builder)
   {
     builder.setSmartDashboardType("Pivot");
-    builder.addDoubleProperty("Target Pivot Motor Position", this::getTargetPositionInRad, this::setTargetPositionInRad);
+    builder.addDoubleProperty("Pivot Test Command Motor Position", this::getTargetPositionInRad, null);
+    builder.addDoubleProperty("Target Pivot Motor Position", this::getTargetPositionInRad, null);
     builder.addDoubleProperty("Commanded Pivot Motor Position", this::getCommandedPositionInRad, null);
     builder.addDoubleProperty("Actual Pivot Motor Position", this::getCurrentPositionInRad, null);
   }
