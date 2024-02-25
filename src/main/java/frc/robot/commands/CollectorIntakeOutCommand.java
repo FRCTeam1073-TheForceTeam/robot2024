@@ -27,7 +27,9 @@ public class CollectorIntakeOutCommand extends Command {
   double tofCurrentValue;
   double tofOldValue;
 
-  /** Creates a new CollectorIntakeOutCommand. */
+  /** Creates a new CollectorIntakeOutCommand. 
+   * 
+  */
   public CollectorIntakeOutCommand(Collector collector, CollectorArm collectorArm, Drivetrain ds) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_collector = collector;

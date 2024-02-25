@@ -19,7 +19,9 @@ public class ArmPoseCommand extends Command {
 
   boolean m_extendFlag;
 
-  /** Creates a new ArmPoseCommand. */
+  /** Creates a new ArmPoseCommand. 
+   * @param extendInterpolateFlag is set to true when you want to use the interpolator for extend
+  */
   public ArmPoseCommand(CollectorArm arm, POSE pose, boolean extendInterpolateFlag) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_arm = arm;

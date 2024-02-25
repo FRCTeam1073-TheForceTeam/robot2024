@@ -108,9 +108,9 @@ public class RobotContainer {
     // CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_shooterTestCommand);
     //CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
-    //CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand);
+    CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_collectorArmTeleop);
-    //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
+    CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
     SmartDashboard.putData(m_collector);
@@ -147,10 +147,10 @@ public class RobotContainer {
     //Trigger.getOperatorRawButton1.toggleOnTrue(loadNoteToFeeder());
     
     Trigger loadNoteToFeeder = new Trigger(m_OI::getOperatorLeftTrigger);
-    loadNoteToFeeder.onTrue(m_collectAndFeed.runCollectShootCommand(m_drivetrain, m_collector, m_collectorArm, m_pivot, m_feeder, m_shooter));
+    loadNoteToFeeder.onTrue(m_collectAndFeed.runCollectFeedCommand(m_drivetrain, m_collector, m_collectorArm, m_pivot, m_feeder, m_shooter));
     
     Trigger launchFeederToSpeaker = new Trigger(m_OI::getOperatorRightTrigger);
-    launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder));
+    launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot));
 
     // System.out.println("Configuring buttons");
     // Trigger tagButton = new Trigger(m_OI::getXButton);
@@ -246,7 +246,7 @@ public class RobotContainer {
   }
 
   public Command launchFeederToSpeaker(){
-    return m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder);
+    return m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot);
     // return new SequentialCommandGroup(
     //   new RunShooter(m_shooter, 7.7), //, m_rangeFinder.getRange()),
     //  new ParallelRaceGroup(

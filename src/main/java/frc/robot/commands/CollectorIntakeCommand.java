@@ -29,7 +29,10 @@ public class CollectorIntakeCommand extends Command {
 
   double count = 0;
 
-  /** Creates a new CollectorIntakeCommand. */
+  /** Creates a new CollectorIntakeCommand. 
+   * <p> This command is used for intaking into the collector from the ground
+   * <p> This command ends when a note is in the collector
+  */
   public CollectorIntakeCommand(Collector collector, CollectorArm collectorArm, Drivetrain ds) {
     // Use addRequirements() here to declare subsystem dependencies.
 

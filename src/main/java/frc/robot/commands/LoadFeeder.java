@@ -45,6 +45,8 @@ public class LoadFeeder extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    feeder.setTargetVelocityInMPS(1.5);
+    
     currentTofRange = feeder.getTofRange();
     feederRate = ((currentTofRange - oldTofRange) / 0.02);
     oldTofRange = currentTofRange;

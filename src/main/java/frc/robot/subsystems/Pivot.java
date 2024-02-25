@@ -28,7 +28,7 @@ public class Pivot extends DiagnosticsSubsystem {
   private final double pivotGearRatio = 16 * 8.18 / 1;
   private final double pivotWheelRadius = 0.1429; //meters
   private final double pivotMeterPerRotations = pivotWheelRadius * 2 * Math.PI * pivotGearRatio;
-  private double pivotRotationsPerRadian = pivotGearRatio / (2 * Math.PI);
+  private double pivotRotationsPerRadian = -pivotGearRatio / (2 * Math.PI);
 
   // Pivot limits
   private final double minAngleRad = -.88;
@@ -54,7 +54,7 @@ public class Pivot extends DiagnosticsSubsystem {
   /** Creates a new Pivot. */
   public Pivot() {
     //pivotMotor = new TalonFX(21, kCANbus); //Falcon
-    pivotMotor = new TalonFX(21);
+    pivotMotor = new TalonFX(21, kCANbus);
     pivotMotorFault = new MotorFault(pivotMotor, 21);
     pivotMotorFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
     pivotMotor.setPosition(0); //TODO - initialize position
@@ -142,8 +142,8 @@ public class Pivot extends DiagnosticsSubsystem {
   public void initSendable(SendableBuilder builder)
   {
     builder.setSmartDashboardType("Pivot");
-    builder.addDoubleProperty("Pivot Test Command Motor Position", this::getTargetPositionInRad, null);
-    builder.addDoubleProperty("Target Pivot Motor Position", this::getTargetPositionInRad, null);
+    builder.addDoubleProperty("Pivot Test Command Motor Position", this::getTargetPositionInRad, this::setTargetPositionInRad);
+    builder.addDoubleProperty("Target Pivot Motor Position", this::getTargetPositionInRad, this::setTargetPositionInRad);
     builder.addDoubleProperty("Commanded Pivot Motor Position", this::getCommandedPositionInRad, null);
     builder.addDoubleProperty("Actual Pivot Motor Position", this::getCurrentPositionInRad, null);
   }

@@ -28,7 +28,7 @@ public class Shooter extends DiagnosticsSubsystem{
   private final MotorFault topShooterMotorFault;
   private final MotorFault bottomShooterMotorFault;
 
-  // Configurator erros
+  // Configurator errors
   StatusCode topConfigError;
   StatusCode bottomConfigError;
 
@@ -66,8 +66,8 @@ public class Shooter extends DiagnosticsSubsystem{
   public Shooter() {
     // topShooterMotor = new TalonFX(17, kCANbus); // Kraken 
     // bottomShooterMotor = new TalonFX(18, kCANbus); //Kraken 
-    topShooterMotor = new TalonFX(17);
-    bottomShooterMotor = new TalonFX(18);
+    topShooterMotor = new TalonFX(17, kCANbus);
+    bottomShooterMotor = new TalonFX(18, kCANbus);
     shooterBeamBreak = new DigitalInput(2);
     topShooterMotorFault = new MotorFault(topShooterMotor, 17);
     bottomShooterMotorFault = new MotorFault(bottomShooterMotor, 18);
