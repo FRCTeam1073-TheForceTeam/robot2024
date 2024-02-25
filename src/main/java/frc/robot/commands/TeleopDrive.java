@@ -36,6 +36,8 @@ public class TeleopDrive extends SchemaArbiter
   TeleopTranslateSchema translateSchema;
   TeleopRotateSchema rotateSchema;
   TeleopHeadingHoldSchema holdSchema;
+  PointAtTargetSchema targetSchema;
+  boolean pointAtTarget;
 
   PIDController snapPidProfile;
 
@@ -54,6 +56,7 @@ public class TeleopDrive extends SchemaArbiter
     fieldCentric = true;
     startAngle = ds.getHeadingDegrees();
     desiredAngle = startAngle;
+    pointAtTarget = false;
     snapPidProfile = new PIDController(
       0.05, 
       0.0, 
@@ -61,9 +64,11 @@ public class TeleopDrive extends SchemaArbiter
     translateSchema = new TeleopTranslateSchema(m_OI, maximumLinearVelocity);
     rotateSchema = new TeleopRotateSchema(m_OI, maximumRotationVelocity);
     holdSchema = new TeleopHeadingHoldSchema(m_OI);
+    targetSchema = new PointAtTargetSchema(maximumRotationVelocity, new Pose2d(2.5, 0.0, new Rotation2d()), 1.75);
     addSchema(translateSchema);
     addSchema(rotateSchema);
     addSchema(holdSchema);
+    addSchema(targetSchema);
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(ds);
   }
@@ -101,6 +106,23 @@ public class TeleopDrive extends SchemaArbiter
     // if(Math.abs(rightX) < .15) {rightX = 0;}
 
     // ChassisSpeeds chassisSpeeds = new ChassisSpeeds(leftY * 0.5, leftX * 0.5, rightX); //debug
+    if (m_OI.getYButtonDriver())
+    {
+      pointAtTarget = !pointAtTarget;
+    }
+    if (pointAtTarget)
+    {
+      rotateSchema.setActive(false);
+      targetSchema.setActive(true);
+    }
+    else
+    {
+      rotateSchema.setActive(true);
+      targetSchema.setActive(false);
+    }
+    SmartDashboard.putBoolean("Rotate Schema Active", rotateSchema.getActive());
+    SmartDashboard.putBoolean("Target Schema Active", targetSchema.getActive());
+
     if (m_OI.getFieldCentricToggle() && lastRobotCentricButton == false)
     {
       fieldCentric = !fieldCentric;
@@ -136,10 +158,11 @@ public class TeleopDrive extends SchemaArbiter
       //   Rotation2d.fromDegrees(m_drivetrain.getHeading())); // get fused heading
       // m_drivetrain.setChassisSpeeds(speeds);
       
+      
       translateSchema.update(m_drivetrain);
       rotateSchema.update(m_drivetrain);
       holdSchema.update(m_drivetrain);
-
+      targetSchema.update(m_drivetrain);
     }
     // else
     // {

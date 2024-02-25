@@ -61,7 +61,7 @@ public class Drivetrain extends DiagnosticsSubsystem
 
     SwerveModuleConfig moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 0;
-    moduleConfig.position = new Translation2d(Preferences.getDouble("Drive.ModulePositions", 0.5017), Preferences.getDouble("Drive.ModulePositions", 0.5017));
+    moduleConfig.position = new Translation2d(Preferences.getDouble("Drive.ModulePositions", 0.254), Preferences.getDouble("Drive.ModulePositions", 0.5017));
 
     modules[0] = new SwerveModule(moduleConfig, moduleIDConfig);
     modulePositions[0] = new SwerveModulePosition();
@@ -71,7 +71,7 @@ public class Drivetrain extends DiagnosticsSubsystem
 
     moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 1;
-    moduleConfig.position = new Translation2d(Preferences.getDouble("Drive.ModulePositions", 0.5017), -Preferences.getDouble("Drive.ModulePositions", 0.5017));
+    moduleConfig.position = new Translation2d(Preferences.getDouble("Drive.ModulePositions", 0.254), -Preferences.getDouble("Drive.ModulePositions", 0.5017));
 
     modules[1] = new SwerveModule(moduleConfig, moduleIDConfig);
     modulePositions[1] = new SwerveModulePosition();
@@ -81,7 +81,7 @@ public class Drivetrain extends DiagnosticsSubsystem
 
     moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 2;
-    moduleConfig.position = new Translation2d(-Preferences.getDouble("Drive.ModulePositions", 0.5017), Preferences.getDouble("Drive.ModulePositions", 0.5017));
+    moduleConfig.position = new Translation2d(-Preferences.getDouble("Drive.ModulePositions", 0.254), Preferences.getDouble("Drive.ModulePositions", 0.5017));
 
     modules[2] = new SwerveModule(moduleConfig, moduleIDConfig);
     modulePositions[2] = new SwerveModulePosition();
@@ -90,7 +90,7 @@ public class Drivetrain extends DiagnosticsSubsystem
     moduleIDConfig = new SwerveModuleIDConfig(12, 8, 4);
     moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 3;
-    moduleConfig.position = new Translation2d(-Preferences.getDouble("Drive.ModulePositions", 0.5017), -Preferences.getDouble("Drive.ModulePositions", 0.5017));
+    moduleConfig.position = new Translation2d(-Preferences.getDouble("Drive.ModulePositions", 0.254), -Preferences.getDouble("Drive.ModulePositions", 0.5017));
 
     modules[3] = new SwerveModule(moduleConfig, moduleIDConfig);
     modulePositions[3] = new SwerveModulePosition();
@@ -185,23 +185,23 @@ public class Drivetrain extends DiagnosticsSubsystem
   //Returns IMU heading in degrees
   public double getHeadingDegrees() 
   {
-    return -pigeon2.getAngle();
+    return pigeon2.getYaw().refresh().getValue();
+  }
+
+  public double getHeadingRadians()
+  {
+    return getHeadingDegrees() * Math.PI / 180.0;
   }
 
   // Wraps the heading in degrees:
   public double getWrappedHeadingDegrees()
   {
-    double heading = getHeadingDegrees() % 360;
+    return MathUtils.wrapAngleDegrees(getHeadingDegrees());
+  }
 
-    if(heading >= 0)
-    {
-      return heading;
-    }
-
-    else
-    {
-      return 360 + heading;
-    }
+  public double getWrappedHeadingRadians()
+  {
+    return MathUtils.wrapAngleRadians(getHeadingDegrees() * Math.PI / 180);
   }
 
   public double getPitch()
@@ -281,7 +281,7 @@ public class Drivetrain extends DiagnosticsSubsystem
 
   public Pose2d getOdometry()
   {
-    return new Pose2d(odometry.getPoseMeters().getX(), odometry.getPoseMeters().getY(), Rotation2d.fromDegrees(getHeadingDegrees()));
+    return new Pose2d(odometry.getPoseMeters().getX(), odometry.getPoseMeters().getY(), Rotation2d.fromDegrees(MathUtils.wrapAngleDegrees(getHeadingDegrees())));
   }
 
   public Pose3d get3dOdometry()
@@ -317,6 +317,8 @@ public class Drivetrain extends DiagnosticsSubsystem
 
     SmartDashboard.putNumber("Odometry X", getOdometry().getX());
     SmartDashboard.putNumber("Odometry Y", getOdometry().getY());
+    SmartDashboard.putNumber("Wrapped Heading Degrees", getWrappedHeadingDegrees());
+    SmartDashboard.putNumber("Wrapped Heading Radians", getWrappedHeadingRadians());
   }
 
 

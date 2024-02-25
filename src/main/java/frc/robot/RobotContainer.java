@@ -216,9 +216,10 @@ public class RobotContainer {
   public Command testAuto()
   {
     ArrayList<Pose2d> pointList = new ArrayList<Pose2d>();
-    pointList.add(new Pose2d(1.0, 0.0, new Rotation2d(Math.PI / 2)));
-    pointList.add(new Pose2d(2.0, 2.0, new Rotation2d(Math.PI / 2)));
-    return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, pointList, 1.0, 1.0, 1.0, 1.0), m_drivetrain);
+    pointList.add(new Pose2d(2.0, 0.0, new Rotation2d(0)));
+    pointList.add(new Pose2d(2.0, 1.0, new Rotation2d(0)));
+    pointList.add(new Pose2d(4.0, 1.0, new Rotation2d(Math.PI)));
+    return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, pointList, 2.0, 2.0, 5.0), m_drivetrain);
   }
 
   public Command getTeleopCommand(){
@@ -240,8 +241,7 @@ public class RobotContainer {
         return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7, 0, new Rotation2d(0)), 5, 1), m_drivetrain),
           SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7.0, 5.5, new Rotation2d(0)), 5, 1), m_drivetrain), c_startRecordingAutonomous);
       case kLeaveAuto:
-        return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(1.5, 0.0, new Rotation2d()), 1.5, 0), m_drivetrain),
-          c_startRecordingAutonomous);
+        return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(1.5, 0.0, new Rotation2d()), 1.5, 0), m_drivetrain), c_startRecordingAutonomous);
       case kTestAuto:
         return new SequentialCommandGroup(testAuto(), c_startRecordingAutonomous);
       default:

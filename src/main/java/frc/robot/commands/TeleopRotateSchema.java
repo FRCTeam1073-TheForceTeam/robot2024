@@ -8,11 +8,23 @@ public class TeleopRotateSchema extends MotionSchema
 {
     OI oi;
     double maximumRotationVelocity;
+    boolean active;
 
     public TeleopRotateSchema(OI oi, double maximumRotationVelocity)
     {
         this.oi = oi;
         this.maximumRotationVelocity = maximumRotationVelocity;
+        active = true;
+    }
+
+    public void setActive(boolean active)
+    {
+        this.active = active;
+    }
+
+    public boolean getActive()
+    {
+        return active;
     }
 
     @Override
@@ -28,7 +40,13 @@ public class TeleopRotateSchema extends MotionSchema
         if(Math.abs(rightX) < .15) {rightX = 0;}
 
         double w = MathUtil.clamp(-(rightX * maximumRotationVelocity / 25) * mult1 * mult2, -maximumRotationVelocity, maximumRotationVelocity);
-
-        setRotate(w, 1);
+        if (active)
+        {
+            setRotate(w, 1);
+        }
+        else
+        {
+            setRotate(0, 0);
+        }
     }
 }
