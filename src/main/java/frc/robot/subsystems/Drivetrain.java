@@ -61,7 +61,7 @@ public class Drivetrain extends DiagnosticsSubsystem
 
     SwerveModuleConfig moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 0;
-    moduleConfig.position = new Translation2d(Preferences.getDouble("Drive.ModulePositions", 0.5017), Preferences.getDouble("Drive.ModulePositions", 0.5017));
+    moduleConfig.position = new Translation2d(Preferences.getDouble("Drive.ModulePositions", 0.254), Preferences.getDouble("Drive.ModulePositions", 0.5017));
 
     modules[0] = new SwerveModule(moduleConfig, moduleIDConfig);
     modulePositions[0] = new SwerveModulePosition();
@@ -71,7 +71,7 @@ public class Drivetrain extends DiagnosticsSubsystem
 
     moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 1;
-    moduleConfig.position = new Translation2d(Preferences.getDouble("Drive.ModulePositions", 0.5017), -Preferences.getDouble("Drive.ModulePositions", 0.5017));
+    moduleConfig.position = new Translation2d(Preferences.getDouble("Drive.ModulePositions", 0.254), -Preferences.getDouble("Drive.ModulePositions", 0.5017));
 
     modules[1] = new SwerveModule(moduleConfig, moduleIDConfig);
     modulePositions[1] = new SwerveModulePosition();
@@ -81,7 +81,7 @@ public class Drivetrain extends DiagnosticsSubsystem
 
     moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 2;
-    moduleConfig.position = new Translation2d(-Preferences.getDouble("Drive.ModulePositions", 0.5017), Preferences.getDouble("Drive.ModulePositions", 0.5017));
+    moduleConfig.position = new Translation2d(-Preferences.getDouble("Drive.ModulePositions", 0.254), Preferences.getDouble("Drive.ModulePositions", 0.5017));
 
     modules[2] = new SwerveModule(moduleConfig, moduleIDConfig);
     modulePositions[2] = new SwerveModulePosition();
@@ -90,7 +90,7 @@ public class Drivetrain extends DiagnosticsSubsystem
     moduleIDConfig = new SwerveModuleIDConfig(12, 8, 4);
     moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 3;
-    moduleConfig.position = new Translation2d(-Preferences.getDouble("Drive.ModulePositions", 0.5017), -Preferences.getDouble("Drive.ModulePositions", 0.5017));
+    moduleConfig.position = new Translation2d(-Preferences.getDouble("Drive.ModulePositions", 0.254), -Preferences.getDouble("Drive.ModulePositions", 0.5017));
 
     modules[3] = new SwerveModule(moduleConfig, moduleIDConfig);
     modulePositions[3] = new SwerveModulePosition();
@@ -186,6 +186,11 @@ public class Drivetrain extends DiagnosticsSubsystem
   public double getHeadingDegrees() 
   {
     return pigeon2.getYaw().refresh().getValue();
+  }
+
+  public double getHeadingRadians()
+  {
+    return getHeadingDegrees() * Math.PI / 180.0;
   }
 
   // Wraps the heading in degrees:
