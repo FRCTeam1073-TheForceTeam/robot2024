@@ -8,12 +8,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Camera;
 
 public class StartRecordingTeleop extends Command {
-  Camera camera;
+  Camera[] cameras;
   Boolean weAreFinished;
   /** Creates a new StartCamera. */
-  public StartRecordingTeleop(Camera camera) {
-    this.camera = camera;
-    addRequirements(camera);
+  public StartRecordingTeleop(Camera[] cameras) {
+    this.cameras = cameras;
+    addRequirements(cameras);
     this.weAreFinished = false;
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -28,11 +28,12 @@ public class StartRecordingTeleop extends Command {
   @Override
   public void execute() {
     this.weAreFinished = false;
-    System.out.println("in startCamera.java execute(), starting teleop recording");
-    camera.startRecordingTeleop();
+    for (int i = 0; i < cameras.length; i++){
+    cameras[i].startRecordingTeleop();
     // TODO: listen for a reponse before finishing, ideally retry
     this.weAreFinished = true;
   }
+ }
 
   // Called once the command ends or is interrupted.
   @Override
