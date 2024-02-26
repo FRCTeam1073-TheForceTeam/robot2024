@@ -100,7 +100,6 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     m_teleopCommand = m_robotContainer.getTeleopCommand();
-    if(m_teleopCommand != null){
     if (m_teleopCommand != null) {
       m_teleopCommand.schedule();
     }
