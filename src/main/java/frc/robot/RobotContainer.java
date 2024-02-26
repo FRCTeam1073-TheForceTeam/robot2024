@@ -107,15 +107,17 @@ public class RobotContainer {
   private static final String kSnowPlowAuto = "Snowplow Auto";
   private static final String kLeaveAuto = "Leave Auto";
   private static final String kTestAuto = "Test Auto";
-  
+
   private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
   private final Camera m_camera1 = new Camera(m_serial, "1");  // camID is how SerialComms and the cameras themselves tells them apart
   private final Camera m_camera2 = new Camera(m_serial, "2");
-  //private final GetTagData c_GetTagData = new GetTagData(m_camera1);
-  private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_camera1);
-  private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_camera1);
-  private final StopRecording c_stopRecording = new StopRecording(m_camera1);
+  private final Camera[] m_cameras = {m_camera1, m_camera2};
+
+  private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_cameras);
+  private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_cameras);
+  private final StopRecording c_stopRecording = new StopRecording(m_cameras);
   private final GetAprilTagInfo c_getAprilTagInfo = new GetAprilTagInfo(m_serial, m_camera1);
+
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -215,9 +217,10 @@ public class RobotContainer {
   public Command testAuto()
   {
     ArrayList<Pose2d> pointList = new ArrayList<Pose2d>();
-    pointList.add(new Pose2d(1.0, 0.0, new Rotation2d(Math.PI / 2)));
-    pointList.add(new Pose2d(2.0, 2.0, new Rotation2d(Math.PI / 2)));
-    return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, pointList, 1.0, 1.0, 1.0, 1.0), m_drivetrain);
+    pointList.add(new Pose2d(2.0, 0.0, new Rotation2d(0)));
+    pointList.add(new Pose2d(2.0, 1.0, new Rotation2d(0)));
+    pointList.add(new Pose2d(4.0, 1.0, new Rotation2d(Math.PI)));
+    return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, pointList, 2.0, 2.0, 5.0), m_drivetrain);
   }
 
   public Command getTeleopCommand(){
@@ -239,8 +242,7 @@ public class RobotContainer {
         return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7, 0, new Rotation2d(0)), 5, 1), m_drivetrain),
           SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7.0, 5.5, new Rotation2d(0)), 5, 1), m_drivetrain), c_startRecordingAutonomous);
       case kLeaveAuto:
-        return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(1.5, 0.0, new Rotation2d()), 1.5, 0), m_drivetrain),
-          c_startRecordingAutonomous);
+        return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(1.5, 0.0, new Rotation2d()), 1.5, 0), m_drivetrain), c_startRecordingAutonomous);
       case kTestAuto:
         return new SequentialCommandGroup(testAuto(), c_startRecordingAutonomous);
       default:
