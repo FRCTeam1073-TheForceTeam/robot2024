@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.ArrayList;
@@ -42,8 +43,6 @@ public class SerialComms extends SubsystemBase{
       //System.out.println(String.format("i: %s", i));
       serialPort.write(arrayofone, 1);
     }
-
-    //System.out.println("bottom of SerialComms.send()");
   }
 
   public static String receive() {
@@ -75,6 +74,7 @@ public class SerialComms extends SubsystemBase{
   static String transact(String message){
     System.out.println(String.format("sending message, as a String: %s", message));
     send(message);
+
     String receivedString = receive();
     System.out.println(String.format("msg received as string: %s", receivedString));
     return receivedString;
@@ -84,3 +84,4 @@ public class SerialComms extends SubsystemBase{
   public void periodic() {
   }
 }
+

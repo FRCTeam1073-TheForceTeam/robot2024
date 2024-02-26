@@ -21,6 +21,7 @@ public class StartRecordingTeleop extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    System.out.println("in StartRecordingTeleop.java initialize()");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
