@@ -221,7 +221,7 @@ public class RobotContainer {
   }
 
   public Command getTeleopCommand(){
-    return c_getAprilTagInfo;
+    return c_startRecordingTeleop;
   }
 
   /**
