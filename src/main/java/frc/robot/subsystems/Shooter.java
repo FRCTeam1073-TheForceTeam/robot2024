@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -58,7 +59,8 @@ public class Shooter extends DiagnosticsSubsystem{
   private final DigitalInput shooterBeamBreak;
 
   // VelocityVoltage object
-  private VelocityVoltage shooterVelocityVoltage = new VelocityVoltage(0);
+  //private VelocityVoltage shooterVelocityVoltage = new VelocityVoltage(0);
+  private MotionMagicVelocityVoltage shooterVelocityVoltage = new MotionMagicVelocityVoltage(0);
 
   // CANbus for this subsystem
   private final String kCANbus = "CANivore";
@@ -103,9 +105,11 @@ public class Shooter extends DiagnosticsSubsystem{
     shooterTofRange = (shooterTofScaleFactor * (shooterTofDutyCycle / shooterTofFreq - 0.001)) / 1000;
 
     // Calculate ratelimited commanded velocities in rotations/second based on meters/second target velocity
-    commandedTopVelocityMPS = topFlyWheelLimiter.calculate(-targetTopVelocityMPS);
-    commandedBottomVelocityMPS = bottomFlyWheelLimiter.calculate(-targetBottomVelocityMPS);
-    
+    //commandedTopVelocityMPS = topFlyWheelLimiter.calculate(-targetTopVelocityMPS);
+    //commandedBottomVelocityMPS = bottomFlyWheelLimiter.calculate(-targetBottomVelocityMPS);
+    commandedTopVelocityMPS = -targetBottomVelocityMPS;
+    commandedBottomVelocityMPS = -targetBottomVelocityMPS;
+
     // Run the motors at the current commanded velocity
     topShooterMotor.setControl(shooterVelocityVoltage.withVelocity(commandedTopVelocityMPS / shooterMetersPerRotation));
     bottomShooterMotor.setControl(shooterVelocityVoltage.withVelocity(commandedBottomVelocityMPS / shooterMetersPerRotation));
@@ -174,6 +178,14 @@ public class Shooter extends DiagnosticsSubsystem{
     runShooterTargetBottomVelocityInMPS = velocityMPS;
   }
 
+  public double getTopVelocityError() {
+    return Math.abs(getCurrentTopVelocityInMPS()) - Math.abs(getCommandedTopVelocityInMPS());
+  }
+
+  public double getBottomVelocityError() {
+    return Math.abs(getCurrentBottomVelocityInMPS()) - Math.abs(getCommandedBottomVelocityInMPS());
+  }
+
   /* Uses the beam break sensor to detect if the note has entered the shooter */
   public boolean noteIsInShooter(){
     return shooterBeamBreak.get();
@@ -181,6 +193,11 @@ public class Shooter extends DiagnosticsSubsystem{
 
   public void configureHardware(){
     TalonFXConfiguration configs = new TalonFXConfiguration();
+
+    configs.MotionMagic.MotionMagicCruiseVelocity = 30;
+    configs.MotionMagic.MotionMagicAcceleration = 60;
+    configs.MotionMagic.MotionMagicJerk = 60;
+
     configs.Slot0.kP = p;
     configs.Slot0.kI = i;
     configs.Slot0.kD = d;
@@ -191,6 +208,8 @@ public class Shooter extends DiagnosticsSubsystem{
     configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
     configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
 
+    
+
     topConfigError = topShooterMotor.getConfigurator().apply(configs);
     bottomConfigError = bottomShooterMotor.getConfigurator().apply(configs);
   }
@@ -198,9 +217,9 @@ public class Shooter extends DiagnosticsSubsystem{
   @Override
   public boolean updateDiagnostics(){
     String result = "";
-    boolean ok = false;
+    boolean ok = true;
     if (topShooterMotorFault.hasFaults()||
-    bottomShooterMotorFault.hasFaults());{
+    bottomShooterMotorFault.hasFaults()){
       ok = false;
       result += topShooterMotorFault.getFaults() +  bottomShooterMotorFault.getFaults();
     }
@@ -235,5 +254,7 @@ public class Shooter extends DiagnosticsSubsystem{
     builder.addDoubleProperty("Commanded Bottom Motor Velocity", this::getCommandedBottomVelocityInMPS, null);
     builder.addDoubleProperty("Actual Top Motor Velocity", this::getCurrentTopVelocityInMPS, null);
     builder.addDoubleProperty("Actual Bottom Motor Velocity", this::getCurrentBottomVelocityInMPS, null);
+    builder.addDoubleProperty("Top Velocity Error", this::getTopVelocityError, null);
+    builder.addDoubleProperty("Bottom Velocity Error", this::getBottomVelocityError, null);
   }
 }
