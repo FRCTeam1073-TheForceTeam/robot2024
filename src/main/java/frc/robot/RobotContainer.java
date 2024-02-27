@@ -207,7 +207,7 @@ public class RobotContainer {
 
   public static void initPreferences()
   {
-    System.out.println("RobotContainer: init Preferences.");
+    //System.out.println("RobotContainer: init Preferences.");
     SwerveModuleConfig.initPreferences();
     Drivetrain.initPreferences();
     //OI.initPreferences();
