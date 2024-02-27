@@ -6,16 +6,19 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.Shooter;
 
 public class RunFeeder extends Command {
   private Feeder feeder;
-    double minRange;
-    double maxRange;
-    double feederTargetVelocityMPS;
+  private Shooter shooter;
+  double minRange;
+  double maxRange;
+  double feederTargetVelocityMPS;
 
   /** Creates a new RunFeeder. */
-  public RunFeeder(Feeder feeder, double feederTargetVelocityMPS) {
+  public RunFeeder(Feeder feeder, Shooter shooter, double feederTargetVelocityMPS) {
     this.feeder = feeder;
+    this.shooter = shooter;
     this.feederTargetVelocityMPS = feederTargetVelocityMPS;
     // Use addRequirements() here to declare subsystem dependencies.
     minRange = 0.2;
@@ -36,17 +39,13 @@ public class RunFeeder extends Command {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    feeder.setTargetVelocityInMPS(0);
+  }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    //return false;
-    if((feeder.getTofRange() >= maxRange)){
-      return true;
-    }
-    else{
-      return false;
-    }
+    return (shooter.getTofRange() >= maxRange);
   }
 }

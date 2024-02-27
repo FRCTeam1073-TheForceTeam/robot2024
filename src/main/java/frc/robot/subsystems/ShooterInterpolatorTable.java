@@ -11,31 +11,53 @@ public class ShooterInterpolatorTable {
 
     private InterpolatingDoubleTreeMap shooterVelocityTable;
     private InterpolatingDoubleTreeMap feederVelocityTable;
+    private InterpolatingDoubleTreeMap pivotTable;
 
     public ShooterInterpolatorTable(){
         shooterVelocityTable = new InterpolatingDoubleTreeMap();
         setUpShooterInterpolator();
         feederVelocityTable = new InterpolatingDoubleTreeMap();
         setUpFeederInterpolator();
+        pivotTable = new InterpolatingDoubleTreeMap();
+        setUpPivotInterpolator();
     }
 
     public void setUpShooterInterpolator(){
        shooterVelocityTable.clear();
         //first value is the range, sceond value is the speed/velocity
-        shooterVelocityTable.put(3.0, 15.0); // this one is made up
-        shooterVelocityTable.put(4.0, 20.0); // this one is made up
-        shooterVelocityTable.put(5.7, 22.0); //pivot angle: -0.7, feeder: 22
-        shooterVelocityTable.put(7.7, 25.0); //pivot angle: -0.7, feeder: 22
+        shooterVelocityTable.put(2.0, 15.0); //likely 2.0, literally the same thing
+        shooterVelocityTable.put(2.53, 20.0); //likely 2.49
+        shooterVelocityTable.put(3.1, 20.0); //likely 3.048
+        shooterVelocityTable.put(3.76, 25.0);// likely 3.63
+        shooterVelocityTable.put(4.78, 20.0); // likely 4.29 for AprilTag
+        shooterVelocityTable.put(5.7, 22.0); // 
+        shooterVelocityTable.put(5.83, 25.0); // likely 4.8 for AprilTag
+        shooterVelocityTable.put(6.0, 25.0); // likely 5.28 for AprilTag
+        shooterVelocityTable.put(7.7, 25.0); // 
+
         // ex: shooterVelocityTable.put(Double.valueOf(15), Double.valueOf(22));
     }
 
     public void setUpFeederInterpolator(){
-        feederVelocityTable = new InterpolatingDoubleTreeMap();
         //first value is the range, sceond value is the speed/velocity
-        feederVelocityTable.put(2.0, 20.0); //all of these are made up values
-        feederVelocityTable.put(4.0, 21.0); //all of these are made up values
-        feederVelocityTable.put(6.0, 22.0); //all of these are made up values
-        feederVelocityTable.put(7.0, 23.0); //all of these are made up values
+        feederVelocityTable.put(2.0, 25.0); 
+        feederVelocityTable.put(2.53, 25.0); 
+        feederVelocityTable.put(3.1, 25.0); 
+        feederVelocityTable.put(3.76, 25.0); 
+        feederVelocityTable.put(4.78, 25.0); 
+        feederVelocityTable.put(5.83, 25.0); 
+        feederVelocityTable.put(6.0, 25.0); 
+    }
+
+        public void setUpPivotInterpolator(){
+        //first value is the range, sceond value is the pivot angle
+        pivotTable.put(2.0, -0.25);
+        pivotTable.put(2.53, -0.45);
+        pivotTable.put(3.1, -0.54);
+        pivotTable.put(3.76, -0.602);
+        pivotTable.put(4.78, -0.695);
+        pivotTable.put(5.83, -0.72); 
+        pivotTable.put(6.0, -0.745); 
     }
 
     public double interpolateShooterVelocity(double range){

@@ -12,12 +12,20 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DutyCycle;
 
 public class Shooter extends DiagnosticsSubsystem{
   
   // Motors
   private final TalonFX topShooterMotor;
   private final TalonFX bottomShooterMotor;
+
+  private final DigitalInput shooterTof;
+  private final DutyCycle shooterTofDutyCycleInput;
+  private final double shooterTofScaleFactor = 3000000/4;
+  private double shooterTofFreq;
+  private double shooterTofRange;
+  private double shooterTofDutyCycle;
 
   // Motor pid values
   private double p = 0.3;
@@ -69,11 +77,15 @@ public class Shooter extends DiagnosticsSubsystem{
     topShooterMotor = new TalonFX(17, kCANbus);
     bottomShooterMotor = new TalonFX(18, kCANbus);
     shooterBeamBreak = new DigitalInput(2);
+    shooterTof = new DigitalInput(3); //TODO: find the correct port
+    shooterTofDutyCycleInput = new DutyCycle(shooterTof);
     topShooterMotorFault = new MotorFault(topShooterMotor, 17);
     bottomShooterMotorFault = new MotorFault(bottomShooterMotor, 18);
     topFlyWheelLimiter = new SlewRateLimiter(8); //limits the rate of change to 1.5 units per seconds
     bottomFlyWheelLimiter = new SlewRateLimiter(8); //limits the rate of change to 1.5 units per seconds
 
+    shooterTofFreq = 0;
+    shooterTofRange = 0;
     targetTopVelocityMPS = 0;
     targetBottomVelocityMPS = 0;
 
@@ -84,6 +96,12 @@ public class Shooter extends DiagnosticsSubsystem{
   public void periodic() {
     updateDiagnostics();
     updateFeedback();
+    
+    shooterTofFreq = shooterTofDutyCycleInput.getFrequency();
+    shooterTofDutyCycle = shooterTofDutyCycleInput.getOutput();
+    shooterTofRange = shooterTofDutyCycleInput.getOutput();
+    shooterTofRange = (shooterTofScaleFactor * (shooterTofDutyCycle / shooterTofFreq - 0.001)) / 1000;
+
     // Calculate ratelimited commanded velocities in rotations/second based on meters/second target velocity
     commandedTopVelocityMPS = topFlyWheelLimiter.calculate(-targetTopVelocityMPS);
     commandedBottomVelocityMPS = bottomFlyWheelLimiter.calculate(-targetBottomVelocityMPS);
@@ -106,6 +124,14 @@ public class Shooter extends DiagnosticsSubsystem{
   public void setTargetBottomVelocityInMPS(double velocityMPS)
   {
     targetBottomVelocityMPS = velocityMPS;
+  }
+
+  public double getTofRange(){
+    return shooterTofRange;
+  }
+
+  public double getTofFreq(){
+    return shooterTofFreq;
   }
 
   /* Gets the target velocities for the motors in meters per second */
@@ -200,9 +226,11 @@ public class Shooter extends DiagnosticsSubsystem{
     builder.addDoubleProperty("Target Top Motor Velocity", this::getTargetTopVelocityInMPS, this::setTargetTopVelocityInMPS);
     builder.addDoubleProperty("Target Bottom Motor Velocity", this::getTargetBottomVelocityInMPS, this::setTargetBottomVelocityInMPS);
     
+    builder.addDoubleProperty("Tof Range", this::getTofRange, null);
+    builder.addDoubleProperty("Tof Freq", this::getTofFreq, null);
+
     builder.addDoubleProperty("RunShooter Target Top Motor Velocity", this::getRunShooterTargetTopVelocityInMPS, this::setRunShooterTargetTopVelocityInMPS);
     builder.addDoubleProperty("RunShooter Bottom Motor Velocity", this::getRunShooterTargetBottomVelocityInMPS, this::setRunShooterTargetBottomVelocityInMPS);
-    
     builder.addDoubleProperty("Commanded Top Motor Velocity", this::getCommandedTopVelocityInMPS, null);
     builder.addDoubleProperty("Commanded Bottom Motor Velocity", this::getCommandedBottomVelocityInMPS, null);
     builder.addDoubleProperty("Actual Top Motor Velocity", this::getCurrentTopVelocityInMPS, null);
