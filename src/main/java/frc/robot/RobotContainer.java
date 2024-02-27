@@ -5,7 +5,6 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.GetAprilTagInfo;
 import frc.robot.commands.CollectorTeleop;
 import frc.robot.commands.ArmPoseCommand;
 import frc.robot.commands.ArmPoseTeleop;
@@ -40,7 +39,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.StartRecordingAutonomous;
 import frc.robot.commands.StartRecordingTeleop;
-import frc.robot.commands.GetAprilTagInfo;
 import frc.robot.commands.StopRecording;
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.SerialComms;
@@ -116,7 +114,6 @@ public class RobotContainer {
   private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_cameras);
   private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_cameras);
   private final StopRecording c_stopRecording = new StopRecording(m_cameras);
-  private final GetAprilTagInfo c_getAprilTagInfo = new GetAprilTagInfo(m_serial, m_camera1);
 
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
