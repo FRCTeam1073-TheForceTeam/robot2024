@@ -37,7 +37,7 @@ public class CollectFeedCommand extends Command {
         new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain)
       ),
       new ArmPoseCommand(m_collectorArm, POSE.START, true)
-      //new SetPivotCommand(m_pivot, -.07)
+      //new SetPivotCommand(m_pivot, -0.74)
     );
   }
 }
