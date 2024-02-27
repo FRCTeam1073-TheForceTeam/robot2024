@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -26,15 +27,17 @@ public class CollectFeedCommand extends Command {
   public SequentialCommandGroup runCollectFeedCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm, Pivot m_pivot, Feeder m_feeder, Shooter m_shooter) {
     return new SequentialCommandGroup(
       new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
-      new ArmPoseCommand(m_collectorArm, POSE.STOW, true),
-      new ParallelCommandGroup(
-        new ArmPoseCommand(m_collectorArm, POSE.HANDOFF, false),
-        new SetPivotCommand(m_pivot, -0.7)
+      new SetPivotCommand(m_pivot, -0.7),
+      new ArmPoseCommand(m_collectorArm, POSE.HANDOFF, true),
+      //new ParallelCommandGroup(
+        
+      //),
+      new ParallelDeadlineGroup(
+        new LoadFeeder(m_feeder, 2.5),
+        new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain)
       ),
-      new ParallelCommandGroup(
-        new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain),
-        new LoadFeeder(m_feeder)
-      )
+      new ArmPoseCommand(m_collectorArm, POSE.START, true)
+      //new SetPivotCommand(m_pivot, -.07)
     );
   }
 }

@@ -42,6 +42,6 @@ public class SetPivotCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return (pivot.getCurrentPositionInRad() >= (0.98 * targetPositionRad));
+    return (Math.abs(pivot.getCurrentPositionInRad()) >= Math.abs((0.98 * targetPositionRad)));
   }
 }

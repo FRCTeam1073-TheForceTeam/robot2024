@@ -104,7 +104,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() 
-  { CommandScheduler.getInstance().setDefaultCommand(m_pivot, m_pivotTestCommand);
+  { //CommandScheduler.getInstance().setDefaultCommand(m_pivot, m_pivotTestCommand);
     // CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_shooterTestCommand);
     //CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);

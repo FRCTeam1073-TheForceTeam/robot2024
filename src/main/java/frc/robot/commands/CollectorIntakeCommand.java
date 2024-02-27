@@ -79,7 +79,7 @@ public class CollectorIntakeCommand extends Command {
     
     //if(m_collector.getRangeTOF() < minRange){
     if(isCollectable){ // use the rate to decide when to stop
-      vel = (0.05 * Math.abs(m_drivetrain.getChassisSpeeds().vxMetersPerSecond)) + 3;
+      vel = (0.05 * Math.abs(m_drivetrain.getChassisSpeeds().vxMetersPerSecond)) + 4;
       m_collector.setTargetCollectorVelocity(-vel); //meters per sec
     }
     else{

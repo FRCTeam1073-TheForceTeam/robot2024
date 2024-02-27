@@ -13,22 +13,22 @@ import frc.robot.subsystems.OI;
 
 public class LoadFeeder extends Command {
   private Feeder feeder;
-  private OI oi;
 
   double minRange;
   double maxRange;
   double currentTofRange;
   double oldTofRange;
   double feederRate;
+  double feederTargetVelocityMPS;
   double intakeFeederRateThreshold = 0.001;
   
   /** Creates a new LoadTrigger. */
-  public LoadFeeder(Feeder feeder) {
+  public LoadFeeder(Feeder feeder, double feederTargetVelocityMPS) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.feeder = feeder;
-    this.oi = oi;
+    this.feederTargetVelocityMPS = feederTargetVelocityMPS;
     addRequirements(feeder);
-    minRange = 0.16;
+    minRange = 0.25;
     maxRange = 0.8;
     currentTofRange = 0;
     oldTofRange = 0;
@@ -38,14 +38,13 @@ public class LoadFeeder extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    feeder.setTargetVelocityInMPS(1.5);
+    feeder.setTargetVelocityInMPS(feederTargetVelocityMPS);
 
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    feeder.setTargetVelocityInMPS(1.5);
     
     currentTofRange = feeder.getTofRange();
     feederRate = ((currentTofRange - oldTofRange) / 0.02);

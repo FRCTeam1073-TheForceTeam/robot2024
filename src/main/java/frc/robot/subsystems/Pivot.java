@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -46,7 +47,8 @@ public class Pivot extends DiagnosticsSubsystem {
   private double currentPositionRad;
 
   // PositionVoltage object
-  private PositionVoltage pivotPositionVoltage = new PositionVoltage(0).withSlot(0);
+  //private PositionVoltage pivotPositionVoltage = new PositionVoltage(0).withSlot(0);
+  private MotionMagicVoltage pivotPositionVoltage = new MotionMagicVoltage(0).withSlot(0);
 
   // CANbus for this subsystem
   private final String kCANbus = "CANivore";
@@ -69,7 +71,8 @@ public class Pivot extends DiagnosticsSubsystem {
     updateDiagnostics();
     updateFeedback();
     // This method will be called once per scheduler run
-    commandedPositionRad = pivotMotorFilter.calculate(MathUtil.clamp(targetPositionRad, minAngleRad, maxAngleRad));
+    //commandedPositionRad = pivotMotorFilter.calculate(MathUtil.clamp(targetPositionRad, minAngleRad, maxAngleRad));
+    commandedPositionRad = MathUtil.clamp(targetPositionRad, minAngleRad, maxAngleRad);
     pivotMotor.setControl(pivotPositionVoltage.withPosition(commandedPositionRad * pivotRotationsPerRadian));
   }
 
@@ -81,7 +84,7 @@ public class Pivot extends DiagnosticsSubsystem {
   /* Sets the desired motor position in radians */
   public void setTargetPositionInRad(double pivotMotorPositionRad)
   {
-    targetPositionRad  = pivotMotorPositionRad;
+    targetPositionRad = pivotMotorPositionRad;
   }
 
   public double getTestCommandTargetPositionInRad()
@@ -114,6 +117,9 @@ public class Pivot extends DiagnosticsSubsystem {
     configs.Voltage.PeakForwardVoltage = 12;
     configs.Voltage.PeakReverseVoltage = -12;
 
+    configs.MotionMagic.MotionMagicCruiseVelocity = 8;
+    configs.MotionMagic.MotionMagicAcceleration = 8;
+    configs.MotionMagic.MotionMagicJerk = 0;
     // configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
     // configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
     //configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -142,7 +148,7 @@ public class Pivot extends DiagnosticsSubsystem {
   public void initSendable(SendableBuilder builder)
   {
     builder.setSmartDashboardType("Pivot");
-    builder.addDoubleProperty("Pivot Test Command Motor Position", this::getTargetPositionInRad, this::setTargetPositionInRad);
+    builder.addDoubleProperty("Pivot Test Command Motor Position", this::getTargetPositionInRad, null);
     builder.addDoubleProperty("Target Pivot Motor Position", this::getTargetPositionInRad, this::setTargetPositionInRad);
     builder.addDoubleProperty("Commanded Pivot Motor Position", this::getCommandedPositionInRad, null);
     builder.addDoubleProperty("Actual Pivot Motor Position", this::getCurrentPositionInRad, null);

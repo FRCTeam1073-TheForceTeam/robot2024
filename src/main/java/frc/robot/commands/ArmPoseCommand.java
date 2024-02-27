@@ -15,7 +15,8 @@ public class ArmPoseCommand extends Command {
 
   double m_targetLift;
   double m_targetExtend;
-  double m_liftTolerence = 0.01;
+  double m_liftTolerence = 0.03;
+  double m_extendTolerence = 0.025;
 
   boolean m_extendFlag;
 
@@ -42,8 +43,8 @@ public class ArmPoseCommand extends Command {
         m_targetExtend = 0.1047363281;
         break;
       case HANDOFF:
-        m_targetLift = 0.0;
-        m_targetExtend = 0.0;
+        m_targetLift = 0.2;
+        m_targetExtend = 0.1047363281;
         break;
       case AMP:
         m_targetLift = 1.9453125;
@@ -70,8 +71,7 @@ public class ArmPoseCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    double error = Math.abs(m_arm.getCurrentLiftAngle() - m_targetLift);
-    if(error < m_liftTolerence){
+    if((Math.abs(m_arm.getCurrentLiftAngle()) >= Math.abs(0.95 * m_targetLift)) && (Math.abs(m_arm.getCurrentExtendLength()) >= Math.abs(0.95 * m_targetExtend))){
       return true;
     }
     else{
