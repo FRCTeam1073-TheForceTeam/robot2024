@@ -102,7 +102,8 @@ public class RobotContainer {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private static final String kNoAuto = "No Autonomous";
   // ex: private static final String auto1 = "auto 1";
-  private static final String kSnowPlowAuto = "Snowplow Auto";
+  private static final String kCloseSnowPlowAuto = "Close Snowplow Auto";
+  private static final String kFarSnowPlowAuto = "Far Snowplow Auto";
   private static final String kLeaveAuto = "Leave Auto";
   private static final String kTestAuto = "Test Auto";
   
@@ -143,7 +144,8 @@ public class RobotContainer {
     SmartDashboard.putData(m_rangeFinder);
 
     m_chooser.setDefaultOption("No Autonomous", kNoAuto);
-    m_chooser.addOption("Snowplow Auto", kSnowPlowAuto);
+    m_chooser.addOption("Close Snowplow Auto", kCloseSnowPlowAuto);
+    m_chooser.addOption("Far Snowplow Auto", kFarSnowPlowAuto);
     m_chooser.addOption("Leave Auto", kLeaveAuto);
     m_chooser.addOption("Test Auto", kTestAuto);
 
@@ -222,6 +224,26 @@ public class RobotContainer {
     return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, pointList, 2.0, 2.0, 5.0), m_drivetrain);
   }
 
+  public Command closeSnowPlowAuto()
+  {
+    ArrayList<Pose2d> pointList = new ArrayList<Pose2d>();
+    pointList.add(new Pose2d(7, 0, new Rotation2d(0)));
+    pointList.add(new Pose2d(7, 5.5, new Rotation2d(0)));
+    return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7, -1.5, new Rotation2d(0)), 5, 1), m_drivetrain),
+          SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7.0, 5.5, new Rotation2d(0)), 5, 1), m_drivetrain), c_startRecordingAutonomous);
+  }
+
+  public Command farSnowPlowAuto()
+  {
+    ArrayList<Pose2d> pointList = new ArrayList<Pose2d>();
+    pointList.add(new Pose2d(7.2, 0, new Rotation2d(0)));
+    pointList.add(new Pose2d(7.2, -5.7, new Rotation2d(0)));
+    return new SequentialCommandGroup(SchemaDriveAuto.create(
+        new DriveThroughTrajectorySchema(m_drivetrain, pointList, 6.0, 5.0, 7.0), 
+          m_drivetrain),
+      c_startRecordingAutonomous);
+  }
+
   public Command getTeleopCommand(){
     return c_startRecordingTeleop;
   }
@@ -237,9 +259,10 @@ public class RobotContainer {
     switch (m_chooser.getSelected()){
       case kNoAuto:
         return null;
-      case kSnowPlowAuto:
-        return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7, 0, new Rotation2d(0)), 5, 1), m_drivetrain),
-          SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7.0, 5.5, new Rotation2d(0)), 5, 1), m_drivetrain), c_startRecordingAutonomous);
+      case kCloseSnowPlowAuto:
+        return closeSnowPlowAuto();
+      case kFarSnowPlowAuto:
+        return farSnowPlowAuto();
       case kLeaveAuto:
         return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(1.5, 0.0, new Rotation2d()), 1.5, 0), m_drivetrain), c_startRecordingAutonomous);
       case kTestAuto:
@@ -247,20 +270,6 @@ public class RobotContainer {
       default:
         return null;
     }
-    // An example command will be run in autonomous
-
-    //return SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(-1.0, -1.0, new Rotation2d(0)), 0.5, 0.5), m_drivetrain);
-    //return new DriveToPointSchema(m_drivetrain, new Pose2d(1.0, 0, new Rotation2d(Math.PI / 2)), 0.5, 0.5);
-
-    // ArrayList<Pose2d> drivePoints = new ArrayList<>();
-    // drivePoints.clear();
-
-    // drivePoints.add(new Pose2d(-1, 0, new Rotation2d(0)));
-    //drivePoints.add(new Pose2d(1, 1, new Rotation2d(0)));
-    //drivePoints.add(new Pose2d(1, 1, new Rotation2d(Math.PI / 2)));
-    //drivePoints.add(new Pose2d(1, 1, new Rotation2d(0.9)));
-
-    //return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, drivePoints, 0.5, 0.5, 0.5, 1.0), m_drivetrain);
   }
 
   public Command getDisabledCommand() {
