@@ -26,7 +26,7 @@ public class RunShooter extends Command {
     // Use addRequirements() here to declare subsystem dependencies.
     this.shooter = shooter;
     this.range = range;
-    this.shooterInterpolatorTable = shooterInterpolatorTable;
+    this.shooterInterpolatorTable = new ShooterInterpolatorTable();
     addRequirements(shooter);
   }
 
@@ -34,8 +34,8 @@ public class RunShooter extends Command {
   /* start shooter wheels to get them up to speed */
   @Override
   public void initialize() {
-    shooterTopMPS = shooter.getRunShooterTargetTopVelocityInMPS(); //shooterInterpolatorTable.interpolateShooterVelocity(range);
-    shooterBottomMPS = shooter.getRunShooterTargetTopVelocityInMPS(); //shooterInterpolatorTable.interpolateShooterVelocity(range);
+    shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(range);
+    shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(range);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
