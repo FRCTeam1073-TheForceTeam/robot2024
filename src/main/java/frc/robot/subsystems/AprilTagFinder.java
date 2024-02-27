@@ -49,7 +49,7 @@ public class AprilTagFinder extends SubsystemBase {
     //}
   }
 
-  public AprilTagFinder(Drivetrain ds, String tableName) {
+  public AprilTagFinder(Drivetrain ds) {
     driveSubsystem = ds;
     this.tableName = tableName;
 

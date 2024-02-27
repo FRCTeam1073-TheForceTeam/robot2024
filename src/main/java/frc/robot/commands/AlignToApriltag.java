@@ -50,8 +50,8 @@ public class AlignToApriltag extends CommandBase {
     this.YTolerance = YTolerance;
     this.maxVelocity = maxVelocity;
     this.chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-    targetTagX = 111; //TODO change numbers
-    targetTagY = 23; //TODO changer numbers
+    targetTagX = 111; 
+    targetTagY = 23; 
     addRequirements(drivetrain);
   }
 

@@ -42,6 +42,8 @@ import frc.robot.commands.StartRecordingTeleop;
 import frc.robot.commands.StopRecording;
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.SerialComms;
+import frc.robot.subsystems.AprilTagFinder;
+import frc.robot.commands.AlignToApriltag;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -81,6 +83,7 @@ public class RobotContainer {
   private final OI m_OI = new OI();
   private final RangeFinder m_rangeFinder = new RangeFinder();
   private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
+  private final AprilTagFinder m_AprilTagFinder = new AprilTagFinder(m_drivetrain);
   
   private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(m_pivot);
   // private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(m_shooter, m_OI);
@@ -97,6 +100,7 @@ public class RobotContainer {
   private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_collectorArm, m_drivetrain, m_OI);
   private final CollectorArmTeleop m_collectorArmTeleop = new CollectorArmTeleop(m_collectorArm, m_OI);
   private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm, m_OI);
+  private final AlignToApriltag m_AlignToApriltag = new AlignToApriltag(m_drivetrain, m_AprilTagFinder, 0, 0, 0);
 
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -139,6 +143,8 @@ public class RobotContainer {
     SmartDashboard.putData(m_feeder);
     SmartDashboard.putData(m_pivot);
     SmartDashboard.putData(m_rangeFinder);
+    SmartDashboard.putData(m_AlignToApriltag);
+    SmartDashboard.putData(m_AprilTagFinder);
 
     m_chooser.setDefaultOption("No Autonomous", kNoAuto);
     m_chooser.addOption("Snowplow Auto", kSnowPlowAuto);
@@ -183,6 +189,9 @@ public class RobotContainer {
 
     Trigger armAmpPoseTrigger = new Trigger(m_OI::getOperatorYButton);
     armAmpPoseTrigger.onTrue(armAmpPoseCommand());
+
+    Trigger alignToApriltagTrigger = new Trigger(m_OI::getOperatorXButton);
+    alignToApriltagTrigger.onTrue(m_AlignToApriltag);
 
   }
 
