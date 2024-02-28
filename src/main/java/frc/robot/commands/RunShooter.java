@@ -7,6 +7,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.ShooterInterpolatorTable;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -15,17 +16,17 @@ import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 public class RunShooter extends Command {
   private Shooter shooter;
   private ShooterInterpolatorTable shooterInterpolatorTable;
+  private RangeFinder rangefinder;
   private double shooterTopMPS;
   private double shooterBottomMPS;
-  private double range;
   
   /* Creates a new RunShooter. */
 
-  public RunShooter(Shooter shooter, double range) {
+  public RunShooter(Shooter shooter, RangeFinder rangeFinder) {
     /* Range to calculate the speed needed */
     // Use addRequirements() here to declare subsystem dependencies.
     this.shooter = shooter;
-    this.range = range;
+    this.rangefinder = rangeFinder;
     this.shooterInterpolatorTable = new ShooterInterpolatorTable();
     addRequirements(shooter);
   }
@@ -34,8 +35,8 @@ public class RunShooter extends Command {
   /* start shooter wheels to get them up to speed */
   @Override
   public void initialize() {
-    shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(range);
-    shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(range);
+    shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
+    shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
   }
 
   // Called every time the scheduler runs while the command is scheduled.

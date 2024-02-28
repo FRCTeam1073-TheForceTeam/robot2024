@@ -59,6 +59,7 @@ public class RobotContainer {
   private final RangeFinder m_rangeFinder = new RangeFinder();
   private final CollectFeedCommand m_collectAndFeed = new CollectFeedCommand();
   private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
+  private final CancelCommand m_cancelCommand = new CancelCommand();
   
   private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(m_pivot);
   // private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(m_shooter, m_OI);
@@ -75,7 +76,7 @@ public class RobotContainer {
   private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_collectorArm, m_drivetrain, m_OI);
   private final CollectorArmTeleop m_collectorArmTeleop = new CollectorArmTeleop(m_collectorArm, m_OI);
   private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm, m_OI);
-  private final RunShooter m_runShooterCommand = new RunShooter(m_shooter, 0);
+  //private final RunShooter m_runShooterCommand = new RunShooter(m_shooter, 0);
 
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -152,7 +153,10 @@ public class RobotContainer {
     loadNoteToFeeder.onTrue(m_collectAndFeed.runCollectFeedCommand(m_drivetrain, m_collector, m_collectorArm, m_pivot, m_feeder, m_shooter));
     
     Trigger launchFeederToSpeaker = new Trigger(m_OI::getOperatorRightTrigger);
-    launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot));
+    launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot, m_rangeFinder));
+
+    Trigger cancelCommand = new Trigger(m_OI::getOperatorBButton);
+    cancelCommand.onTrue(m_cancelCommand.cancel(m_collector, m_collectorArm, m_shooter, m_feeder, m_pivot));
 
     // System.out.println("Configuring buttons");
     // Trigger tagButton = new Trigger(m_OI::getXButton);
@@ -248,7 +252,7 @@ public class RobotContainer {
   }
 
   public Command launchFeederToSpeaker(){
-    return m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot);
+    return m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot, m_rangeFinder);
     // return new SequentialCommandGroup(
     //   new RunShooter(m_shooter, 7.7), //, m_rangeFinder.getRange()),
     //  new ParallelRaceGroup(

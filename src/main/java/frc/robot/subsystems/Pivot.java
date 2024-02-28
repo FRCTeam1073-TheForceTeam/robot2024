@@ -117,8 +117,8 @@ public class Pivot extends DiagnosticsSubsystem {
     configs.Voltage.PeakForwardVoltage = 12;
     configs.Voltage.PeakReverseVoltage = -12;
 
-    configs.MotionMagic.MotionMagicCruiseVelocity = 8;
-    configs.MotionMagic.MotionMagicAcceleration = 8;
+    configs.MotionMagic.MotionMagicCruiseVelocity = 16;
+    configs.MotionMagic.MotionMagicAcceleration = 15;
     configs.MotionMagic.MotionMagicJerk = 0;
     // configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
     // configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
@@ -131,7 +131,7 @@ public class Pivot extends DiagnosticsSubsystem {
     String result = "";
     boolean ok = true;
     if (
-    pivotMotorFault.hasFaults());{
+    pivotMotorFault.hasFaults()){
       ok = false;
       result += pivotMotorFault.getFaults();
     }

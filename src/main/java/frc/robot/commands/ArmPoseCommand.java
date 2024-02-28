@@ -71,7 +71,7 @@ public class ArmPoseCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if((Math.abs(m_arm.getCurrentLiftAngle()) >= Math.abs(0.95 * m_targetLift)) && (Math.abs(m_arm.getCurrentExtendLength()) >= Math.abs(0.95 * m_targetExtend))){
+    if((Math.abs(m_arm.getCurrentLiftAngle()) >= Math.abs(0.9 * m_targetLift)) && (Math.abs(m_arm.getCurrentExtendLength()) >= Math.abs(0.90 * m_targetExtend))){
       return true;
     }
     else{

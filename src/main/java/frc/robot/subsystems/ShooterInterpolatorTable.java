@@ -60,6 +60,10 @@ public class ShooterInterpolatorTable {
         pivotTable.put(6.0, -0.745); 
     }
 
+    public double interpolatePivotAngle(double range) {
+        return pivotTable.get(range);
+    }
+
     public double interpolateShooterVelocity(double range){
         return shooterVelocityTable.get(range);  //spits out the corresponding velocity
     }

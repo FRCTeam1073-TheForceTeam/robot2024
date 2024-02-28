@@ -182,6 +182,10 @@ public class OI extends DiagnosticsSubsystem
     return getOperatorRawButton(4);
   }
 
+  public boolean getOperatorBButton(){
+    return getOperatorRawButton(2);
+  }
+
   public boolean getOperatorRightTrigger(){
     return (operatorController.getRawAxis(3) > 0.5);
   }

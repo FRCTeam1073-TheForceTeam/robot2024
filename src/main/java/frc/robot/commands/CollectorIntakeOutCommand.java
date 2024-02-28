@@ -59,7 +59,7 @@ public class CollectorIntakeOutCommand extends Command {
     
     //outtake
     if(tofCurrentValue < maxRange){
-      vel = -3;
+      vel = -6;
       m_collector.setTargetCollectorVelocity(vel); //meters per sec
     }
     else{

@@ -103,14 +103,14 @@ public class CollectorArm extends DiagnosticsSubsystem {
   
   // PID gains for lift controller.
   private double lift_kP = 16;
-  private double lift_kI = 0.5;
-  private double lift_kD = 0.5;
+  private double lift_kI = 6;
+  private double lift_kD = 1/5;
   private double lift_kF = 0;
   private double lift_kG = 0.8;
 
   // PID gains for extension controller.
   private double extend_kP = 45;
-  private double extend_kI = 5;
+  private double extend_kI = 7;
   private double extend_kD = 6;
   private double extend_kF = 0;
 
@@ -299,8 +299,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     // liftConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     // liftConfigs.ClosedLoopGeneral.ContinuousWrap = true;
 
-    liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 2; 
-    liftConfigs.MotionMagic.MotionMagicAcceleration = 1.4; 
+    liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 4; 
+    liftConfigs.MotionMagic.MotionMagicAcceleration = 3; 
     liftConfigs.MotionMagic.MotionMagicJerk = 0;
 
     liftMotor.getConfigurator().apply(liftConfigs);
@@ -321,8 +321,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     //extendConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     //extendConfigs.ClosedLoopGeneral.ContinuousWrap = true;
 
-    extendConfigs.MotionMagic.MotionMagicCruiseVelocity = 25;
-    extendConfigs.MotionMagic.MotionMagicAcceleration = 35;
+    extendConfigs.MotionMagic.MotionMagicCruiseVelocity = 45;
+    extendConfigs.MotionMagic.MotionMagicAcceleration = 45;
     extendConfigs.MotionMagic.MotionMagicJerk = 0;
 
     extendMotor.getConfigurator().apply(extendConfigs);
