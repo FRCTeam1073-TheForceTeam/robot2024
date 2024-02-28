@@ -104,6 +104,8 @@ public class RobotContainer {
   // ex: private static final String auto1 = "auto 1";
   private static final String kCloseSnowPlowAuto = "Close Snowplow Auto";
   private static final String kFarSnowPlowAuto = "Far Snowplow Auto";
+  private static final String kFarRed1Note = "Far Red 1 Note";
+  private static final String kBlueClose4Note = "Blue Close 4 Note";
   private static final String kLeaveAuto = "Leave Auto";
   private static final String kTestAuto = "Test Auto";
   
@@ -146,6 +148,8 @@ public class RobotContainer {
     m_chooser.setDefaultOption("No Autonomous", kNoAuto);
     m_chooser.addOption("Close Snowplow Auto", kCloseSnowPlowAuto);
     m_chooser.addOption("Far Snowplow Auto", kFarSnowPlowAuto);
+    m_chooser.addOption("Far Red 1 Note", kFarRed1Note);
+    m_chooser.addOption("Blue Close 4 Note", kBlueClose4Note);
     m_chooser.addOption("Leave Auto", kLeaveAuto);
     m_chooser.addOption("Test Auto", kTestAuto);
 
@@ -244,6 +248,27 @@ public class RobotContainer {
       c_startRecordingAutonomous);
   }
 
+  public Command farRed1Note()
+  {
+    return SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(3.0, 0.0, new Rotation2d(Math.PI / 4)), 5.0, 5.0), m_drivetrain);
+  }
+
+  public Command blueClose4Note()
+  {
+    ArrayList<Pose2d> pointList1 = new ArrayList<Pose2d>();
+    ArrayList<Pose2d> pointList2 = new ArrayList<Pose2d>();
+    pointList1.add(new Pose2d(1.0, -1.0, new Rotation2d(Math.PI / 4)));
+    pointList1.add(new Pose2d(2.1, -2.1, new Rotation2d(Math.PI / 16)));
+    pointList2.add(new Pose2d(1.0, -2.5, new Rotation2d(0)));
+    pointList2.add(new Pose2d(2.1, -2.7, new Rotation2d(-Math.PI / 6)));
+    return new SequentialCommandGroup(SchemaDriveAuto.create(
+        new DriveToPointSchema(m_drivetrain, new Pose2d(1.75, -1, new Rotation2d(Math.PI / 4)), 5.0, 5.0), 
+        m_drivetrain),
+      SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(2.2, -0.5, new Rotation2d(Math.PI / 4)), 5.0, 5.0), m_drivetrain),
+      SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, pointList1, 5.0, 5.0, 7.0), m_drivetrain),
+      c_startRecordingAutonomous);
+  }
+
   public Command getTeleopCommand(){
     return c_startRecordingTeleop;
   }
@@ -263,6 +288,10 @@ public class RobotContainer {
         return closeSnowPlowAuto();
       case kFarSnowPlowAuto:
         return farSnowPlowAuto();
+      case kFarRed1Note:
+        return farRed1Note();
+      case kBlueClose4Note:
+        return blueClose4Note();
       case kLeaveAuto:
         return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(1.5, 0.0, new Rotation2d()), 1.5, 0), m_drivetrain), c_startRecordingAutonomous);
       case kTestAuto:
