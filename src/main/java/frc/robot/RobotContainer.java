@@ -106,6 +106,7 @@ public class RobotContainer {
   private static final String kFarSnowPlowAuto = "Far Snowplow Auto";
   private static final String kFarRed1Note = "Far Red 1 Note";
   private static final String kBlueClose4Note = "Blue Close 4 Note";
+  private static final String kCloseRed2Note = "Close Red 2 Note";
   private static final String kLeaveAuto = "Leave Auto";
   private static final String kTestAuto = "Test Auto";
   
@@ -150,6 +151,7 @@ public class RobotContainer {
     m_chooser.addOption("Far Snowplow Auto", kFarSnowPlowAuto);
     m_chooser.addOption("Far Red 1 Note", kFarRed1Note);
     m_chooser.addOption("Blue Close 4 Note", kBlueClose4Note);
+    m_chooser.addOption("Close Red 2 Note", kCloseRed2Note);
     m_chooser.addOption("Leave Auto", kLeaveAuto);
     m_chooser.addOption("Test Auto", kTestAuto);
 
@@ -253,6 +255,15 @@ public class RobotContainer {
     return SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(3.0, 0.0, new Rotation2d(Math.PI / 4)), 5.0, 5.0), m_drivetrain);
   }
 
+  public Command closeRed2Note()
+  {
+    ArrayList<Pose2d> pointList = new ArrayList<Pose2d>();
+    pointList.add(new Pose2d(0.65, 1.1, new Rotation2d(-Math.PI / 6)));
+    pointList.add(new Pose2d(6.5, -0.1, new Rotation2d(0)));
+    pointList.add(new Pose2d(3.9, 0.0, new Rotation2d(-0.227)));
+    return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, pointList, 3.0, 3.0, 6.0), m_drivetrain);
+  }
+
   public Command blueClose4Note()
   {
     ArrayList<Pose2d> pointList1 = new ArrayList<Pose2d>();
@@ -292,6 +303,8 @@ public class RobotContainer {
         return farRed1Note();
       case kBlueClose4Note:
         return blueClose4Note();
+      case kCloseRed2Note:
+        return closeRed2Note();
       case kLeaveAuto:
         return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(1.5, 0.0, new Rotation2d()), 1.5, 0), m_drivetrain), c_startRecordingAutonomous);
       case kTestAuto:
