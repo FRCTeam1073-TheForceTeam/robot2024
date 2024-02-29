@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.SerialComms;
 
@@ -26,16 +27,16 @@ public class GetAprilTagInfo extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    serialComms.send("1,ap");
-    System.out.println("sent for april tag");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    serialComms.receive();
+    String aprilInfo = camera.getAprilTagInfo();
+    System.out.println("sent for april tag");
+    System.out.println(aprilInfo);
     this.weAreFinished = true;
-  }
+    }
 
   // Called once the command ends or is interrupted.
   @Override

@@ -111,7 +111,7 @@ public class RobotContainer {
   private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
   private final Camera m_camera1 = new Camera(m_serial, "1");  // camID is how SerialComms and the cameras themselves tells them apart
   private final Camera m_camera2 = new Camera(m_serial, "2");
-  private final Camera[] m_cameras = {m_camera1, m_camera2};
+  public final Camera[] m_cameras = {m_camera1, m_camera2};
 
   private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_cameras);
   private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_cameras);
@@ -224,7 +224,7 @@ public class RobotContainer {
   }
 
   public Command getTeleopCommand(){
-    return c_startRecordingTeleop;
+    return new SequentialCommandGroup(c_getAprilTagInfo, c_startRecordingTeleop);
   }
 
   /**

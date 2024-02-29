@@ -167,7 +167,7 @@ public class Feeder extends DiagnosticsSubsystem {
     }
     if (!configError.isOK()) 
     {
-      System.err.println(String.format("FEEDER MOTOR ERROR: %s", configError.toString()));
+      //System.err.println(String.format("FEEDER MOTOR ERROR: %s", configError.toString()));
       result += configError.getDescription();
       ok = false;
     }

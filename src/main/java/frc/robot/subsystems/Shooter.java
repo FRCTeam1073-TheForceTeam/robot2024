@@ -180,13 +180,13 @@ public class Shooter extends DiagnosticsSubsystem{
     }
     if (!topConfigError.isOK()) 
     {
-      System.err.println(String.format("TOP SHOOTER MOTOR ERROR: %s", topConfigError.toString()));
+      //System.err.println(String.format("TOP SHOOTER MOTOR ERROR: %s", topConfigError.toString()));
       result +=topConfigError.getDescription();
       ok = false;
     }
     if (!bottomConfigError.isOK()) 
     {
-      System.err.println(String.format("BOTTOM SHOOTER MOTOR ERROR: %s", bottomConfigError.toString()));
+      //System.err.println(String.format("BOTTOM SHOOTER MOTOR ERROR: %s", bottomConfigError.toString()));
       result +=bottomConfigError.getDescription();
       ok = false;
     }

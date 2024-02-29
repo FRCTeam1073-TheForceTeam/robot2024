@@ -60,8 +60,8 @@ public class SerialComms extends SubsystemBase{
         char dataAsChar = new String(data, StandardCharsets.US_ASCII).toCharArray()[0];
 
         msgAsString = msgAsString.concat(dataAsStr);
-        System.out.println(String.format("msgAsString thus far: %s", msgAsString));
-        System.out.println(String.format("byte we just received as string: |%s|", dataAsStr));
+        //System.out.println(String.format("msgAsString thus far: %s", msgAsString));
+        //System.out.println(String.format("byte we just received as string: |%s|", dataAsStr));
         if(dataAsChar == '\n') {
           System.out.println("should have just gotten a newline");
           System.out.println(String.format("full msg we received as string: %s", msgAsString));

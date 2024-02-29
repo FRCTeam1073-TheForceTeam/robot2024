@@ -125,7 +125,7 @@ public class Pivot extends DiagnosticsSubsystem {
     }
     if (!configError.isOK()) 
     {
-      System.err.println(String.format("PIVOT MOTOR ERROR: %s", configError.toString()));
+      //System.err.println(String.format("PIVOT MOTOR ERROR: %s", configError.toString()));
       result += configError.getDescription();
       ok = false;
     }
