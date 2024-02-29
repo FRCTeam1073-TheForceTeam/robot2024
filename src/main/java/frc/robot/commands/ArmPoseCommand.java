@@ -39,12 +39,12 @@ public class ArmPoseCommand extends Command {
         m_targetExtend = 0.0;
         break;
       case STOW:
-        m_targetLift = 0.2;
-        m_targetExtend = 0.1047363281;
+        m_targetLift = 0.21;
+        m_targetExtend = 0.1067363281;
         break;
       case HANDOFF:
-        m_targetLift = 0.2;
-        m_targetExtend = 0.1047363281;
+        m_targetLift = 0.21;
+        m_targetExtend = 0.1067363281;
         break;
       case AMP:
         m_targetLift = 1.9453125;

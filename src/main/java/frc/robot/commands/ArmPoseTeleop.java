@@ -31,8 +31,9 @@ public class ArmPoseTeleop extends Command {
     // A Button: START
     if(oi.getOperatorRawButton(1)) {
       arm.setPoseName(POSE.START);
-      //arm.setTargetExtendLength(0);
+      arm.setTargetExtendLength(0);
       arm.setTargetLiftAngle(0);
+      
     }
 
     // B Button STOW (lift)
@@ -44,15 +45,23 @@ public class ArmPoseTeleop extends Command {
     // X Button STOW (extend)
     if(oi.getOperatorRawButton(3)) {
       arm.setPoseName(POSE.STOW);
-      //arm.setTargetExtendLength(0.1047363281);
-      arm.setTargetLiftAngle(0.2);
+      /* REAL Values
+       * //arm.setTargetExtendLength(0.1047363281);
+        arm.setTargetLiftAngle(0.21);
+       */
+      arm.setTargetLiftAngle(1.9033203125);
+      arm.setTargetExtendLength(0);
     }
 
     // Y Button AMP
     if(oi.getOperatorRawButton(4)) {
       arm.setPoseName(POSE.AMP);
-      //arm.setTargetExtendLength(0.0966796875);
-      arm.setTargetLiftAngle(1.9453125);
+      /* REAL Values
+       * //arm.setTargetExtendLength(0.0966796875);
+        arm.setTargetLiftAngle(1.9453125);
+       */
+      arm.setTargetLiftAngle(1.9033203125);
+      arm.setTargetExtendLength(0.05);
     }
   }
 

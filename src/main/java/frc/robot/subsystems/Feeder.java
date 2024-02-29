@@ -154,7 +154,7 @@ public class Feeder extends DiagnosticsSubsystem {
   public boolean updateDiagnostics(){
     String result = "";
     boolean ok = true;
-    if (feederMotorFault.hasFaults());{
+    if (feederMotorFault.hasFaults()){
       ok = false;
     }
     if(!ok){
