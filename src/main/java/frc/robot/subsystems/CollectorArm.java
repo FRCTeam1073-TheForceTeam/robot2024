@@ -109,10 +109,10 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private double lift_kG = 0.8;
 
   // PID gains for extension controller.
-  private double extend_kP = 60;
+  private double extend_kP = 125;
   private double extend_kI = 4;
   private double extend_kD = 11;
-  private double extend_kS = 0.55;
+  private double extend_kS = 0.5;
 
   private POSE currentPose;
 
@@ -322,8 +322,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     //extendConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     //extendConfigs.ClosedLoopGeneral.ContinuousWrap = true;
 
-    extendConfigs.MotionMagic.MotionMagicCruiseVelocity = 0.1;
-    extendConfigs.MotionMagic.MotionMagicAcceleration = 0.1;
+    extendConfigs.MotionMagic.MotionMagicCruiseVelocity = 1;
+    extendConfigs.MotionMagic.MotionMagicAcceleration = 0.5;
     extendConfigs.MotionMagic.MotionMagicJerk = 0;
 
     extendMotor.getConfigurator().apply(extendConfigs);
