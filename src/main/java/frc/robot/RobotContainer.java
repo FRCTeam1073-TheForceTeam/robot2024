@@ -261,7 +261,7 @@ public class RobotContainer {
     pointList.add(new Pose2d(0.65, 1.1, new Rotation2d(-Math.PI / 6)));
     pointList.add(new Pose2d(6.5, -0.1, new Rotation2d(0)));
     pointList.add(new Pose2d(3.9, 0.0, new Rotation2d(-0.227)));
-    return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, pointList, 3.0, 3.0, 6.0), m_drivetrain);
+    return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, pointList, 2.0, 2.0, 15.0), m_drivetrain);
   }
 
   public Command blueClose4Note()
