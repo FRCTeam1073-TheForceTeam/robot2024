@@ -29,7 +29,7 @@ public class CollectFeedCommand extends Command {
       new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
       new ParallelCommandGroup(
         new SetPivotCommand(m_pivot, -0.7),
-        new ArmPoseCommand(m_collectorArm, POSE.HANDOFF, true)
+        new ArmPoseCommand(m_collectorArm, POSE.HANDOFF)
       ),
       //new ParallelCommandGroup(
         
@@ -38,7 +38,7 @@ public class CollectFeedCommand extends Command {
         new LoadFeeder(m_feeder, 1.5),
         new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain)
       ),
-      new ArmPoseCommand(m_collectorArm, POSE.START, true)
+      new ArmPoseCommand(m_collectorArm, POSE.START)
       //new SetPivotCommand(m_pivot, -0.74)
     );
   }

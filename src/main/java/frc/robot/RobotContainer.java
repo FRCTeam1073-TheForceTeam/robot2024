@@ -112,7 +112,7 @@ public class RobotContainer {
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_collectorArmTeleop);
-    CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
+    //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_runShooterCommand);
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
@@ -157,6 +157,15 @@ public class RobotContainer {
 
     Trigger cancelCommand = new Trigger(m_OI::getOperatorBButton);
     cancelCommand.onTrue(m_cancelCommand.cancel(m_collector, m_collectorArm, m_shooter, m_feeder, m_pivot));
+
+    Trigger armStartCommand = new Trigger(m_OI::getOperatorAButton);
+    armStartCommand.onTrue(m_armPoseTeleop.startPose());
+
+    Trigger armStowCommand = new Trigger(m_OI::getOperatorXButton);
+    armStowCommand.onTrue(m_armPoseTeleop.stowPose());
+
+    Trigger armAmpCommand = new Trigger(m_OI::getOperatorYButton);
+    armAmpCommand.onTrue(m_armPoseTeleop.ampPose());
 
     // System.out.println("Configuring buttons");
     // Trigger tagButton = new Trigger(m_OI::getXButton);

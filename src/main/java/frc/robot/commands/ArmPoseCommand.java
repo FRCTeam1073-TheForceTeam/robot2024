@@ -23,11 +23,11 @@ public class ArmPoseCommand extends Command {
   /** Creates a new ArmPoseCommand. 
    * @param extendInterpolateFlag is set to true when you want to use the interpolator for extend
   */
-  public ArmPoseCommand(CollectorArm arm, POSE pose, boolean extendInterpolateFlag) {
+  public ArmPoseCommand(CollectorArm arm, POSE pose) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_arm = arm;
     m_pose = pose;
-    m_extendFlag = extendInterpolateFlag;
+    //m_extendFlag = extendInterpolateFlag;
   }
 
   // Called when the command is initially scheduled.
@@ -38,6 +38,9 @@ public class ArmPoseCommand extends Command {
         m_targetLift = 0.0;
         m_targetExtend = 0.0;
         break;
+      case STOW_INTERMEDIATE:
+        m_targetLift = 0.23;
+        m_targetExtend = 0.0;
       case STOW:
         m_targetLift = 0.21;
         m_targetExtend = 0.1067363281;
@@ -48,7 +51,7 @@ public class ArmPoseCommand extends Command {
         break;
       case AMP:
         m_targetLift = 1.9453125;
-        m_targetExtend = 0.0966796875;
+        m_targetExtend = 0.0366796875;
         break;
     }
   }
@@ -57,9 +60,9 @@ public class ArmPoseCommand extends Command {
   @Override
   public void execute() {
     m_arm.setTargetLiftAngle(m_targetLift);
-    if(!m_extendFlag){
-      m_arm.setTargetExtendLength(m_targetExtend);
-    }
+    // if(!m_extendFlag){
+    m_arm.setTargetExtendLength(m_targetExtend);
+    //}
   }
 
   // Called once the command ends or is interrupted.
@@ -71,7 +74,9 @@ public class ArmPoseCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if((Math.abs(m_arm.getCurrentLiftAngle()) >= Math.abs(0.9 * m_targetLift)) && (Math.abs(m_arm.getCurrentExtendLength()) >= Math.abs(0.90 * m_targetExtend))){
+    double liftError = Math.abs(m_arm.getCurrentLiftAngle() - m_targetLift);
+    double extendError = Math.abs(m_arm.getCurrentExtendLength() - m_targetExtend);
+    if((liftError < 0.02) && (extendError < 0.005)){
       return true;
     }
     else{

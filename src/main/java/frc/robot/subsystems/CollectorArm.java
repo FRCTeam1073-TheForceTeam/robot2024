@@ -28,6 +28,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
   
   public static enum POSE{
     START,
+    STOW_INTERMEDIATE,
     STOW,
     HANDOFF,
     AMP
@@ -109,7 +110,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private double lift_kG = 0.8;
 
   // PID gains for extension controller.
-  private double extend_kP = 125;
+  private double extend_kP = 145;
   private double extend_kI = 4;
   private double extend_kD = 11;
   private double extend_kS = 0.5;
@@ -241,8 +242,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
     armMap.put(0.0, 0.0); 
     armMap.put(0.076416015625, 0.0);
-    armMap.put(0.122802734375, -0.02);
-    armMap.put(0.162109375, 0.04); //STOW 
+    armMap.put(0.122802734375, 0.0);
+    armMap.put(0.162109375, 0.0); //STOW 
     armMap.put(0.2, 0.04);
     armMap.put(0.21, 0.107177734375); 
     armMap.put(0.2880859375, 0.107177734375);

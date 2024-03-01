@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.CollectorArm;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.CollectorArm.POSE;
@@ -21,57 +22,23 @@ public class ArmPoseTeleop extends Command {
     addRequirements(arm);
   }
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {}
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    // A Button: START
-    if(oi.getOperatorRawButton(1)) {
-      arm.setPoseName(POSE.START);
-      arm.setTargetExtendLength(0);
-      arm.setTargetLiftAngle(0);
-      
-    }
-
-    // B Button STOW (lift)
-    // if(oi.getOperatorRawButton(2)) {
-    //   //arm.setTargetExtendLength(0);
-    //   arm.setTargetLiftAngle(0.23315429);
-    // }
-
-    // X Button STOW (extend)
-    if(oi.getOperatorRawButton(3)) {
-      arm.setPoseName(POSE.STOW);
-      /* REAL Values
-       * //arm.setTargetExtendLength(0.1047363281);
-        arm.setTargetLiftAngle(0.21);
-       */
-      arm.setTargetLiftAngle(1.9033203125);
-      arm.setTargetExtendLength(0);
-    }
-
-    // Y Button AMP
-    if(oi.getOperatorRawButton(4)) {
-      arm.setPoseName(POSE.AMP);
-      /* REAL Values
-       * //arm.setTargetExtendLength(0.0966796875);
-        arm.setTargetLiftAngle(1.9453125);
-       */
-      arm.setTargetLiftAngle(1.9033203125);
-      arm.setTargetExtendLength(0.05);
-    }
+  public SequentialCommandGroup startPose() {
+    return new SequentialCommandGroup(
+      new ArmPoseCommand(arm, POSE.STOW_INTERMEDIATE),
+      new ArmPoseCommand(arm, POSE.START)
+    );
   }
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {}
+  public SequentialCommandGroup stowPose() {
+    return new SequentialCommandGroup(
+      new ArmPoseCommand(arm, POSE.STOW_INTERMEDIATE),
+      new ArmPoseCommand(arm, POSE.STOW)
+    );
+  }
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
+  public SequentialCommandGroup ampPose() {
+    return new SequentialCommandGroup(
+      new ArmPoseCommand(arm, POSE.AMP)
+    );
   }
 }
