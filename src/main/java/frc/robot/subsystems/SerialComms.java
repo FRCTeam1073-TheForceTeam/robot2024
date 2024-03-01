@@ -32,6 +32,9 @@ public class SerialComms extends SubsystemBase{
   }
 
   public static void send(String message) {
+    if(serialPort == null){
+      return;
+    }
     message = message.concat("\n");
     //System.out.println(String.format("in send() message we're about to send as string: %s", message));
     byte[] messageAsBytes = message.getBytes(StandardCharsets.US_ASCII);
@@ -46,6 +49,9 @@ public class SerialComms extends SubsystemBase{
   }
 
   public static String receive() {
+    if(serialPort == null){
+      return "";
+    }
     System.out.println("in receive");
     //ArrayList<Byte> msg = new ArrayList<Byte>();
     String msgAsString = new String();

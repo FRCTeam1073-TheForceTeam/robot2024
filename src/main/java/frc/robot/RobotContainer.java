@@ -176,8 +176,8 @@ public class RobotContainer {
     launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder));
 
     // System.out.println("Configuring buttons");
-    // Trigger tagButton = new Trigger(m_OI::getXButton);
-    // tagButton.onTrue(getTagData());
+    Trigger tagButton = new Trigger(m_OI::getXButtonDriver);
+    tagButton.onTrue(c_getAprilTagInfo);
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
 
@@ -224,7 +224,7 @@ public class RobotContainer {
   }
 
   public Command getTeleopCommand(){
-    return new SequentialCommandGroup(c_getAprilTagInfo, c_startRecordingTeleop);
+    return new SequentialCommandGroup(c_startRecordingTeleop, c_getAprilTagInfo);
   }
 
   /**
