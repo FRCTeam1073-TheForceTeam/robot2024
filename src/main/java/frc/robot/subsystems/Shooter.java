@@ -55,9 +55,6 @@ public class Shooter extends DiagnosticsSubsystem{
   private double currentTopVelocityMPS;
   private double currentBottomVelocityMPS;
 
-  // Beam break sensor
-  private final DigitalInput shooterBeamBreak;
-
   // VelocityVoltage object
   //private VelocityVoltage shooterVelocityVoltage = new VelocityVoltage(0);
   private MotionMagicVelocityVoltage shooterVelocityVoltage = new MotionMagicVelocityVoltage(0);
@@ -78,8 +75,7 @@ public class Shooter extends DiagnosticsSubsystem{
     // bottomShooterMotor = new TalonFX(18, kCANbus); //Kraken 
     topShooterMotor = new TalonFX(17, kCANbus);
     bottomShooterMotor = new TalonFX(18, kCANbus);
-    shooterBeamBreak = new DigitalInput(2);
-    shooterTof = new DigitalInput(3); //TODO: find the correct port
+    shooterTof = new DigitalInput(2); //TODO: find the correct port
     shooterTofDutyCycleInput = new DutyCycle(shooterTof);
     topShooterMotorFault = new MotorFault(topShooterMotor, 17);
     bottomShooterMotorFault = new MotorFault(bottomShooterMotor, 18);
@@ -184,11 +180,6 @@ public class Shooter extends DiagnosticsSubsystem{
 
   public double getBottomVelocityError() {
     return Math.abs(getCurrentBottomVelocityInMPS()) - Math.abs(getCommandedBottomVelocityInMPS());
-  }
-
-  /* Uses the beam break sensor to detect if the note has entered the shooter */
-  public boolean noteIsInShooter(){
-    return shooterBeamBreak.get();
   }
 
   public void configureHardware(){
