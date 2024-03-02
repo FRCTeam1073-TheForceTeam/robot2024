@@ -224,7 +224,8 @@ public class RobotContainer {
   }
 
   public Command getTeleopCommand(){
-    return new SequentialCommandGroup(c_startRecordingTeleop, c_getAprilTagInfo);
+    //return new SequentialCommandGroup(c_startRecordingTeleop, c_getAprilTagInfo);
+    return c_startRecordingTeleop;
   }
 
   /**
