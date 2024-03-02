@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
 
 public class Shooter extends DiagnosticsSubsystem{
-  
   // Motors
   private final TalonFX topShooterMotor;
   private final TalonFX bottomShooterMotor;
@@ -27,6 +26,7 @@ public class Shooter extends DiagnosticsSubsystem{
   private double shooterTofFreq;
   private double shooterTofRange;
   private double shooterTofDutyCycle;
+  private double shooterTofMax;
 
   // Motor pid values
   private double p = 0.3;
@@ -75,7 +75,7 @@ public class Shooter extends DiagnosticsSubsystem{
     // bottomShooterMotor = new TalonFX(18, kCANbus); //Kraken 
     topShooterMotor = new TalonFX(17, kCANbus);
     bottomShooterMotor = new TalonFX(18, kCANbus);
-    shooterTof = new DigitalInput(2); //TODO: find the correct port
+    shooterTof = new DigitalInput(2);
     shooterTofDutyCycleInput = new DutyCycle(shooterTof);
     topShooterMotorFault = new MotorFault(topShooterMotor, 17);
     bottomShooterMotorFault = new MotorFault(bottomShooterMotor, 18);
@@ -86,6 +86,7 @@ public class Shooter extends DiagnosticsSubsystem{
     shooterTofRange = 0;
     targetTopVelocityMPS = 0;
     targetBottomVelocityMPS = 0;
+    shooterTofMax = 0.3;
 
     configureHardware();
 }
