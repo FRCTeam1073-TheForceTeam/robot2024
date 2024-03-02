@@ -17,6 +17,17 @@ import frc.robot.commands.SchemaDriveAuto;
 import frc.robot.subsystems.Bling;
 import frc.robot.subsystems.Camera;
 import frc.robot.commands.TeleopDrive;
+import frc.robot.commands.autos.BlueClose4Note;
+import frc.robot.commands.autos.BlueCloseMidline2Note;
+import frc.robot.commands.autos.BlueCloseMidline3Note;
+import frc.robot.commands.autos.BlueFarMidline2Note;
+import frc.robot.commands.autos.BlueFarMidline3Note;
+import frc.robot.commands.autos.LeaveAuto;
+import frc.robot.commands.autos.RedCloseMidline2Note;
+import frc.robot.commands.autos.RedCloseSnowPlowAuto;
+import frc.robot.commands.autos.RedFar1Note;
+import frc.robot.commands.autos.RedFarSnowPlowAuto;
+import frc.robot.commands.autos.TestAuto;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.SerialComms;
@@ -102,11 +113,15 @@ public class RobotContainer {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private static final String kNoAuto = "No Autonomous";
   // ex: private static final String auto1 = "auto 1";
-  private static final String kCloseSnowPlowAuto = "Close Snowplow Auto";
-  private static final String kFarSnowPlowAuto = "Far Snowplow Auto";
-  private static final String kFarRed1Note = "Far Red 1 Note";
+  private static final String kRedCloseSnowPlowAuto = "Red Close Snowplow Auto";
+  private static final String kRedFarSnowPlowAuto = "Red Far Snowplow Auto";
+  private static final String kRedFar1Note = "Red Far 1 Note";
   private static final String kBlueClose4Note = "Blue Close 4 Note";
-  private static final String kCloseRed2Note = "Close Red 2 Note";
+  private static final String kRedCloseMidline2Note = "Red Close Midline 2 Note";
+  private static final String kBlueCloseMidline2Note = "Blue Close Midline 2 Note";
+  private static final String kBlueCloseMidline3Note = "Blue Close Midline 3 Note";
+  private static final String kBlueFarMidline2Note = "Blue Far Midline 2 Note";
+  private static final String kBlueFarMidline3Note = "Blue Far Midline 3 Note";
   private static final String kLeaveAuto = "Leave Auto";
   private static final String kTestAuto = "Test Auto";
   
@@ -147,11 +162,15 @@ public class RobotContainer {
     SmartDashboard.putData(m_rangeFinder);
 
     m_chooser.setDefaultOption("No Autonomous", kNoAuto);
-    m_chooser.addOption("Close Snowplow Auto", kCloseSnowPlowAuto);
-    m_chooser.addOption("Far Snowplow Auto", kFarSnowPlowAuto);
-    m_chooser.addOption("Far Red 1 Note", kFarRed1Note);
+    m_chooser.addOption("Red Close Snowplow Auto", kRedCloseSnowPlowAuto);
+    m_chooser.addOption("Red Far Snowplow Auto", kRedFarSnowPlowAuto);
+    m_chooser.addOption("Red Far 1 Note", kRedFar1Note);
     m_chooser.addOption("Blue Close 4 Note", kBlueClose4Note);
-    m_chooser.addOption("Close Red 2 Note", kCloseRed2Note);
+    m_chooser.addOption("Red Close Midline 2 Note", kRedCloseMidline2Note);
+    m_chooser.addOption("Blue Close Midline 2 Note", kBlueCloseMidline2Note);
+    m_chooser.addOption("Blue Close Midline 3 Note", kBlueCloseMidline3Note);
+    m_chooser.addOption("Blue Far Midline 2 Note", kBlueFarMidline2Note);
+    m_chooser.addOption("Blue Far Midline 3 Note", kBlueFarMidline3Note);
     m_chooser.addOption("Leave Auto", kLeaveAuto);
     m_chooser.addOption("Test Auto", kTestAuto);
 
@@ -221,65 +240,6 @@ public class RobotContainer {
     //SwerveModule.initPreferences();
   }
 
-  public Command testAuto()
-  {
-    ArrayList<Pose2d> pointList = new ArrayList<Pose2d>();
-    pointList.add(new Pose2d(2.0, 0.0, new Rotation2d(0)));
-    pointList.add(new Pose2d(2.0, 1.0, new Rotation2d(0)));
-    pointList.add(new Pose2d(4.0, 1.0, new Rotation2d(Math.PI)));
-    return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, pointList, 2.0, 2.0, 5.0), m_drivetrain);
-  }
-
-  public Command closeSnowPlowAuto()
-  {
-    ArrayList<Pose2d> pointList = new ArrayList<Pose2d>();
-    pointList.add(new Pose2d(7, 0, new Rotation2d(0)));
-    pointList.add(new Pose2d(7, 5.5, new Rotation2d(0)));
-    return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7, -1.5, new Rotation2d(0)), 5, 1), m_drivetrain),
-          SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7.0, 5.5, new Rotation2d(0)), 5, 1), m_drivetrain), c_startRecordingAutonomous);
-  }
-
-  public Command farSnowPlowAuto()
-  {
-    ArrayList<Pose2d> pointList = new ArrayList<Pose2d>();
-    pointList.add(new Pose2d(7.2, 0, new Rotation2d(0)));
-    pointList.add(new Pose2d(7.2, -5.7, new Rotation2d(0)));
-    return new SequentialCommandGroup(SchemaDriveAuto.create(
-        new DriveThroughTrajectorySchema(m_drivetrain, pointList, 6.0, 5.0, 7.0), 
-          m_drivetrain),
-      c_startRecordingAutonomous);
-  }
-
-  public Command farRed1Note()
-  {
-    return SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(3.0, 0.0, new Rotation2d(Math.PI / 4)), 5.0, 5.0), m_drivetrain);
-  }
-
-  public Command closeRed2Note()
-  {
-    ArrayList<Pose2d> pointList = new ArrayList<Pose2d>();
-    pointList.add(new Pose2d(0.65, 1.1, new Rotation2d(-Math.PI / 6)));
-    pointList.add(new Pose2d(6.5, -0.1, new Rotation2d(0)));
-    pointList.add(new Pose2d(3.9, 0.0, new Rotation2d(-0.227)));
-    return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, pointList, 2.0, 2.0, 15.0), m_drivetrain);
-  }
-
-  public Command blueClose4Note()
-  {
-    ArrayList<Pose2d> pointList1 = new ArrayList<Pose2d>();
-    ArrayList<Pose2d> pointList2 = new ArrayList<Pose2d>();
-    pointList1.add(new Pose2d(1.0, -1.0, new Rotation2d(Math.PI / 4)));
-    pointList1.add(new Pose2d(2.1, -2.1, new Rotation2d(Math.PI / 16)));
-    pointList2.add(new Pose2d(1.0, -2.5, new Rotation2d(0)));
-    pointList2.add(new Pose2d(2.1, -2.7, new Rotation2d(-Math.PI / 6)));
-    return new SequentialCommandGroup(SchemaDriveAuto.create(
-        new DriveToPointSchema(m_drivetrain, new Pose2d(1.75, -1, new Rotation2d(Math.PI / 4)), 5.0, 5.0), 
-        m_drivetrain),
-      SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(2.2, -0.5, new Rotation2d(Math.PI / 4)), 5.0, 5.0), m_drivetrain),
-      SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, pointList1, 5.0, 5.0, 7.0), m_drivetrain),
-      c_startRecordingAutonomous);
-  }
-
   public Command getTeleopCommand(){
     return c_startRecordingTeleop;
   }
@@ -289,26 +249,36 @@ public class RobotContainer {
    * 
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
+  public Command getAutonomousCommand() 
+  {
     //TODO: addc_startRecordingAutonomous; to preexisting getAutonomousCommand
     
-    switch (m_chooser.getSelected()){
+    switch (m_chooser.getSelected())
+    {
       case kNoAuto:
         return null;
-      case kCloseSnowPlowAuto:
-        return closeSnowPlowAuto();
-      case kFarSnowPlowAuto:
-        return farSnowPlowAuto();
-      case kFarRed1Note:
-        return farRed1Note();
+      case kRedCloseSnowPlowAuto:
+        return RedCloseSnowPlowAuto.create(m_drivetrain, c_startRecordingAutonomous);
+      case kRedFarSnowPlowAuto:
+        return RedFarSnowPlowAuto.create(m_drivetrain, c_startRecordingAutonomous);
+      case kRedFar1Note:
+        return RedFar1Note.create(m_drivetrain);
       case kBlueClose4Note:
-        return blueClose4Note();
-      case kCloseRed2Note:
-        return closeRed2Note();
+        return BlueClose4Note.create(m_drivetrain, c_startRecordingAutonomous);
+      case kRedCloseMidline2Note:
+        return RedCloseMidline2Note.create(m_drivetrain);
+      case kBlueCloseMidline2Note:
+        return BlueCloseMidline2Note.create(m_drivetrain);
+      case kBlueCloseMidline3Note:
+        return BlueCloseMidline3Note.create(m_drivetrain);
+      case kBlueFarMidline2Note:
+        return BlueFarMidline2Note.create(m_drivetrain);
+      case kBlueFarMidline3Note:
+        return BlueFarMidline3Note.create(m_drivetrain);
       case kLeaveAuto:
-        return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(1.5, 0.0, new Rotation2d()), 1.5, 0), m_drivetrain), c_startRecordingAutonomous);
+        return LeaveAuto.create(m_drivetrain, c_startRecordingAutonomous);
       case kTestAuto:
-        return new SequentialCommandGroup(testAuto(), c_startRecordingAutonomous);
+        return TestAuto.create(m_drivetrain);
       default:
         return null;
     }
