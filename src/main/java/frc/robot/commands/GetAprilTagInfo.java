@@ -17,6 +17,7 @@ public class GetAprilTagInfo extends Command {
   Timer timer;
   Boolean weAreFinished;
   public GetAprilTagInfo(SerialComms serialComms, Camera camera) {
+    System.out.println("in GetAprilTagInfo command");
     // Use addRequirements() here to declare subsystem dependencies.
     this.camera = camera;
     this.serialComms = serialComms;

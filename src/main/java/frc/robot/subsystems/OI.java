@@ -144,7 +144,7 @@ public class OI extends DiagnosticsSubsystem
     return yDriverButtonDebouncer.calculate(driverController.getRawButton(4));
   }
   public boolean getXButtonDriver(){
-    return xDriverButtonDebouncer.calculate(driverController.getRawButton(3)); //TODO: find out what x button is
+    return xDriverButtonDebouncer.calculate(driverController.getRawButton(3));
   }
 
   public void zeroOperatorController() {
