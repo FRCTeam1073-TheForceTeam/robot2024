@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -42,8 +43,8 @@ public class Shooter extends DiagnosticsSubsystem{
   StatusCode bottomConfigError;
 
   // Motor rate limiters
-  private final SlewRateLimiter topFlyWheelLimiter;
-  private final SlewRateLimiter bottomFlyWheelLimiter;
+  // private final SlewRateLimiter topFlyWheelLimiter;
+  // private final SlewRateLimiter bottomFlyWheelLimiter;
 
   // Velocity variables
   private double targetTopVelocityMPS;
@@ -57,7 +58,7 @@ public class Shooter extends DiagnosticsSubsystem{
 
   // VelocityVoltage object
   //private VelocityVoltage shooterVelocityVoltage = new VelocityVoltage(0);
-  private MotionMagicVelocityVoltage shooterVelocityVoltage = new MotionMagicVelocityVoltage(0);
+  private MotionMagicVelocityVoltage shooterVelocityVoltage;
 
   // CANbus for this subsystem
   private final String kCANbus = "CANivore";
@@ -69,6 +70,8 @@ public class Shooter extends DiagnosticsSubsystem{
    */
   private double shooterMetersPerRotation = 8 * Math.PI * 0.0254; // 0.0254 meters/inch
 
+  private boolean noteShot = false;
+
   /** Creates a new Shooter. **/
   public Shooter() {
     // topShooterMotor = new TalonFX(17, kCANbus); // Kraken 
@@ -79,8 +82,9 @@ public class Shooter extends DiagnosticsSubsystem{
     shooterTofDutyCycleInput = new DutyCycle(shooterTof);
     topShooterMotorFault = new MotorFault(topShooterMotor, 17);
     bottomShooterMotorFault = new MotorFault(bottomShooterMotor, 18);
-    topFlyWheelLimiter = new SlewRateLimiter(8); //limits the rate of change to 1.5 units per seconds
-    bottomFlyWheelLimiter = new SlewRateLimiter(8); //limits the rate of change to 1.5 units per seconds
+    // topFlyWheelLimiter = new SlewRateLimiter(6); //limits the rate of change to 1.5 units per seconds
+    // bottomFlyWheelLimiter = new SlewRateLimiter(6); //limits the rate of change to 1.5 units per seconds
+    shooterVelocityVoltage = new MotionMagicVelocityVoltage(0).withSlot(0); 
 
     shooterTofFreq = 0;
     shooterTofRange = 0;
@@ -104,8 +108,8 @@ public class Shooter extends DiagnosticsSubsystem{
     // Calculate ratelimited commanded velocities in rotations/second based on meters/second target velocity
     //commandedTopVelocityMPS = topFlyWheelLimiter.calculate(-targetTopVelocityMPS);
     //commandedBottomVelocityMPS = bottomFlyWheelLimiter.calculate(-targetBottomVelocityMPS);
-    commandedTopVelocityMPS = -targetBottomVelocityMPS;
-    commandedBottomVelocityMPS = -targetBottomVelocityMPS;
+    commandedTopVelocityMPS = limitShooterVelocity(-targetBottomVelocityMPS);
+    commandedBottomVelocityMPS = limitShooterVelocity(-targetBottomVelocityMPS);
 
     // Run the motors at the current commanded velocity
     topShooterMotor.setControl(shooterVelocityVoltage.withVelocity(commandedTopVelocityMPS / shooterMetersPerRotation));
@@ -122,9 +126,14 @@ public class Shooter extends DiagnosticsSubsystem{
   public void setTargetTopVelocityInMPS(double velocityMPS){
     targetTopVelocityMPS = velocityMPS;
   }
+
   public void setTargetBottomVelocityInMPS(double velocityMPS)
   {
     targetBottomVelocityMPS = velocityMPS;
+  }
+
+  public double limitShooterVelocity(double maxVel) {
+    return MathUtil.clamp(maxVel, -28, 28);
   }
 
   public double getTofRange(){
@@ -183,12 +192,20 @@ public class Shooter extends DiagnosticsSubsystem{
     return Math.abs(getCurrentBottomVelocityInMPS()) - Math.abs(getCommandedBottomVelocityInMPS());
   }
 
+  public double getBottomTemp(){
+    return bottomShooterMotor.getDeviceTemp().getValue();
+  }
+
+  public double getTopTemp(){
+    return topShooterMotor.getDeviceTemp().getValue();
+  }
+
   public void configureHardware(){
     TalonFXConfiguration configs = new TalonFXConfiguration();
 
-    configs.MotionMagic.MotionMagicCruiseVelocity = 30;
-    configs.MotionMagic.MotionMagicAcceleration = 60;
-    configs.MotionMagic.MotionMagicJerk = 60;
+    configs.MotionMagic.MotionMagicCruiseVelocity = 25;
+    configs.MotionMagic.MotionMagicAcceleration = 30;
+    configs.MotionMagic.MotionMagicJerk = 30;
 
     configs.Slot0.kP = p;
     configs.Slot0.kI = i;
@@ -230,12 +247,27 @@ public class Shooter extends DiagnosticsSubsystem{
     return setDiagnosticsFeedback(result, ok);
   }
 
+  public void setBothShooterMotorsInMPS(double mps){
+    setTargetBottomVelocityInMPS(mps);
+    setTargetTopVelocityInMPS(mps);
+  }
+
+  public boolean isNoteShot(){
+    return noteShot;
+  }
+
+  public void setShot(boolean shot){
+    noteShot = shot;
+  }
+
   @Override
   public void initSendable(SendableBuilder builder)
   {
     builder.setSmartDashboardType("Shooter");
-    builder.addDoubleProperty("Target Top Motor Velocity", this::getTargetTopVelocityInMPS, this::setTargetTopVelocityInMPS);
-    builder.addDoubleProperty("Target Bottom Motor Velocity", this::getTargetBottomVelocityInMPS, this::setTargetBottomVelocityInMPS);
+    builder.addDoubleProperty("Target Top Motor Velocity", this::getTargetTopVelocityInMPS, null);
+    builder.addDoubleProperty("Target Bottom Motor Velocity", this::getTargetBottomVelocityInMPS, null);
+    builder.addDoubleProperty("Set Shooter", this::getTargetBottomVelocityInMPS, this::setBothShooterMotorsInMPS);
+    builder.addBooleanProperty("Note Seen", this::isNoteShot, this::setShot);
     
     builder.addDoubleProperty("Tof Range", this::getTofRange, null);
     builder.addDoubleProperty("Tof Freq", this::getTofFreq, null);
@@ -248,5 +280,9 @@ public class Shooter extends DiagnosticsSubsystem{
     builder.addDoubleProperty("Actual Bottom Motor Velocity", this::getCurrentBottomVelocityInMPS, null);
     builder.addDoubleProperty("Top Velocity Error", this::getTopVelocityError, null);
     builder.addDoubleProperty("Bottom Velocity Error", this::getBottomVelocityError, null);
+
+    builder.addDoubleProperty("Bottom Roller Temp (C)", this::getBottomTemp, null);
+    builder.addDoubleProperty("Top Roller Temp (c)", this::getTopTemp, null);
+  
   }
 }

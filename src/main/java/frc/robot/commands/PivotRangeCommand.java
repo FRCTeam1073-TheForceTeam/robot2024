@@ -30,7 +30,8 @@ public class PivotRangeCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    targetPositionRad = pivotTable.interpolatePivotAngle(rangefinder.getRange());
+    // targetPositionRad = pivotTable.interpolatePivotAngle(rangefinder.getRange());
+    targetPositionRad = pivot.getDebugPivotAngle();
   }
 
   // Called every time the scheduler runs while the command is scheduled.

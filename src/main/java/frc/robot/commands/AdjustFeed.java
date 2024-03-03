@@ -9,8 +9,8 @@ import frc.robot.subsystems.Feeder;
 
 public class AdjustFeed extends Command {
   Feeder feeder;
-  private double maxFeedRange = 0.043;
-  private double minFeedRange = 0.03;
+  private double maxFeedRange = 0.04;
+  private double minFeedRange = 0.035; //0.03
   /** Creates a new AdjustFeed. */
   public AdjustFeed(Feeder feeder) {
     this.feeder = feeder;
@@ -26,11 +26,11 @@ public class AdjustFeed extends Command {
   public void execute() {
     if(feeder.getTofRange() < minFeedRange){
       // if note is too close to ToF sensor, need to back out of the feeder (slowly)
-      feeder.setTargetVelocityInMPS(0.25);
+      feeder.setTargetVelocityInMPS(-0.3);
     }
-    if(feeder.getTofRange()> maxFeedRange){
+    if(feeder.getTofRange() > maxFeedRange){
       // if note is too far from the ToF sensor, pull farther into feeder (slowly)
-      feeder.setTargetVelocityInMPS(-0.25);
+      feeder.setTargetVelocityInMPS(0.3);
     }
   }
 

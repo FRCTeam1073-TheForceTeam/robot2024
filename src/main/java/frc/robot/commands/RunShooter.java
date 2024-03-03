@@ -19,6 +19,14 @@ public class RunShooter extends Command {
   private RangeFinder rangefinder;
   private double shooterTopMPS;
   private double shooterBottomMPS;
+
+  double averageBottomVel = 0;
+  double averageTopVel = 0;
+
+  double currentBottomVel;
+  double currentTopVel;
+
+  double count;
   
   /* Creates a new RunShooter. */
 
@@ -35,15 +43,31 @@ public class RunShooter extends Command {
   /* start shooter wheels to get them up to speed */
   @Override
   public void initialize() {
-    shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
-    shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
+    //shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
+    //shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
+    shooterTopMPS = shooter.getRunShooterTargetBottomVelocityInMPS();
+    shooterBottomMPS = shooter.getRunShooterTargetBottomVelocityInMPS();
+    count = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    currentBottomVel = shooter.getCurrentBottomVelocityInMPS();
+    currentTopVel = shooter.getCurrentTopVelocityInMPS();
+    
     shooter.setTargetTopVelocityInMPS(shooterTopMPS);
     shooter.setTargetBottomVelocityInMPS(shooterBottomMPS);
+
+    averageBottomVel = (0.5 * averageBottomVel) + (0.5 * currentBottomVel);
+    averageTopVel = (0.5 * averageTopVel) + (0.5 * currentTopVel);
+
+    if((Math.abs(averageBottomVel - shooterBottomMPS) < 0.5) && (Math.abs(averageTopVel - shooterTopMPS) < 0.5)){
+      count++;
+    }
+    else if(count > 0){
+      count--;
+    }
   }
 
   // Called once the command ends or is interrupted.
@@ -56,8 +80,14 @@ public class RunShooter extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if((shooter.getCurrentTopVelocityInMPS() >= (0.98 * shooterTopMPS)) && 
-    (shooter.getCurrentBottomVelocityInMPS() >= (0.98 * shooterBottomMPS))){
+    // if((shooter.getCurrentTopVelocityInMPS() >= (0.98 * shooterTopMPS)) && 
+    // (shooter.getCurrentBottomVelocityInMPS() >= (0.98 * shooterBottomMPS))){
+    //   return true;
+    // }
+    // else{
+    //   return false;
+    // }
+    if(count > 20){
       return true;
     }
     else{

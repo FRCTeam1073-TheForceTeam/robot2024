@@ -18,6 +18,7 @@ import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.CollectorArm.POSE;
 
+
 public class CollectFeedCommand extends Command {
   /** Creates a new CollectShootCommand. */
   public CollectFeedCommand() {
@@ -27,9 +28,13 @@ public class CollectFeedCommand extends Command {
   public SequentialCommandGroup runCollectFeedCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm, Pivot m_pivot, Feeder m_feeder, Shooter m_shooter) {
     return new SequentialCommandGroup(
       new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
+      
       new ParallelCommandGroup(
-        new SetPivotCommand(m_pivot, -0.7),
-        new ArmPoseCommand(m_collectorArm, POSE.HANDOFF)
+        new SequentialCommandGroup(
+          new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE),
+          new ArmPoseCommand(m_collectorArm, POSE.HANDOFF)
+        ),
+        new SetPivotCommand(m_pivot, -0.7)
       ),
       //new ParallelCommandGroup(
         
@@ -38,7 +43,7 @@ public class CollectFeedCommand extends Command {
         new LoadFeeder(m_feeder, 1.5),
         new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain)
       ),
-      new ArmPoseCommand(m_collectorArm, POSE.START)
+      new ArmPoseCommand(m_collectorArm, POSE.START)      
       //new SetPivotCommand(m_pivot, -0.74)
     );
   }

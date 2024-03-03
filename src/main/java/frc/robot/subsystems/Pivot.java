@@ -46,6 +46,8 @@ public class Pivot extends DiagnosticsSubsystem {
   private double commandedPositionRad;
   private double currentPositionRad;
 
+  private double debugPivotAngle;
+
   // PositionVoltage object
   //private PositionVoltage pivotPositionVoltage = new PositionVoltage(0).withSlot(0);
   private MotionMagicVoltage pivotPositionVoltage = new MotionMagicVoltage(0).withSlot(0);
@@ -144,10 +146,19 @@ public class Pivot extends DiagnosticsSubsystem {
     return setDiagnosticsFeedback(result, ok);
   }
 
+  public double getDebugPivotAngle(){
+    return debugPivotAngle;
+  }
+
+  public void setDebugPivotAngle(double angle){
+    debugPivotAngle = angle;
+  }
+
   @Override
   public void initSendable(SendableBuilder builder)
   {
     builder.setSmartDashboardType("Pivot");
+    builder.addDoubleProperty("Debug Pivot Angle", this::getDebugPivotAngle, this::setDebugPivotAngle);
     builder.addDoubleProperty("Pivot Test Command Motor Position", this::getTargetPositionInRad, null);
     builder.addDoubleProperty("Target Pivot Motor Position", this::getTargetPositionInRad, this::setTargetPositionInRad);
     builder.addDoubleProperty("Commanded Pivot Motor Position", this::getCommandedPositionInRad, null);

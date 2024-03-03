@@ -26,7 +26,7 @@ public class StopShooter extends Command {
     /* Range to calculate the speed needed */
     // Use addRequirements() here to declare subsystem dependencies.
     maxRange = 0.4;
-    minRange = 0.3;
+    minRange = 0.4;
     this.shooter = shooter;
     noteEntered = false;
     noteGone = false;
@@ -36,7 +36,9 @@ public class StopShooter extends Command {
 // Called when the command is initially scheduled.
   /* start shooter wheels to get them up to speed */
   @Override
-  public void initialize() {}
+  public void initialize() {
+    shooter.setShot(false);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -48,6 +50,7 @@ public class StopShooter extends Command {
       noteGone = true;
     }
     if(noteEntered && noteGone){
+      shooter.setShot(true);
       shooter.setTargetTopVelocityInMPS(0);
       shooter.setTargetBottomVelocityInMPS(0);
     }
