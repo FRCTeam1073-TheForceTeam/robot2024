@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
+import frc.robot.commands.Path.PathFeedback;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.MathUtils;
 
@@ -97,27 +98,27 @@ public class DrivePathSchema extends MotionSchema {
   @Override
   public void execute() 
   {
-    if (currentSegmentIndex < 0) {
+    if (currentSegmentIndex < 0) 
+    {
       System.out.println("DrivePathSchema: Invalid segment index.");
     }
     currentTime = Timer.getFPGATimestamp() - startTime;
     robotPose = drivetrain.getOdometry();
-    Pose2d pathPose = new Pose2d();
     
     // Compute position and velocity desired from where we actually are:
-    Vector<N2> trajectoryVel = path.getPathVelocity(currentSegmentIndex, robotPose, pathPose);
+    PathFeedback pathFeedback = path.getPathFeedback(currentSegmentIndex, robotPose);
 
-    if (currentSegmentIndex >= path.segments.size()-1)
+    if (currentSegmentIndex >= path.segments.size() - 1)
     {
       // Last point is meant to be a bit different:
-      xVelocity = xController.calculate(robotPose.getX(), pathPose.getX());
-      yVelocity = yController.calculate(robotPose.getY(), pathPose.getY());
+      xVelocity = xController.calculate(robotPose.getX(), pathFeedback.pose.getX());
+      yVelocity = yController.calculate(robotPose.getY(), pathFeedback.pose.getY());
       thetaVelocity = thetaController.calculate(robotPose.getRotation().getRadians(), path.finalOrientation);
     }
     else
     {
-      xVelocity = xController.calculate(robotPose.getX(), pathPose.getX()) + 0.3 * trajectoryVel.get(0,0);
-      yVelocity = yController.calculate(robotPose.getY(), pathPose.getY()) + 0.3 * trajectoryVel.get(1,0);
+      xVelocity = xController.calculate(robotPose.getX(), pathFeedback.pose.getX()) + 0.3 * pathFeedback.velocity.get(0,0);
+      yVelocity = yController.calculate(robotPose.getY(), pathFeedback.pose.getY()) + 0.3 * pathFeedback.velocity.get(1,0);
       thetaVelocity = thetaController.calculate(robotPose.getRotation().getRadians(), path.getPathOrientation(currentSegmentIndex, robotPose)); 
     }
     
@@ -128,8 +129,8 @@ public class DrivePathSchema extends MotionSchema {
     SmartDashboard.putNumber("Robot Pose y", robotPose.getY());
     SmartDashboard.putNumber("Trajectory Time", currentTime);
 
-    SmartDashboard.putNumber("Trajectory Velocity X", trajectoryVel.get(0,0));
-    SmartDashboard.putNumber("Trajectory Velocity Y", trajectoryVel.get(1,0));
+    SmartDashboard.putNumber("Trajectory Velocity X", pathFeedback.velocity.get(0,0));
+    SmartDashboard.putNumber("Trajectory Velocity Y", pathFeedback.velocity.get(1,0));
 
     // xVelocity = MathUtil.clamp(xVelocity, -maxVelocity, maxVelocity);
     // yVelocity = MathUtil.clamp(yVelocity, -maxVelocity, maxVelocity);
@@ -138,6 +139,8 @@ public class DrivePathSchema extends MotionSchema {
     SmartDashboard.putNumber("Trajectory Speed X", speeds.vxMetersPerSecond);
     SmartDashboard.putNumber("Trajectory Speed Y", speeds.vyMetersPerSecond);
     SmartDashboard.putNumber("Trajectory Angular Speed", speeds.omegaRadiansPerSecond);
+
+    SmartDashboard.putNumber("Segment Index", currentSegmentIndex);
 
     setTranslate(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 1.0);
     setRotate(speeds.omegaRadiansPerSecond, 1.0);
@@ -158,26 +161,33 @@ public class DrivePathSchema extends MotionSchema {
   if (currentSegmentIndex < 0) return true; // Finished if we don't have a good index.
 
   Path.Segment seg = path.segments.get(currentSegmentIndex);
-  if (path.atEndPoint(currentSegmentIndex, drivetrain.getOdometry())) {
+  if (path.atEndPoint(currentSegmentIndex, drivetrain.getOdometry())) 
+  {
 
     // Cancel comamnd for this segment:
-    if (seg.entryCommand != null) {
+    if (seg.entryCommand != null) 
+    {
       CommandScheduler.getInstance().cancel(seg.entryCommand);
     }
     // Kick off our exit command:
-    if (seg.exitCommand != null) {
+    if (seg.exitCommand != null) 
+    {
       CommandScheduler.getInstance().schedule(seg.exitCommand);
     }
 
     // Move to next path segment:
     currentSegmentIndex = currentSegmentIndex + 1;
-    if (currentSegmentIndex >= path.segments.size()) {
+    if (currentSegmentIndex >= path.segments.size()) 
+    {
       System.out.println("DrivePathSchema: Finished.");
       return true;
-    } else {
+    } 
+    else 
+    {
       // Move to new segment:
       seg = path.segments.get(currentSegmentIndex);
-      if (seg.entryCommand != null) {
+      if (seg.entryCommand != null) 
+      {
         CommandScheduler.getInstance().schedule(seg.entryCommand);
       }
     }

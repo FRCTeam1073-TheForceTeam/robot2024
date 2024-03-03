@@ -13,14 +13,13 @@ import frc.robot.subsystems.Drivetrain;
 
 public class RedFarSnowPlowAuto 
 {
-    public static Command create(Drivetrain m_drivetrain, StartRecordingAutonomous c_startRecordingAutonomous)
+    public static Command create(Drivetrain m_drivetrain)
     {
         ArrayList<Pose2d> pointList = new ArrayList<Pose2d>();
     pointList.add(new Pose2d(7.2, 0, new Rotation2d(0)));
     pointList.add(new Pose2d(7.2, -5.7, new Rotation2d(0)));
     return new SequentialCommandGroup(SchemaDriveAuto.create(
         new DriveThroughTrajectorySchema(m_drivetrain, pointList, 6.0, 5.0, 7.0), 
-          m_drivetrain),
-      c_startRecordingAutonomous);
+          m_drivetrain));
     }
 }

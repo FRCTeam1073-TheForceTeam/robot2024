@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import edu.wpi.first.math.Num;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -14,28 +16,30 @@ import edu.wpi.first.wpilibj2.command.Command;
  * 
  * The path is defined and operates in field-centric orientation.
  */
-class Path {
+public class Path 
+{
 
     /**
      * The point is a point along the path. It has a 2D vector location and a blend_radius for 
      * defining if we are "close enough" to it.
      */
-    public class Point {
+    public static class Point 
+    {
 
         public Vector<N2> position = new Vector<N2>(N2.instance);
         public double     blend_radius = 0.2;     // Radius of bend/arrival at the point.
 
-        Point() {
+        public Point() {
             position.set(0,0,0.0);
             position.set(1,0,0.0);
         }
 
-        Point(double x, double y) {
+        public Point(double x, double y) {
             position.set(0,0,x);
             position.set(1,0,y);
         }
 
-    };
+    }
 
     /**
      * A segment is a linear segment with a start and end point as well as a desired velocity
@@ -49,7 +53,7 @@ class Path {
      * to adjust the direction vector. If start and end are equal points, the direction
      * is the zero vector.
      */
-    public class Segment {
+    public static class Segment {
         public Point start;           // Start point on the segment. meters.
         public Point end;             // End point of the segment. meters.
         public Vector<N2> dir;        // Computed direction vector normal for segment.
@@ -60,7 +64,8 @@ class Path {
         public Command entryCommand = null; // Command to schedule when segment is entered.
         public Command exitCommand = null;  // Command to schedule when segment is exited.
 
-        Segment(Point start, Point end, double orientation, double velocity) {
+        public Segment(Point start, Point end, double orientation, double velocity) 
+        {
             this.start = start;
             this.end = end;
             updateDirection();
@@ -82,6 +87,18 @@ class Path {
         }
     }
 
+    public static class PathFeedback
+    {
+        Vector<N2> velocity;
+        Pose2d pose;
+
+        public PathFeedback(Vector<N2> velocity, Pose2d pose)
+        {
+            this.velocity = velocity;
+            this.pose = pose;
+        }
+    }
+
 
     public ArrayList<Segment> segments; // The path is a list of segments.
     public double finalOrientation = 0.0;    // The orientation goal to hit at the end of the entire path.
@@ -93,7 +110,8 @@ class Path {
      * @param segments
      * @param finalOrientation
      */
-    Path(ArrayList<Segment> segments, double finalOrientation) {
+    public Path(ArrayList<Segment> segments, double finalOrientation) 
+    {
         this.segments = segments;
         this.finalOrientation = finalOrientation;
     }
@@ -179,7 +197,9 @@ class Path {
      * @param segmentIndex
      * @return
      */
-    public Vector<N2> getPathVelocity(int segmentIndex, Pose2d location, Pose2d pathPoint) {
+    public PathFeedback getPathFeedback(int segmentIndex, Pose2d location) 
+    {
+        
         Vector<N2> Vp = new Vector<N2>(N2.instance);  // Output path velocity.
         Vector<N2> pos = positionToVector(location);  // Where are are.
 
@@ -202,14 +222,19 @@ class Path {
         }
 
         // Set our leading position
-        if (pathPoint != null) {
-            // Compute leading position by moving along path direction 0.5 second from closest.
-            Vector<N2> pp = path_pos.plus(seg.dir.times(0.5*seg.velocity)); // 1/2 second ahead of projected point.
-            pp.set(0,0,pp.get(0,0));
-            pp.set(1,0,pp.get(1,0));
-        }
+        
+        // Compute leading position by moving along path direction 0.5 second from closest.
+        Vector<N2> pp = path_pos.plus(seg.dir.times(0.5*seg.velocity)); // 1/2 second ahead of projected point.
+        pp.set(0,0,pp.get(0,0));
+        pp.set(1,0,pp.get(1,0));   
+        
+        // Project the computed position onto the path segment as well.
+        Vector<N2> ppp = new Vector<N2>(N2.instance);  /// projected path position point.
+        double notused = distanceToSegment(seg.start.position, seg.end.position, seg.length, pp, ppp);
 
-        return Vp;
+        Pose2d pathPoint = new Pose2d(new Translation2d(ppp.get(0, 0), ppp.get(1, 0)), new Rotation2d(seg.orientation));
+
+        return new PathFeedback(Vp, pathPoint);
     }
 
     /**

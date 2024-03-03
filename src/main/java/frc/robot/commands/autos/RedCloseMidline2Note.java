@@ -13,6 +13,8 @@ public class RedCloseMidline2Note
 {
     public static Command create(Drivetrain m_drivetrain)
     {
+        
+
         ArrayList<Pose2d> pointList = new ArrayList<Pose2d>();
         pointList.add(new Pose2d(0.65, 1.1, new Rotation2d(-Math.PI / 6)));
         pointList.add(new Pose2d(6.5, -0.1, new Rotation2d(0)));
