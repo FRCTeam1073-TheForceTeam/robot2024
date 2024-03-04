@@ -142,8 +142,9 @@ public class DrivePathSchema extends MotionSchema {
 
     SmartDashboard.putNumber("Segment Index", currentSegmentIndex);
 
-    setTranslate(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 1.0);
-    setRotate(speeds.omegaRadiansPerSecond, 1.0);
+    // Controlled drive command with weights from our path segment feedback:
+    setTranslate(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, pathFeedback.translation_weight);
+    setRotate(speeds.omegaRadiansPerSecond, pathFeedback.orientation_weight);
   }
 
   // Called once the command ends or is interrupted.

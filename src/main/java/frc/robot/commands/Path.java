@@ -61,6 +61,8 @@ public class Path
         public double orientation = 0.0;    // Desired orientation along the segment. Radians in field centric frame
         public double velocity = 1.0;       // Desired velocity along the segment. Shoudl always be positive m/s
         public double width = 1.0;    // Path width beyond which we stop trying to progress along the path.
+        public double orientation_weight = 1.0; // Desired orientation weight along this segment.
+        public double translation_weight = 1.0; // Desired translation weight along this segment.
         public Command entryCommand = null; // Command to schedule when segment is entered.
         public Command exitCommand = null;  // Command to schedule when segment is exited.
 
@@ -91,11 +93,15 @@ public class Path
     {
         Vector<N2> velocity;
         Pose2d pose;
+        double orientation_weight = 1.0;
+        double translation_weight = 1.0;
 
-        public PathFeedback(Vector<N2> velocity, Pose2d pose)
+        public PathFeedback(Vector<N2> velocity, Pose2d pose, double ow, double tw)
         {
             this.velocity = velocity;
             this.pose = pose;
+            this.orientation_weight = ow;
+            this.translation_weight = tw;
         }
     }
 
@@ -234,7 +240,7 @@ public class Path
 
         Pose2d pathPoint = new Pose2d(new Translation2d(ppp.get(0, 0), ppp.get(1, 0)), new Rotation2d(seg.orientation));
 
-        return new PathFeedback(Vp, pathPoint);
+        return new PathFeedback(Vp, pathPoint, seg.orientation_weight, seg.translation_weight);
     }
 
     /**
