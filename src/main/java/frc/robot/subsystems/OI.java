@@ -21,6 +21,7 @@ public class OI extends DiagnosticsSubsystem
   public Debouncer parkingBrakeDebouncer = new Debouncer(0.05);
   public Debouncer menuDriverButtonDebouncer = new Debouncer(0.05);
   public Debouncer aDriverButtonDebouncer = new Debouncer(0.05);
+  public Debouncer yDriverButtonDebouncer = new Debouncer(0.05);
 
   // Declares the "zero" value variables (which allow us to compensate for joysticks that are a little off)
   private double LEFT_X_ZERO;
@@ -135,6 +136,13 @@ public class OI extends DiagnosticsSubsystem
     return aDriverButtonDebouncer.calculate(driverController.getRawButton(1));
   }
 
+
+  public boolean getYButtonDriver()
+  {
+    
+    return yDriverButtonDebouncer.calculate(driverController.getRawButton(4));
+  }
+
   public void zeroOperatorController() {
     //Sets all the offsets to zero, then uses whatever value it returns as the new offset.
     LEFT_X_ZERO = 0;
@@ -210,5 +218,6 @@ public class OI extends DiagnosticsSubsystem
     builder.addDoubleProperty("Operator Right X", this::getOperatorRightX, null);
     builder.addDoubleProperty("Operator Left Y", this::getOperatorLeftY, null);
     builder.addDoubleProperty("Operator Left X", this::getOperatorLeftX, null);
+
   }
 }
