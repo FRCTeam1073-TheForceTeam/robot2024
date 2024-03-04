@@ -4,24 +4,24 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.*;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.Shooter;
 
-/** Add your docs here. */
-public class LaunchFeederToSpeaker extends SequentialCommandGroup{
-    
-  public LaunchFeederToSpeaker(){ //Shooter shooter, Feeder feeder, RangeFinder rangefinder
+public class AmpShootCommand extends Command {
+  /** Creates a new AmpShot. */
+  public AmpShootCommand() {
+    // Use addRequirements() here to declare subsystem dependencies.
 
-    }
-
-  public SequentialCommandGroup runLaunchFeedertoSpeaker(Shooter m_shooter, Feeder m_feeder, Pivot m_pivot, RangeFinder m_rangeFinder){
+  }
+  public SequentialCommandGroup ampShot(Shooter m_shooter, Feeder m_feeder, Pivot m_pivot) {
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new PivotRangeCommand(m_pivot, m_rangeFinder),
-        new RunShooter(m_shooter, m_rangeFinder) //, m_rangefinder.getRange()),
+        new SetPivotCommand(m_pivot, 0),
+        new SetShooterVel(m_shooter, 8, 8) //, m_rangefinder.getRange()),
       ),
       //new WaitCommand(1),
       new ParallelCommandGroup(
@@ -31,4 +31,4 @@ public class LaunchFeederToSpeaker extends SequentialCommandGroup{
       ),
       new SetPivotCommand(m_pivot, 0));
     }
-}
+  }

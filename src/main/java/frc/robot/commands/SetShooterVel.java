@@ -12,21 +12,24 @@ import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Pivot;
 
 
-public class SetShooterAngle extends Command {
+public class SetShooterVel extends Command {
   private Shooter shooter;
-  private Pivot pivot;
-  double targetPositionRotations;
+  double targetTopVel;
+  double targetBottomVel;
+  
   /** Creates a new SetShooterAngle. */
-  public SetShooterAngle(Shooter m_shooter, double targetPositionRotations) {
+  public SetShooterVel(Shooter m_shooter, double targetTopVel, double targetBottomVel) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.shooter = m_shooter;
-    this.targetPositionRotations = targetPositionRotations;
+    this.targetTopVel = targetTopVel;
+    this.targetBottomVel = targetBottomVel;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    pivot.setTargetPositionInRad(targetPositionRotations);
+    shooter.setTargetBottomVelocityInMPS(targetBottomVel);
+    shooter.setTargetTopVelocityInMPS(targetTopVel);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -42,6 +45,6 @@ public class SetShooterAngle extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (pivot.getCurrentPositionInRad() >= targetPositionRotations * 0.98);
+    return ((shooter.getTargetBottomVelocityInMPS() >= targetBottomVel * 0.98) && (shooter.getTargetTopVelocityInMPS() >= targetTopVel *0.98));
   }
 }

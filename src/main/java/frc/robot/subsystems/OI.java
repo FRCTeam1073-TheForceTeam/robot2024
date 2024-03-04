@@ -194,6 +194,10 @@ public class OI extends DiagnosticsSubsystem
     return (operatorController.getRawAxis(2) > 0.5);
   }
 
+  public boolean getOperatorMenuButton() {
+    return getOperatorRawButton(8);
+  }
+
 
   @Override
   public void initSendable(SendableBuilder builder){

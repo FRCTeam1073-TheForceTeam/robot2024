@@ -43,7 +43,10 @@ public class CollectFeedCommand extends Command {
         new LoadFeeder(m_feeder, 1.5),
         new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain)
       ),
-      new ArmPoseCommand(m_collectorArm, POSE.START)      
+      new ParallelCommandGroup(
+        new ArmPoseCommand(m_collectorArm, POSE.START),
+        new AdjustFeed(m_feeder)
+      )
       //new SetPivotCommand(m_pivot, -0.74)
     );
   }

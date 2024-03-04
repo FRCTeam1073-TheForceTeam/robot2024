@@ -43,10 +43,10 @@ public class RunShooter extends Command {
   /* start shooter wheels to get them up to speed */
   @Override
   public void initialize() {
-    //shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
-    //shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
-    shooterTopMPS = shooter.getRunShooterTargetBottomVelocityInMPS();
-    shooterBottomMPS = shooter.getRunShooterTargetBottomVelocityInMPS();
+    shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
+    shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
+    // shooterTopMPS = shooter.getRunShooterTargetBottomVelocityInMPS();
+    // shooterBottomMPS = shooter.getRunShooterTargetBottomVelocityInMPS();
     count = 0;
   }
 

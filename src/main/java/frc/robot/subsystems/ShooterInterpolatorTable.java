@@ -43,8 +43,8 @@ public class ShooterInterpolatorTable {
         pivotTable.put(2.11, -0.3);
         pivotTable.put(2.75, -0.46);
         pivotTable.put(2.93, -0.5);
-        pivotTable.put(3.64, -0.53);
-        pivotTable.put(4.18, -0.58);
+        pivotTable.put(3.64, -0.578);
+        pivotTable.put(4.18, -0.63);
         pivotTable.put(4.66, -0.7);
         pivotTable.put(5.03, -0.718);
         pivotTable.put(5.85, -0.747);

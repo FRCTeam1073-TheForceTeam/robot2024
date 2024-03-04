@@ -76,6 +76,7 @@ public class RobotContainer {
   private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_collectorArm, m_drivetrain, m_OI);
   private final CollectorArmTeleop m_collectorArmTeleop = new CollectorArmTeleop(m_collectorArm, m_OI);
   private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm, m_OI);
+  private final AmpShootCommand m_ampShootCommand = new AmpShootCommand();
   //private final RunShooter m_runShooterCommand = new RunShooter(m_shooter, 0);
 
 
@@ -166,6 +167,9 @@ public class RobotContainer {
 
     Trigger armAmpCommand = new Trigger(m_OI::getOperatorYButton);
     armAmpCommand.onTrue(m_armPoseTeleop.ampPose());
+
+    Trigger ampShootCommand = new Trigger(m_OI::getOperatorMenuButton);
+    ampShootCommand.onTrue(m_ampShootCommand.ampShot(m_shooter, m_feeder, m_pivot));
 
     // System.out.println("Configuring buttons");
     // Trigger tagButton = new Trigger(m_OI::getXButton);

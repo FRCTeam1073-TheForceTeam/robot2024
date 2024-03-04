@@ -163,7 +163,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     currentLiftAngle = liftMotor.getPosition().refresh().getValue();
     SmartDashboard.putNumber("lift motor position rotations", liftMotor.getPosition().refresh().getValue());
     currentLiftVelocity = liftMotor.getVelocity().refresh().getValueAsDouble() * liftRadiansPerRotation;
-    currentExtendLength = extendMotor.getPosition().refresh().getValue() * extendMetersPerRotation - extendAbsoluteOffset;
+    //currentExtendLength = extendMotor.getPosition().refresh().getValue() * extendMetersPerRotation - extendAbsoluteOffset;
     currentExtendLength = extendMotor.getPosition().refresh().getValue();
     SmartDashboard.putNumber("Extend motor position rotations", extendMotor.getPosition().refresh().getValue());
     currentExtendVelocity = extendMotor.getVelocity().refresh().getValueAsDouble() * extendMetersPerRotation;
