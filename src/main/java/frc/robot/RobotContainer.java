@@ -32,9 +32,8 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.SerialComms;
 import frc.robot.subsystems.SwerveModuleConfig;
+
 import frc.robot.subsystems.CollectorArm.POSE;
-import frc.robot.subsystems.Collector;
-import frc.robot.subsystems.CollectorArm;
 
 import java.util.ArrayList;
 
@@ -48,11 +47,6 @@ import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.StartRecordingAutonomous;
-import frc.robot.commands.StartRecordingTeleop;
-import frc.robot.commands.StopRecording;
-import frc.robot.subsystems.Camera;
-import frc.robot.subsystems.SerialComms;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -90,29 +84,23 @@ public class RobotContainer {
   // private final Feeder m_feeder = new Feeder(); 
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
-  // private final RangeFinder m_rangeFinder = new RangeFinder();
-  // private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
-  
-  // private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(m_pivot);
-  // private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(m_shooter, m_OI);
-  // private final FeederTestCommand m_feederTestCommand = new FeederTestCommand(m_feeder, m_OI);
-  // private final LoadFeeder loadFeeder = new LoadFeeder(m_feeder);
-  // private final RunFeeder runFeeder = new RunFeeder(m_feeder);
-  // private final SetShooterAngle setShooterAngle = new SetShooterAngle(m_feeder, 0);
-  // private final RunShooter runShooter = new RunShooter(m_shooter, 0, 0, 0);
 
-  // private final StopShooter m_stopShooter = new StopShooter(m_shooter);
+  private final RangeFinder m_rangeFinder = new RangeFinder();
+  private final CollectFeedCommand m_collectAndFeed = new CollectFeedCommand();
+  private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
+  private final CancelCommand m_cancelCommand = new CancelCommand();
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
-  // private final Collector m_collector = new Collector();
-  // private final CollectorArm m_collectorArm = new CollectorArm();
-  // private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_collectorArm, m_drivetrain, m_OI);
-  // private final CollectorArmTeleop m_collectorArmTeleop = new CollectorArmTeleop(m_collectorArm, m_OI);
-  // private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm, m_OI);
+  private final Collector m_collector = new Collector();
+  private final CollectorArm m_collectorArm = new CollectorArm();
+  private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_collectorArm, m_drivetrain, m_OI);
+  private final CollectorArmTeleop m_collectorArmTeleop = new CollectorArmTeleop(m_collectorArm, m_OI);
+  private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm, m_OI);
+  private final AmpShootCommand m_ampShootCommand = new AmpShootCommand();
+
 
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private static final String kNoAuto = "No Autonomous";
-  // ex: private static final String auto1 = "auto 1";
   private static final String kRedCloseSnowPlowAuto = "Red Close Snowplow Auto";
   private static final String kRedFarSnowPlowAuto = "Red Far Snowplow Auto";
   private static final String kRedFar1Note = "Red Far 1 Note";
@@ -124,18 +112,18 @@ public class RobotContainer {
   private static final String kBlueFarMidline3Note = "Blue Far Midline 3 Note";
   private static final String kLeaveAuto = "Leave Auto";
   private static final String kTestAuto = "Test Auto";
-  
-  // private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
-  // private final Camera m_camera1 = new Camera(m_serial, "1");  // camID is how SerialComms and the cameras themselves tells them apart
-  // private final Camera m_camera2 = new Camera(m_serial, "2");
-  // private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_camera1);
-  // private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_camera1);
-  // private final StopRecording c_stopRecording = new StopRecording(m_camera1);
-  // redeclare for camera 2 until we figure out how to do more than one at a time
-  // private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_camera2);
-  // private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_camera2);
-  // private final StopRecording c_stopRecording = new StopRecording(m_camera2);
+  private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
+  private final Camera m_camera1 = new Camera(m_serial, "1");  // camID is how SerialComms and the cameras themselves tells them apart
+  private final Camera m_camera2 = new Camera(m_serial, "2");
+  private final Camera[] m_cameras = {m_camera1, m_camera2};
+
+  private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_cameras);
+  private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_cameras);
+  private final StopRecording c_stopRecording = new StopRecording(m_cameras);
+
   // and so on for however many cameras we have
+
+
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -144,15 +132,15 @@ public class RobotContainer {
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() 
-  { 
-    //CommandScheduler.getInstance().setDefaultCommand(m_pivot, m_pivotTestCommand);
+  public RobotContainer()
+  {
     // CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_shooterTestCommand);
     //CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
-    //CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand);
+    CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_collectorArmTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
+    //CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_runShooterCommand);
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
     // SmartDashboard.putData(m_collector);
@@ -193,14 +181,26 @@ public class RobotContainer {
    */
   private void configureBindings() // TODO: NSARGENT: is this legit? configureBindings() call up on line 82
   {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    //Trigger.getOperatorRawButton1.toggleOnTrue(loadNoteToFeeder());
+    Trigger loadNoteToFeeder = new Trigger(m_OI::getOperatorLeftTrigger);
+    loadNoteToFeeder.onTrue(m_collectAndFeed.runCollectFeedCommand(m_drivetrain, m_collector, m_collectorArm, m_pivot, m_feeder, m_shooter));
     
-    // Trigger loadNoteToFeeder = new Trigger(m_OI::getOperatorLeftTrigger);
-    // loadNoteToFeeder.onTrue(new LoadFeeder(m_feeder));
-    
-    // Trigger launchFeederToSpeaker = new Trigger(m_OI::getOperatorRightTrigger);
-    // launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder));
+    Trigger launchFeederToSpeaker = new Trigger(m_OI::getOperatorRightTrigger);
+    launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot, m_rangeFinder));
+
+    Trigger cancelCommand = new Trigger(m_OI::getOperatorBButton);
+    cancelCommand.onTrue(m_cancelCommand.cancel(m_collector, m_collectorArm, m_shooter, m_feeder, m_pivot));
+
+    Trigger armStartCommand = new Trigger(m_OI::getOperatorAButton);
+    armStartCommand.onTrue(m_armPoseTeleop.startPose());
+
+    Trigger armStowCommand = new Trigger(m_OI::getOperatorXButton);
+    armStowCommand.onTrue(m_armPoseTeleop.stowPose());
+
+    Trigger armAmpCommand = new Trigger(m_OI::getOperatorYButton);
+    armAmpCommand.onTrue(m_armPoseTeleop.ampPose());
+
+    Trigger ampShootCommand = new Trigger(m_OI::getOperatorMenuButton);
+    ampShootCommand.onTrue(m_ampShootCommand.ampShot(m_shooter, m_feeder, m_pivot));
 
     // System.out.println("Configuring buttons");
     // Trigger tagButton = new Trigger(m_OI::getXButton);
@@ -291,40 +291,7 @@ public class RobotContainer {
     return null;
   }
 
-  // public Command launchFeederToSpeaker(){
-  //   return m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder);
-  //   // return new SequentialCommandGroup(
-  //   //   new RunShooter(m_shooter, 7.7), //, m_rangeFinder.getRange()),
-  //   //  new ParallelRaceGroup(
-  //   //    new RunFeeder(m_feeder, 30), 
-  //   //    new WaitCommand(1)),
-  //   //   new StopShooter(m_shooter),
-  //   //   new RunFeeder(m_feeder, 0)
-  //   // );
-  // }
-
-  // public Command armStartPoseCommand(){
-  //   return new ArmPoseCommand(m_collectorArm, POSE.START, false);
-  // }
-
-  // public Command armAmpPoseCommand(){
-  //   return new ArmPoseCommand(m_collectorArm, POSE.AMP, false);
-  // }
-
-  // public Command armTestCommand(){
-  //   return new SequentialCommandGroup(
-  //     new ArmPoseCommand(m_collectorArm, POSE.AMP, false),
-  //     new WaitCommand(2),
-  //     new ArmPoseCommand(m_collectorArm, POSE.START, false)
-  //   );
-  // }
-
-  // public Command collectorScoreCommand(){
-  //   return new SequentialCommandGroup(
-  //     new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
-  //     new ArmPoseCommand(m_collectorArm, POSE.AMP, false),
-  //     new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain),
-  //     new ArmPoseCommand(m_collectorArm, POSE.START, false)
-  //   );
-  // }
+  public Command launchFeederToSpeaker(){
+    return m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot, m_rangeFinder);
+  }
 }

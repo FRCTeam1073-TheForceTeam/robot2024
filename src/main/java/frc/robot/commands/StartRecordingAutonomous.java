@@ -8,17 +8,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Camera;
 
 public class StartRecordingAutonomous extends Command {
-  Camera camera;
+  //Camera camera;
+  Camera[] cameras;
   Boolean weAreFinished;
-  int initcounter;
-  int execcounter;
+  
   /** Creates a new StartCamera. */
-  public StartRecordingAutonomous(Camera camera) {
-    this.camera = camera;
-    addRequirements(camera);
+  public StartRecordingAutonomous(Camera[] cameras) {
+    this.cameras = cameras;
+    addRequirements(cameras);
     this.weAreFinished = false;
-    this.initcounter = 0;
-    this.execcounter = 0;
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
@@ -26,8 +24,6 @@ public class StartRecordingAutonomous extends Command {
   @Override
   public void initialize() {
     this.weAreFinished = false;
-    this.initcounter += 1;
-    System.out.println(String.format("StartRecordingAutonomous.java init counter: %s", this.initcounter));
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -35,11 +31,11 @@ public class StartRecordingAutonomous extends Command {
   public void execute() {
     this.weAreFinished = false;
     System.out.println("in StartRecordingAutonomous.java execute(), starting autonomous recording");
-    camera.startRecordingAutonomous();
+    for (int i = 0; i < cameras.length; i++){
+      cameras[i].startRecordingAutonomous();
+    }
     // TODO: listen for a reponse before finishing, ideally retry
     this.weAreFinished = true;
-    this.execcounter += 1;
-    System.out.println(String.format("StartRecordingAutonomous.java exec counter: %s", this.execcounter));
   }
 
   // Called once the command ends or is interrupted.

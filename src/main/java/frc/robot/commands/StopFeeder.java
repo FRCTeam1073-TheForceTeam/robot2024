@@ -7,41 +7,37 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Feeder;
 
-public class RunFeeder extends Command {
-  private Feeder feeder;
-  double minRange;
-  double maxRange;
-  double feederTargetVelocityMPS;
+public class StopFeeder extends Command {
 
-  /** Creates a new RunFeeder. */
-  public RunFeeder(Feeder feeder, double feederTargetVelocityMPS) {
-    this.feeder = feeder;
-    this.feederTargetVelocityMPS = feederTargetVelocityMPS;
+  Feeder m_feeder;
+
+  /** Creates a new StopFeeder. */
+  public StopFeeder(Feeder feeder) {
     // Use addRequirements() here to declare subsystem dependencies.
-    minRange = 0.2;
-    maxRange = 0.3;
+    m_feeder = feeder;
+
+    addRequirements(m_feeder);
   }
 
-// Called when the command is initially scheduled.
+  // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    m_feeder.setTargetVelocityInMPS(0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {
-      feeder.setTargetVelocityInMPS(feederTargetVelocityMPS);
-  }
+  public void execute() {}
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    feeder.setTargetVelocityInMPS(0);
+    m_feeder.setTargetVelocityInMPS(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return (feeder.getTofRange() >= maxRange);
+    return true;
   }
 }

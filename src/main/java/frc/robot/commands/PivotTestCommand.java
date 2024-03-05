@@ -12,11 +12,12 @@ import frc.robot.subsystems.Pivot;
 public class PivotTestCommand extends Command {
   /** Creates a new PivotTestCommand. */
   private Pivot pivot;
-  private double pivotMotorPosition;
+  private double targetPositionRad;
   private boolean isPivotOn;
 
   public PivotTestCommand(Pivot pivot) {
     this.pivot = pivot;
+    targetPositionRad = pivot.getTestCommandTargetPositionInRad();
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(pivot);
   }
@@ -28,34 +29,19 @@ public class PivotTestCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // pivotMotorPosition = SmartDashboard.getNumber("Pivot Motor Rotations", 0.0);    
-    // if(getPivotOn()){
-    //   pivot.setPivotMotorPositionRadians(pivotMotorPosition);
-    // }
+    pivot.setTargetPositionInRad(targetPositionRad);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+
+  }
 
   // Returns true when the command should end.
-  
-
-  public boolean getPivotOn(){
-    return isPivotOn;
-  }
-
-  public void setPivotOn(boolean pivoton){
-    isPivotOn = pivoton;
-  }
-
-  public void initSendable(SendableBuilder builder){
-    builder.setSmartDashboardType("Pivot Test Command");
-    builder.addBooleanProperty("Toggle Pivot", this::getPivotOn, this::setPivotOn);
-  }
 
   @Override
   public boolean isFinished() {
-    return false;
+    return (pivot.getCurrentPositionInRad() >= (0.98 * targetPositionRad));
   }
 }

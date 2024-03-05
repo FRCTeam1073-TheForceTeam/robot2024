@@ -28,6 +28,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
   
   public static enum POSE{
     START,
+    STOW_INTERMEDIATE,
     STOW,
     HANDOFF,
     AMP
@@ -85,7 +86,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   // TODO: update values (in meters)
   private final double minExtend = -0.08;
-  private final double maxExtend = 0.1;
+  private final double maxExtend = 0.107;
 
   // Internal lift state variables:
   private double currentLiftAngle = 0;
@@ -102,17 +103,17 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   
   // PID gains for lift controller.
-  private double lift_kP = 8;
-  private double lift_kI = 0.5;
-  private double lift_kD = 0.5;
+  private double lift_kP = 16;
+  private double lift_kI = 6;
+  private double lift_kD = 1.5;
   private double lift_kF = 0;
   private double lift_kG = 0.8;
 
   // PID gains for extension controller.
-  private double extend_kP = 45;
-  private double extend_kI = 5;
-  private double extend_kD = 6;
-  private double extend_kF = 0;
+  private double extend_kP = 145;
+  private double extend_kI = 4;
+  private double extend_kD = 11;
+  private double extend_kS = 0.5;
 
   private POSE currentPose;
 
@@ -145,9 +146,9 @@ public class CollectorArm extends DiagnosticsSubsystem {
   public void periodic() 
   {
     updateFeedback();
-    if(extendInterpolateFlag){
-      targetExtendLength = interpolateExtendPosition(currentLiftAngle);
-    }
+    // if(extendInterpolateFlag){
+    //   targetExtendLength = interpolateExtendPosition(currentLiftAngle);
+    // }
     commandedExtendLength = limitExtendLength(targetExtendLength);
     commandedLiftAngle = limitLiftAngle(targetLiftAngle);
     runLiftMotor(commandedLiftAngle);
@@ -162,7 +163,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     currentLiftAngle = liftMotor.getPosition().refresh().getValue();
     SmartDashboard.putNumber("lift motor position rotations", liftMotor.getPosition().refresh().getValue());
     currentLiftVelocity = liftMotor.getVelocity().refresh().getValueAsDouble() * liftRadiansPerRotation;
-    currentExtendLength = extendMotor.getPosition().refresh().getValue() * extendMetersPerRotation - extendAbsoluteOffset;
+    //currentExtendLength = extendMotor.getPosition().refresh().getValue() * extendMetersPerRotation - extendAbsoluteOffset;
     currentExtendLength = extendMotor.getPosition().refresh().getValue();
     SmartDashboard.putNumber("Extend motor position rotations", extendMotor.getPosition().refresh().getValue());
     currentExtendVelocity = extendMotor.getVelocity().refresh().getValueAsDouble() * extendMetersPerRotation;
@@ -241,10 +242,11 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
     armMap.put(0.0, 0.0); 
     armMap.put(0.076416015625, 0.0);
-    armMap.put(0.122802734375, -0.02);
-    armMap.put(0.162109375, 0.04); //STOW 
-    armMap.put(0.2, 0.104248046875);
-    armMap.put(0.2880859375, 0.104248046875);
+    armMap.put(0.122802734375, 0.0);
+    armMap.put(0.162109375, 0.0); //STOW 
+    armMap.put(0.2, 0.04);
+    armMap.put(0.21, 0.107177734375); 
+    armMap.put(0.2880859375, 0.107177734375);
     armMap.put(0.400390625, -0.041005859375);
     armMap.put(0.76171875, -0.0425390625);
     armMap.put(1.313720703125, 0.030517578125);
@@ -299,8 +301,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     // liftConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     // liftConfigs.ClosedLoopGeneral.ContinuousWrap = true;
 
-    liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 1; 
-    liftConfigs.MotionMagic.MotionMagicAcceleration = 0.8; 
+    liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 4; 
+    liftConfigs.MotionMagic.MotionMagicAcceleration = 3; 
     liftConfigs.MotionMagic.MotionMagicJerk = 0;
 
     liftMotor.getConfigurator().apply(liftConfigs);
@@ -321,8 +323,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     //extendConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     //extendConfigs.ClosedLoopGeneral.ContinuousWrap = true;
 
-    extendConfigs.MotionMagic.MotionMagicCruiseVelocity = 25;
-    extendConfigs.MotionMagic.MotionMagicAcceleration = 30;
+    extendConfigs.MotionMagic.MotionMagicCruiseVelocity = 1;
+    extendConfigs.MotionMagic.MotionMagicAcceleration = 0.5;
     extendConfigs.MotionMagic.MotionMagicJerk = 0;
 
     extendMotor.getConfigurator().apply(extendConfigs);
@@ -335,7 +337,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     extendMotorClosedLoopConfig.withKP(extend_kP);
     extendMotorClosedLoopConfig.withKI(extend_kI);
     extendMotorClosedLoopConfig.withKD(extend_kD);
-    extendMotorClosedLoopConfig.withKV(extend_kF);
+    extendMotorClosedLoopConfig.withKS(extend_kS);
 
     var error1 = liftMotor.getConfigurator().apply(liftMotorClosedLoopConfig, 0.5);
     if(!error1.isOK()){

@@ -29,7 +29,10 @@ public class CollectorIntakeCommand extends Command {
 
   double count = 0;
 
-  /** Creates a new CollectorIntakeCommand. */
+  /** Creates a new CollectorIntakeCommand. 
+   * <p> This command is used for intaking into the collector from the ground
+   * <p> This command ends when a note is in the collector
+  */
   public CollectorIntakeCommand(Collector collector, CollectorArm collectorArm, Drivetrain ds) {
     // Use addRequirements() here to declare subsystem dependencies.
 
@@ -76,7 +79,8 @@ public class CollectorIntakeCommand extends Command {
     
     //if(m_collector.getRangeTOF() < minRange){
     if(isCollectable){ // use the rate to decide when to stop
-      vel = (0.05 * Math.abs(m_drivetrain.getChassisSpeeds().vxMetersPerSecond)) + 3;
+      //vel = (0.05 * Math.abs(m_drivetrain.getChassisSpeeds().vxMetersPerSecond)) + 3;
+      vel = 3;
       m_collector.setTargetCollectorVelocity(-vel); //meters per sec
     }
     else{
