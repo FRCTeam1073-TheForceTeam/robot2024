@@ -5,32 +5,34 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Camera;
+import frc.robot.subsystems.Feeder;
 
-public class StopRecording extends Command {
-  Camera[] cameras;
-  /** Creates a new StopCamera. */
-  public StopRecording(Camera[] cameras) {
+public class RunFeeder extends Command {
+  private Feeder feeder;
+    double minRange;
+    double maxRange;
+    double feederTargetVelocityMPS;
+
+  /** Creates a new RunFeeder. */
+  public RunFeeder(Feeder feeder, double feederTargetVelocityMPS) {
+    this.feeder = feeder;
+    this.feederTargetVelocityMPS = feederTargetVelocityMPS;
     // Use addRequirements() here to declare subsystem dependencies.
-    this.cameras = cameras;
-    addRequirements(cameras);
+    minRange = 0.2;
+    maxRange = 0.3;
   }
 
-  // Called when the command is initially scheduled.
+// Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    System.out.println("in StopRecording.java initialize()");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    System.out.println("in StopRecording.java exec()");
-    for (int i = 0; i < cameras.length; i++){
+      feeder.setTargetVelocityInMPS(feederTargetVelocityMPS);
 
-    cameras[i].stopRecording();
   }
-}
 
   // Called once the command ends or is interrupted.
   @Override
@@ -39,13 +41,12 @@ public class StopRecording extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    // TODO: see if this works without the this.weAreFinished business
-    System.out.println("in StopRecording.java isFinished()");
-    return true;
-  }
-
-  @Override
-  public boolean runsWhenDisabled(){
-    return true;
+    //return false;
+    if((feeder.getTofRange() >= maxRange)){
+      return true;
+    }
+    else{
+      return false;
+    }
   }
 }

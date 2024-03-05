@@ -1,29 +1,63 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.MathUtils;
 
 public class PointAtTargetSchema extends MotionSchema
 {
     double maxAngularVelocity;
     Pose2d targetPose;
+    boolean active;
+    double distanceTolerance;
+    double alpha;
 
-
-    public PointAtTargetSchema(double maxAngularVelocity,  Pose2d targetPose)
+    public PointAtTargetSchema(double maxAngularVelocity,  Pose2d targetPose, double alpha)
     {
         this.maxAngularVelocity = maxAngularVelocity;
         this.targetPose = targetPose;
+        this.alpha = alpha;
+        active = false;
+        distanceTolerance = 0.2;
+    }
+
+    public void setActive(boolean active)
+    {
+        this.active = active;
+    }
+
+    public boolean getActive()
+    {
+        return active;
     }
 
     @Override
     public void update(Drivetrain drivetrain)
     {
         Pose2d currentPose = drivetrain.getOdometry();
-        double xDiff = currentPose.getX() - targetPose.getX();
-        double yDiff = currentPose.getY() - targetPose.getY();
-        double desiredAngle = Math.atan(yDiff / xDiff);
-        double angularVelocity = currentPose.getRotation().getRadians() - desiredAngle;
+        double xDiff = targetPose.getX() - currentPose.getX();
+        double yDiff = targetPose.getY() - currentPose.getY();
+        double distance = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
+        double desiredAngle = Math.atan2(yDiff, xDiff);
+        if (yDiff == 0)
+        {
+            desiredAngle = 0;
+        }
+        double angleDifference = desiredAngle - MathUtils.wrapAngleRadians(currentPose.getRotation().getRadians());
+        angleDifference = MathUtils.wrapAngleRadians(angleDifference);
+        double angularVelocity = angleDifference * alpha;
+        SmartDashboard.putNumber("Angle Difference", angleDifference);
+        SmartDashboard.putNumber("Target Schema Angular Velocity", angularVelocity);
 
-        setRotate(angularVelocity, 1.0);
+        if (active && distance > distanceTolerance)
+        {
+            setRotate(angularVelocity, 1.0);
+        }
+        else 
+        {
+            setRotate(0, 0);
+        }
     }
 }
