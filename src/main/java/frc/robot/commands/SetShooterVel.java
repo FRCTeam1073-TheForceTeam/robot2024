@@ -16,6 +16,14 @@ public class SetShooterVel extends Command {
   private Shooter shooter;
   double targetTopVel;
   double targetBottomVel;
+
+  double averageBottomVel = 0;
+  double averageTopVel = 0;
+
+  double currentBottomVel;
+  double currentTopVel;
+
+  double count;
   
   /** Creates a new SetShooterAngle. */
   public SetShooterVel(Shooter m_shooter, double targetTopVel, double targetBottomVel) {
@@ -23,6 +31,8 @@ public class SetShooterVel extends Command {
     this.shooter = m_shooter;
     this.targetTopVel = targetTopVel;
     this.targetBottomVel = targetBottomVel;
+
+    addRequirements(shooter);
   }
 
   // Called when the command is initially scheduled.
@@ -30,11 +40,26 @@ public class SetShooterVel extends Command {
   public void initialize() {
     shooter.setTargetBottomVelocityInMPS(targetBottomVel);
     shooter.setTargetTopVelocityInMPS(targetTopVel);
+
+    count = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    currentBottomVel = shooter.getCurrentBottomVelocityInMPS();
+    currentTopVel = shooter.getCurrentTopVelocityInMPS();
+
+    averageBottomVel = (0.5 * averageBottomVel) + (0.5 * currentBottomVel);
+    averageTopVel = (0.5 * averageTopVel) + (0.5 * currentTopVel);
+
+    if((Math.abs(averageBottomVel - targetBottomVel) < 0.5) && (Math.abs(averageTopVel - targetTopVel) < 0.5)){
+      count++;
+    }
+    else if(count > 0){
+      count--;
+    }
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -45,6 +70,11 @@ public class SetShooterVel extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return ((shooter.getTargetBottomVelocityInMPS() >= targetBottomVel * 0.98) && (shooter.getTargetTopVelocityInMPS() >= targetTopVel *0.98));
+    if(count > 20){
+      return true;
+    }
+    else{
+      return false;
+    }
   }
 }
