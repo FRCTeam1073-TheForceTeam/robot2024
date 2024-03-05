@@ -5,25 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.CollectorTeleop;
-import frc.robot.commands.ArmPoseCommand;
-import frc.robot.commands.ArmPoseTeleop;
-import frc.robot.commands.CollectorArmTeleop;
-import frc.robot.commands.CollectorIntakeCommand;
-import frc.robot.commands.CollectorIntakeOutCommand;
-import frc.robot.commands.DriveThroughTrajectorySchema;
-import frc.robot.commands.DriveToPointSchema;
-import frc.robot.commands.SchemaDriveAuto;
-import frc.robot.subsystems.Bling;
-import frc.robot.subsystems.Camera;
-import frc.robot.commands.TeleopDrive;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.OI;
-import frc.robot.subsystems.SerialComms;
-import frc.robot.subsystems.SwerveModuleConfig;
 import frc.robot.subsystems.CollectorArm.POSE;
-import frc.robot.subsystems.Collector;
-import frc.robot.subsystems.CollectorArm;
 
 import java.util.ArrayList;
 
@@ -37,11 +19,6 @@ import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.StartRecordingAutonomous;
-import frc.robot.commands.StartRecordingTeleop;
-import frc.robot.commands.StopRecording;
-import frc.robot.subsystems.Camera;
-import frc.robot.subsystems.SerialComms;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -80,7 +57,9 @@ public class RobotContainer {
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
   private final RangeFinder m_rangeFinder = new RangeFinder();
+  private final CollectFeedCommand m_collectAndFeed = new CollectFeedCommand();
   private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
+  private final CancelCommand m_cancelCommand = new CancelCommand();
   
   private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(m_pivot);
   // private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(m_shooter, m_OI);
@@ -97,6 +76,8 @@ public class RobotContainer {
   private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_collectorArm, m_drivetrain, m_OI);
   private final CollectorArmTeleop m_collectorArmTeleop = new CollectorArmTeleop(m_collectorArm, m_OI);
   private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm, m_OI);
+  private final AmpShootCommand m_ampShootCommand = new AmpShootCommand();
+  //private final RunShooter m_runShooterCommand = new RunShooter(m_shooter, 0);
 
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -126,13 +107,14 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() 
-  { CommandScheduler.getInstance().setDefaultCommand(m_pivot, m_pivotTestCommand);
+  { //CommandScheduler.getInstance().setDefaultCommand(m_pivot, m_pivotTestCommand);
     // CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_shooterTestCommand);
     //CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
-    //CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand);
+    CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_collectorArmTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
+    //CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_runShooterCommand);
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
     SmartDashboard.putData(m_collector);
@@ -169,10 +151,25 @@ public class RobotContainer {
     //Trigger.getOperatorRawButton1.toggleOnTrue(loadNoteToFeeder());
     
     Trigger loadNoteToFeeder = new Trigger(m_OI::getOperatorLeftTrigger);
-    loadNoteToFeeder.onTrue(new LoadFeeder(m_feeder));
+    loadNoteToFeeder.onTrue(m_collectAndFeed.runCollectFeedCommand(m_drivetrain, m_collector, m_collectorArm, m_pivot, m_feeder, m_shooter));
     
     Trigger launchFeederToSpeaker = new Trigger(m_OI::getOperatorRightTrigger);
-    launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder));
+    launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot, m_rangeFinder));
+
+    Trigger cancelCommand = new Trigger(m_OI::getOperatorBButton);
+    cancelCommand.onTrue(m_cancelCommand.cancel(m_collector, m_collectorArm, m_shooter, m_feeder, m_pivot));
+
+    Trigger armStartCommand = new Trigger(m_OI::getOperatorAButton);
+    armStartCommand.onTrue(m_armPoseTeleop.startPose());
+
+    Trigger armStowCommand = new Trigger(m_OI::getOperatorXButton);
+    armStowCommand.onTrue(m_armPoseTeleop.stowPose());
+
+    Trigger armAmpCommand = new Trigger(m_OI::getOperatorYButton);
+    armAmpCommand.onTrue(m_armPoseTeleop.ampPose());
+
+    Trigger ampShootCommand = new Trigger(m_OI::getOperatorMenuButton);
+    ampShootCommand.onTrue(m_ampShootCommand.ampShot(m_shooter, m_feeder, m_pivot));
 
     // System.out.println("Configuring buttons");
     // Trigger tagButton = new Trigger(m_OI::getXButton);
@@ -180,11 +177,11 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
 
-    Trigger armStartPoseTrigger = new Trigger(m_OI::getOperatorAButton);
-    armStartPoseTrigger.onTrue(collectorScoreCommand());
+    // Trigger armStartPoseTrigger = new Trigger(m_OI::getOperatorAButton);
+    // armStartPoseTrigger.onTrue(collectorScoreCommand());
 
-    Trigger armAmpPoseTrigger = new Trigger(m_OI::getOperatorYButton);
-    armAmpPoseTrigger.onTrue(armAmpPoseCommand());
+    // Trigger armAmpPoseTrigger = new Trigger(m_OI::getOperatorYButton);
+    // armAmpPoseTrigger.onTrue(armAmpPoseCommand());
 
   }
 
@@ -268,7 +265,7 @@ public class RobotContainer {
   }
 
   public Command launchFeederToSpeaker(){
-    return m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder);
+    return m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot, m_rangeFinder);
     // return new SequentialCommandGroup(
     //   new RunShooter(m_shooter, 7.7), //, m_rangeFinder.getRange()),
     //  new ParallelRaceGroup(
@@ -277,30 +274,5 @@ public class RobotContainer {
     //   new StopShooter(m_shooter),
     //   new RunFeeder(m_feeder, 0)
     // );
-  }
-
-  public Command armStartPoseCommand(){
-    return new ArmPoseCommand(m_collectorArm, POSE.START, false);
-  }
-
-  public Command armAmpPoseCommand(){
-    return new ArmPoseCommand(m_collectorArm, POSE.AMP, false);
-  }
-
-  public Command armTestCommand(){
-    return new SequentialCommandGroup(
-      new ArmPoseCommand(m_collectorArm, POSE.AMP, false),
-      new WaitCommand(2),
-      new ArmPoseCommand(m_collectorArm, POSE.START, false)
-    );
-  }
-
-  public Command collectorScoreCommand(){
-    return new SequentialCommandGroup(
-      new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
-      new ArmPoseCommand(m_collectorArm, POSE.AMP, false),
-      new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain),
-      new ArmPoseCommand(m_collectorArm, POSE.START, false)
-    );
   }
 }
