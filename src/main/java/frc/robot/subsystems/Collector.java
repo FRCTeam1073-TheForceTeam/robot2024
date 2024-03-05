@@ -8,11 +8,9 @@ import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycle;
@@ -22,9 +20,8 @@ public class Collector extends DiagnosticsSubsystem {
   private final String kCANbus = "CANivore";
   private TalonFX collectMotor = new TalonFX(14, kCANbus); // same thing
   private MotorFault collectMotorFault = new MotorFault(collectMotor, 14);
-  private TalonFXConfiguration collectMotorConfigurator = new TalonFXConfiguration();
   private StatusCode configError;
-  private double targetCollectorVelocity = 0; //TODO: find appropriate speed for collector
+  private double targetCollectorVelocity = 0;
   private double currentCollectorVelocity = 0;
   private double commandedCollectorVelocity = 0;
   public MotionMagicVelocityVoltage collectorVelocityVoltage;
@@ -40,12 +37,6 @@ public class Collector extends DiagnosticsSubsystem {
   private final double collectorGearRatio = 12.0/18.0;
   private final double collectorWheelRadius = 0.0254; //meters
   private final double collectorMeterPerRotations = collectorWheelRadius * 2 * Math.PI * collectorGearRatio;
-
-  //private final SlewRateLimiter collectorLimiter;
-
-  // private final double intakeTicksPerRadian = 2048.0 * collectorGearRatio / (2.0 * Math.PI);
-  
-  // fill in PID values
   
   private double collect_kP = 0.27;
   private double collect_kI = 0;
@@ -61,7 +52,6 @@ public class Collector extends DiagnosticsSubsystem {
     tof1Range = 0;
 
     collectorVelocityVoltage = new MotionMagicVelocityVoltage(0).withSlot(0); 
-    //collectorLimiter = new SlewRateLimiter(24);
 
     configureHardware();
   }
@@ -69,7 +59,6 @@ public class Collector extends DiagnosticsSubsystem {
   @Override
   public void periodic() 
   {
-    //commandedCollectorVelocity = collectorLimiter.calculate(targetCollectorVelocity);
     currentCollectorVelocity = collectMotor.getVelocity().getValueAsDouble() * collectorMeterPerRotations; //meters per second 
     runCollectMotor(targetCollectorVelocity);
     tof1Freq = tof1DutyCycleInput.getFrequency();
@@ -81,11 +70,11 @@ public class Collector extends DiagnosticsSubsystem {
   
   private void runCollectMotor(double vel)
   {
-    collectMotor.setControl(collectorVelocityVoltage.withVelocity(vel / collectorMeterPerRotations)); //meters per 
-    //collectMotor.setControl(collectorVelocityVoltage.withVelocity(vel)); //meters per 
+    collectMotor.setControl(collectorVelocityVoltage.withVelocity(vel / collectorMeterPerRotations)); //meters per rotation
   }
 
-  public void setTargetCollectorVelocity(double velocity){
+  public void setTargetCollectorVelocity(double velocity)
+  {
     targetCollectorVelocity = velocity;
   }
 
@@ -142,8 +131,6 @@ public class Collector extends DiagnosticsSubsystem {
     builder.addDoubleProperty("Actual Velocity", this::getActualCollectorVelocity, null);
     builder.addDoubleProperty("Commanded Velocity", this::getCommandedCollectorVelocity, null);
     builder.addDoubleProperty("tofCollectorRange", this::getRangeTOF, null);
-    //builder.addBooleanProperty("ok", this::isOK, null);
-    //builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
   }
 
   @Override

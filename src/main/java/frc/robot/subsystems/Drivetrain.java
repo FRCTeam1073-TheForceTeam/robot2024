@@ -4,12 +4,6 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.networktables.DoubleSubscriber;
-import edu.wpi.first.networktables.IntegerArrayPublisher;
-import edu.wpi.first.networktables.IntegerArraySubscriber;
-import edu.wpi.first.networktables.IntegerArrayTopic;
-import edu.wpi.first.networktables.PubSubOption;
-
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -58,7 +52,6 @@ public class Drivetrain extends DiagnosticsSubsystem
 
     //front left
     SwerveModuleIDConfig moduleIDConfig = new SwerveModuleIDConfig(9, 5, 1);
-
     SwerveModuleConfig moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 0;
     moduleConfig.position = new Translation2d(Preferences.getDouble("Drive.ModulePositions", 0.254), Preferences.getDouble("Drive.ModulePositions", 0.5017));
@@ -68,7 +61,6 @@ public class Drivetrain extends DiagnosticsSubsystem
 
     //front right
     moduleIDConfig = new SwerveModuleIDConfig(10, 6, 2);
-
     moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 1;
     moduleConfig.position = new Translation2d(Preferences.getDouble("Drive.ModulePositions", 0.254), -Preferences.getDouble("Drive.ModulePositions", 0.5017));
@@ -78,7 +70,6 @@ public class Drivetrain extends DiagnosticsSubsystem
 
     //back left
     moduleIDConfig = new SwerveModuleIDConfig(11, 7, 3);
-
     moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 2;
     moduleConfig.position = new Translation2d(-Preferences.getDouble("Drive.ModulePositions", 0.254), Preferences.getDouble("Drive.ModulePositions", 0.5017));
@@ -116,186 +107,9 @@ public class Drivetrain extends DiagnosticsSubsystem
     targetChassisSpeeds = new ChassisSpeeds(0,0,0);
   }
 
-  // Initialize preferences for this class:
-  public static void initPreferences() 
-  {
-    Preferences.initDouble("Drive.MaximumLinearSpeed", 3.5); // Meters/second
-    Preferences.initDouble("Drive.ModulePositions", 0.5017);
-  }
-
-  // Returns target x velocity (for sendable)
-  double getTargetVx() {
-    return targetChassisSpeeds.vxMetersPerSecond;
-  }
-
-  // Returns target y velocity (for sendable)
-  double getTargetVy() {
-    return targetChassisSpeeds.vyMetersPerSecond;
-  }
-
-  // Returns target angular velocity (for sendable)
-  double getTargetOmega() {
-    return targetChassisSpeeds.omegaRadiansPerSecond;
-  }
-
-  @Override
-  public void initSendable(SendableBuilder builder){
-    builder.setSmartDashboardType("Drivetrain");
-    builder.addBooleanProperty("ParkingBrake", this::getParkingBrake, null);
-    builder.addDoubleProperty("Odo X", this.getOdometry()::getX, null);
-    builder.addDoubleProperty("Odo Y", this.getOdometry()::getY, null);
-    builder.addDoubleProperty("Odo Heading(DEG)", this::getHeadingDegrees, null);
-    builder.addDoubleProperty("Odo Wrapped Heading", this::getWrappedHeadingDegrees, null);
-    builder.addDoubleProperty("Target Vx", this::getTargetVx, null);
-    builder.addDoubleProperty("Target Vy", this::getTargetVy, null);
-    builder.addDoubleProperty("Target Omega", this::getTargetOmega, null);
-    builder.addDoubleProperty("Pitch", this::getPitch, null);
-    builder.addDoubleProperty("Roll", this::getRoll, null);
-
-    // Add each module to the sendable setup:
-    for (int mod = 0; mod < 4; ++mod) {
-      modules[mod].initSendable(builder);
-    }
-  }
-
-  @Override
-  public boolean updateDiagnostics() {
-    String result = new String();
-    boolean isOK = true;
-
-    // Run the diagnostics for each ofthe modules and return value if something is wrong:
-    for (int mod = 0; mod < 4; ++mod) {
-      if (!modules[mod].updateDiagnostics())
-        return setDiagnosticsFeedback(modules[mod].getDiagnosticsDetails(), false);
-    }
-
-    StatusCode error = pigeon2.clearStickyFaults(0.5);
-    if (error != StatusCode.OK) {
-       return setDiagnosticsFeedback("Pigeon 2 Diagnostics Error", false);
-    }
-
-    return setDiagnosticsFeedback(result, isOK);
-  }
-
-  public void setDebugMode(boolean debug) 
-  {
-    this.debug = debug;
-  }
-
-  //Returns IMU heading in degrees
-  public double getHeadingDegrees() 
-  {
-    return pigeon2.getYaw().refresh().getValue();
-  }
-
-  public double getHeadingRadians()
-  {
-    return getHeadingDegrees() * Math.PI / 180.0;
-  }
-
-  // Wraps the heading in degrees:
-  public double getWrappedHeadingDegrees()
-  {
-    return MathUtils.wrapAngleDegrees(getHeadingDegrees());
-  }
-
-  public double getWrappedHeadingRadians()
-  {
-    return MathUtils.wrapAngleRadians(getHeadingDegrees() * Math.PI / 180);
-  }
-
-  public double getPitch()
-  {
-    return pigeon2.getPitch().getValue();
-  }
-
-  public double getRoll()
-  {
-    return pigeon2.getRoll().getValue();
-  }
-
-  // Reset IMU heading to zero degrees
-  public void zeroHeading() 
-  {
-    // TODO:Change value to whatever value you need it to be
-    pigeon2.setYaw(0);
-  }
-
-  // Set the commanded chassis speeds for the drive subsystem.
-  public void setTargetChassisSpeeds(ChassisSpeeds speeds)
-  {
-    targetChassisSpeeds = speeds;
-  }
-
-  // Return the measured chassis speeds for the drive subsystem.
-  public ChassisSpeeds getChassisSpeeds()
-  {
-    SwerveModuleState[] wheelStates = new SwerveModuleState[4];
-    wheelStates[0] = new SwerveModuleState();
-    wheelStates[1] = new SwerveModuleState();
-    wheelStates[2] = new SwerveModuleState();
-    wheelStates[3] = new SwerveModuleState();
-
-    wheelStates[0].speedMetersPerSecond = modules[0].getDriveVelocity();
-    wheelStates[1].speedMetersPerSecond = modules[1].getDriveVelocity();
-    wheelStates[2].speedMetersPerSecond = modules[2].getDriveVelocity();
-    wheelStates[3].speedMetersPerSecond = modules[3].getDriveVelocity();
-
-    wheelStates[0].angle = Rotation2d.fromRotations(modules[0].getSteerRotations());
-    wheelStates[1].angle = Rotation2d.fromRotations(modules[1].getSteerRotations());
-    wheelStates[2].angle = Rotation2d.fromRotations(modules[2].getSteerRotations());
-    wheelStates[3].angle = Rotation2d.fromRotations(modules[3].getSteerRotations());
-
-    return kinematics.toChassisSpeeds(wheelStates);
-  }
-
-  // puts the motors in brake mode
-  public void setBrakes(boolean brakeOn)
-  {
-    modules[0].setDriveMotorBraking(brakeOn);
-    modules[1].setDriveMotorBraking(brakeOn);
-    modules[2].setDriveMotorBraking(brakeOn);
-    modules[3].setDriveMotorBraking(brakeOn);
-  }
-
-  // returns the wheel positions
-  public SwerveDriveKinematics getKinematics()
-  {
-    return kinematics;
-  }
-
-  public void updateOdometry() 
-  {
-    modules[0].samplePosition(modulePositions[0]);
-    modules[1].samplePosition(modulePositions[1]);
-    modules[2].samplePosition(modulePositions[2]);
-    modules[3].samplePosition(modulePositions[3]);
-    
-    odometry.update(Rotation2d.fromDegrees(getHeadingDegrees()), modulePositions);
-  }
-
-  public void resetOdometry(Pose2d where)
-  {
-    odometry.resetPosition(Rotation2d.fromDegrees(getHeadingDegrees()), modulePositions, where);
-  }
-
-  public Pose2d getOdometry()
-  {
-    return new Pose2d(odometry.getPoseMeters().getX(), odometry.getPoseMeters().getY(), Rotation2d.fromDegrees(MathUtils.wrapAngleDegrees(getHeadingDegrees())));
-  }
-
-  public Pose3d get3dOdometry()
-  {
-    // return odometry position as a pose 3d
-    Pose2d odo = getOdometry();
-    // TODO: use internal roll and pitch methods later
-    return new Pose3d(odo.getX(), odo.getY(), 0.0, new Rotation3d(getRoll(), getPitch(), getHeadingDegrees()));
-  }
-  
   @Override
   public void periodic()
   {
-
     if (!debug && !parkingBrakeOn) //disables motors when parking brakes are active
     {
       // This method will be called once per scheduler run
@@ -321,8 +135,125 @@ public class Drivetrain extends DiagnosticsSubsystem
     SmartDashboard.putNumber("Wrapped Heading Radians", getWrappedHeadingRadians());
   }
 
+  /* Returns target x velocity (for sendable) */
+  double getTargetVx() {
+    return targetChassisSpeeds.vxMetersPerSecond;
+  }
 
-  // rotates all the wheels to be facing inwards and stops the motors to hold position
+  /* Returns target y velocity (for sendable) */
+  double getTargetVy() {
+    return targetChassisSpeeds.vyMetersPerSecond;
+  }
+
+  /* Returns target angular velocity (for sendable) */
+  double getTargetOmega() {
+    return targetChassisSpeeds.omegaRadiansPerSecond;
+  }
+
+  /* Returns IMU heading in degrees */
+  public double getHeadingDegrees() 
+  {
+    return pigeon2.getYaw().refresh().getValue();
+  }
+  public double getHeadingRadians()
+  {
+    return getHeadingDegrees() * Math.PI / 180.0;
+  }
+
+  /* Wraps the heading in degrees */
+  public double getWrappedHeadingDegrees()
+  {
+    return MathUtils.wrapAngleDegrees(getHeadingDegrees());
+  }
+  public double getWrappedHeadingRadians()
+  {
+    return MathUtils.wrapAngleRadians(getHeadingDegrees() * Math.PI / 180);
+  }
+  public double getPitch()
+  {
+    return pigeon2.getPitch().getValue();
+  }
+  public double getRoll()
+  {
+    return pigeon2.getRoll().getValue();
+  }
+
+  /* Reset IMU heading to zero degrees */
+  public void zeroHeading() 
+  {
+    pigeon2.setYaw(0);
+  }
+
+  /* Set the commanded chassis speeds for the drive subsystem. */
+  public void setTargetChassisSpeeds(ChassisSpeeds speeds)
+  {
+    targetChassisSpeeds = speeds;
+  }
+
+  /* Return the measured chassis speeds for the drive subsystem. */
+  public ChassisSpeeds getChassisSpeeds()
+  {
+    SwerveModuleState[] wheelStates = new SwerveModuleState[4];
+    wheelStates[0] = new SwerveModuleState();
+    wheelStates[1] = new SwerveModuleState();
+    wheelStates[2] = new SwerveModuleState();
+    wheelStates[3] = new SwerveModuleState();
+
+    wheelStates[0].speedMetersPerSecond = modules[0].getDriveVelocity();
+    wheelStates[1].speedMetersPerSecond = modules[1].getDriveVelocity();
+    wheelStates[2].speedMetersPerSecond = modules[2].getDriveVelocity();
+    wheelStates[3].speedMetersPerSecond = modules[3].getDriveVelocity();
+
+    wheelStates[0].angle = Rotation2d.fromRotations(modules[0].getSteerRotations());
+    wheelStates[1].angle = Rotation2d.fromRotations(modules[1].getSteerRotations());
+    wheelStates[2].angle = Rotation2d.fromRotations(modules[2].getSteerRotations());
+    wheelStates[3].angle = Rotation2d.fromRotations(modules[3].getSteerRotations());
+
+    return kinematics.toChassisSpeeds(wheelStates);
+  }
+
+  /* puts the motors in brake mode */
+  public void setBrakes(boolean brakeOn)
+  {
+    modules[0].setDriveMotorBraking(brakeOn);
+    modules[1].setDriveMotorBraking(brakeOn);
+    modules[2].setDriveMotorBraking(brakeOn);
+    modules[3].setDriveMotorBraking(brakeOn);
+  }
+
+  /* returns the wheel positions */
+  public SwerveDriveKinematics getKinematics()
+  {
+    return kinematics;
+  }
+
+  /* Odemetry */
+  public void updateOdometry() 
+  {
+    modules[0].samplePosition(modulePositions[0]);
+    modules[1].samplePosition(modulePositions[1]);
+    modules[2].samplePosition(modulePositions[2]);
+    modules[3].samplePosition(modulePositions[3]);
+    
+    odometry.update(Rotation2d.fromDegrees(getHeadingDegrees()), modulePositions);
+  }
+  public void resetOdometry(Pose2d where)
+  {
+    odometry.resetPosition(Rotation2d.fromDegrees(getHeadingDegrees()), modulePositions, where);
+  }
+  public Pose2d getOdometry()
+  {
+    return new Pose2d(odometry.getPoseMeters().getX(), odometry.getPoseMeters().getY(), Rotation2d.fromDegrees(MathUtils.wrapAngleDegrees(getHeadingDegrees())));
+  }
+  public Pose3d get3dOdometry()
+  {
+    // return odometry position as a pose 3d
+    Pose2d odo = getOdometry();
+    // TODO: use internal roll and pitch methods later
+    return new Pose3d(odo.getX(), odo.getY(), 0.0, new Rotation3d(getRoll(), getPitch(), getHeadingDegrees()));
+  }
+
+  /* rotates all the wheels to be facing inwards and stops the motors to hold position */
   public void parkingBrake(boolean parkingBrakeOn) 
   {
     this.parkingBrakeOn = parkingBrakeOn;
@@ -359,6 +290,11 @@ public class Drivetrain extends DiagnosticsSubsystem
     return parkingBrakeOn;
   }
 
+  /* Debug */
+  public void setDebugMode(boolean debug) 
+  {
+    this.debug = debug;
+  }
   public void setDebugSpeed(double speed) // sets the speed directly
   {
     modules[0].setDriveVelocity(speed);
@@ -366,7 +302,6 @@ public class Drivetrain extends DiagnosticsSubsystem
     modules[2].setDriveVelocity(speed);
     modules[3].setDriveVelocity(speed);
   }
-
   public void setDebugAngle(double power) // sets the angle directly
   {
     modules[0].setDebugRotate(power);
@@ -374,7 +309,6 @@ public class Drivetrain extends DiagnosticsSubsystem
     modules[2].setDebugRotate(power);
     modules[3].setDebugRotate(power);
   }
-
   public void setDebugDrivePower(double power) // sets the power directly
   {
     modules[0].setDebugTranslate(power);
@@ -383,15 +317,49 @@ public class Drivetrain extends DiagnosticsSubsystem
     modules[3].setDebugTranslate(power);
   }
 
-}
+  @Override
+  public boolean updateDiagnostics() {
+    String result = new String();
+    boolean isOK = true;
 
-// class AprilTagSubscriber {
-//   // the publisher is an instance variable so its lifetime matches that of the class
-//   IntegerArraySubscriber intArraySub;
-  
-//   public void GetAprilTag(IntegerArrayTopic intArrayTopic) {
-//       // start publishing; the return value must be retained (in this case, via
-//       // an instance variable)
-//       intArraySub = intArrayTopic.subscribe();
-//     }
-//   }
+    // Run the diagnostics for each ofthe modules and return value if something is wrong:
+    for (int mod = 0; mod < 4; ++mod) {
+      if (!modules[mod].updateDiagnostics())
+        return setDiagnosticsFeedback(modules[mod].getDiagnosticsDetails(), false);
+    }
+
+    StatusCode error = pigeon2.clearStickyFaults(0.5);
+    if (error != StatusCode.OK) {
+       return setDiagnosticsFeedback("Pigeon 2 Diagnostics Error", false);
+    }
+
+    return setDiagnosticsFeedback(result, isOK);
+  }
+
+  /* Initialize preferences for this class: */
+  public static void initPreferences() 
+  {
+    Preferences.initDouble("Drive.MaximumLinearSpeed", 3.5); // Meters/second
+    Preferences.initDouble("Drive.ModulePositions", 0.5017);
+  }
+
+  @Override
+  public void initSendable(SendableBuilder builder){
+    builder.setSmartDashboardType("Drivetrain");
+    builder.addBooleanProperty("ParkingBrake", this::getParkingBrake, null);
+    builder.addDoubleProperty("Odo X", this.getOdometry()::getX, null);
+    builder.addDoubleProperty("Odo Y", this.getOdometry()::getY, null);
+    builder.addDoubleProperty("Odo Heading(DEG)", this::getHeadingDegrees, null);
+    builder.addDoubleProperty("Odo Wrapped Heading", this::getWrappedHeadingDegrees, null);
+    builder.addDoubleProperty("Target Vx", this::getTargetVx, null);
+    builder.addDoubleProperty("Target Vy", this::getTargetVy, null);
+    builder.addDoubleProperty("Target Omega", this::getTargetOmega, null);
+    builder.addDoubleProperty("Pitch", this::getPitch, null);
+    builder.addDoubleProperty("Roll", this::getRoll, null);
+
+    // Add each module to the sendable setup:
+    for (int mod = 0; mod < 4; ++mod) {
+      modules[mod].initSendable(builder);
+    }
+  }
+}

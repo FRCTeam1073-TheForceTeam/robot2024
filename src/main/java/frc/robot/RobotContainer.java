@@ -4,42 +4,26 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.CollectorArm.POSE;
 
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.*;
+import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.*;
 
-import java.util.ArrayList;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -51,34 +35,23 @@ public class RobotContainer {
   SerialPort.Port serial_port = SerialPort.Port.kUSB;
 
   // The robot's subsystems and commands are defined here...
-  private final Pivot m_pivot = new Pivot();
-  private final Shooter m_shooter = new Shooter();
-  private final Feeder m_feeder = new Feeder(); 
-  private final Drivetrain m_drivetrain = new Drivetrain();
-  private final OI m_OI = new OI();
-  private final RangeFinder m_rangeFinder = new RangeFinder();
-  private final CollectFeedCommand m_collectAndFeed = new CollectFeedCommand();
-  private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
-  private final CancelCommand m_cancelCommand = new CancelCommand();
-  
-  private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(m_pivot);
-  // private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(m_shooter, m_OI);
-  // private final FeederTestCommand m_feederTestCommand = new FeederTestCommand(m_feeder, m_OI);
-  // private final LoadFeeder loadFeeder = new LoadFeeder(m_feeder);
-  // private final RunFeeder runFeeder = new RunFeeder(m_feeder);
-  // private final SetShooterAngle setShooterAngle = new SetShooterAngle(m_feeder, 0);
-  // private final RunShooter runShooter = new RunShooter(m_shooter, 0, 0, 0);
-
-  private final StopShooter m_stopShooter = new StopShooter(m_shooter);
-  private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
   private final Collector m_collector = new Collector();
   private final CollectorArm m_collectorArm = new CollectorArm();
-  private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_collectorArm, m_drivetrain, m_OI);
-  private final CollectorArmTeleop m_collectorArmTeleop = new CollectorArmTeleop(m_collectorArm, m_OI);
+  private final Drivetrain m_drivetrain = new Drivetrain();
+  private final Feeder m_feeder = new Feeder();
+  private final OI m_OI = new OI();
+  private final Pivot m_pivot = new Pivot();
+  private final RangeFinder m_rangeFinder = new RangeFinder();
+  private final Shooter m_shooter = new Shooter();
+  
   private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm, m_OI);
   private final AmpShootCommand m_ampShootCommand = new AmpShootCommand();
-  //private final RunShooter m_runShooterCommand = new RunShooter(m_shooter, 0);
-
+  private final CancelCommand m_cancelCommand = new CancelCommand();
+  private final CollectFeedCommand m_collectAndFeed = new CollectFeedCommand();
+  private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_collectorArm, m_drivetrain, m_OI);
+  private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
+  private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
+  
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private static final String kNoAuto = "No Autonomous";
@@ -98,23 +71,11 @@ public class RobotContainer {
   // and so on for however many cameras we have
 
 
-
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
-  private final Bling m_bling = new Bling();
-
-
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() 
-  { //CommandScheduler.getInstance().setDefaultCommand(m_pivot, m_pivotTestCommand);
-    // CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_shooterTestCommand);
-    //CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
+  { 
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand);
-    //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_collectorArmTeleop);
-    //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
-    //CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_runShooterCommand);
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
     SmartDashboard.putData(m_collector);
@@ -145,11 +106,8 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() // TODO: NSARGENT: is this legit? configureBindings() call up on line 82
+  private void configureBindings()
   {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    //Trigger.getOperatorRawButton1.toggleOnTrue(loadNoteToFeeder());
-    
     Trigger loadNoteToFeeder = new Trigger(m_OI::getOperatorLeftTrigger);
     loadNoteToFeeder.onTrue(m_collectAndFeed.runCollectFeedCommand(m_drivetrain, m_collector, m_collectorArm, m_pivot, m_feeder, m_shooter));
     
@@ -170,19 +128,6 @@ public class RobotContainer {
 
     Trigger ampShootCommand = new Trigger(m_OI::getOperatorMenuButton);
     ampShootCommand.onTrue(m_ampShootCommand.ampShot(m_shooter, m_feeder, m_pivot));
-
-    // System.out.println("Configuring buttons");
-    // Trigger tagButton = new Trigger(m_OI::getXButton);
-    // tagButton.onTrue(getTagData());
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-
-    // Trigger armStartPoseTrigger = new Trigger(m_OI::getOperatorAButton);
-    // armStartPoseTrigger.onTrue(collectorScoreCommand());
-
-    // Trigger armAmpPoseTrigger = new Trigger(m_OI::getOperatorYButton);
-    // armAmpPoseTrigger.onTrue(armAmpPoseCommand());
-
   }
 
   public void printAllFalseDiagnostics(){
@@ -206,8 +151,6 @@ public class RobotContainer {
     System.out.println("RobotContainer: init Preferences.");
     SwerveModuleConfig.initPreferences();
     Drivetrain.initPreferences();
-    //OI.initPreferences();
-    //SwerveModule.initPreferences();
   }
 
   public Command testAuto()
@@ -244,35 +187,9 @@ public class RobotContainer {
       default:
         return null;
     }
-    // An example command will be run in autonomous
-
-    //return SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(-1.0, -1.0, new Rotation2d(0)), 0.5, 0.5), m_drivetrain);
-    //return new DriveToPointSchema(m_drivetrain, new Pose2d(1.0, 0, new Rotation2d(Math.PI / 2)), 0.5, 0.5);
-
-    // ArrayList<Pose2d> drivePoints = new ArrayList<>();
-    // drivePoints.clear();
-
-    // drivePoints.add(new Pose2d(-1, 0, new Rotation2d(0)));
-    //drivePoints.add(new Pose2d(1, 1, new Rotation2d(0)));
-    //drivePoints.add(new Pose2d(1, 1, new Rotation2d(Math.PI / 2)));
-    //drivePoints.add(new Pose2d(1, 1, new Rotation2d(0.9)));
-
-    //return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, drivePoints, 0.5, 0.5, 0.5, 1.0), m_drivetrain);
   }
 
   public Command getDisabledCommand() {
     return c_stopRecording;
-  }
-
-  public Command launchFeederToSpeaker(){
-    return m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot, m_rangeFinder);
-    // return new SequentialCommandGroup(
-    //   new RunShooter(m_shooter, 7.7), //, m_rangeFinder.getRange()),
-    //  new ParallelRaceGroup(
-    //    new RunFeeder(m_feeder, 30), 
-    //    new WaitCommand(1)),
-    //   new StopShooter(m_shooter),
-    //   new RunFeeder(m_feeder, 0)
-    // );
   }
 }

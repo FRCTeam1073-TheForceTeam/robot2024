@@ -45,8 +45,8 @@ public class Feeder extends DiagnosticsSubsystem {
   // Time of flight sensor
   private final DigitalInput feederTof;
   private final DutyCycle feederTofDutyCycleInput;
+  // Scale factor: for 50cm (irs16a): 3/4 million || for 130 cm (irs17a): 2 million || for 300 cm (irs17a): 4 million
   private final double feederTofScaleFactor = 3000000/4;
-    // Scale factor: for 50cm (irs16a): 3/4 million || for 130 cm (irs17a): 2 million || for 300 cm (irs17a): 4 million
   private double feederTofFreq;
   private double feederTofRange;
   private double feederTofDutyCycle;
@@ -59,7 +59,6 @@ public class Feeder extends DiagnosticsSubsystem {
 
   /** Creates a new Trigger. */
   public Feeder() {
-    //feederMotor = new TalonFX(19, kCANbus); //Falcon
     feederMotor = new TalonFX(19, kCANbus);
     feederMotorFault = new MotorFault(feederMotor, 19);
     feederMotorLimiter = new SlewRateLimiter(13); //limits the rate of change to 0.5 units per seconds
@@ -126,13 +125,12 @@ public class Feeder extends DiagnosticsSubsystem {
     return feederTofFreq;
   }
 
-  /* Uses the beam break sensor to detect if the note has entered the trigger */
+  /* Uses the TOF sensor to detect if the note has entered the trigger */
   public boolean noteIsInTrigger(){
     if (feederTofRange < 12){
-
+      return true;
     }
     return false;
-    // return triggerBeamBreak.get();
   }
 
   public void configureHardware(){

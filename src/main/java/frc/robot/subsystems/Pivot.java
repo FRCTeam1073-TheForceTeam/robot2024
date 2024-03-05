@@ -2,19 +2,14 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-/* TODO: check slew rate limiters, initialize to the right angle, 
-change methods to use pivot in radians */
-
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.util.sendable.SendableBuilder;
 
 public class Pivot extends DiagnosticsSubsystem {
@@ -22,7 +17,6 @@ public class Pivot extends DiagnosticsSubsystem {
   // Motor and related objects
   private final TalonFX pivotMotor;
   private final MotorFault pivotMotorFault;
-  private final SlewRateLimiter pivotMotorFilter;
   private StatusCode configError;
 
   // Motor scale factors
@@ -46,10 +40,9 @@ public class Pivot extends DiagnosticsSubsystem {
   private double commandedPositionRad;
   private double currentPositionRad;
 
-  private double debugPivotAngle;
+  private double debugPivotAngleRad;
 
-  // PositionVoltage object
-  //private PositionVoltage pivotPositionVoltage = new PositionVoltage(0).withSlot(0);
+  // MotionMagicVoltage object
   private MotionMagicVoltage pivotPositionVoltage = new MotionMagicVoltage(0).withSlot(0);
 
   // CANbus for this subsystem
@@ -57,10 +50,8 @@ public class Pivot extends DiagnosticsSubsystem {
 
   /** Creates a new Pivot. */
   public Pivot() {
-    //pivotMotor = new TalonFX(21, kCANbus); //Falcon
     pivotMotor = new TalonFX(21, kCANbus);
     pivotMotorFault = new MotorFault(pivotMotor, 21);
-    pivotMotorFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
     pivotMotor.setPosition(0); //TODO - initialize position
 
     targetPositionRad = 0;
@@ -72,8 +63,6 @@ public class Pivot extends DiagnosticsSubsystem {
   public void periodic() {
     updateDiagnostics();
     updateFeedback();
-    // This method will be called once per scheduler run
-    //commandedPositionRad = pivotMotorFilter.calculate(MathUtil.clamp(targetPositionRad, minAngleRad, maxAngleRad));
     commandedPositionRad = MathUtil.clamp(targetPositionRad, minAngleRad, maxAngleRad);
     pivotMotor.setControl(pivotPositionVoltage.withPosition(commandedPositionRad * pivotRotationsPerRadian));
   }
@@ -87,11 +76,6 @@ public class Pivot extends DiagnosticsSubsystem {
   public void setTargetPositionInRad(double pivotMotorPositionRad)
   {
     targetPositionRad = pivotMotorPositionRad;
-  }
-
-  public double getTestCommandTargetPositionInRad()
-  {
-    return testPositionRad;
   }
 
   /* Gets the desired motor position in radians */
@@ -108,6 +92,16 @@ public class Pivot extends DiagnosticsSubsystem {
   /* Gets the actual reported rotation of the motor in radians */
   public double getCurrentPositionInRad(){
     return currentPositionRad;
+  }
+
+  /* Gets stored debug pivot angle */
+  public double getDebugPivotAngleInRad(){
+    return debugPivotAngleRad;
+  }
+  
+  /* Stores debug pivot angle */
+  public void setDebugPivotAngleInRad(double angle){
+    debugPivotAngleRad = angle;
   }
 
   public void configureHardware(){
@@ -146,20 +140,11 @@ public class Pivot extends DiagnosticsSubsystem {
     return setDiagnosticsFeedback(result, ok);
   }
 
-  public double getDebugPivotAngle(){
-    return debugPivotAngle;
-  }
-
-  public void setDebugPivotAngle(double angle){
-    debugPivotAngle = angle;
-  }
-
   @Override
   public void initSendable(SendableBuilder builder)
   {
     builder.setSmartDashboardType("Pivot");
-    builder.addDoubleProperty("Debug Pivot Angle", this::getDebugPivotAngle, this::setDebugPivotAngle);
-    builder.addDoubleProperty("Pivot Test Command Motor Position", this::getTargetPositionInRad, null);
+    builder.addDoubleProperty("Debug Pivot Angle", this::getDebugPivotAngleInRad, this::setDebugPivotAngleInRad);
     builder.addDoubleProperty("Target Pivot Motor Position", this::getTargetPositionInRad, this::setTargetPositionInRad);
     builder.addDoubleProperty("Commanded Pivot Motor Position", this::getCommandedPositionInRad, null);
     builder.addDoubleProperty("Actual Pivot Motor Position", this::getCurrentPositionInRad, null);

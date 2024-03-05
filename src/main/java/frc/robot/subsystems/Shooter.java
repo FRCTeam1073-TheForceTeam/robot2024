@@ -27,7 +27,6 @@ public class Shooter extends DiagnosticsSubsystem{
   private double shooterTofFreq;
   private double shooterTofRange;
   private double shooterTofDutyCycle;
-  private double shooterTofMax;
 
   // Motor pid values
   private double p = 0.3;
@@ -42,22 +41,17 @@ public class Shooter extends DiagnosticsSubsystem{
   StatusCode topConfigError;
   StatusCode bottomConfigError;
 
-  // Motor rate limiters
-  // private final SlewRateLimiter topFlyWheelLimiter;
-  // private final SlewRateLimiter bottomFlyWheelLimiter;
-
   // Velocity variables
   private double targetTopVelocityMPS;
   private double targetBottomVelocityMPS;
-  private double runShooterTargetTopVelocityInMPS;
-  private double runShooterTargetBottomVelocityInMPS;
+  private double debugTargetTopVelocityInMPS;
+  private double debugTargetBottomVelocityInMPS;
   private double commandedTopVelocityMPS;
   private double commandedBottomVelocityMPS;
   private double currentTopVelocityMPS;
   private double currentBottomVelocityMPS;
 
-  // VelocityVoltage object
-  //private VelocityVoltage shooterVelocityVoltage = new VelocityVoltage(0);
+  // MotionMagicVelocity object
   private MotionMagicVelocityVoltage shooterVelocityVoltage;
 
   // CANbus for this subsystem
@@ -74,24 +68,19 @@ public class Shooter extends DiagnosticsSubsystem{
 
   /** Creates a new Shooter. **/
   public Shooter() {
-    // topShooterMotor = new TalonFX(17, kCANbus); // Kraken 
-    // bottomShooterMotor = new TalonFX(18, kCANbus); //Kraken 
     topShooterMotor = new TalonFX(17, kCANbus);
     bottomShooterMotor = new TalonFX(18, kCANbus);
     shooterTof = new DigitalInput(2);
     shooterTofDutyCycleInput = new DutyCycle(shooterTof);
     topShooterMotorFault = new MotorFault(topShooterMotor, 17);
     bottomShooterMotorFault = new MotorFault(bottomShooterMotor, 18);
-    // topFlyWheelLimiter = new SlewRateLimiter(6); //limits the rate of change to 1.5 units per seconds
-    // bottomFlyWheelLimiter = new SlewRateLimiter(6); //limits the rate of change to 1.5 units per seconds
     shooterVelocityVoltage = new MotionMagicVelocityVoltage(0).withSlot(0); 
 
     shooterTofFreq = 0;
     shooterTofRange = 0;
     targetTopVelocityMPS = 0;
     targetBottomVelocityMPS = 0;
-    shooterTofMax = 0.3;
-
+    
     configureHardware();
 }
  
@@ -105,9 +94,7 @@ public class Shooter extends DiagnosticsSubsystem{
     shooterTofRange = shooterTofDutyCycleInput.getOutput();
     shooterTofRange = (shooterTofScaleFactor * (shooterTofDutyCycle / shooterTofFreq - 0.001)) / 1000;
 
-    // Calculate ratelimited commanded velocities in rotations/second based on meters/second target velocity
-    //commandedTopVelocityMPS = topFlyWheelLimiter.calculate(-targetTopVelocityMPS);
-    //commandedBottomVelocityMPS = bottomFlyWheelLimiter.calculate(-targetBottomVelocityMPS);
+    // Calculate commanded velocities in rotations/second based on meters/second target velocity + account for limits
     commandedTopVelocityMPS = limitShooterVelocity(-targetBottomVelocityMPS);
     commandedBottomVelocityMPS = limitShooterVelocity(-targetBottomVelocityMPS);
 
@@ -148,6 +135,7 @@ public class Shooter extends DiagnosticsSubsystem{
   public double getTargetTopVelocityInMPS(){
     return Math.abs(targetTopVelocityMPS);
   }
+
   public double getTargetBottomVelocityInMPS(){ 
     return Math.abs(targetBottomVelocityMPS);
   }
@@ -168,38 +156,47 @@ public class Shooter extends DiagnosticsSubsystem{
     return Math.abs(currentBottomVelocityMPS);
   }
 
-  public double getRunShooterTargetTopVelocityInMPS(){
-    return Math.abs(runShooterTargetTopVelocityInMPS);
+  /* Gets the stored debug shooter top and bottom velocities */
+  public double getdebugTargetTopVelocityInMPS(){
+    return Math.abs(debugTargetTopVelocityInMPS);
+  }
+  public double getdebugTargetBottomVelocityInMPS(){
+    return Math.abs(debugTargetBottomVelocityInMPS);
   }
 
-  public double getRunShooterTargetBottomVelocityInMPS(){
-    return Math.abs(runShooterTargetBottomVelocityInMPS);
+  /* Stores the debug shooter top and bottom velocities from the RunShooterCommand */
+  public void setdebugTargetTopVelocityInMPS(double velocityMPS){
+    debugTargetTopVelocityInMPS = velocityMPS;
+  }
+  public void setdebugTargetBottomVelocityInMPS(double velocityMPS){
+    debugTargetBottomVelocityInMPS = velocityMPS;
   }
 
-  public void setRunShooterTargetTopVelocityInMPS(double velocityMPS){
-    runShooterTargetTopVelocityInMPS = velocityMPS;
-  }
-
-  public void setRunShooterTargetBottomVelocityInMPS(double velocityMPS){
-    runShooterTargetBottomVelocityInMPS = velocityMPS;
-  }
-
+  /* Stores the shooter top and bottom velocity errors */
   public double getTopVelocityError() {
     return Math.abs(getCurrentTopVelocityInMPS()) - Math.abs(getCommandedTopVelocityInMPS());
   }
-
   public double getBottomVelocityError() {
     return Math.abs(getCurrentBottomVelocityInMPS()) - Math.abs(getCommandedBottomVelocityInMPS());
   }
 
+  /* Stores the shooter bottom and top motor temperatures */
   public double getBottomTemp(){
     return bottomShooterMotor.getDeviceTemp().getValue();
   }
-
   public double getTopTemp(){
     return topShooterMotor.getDeviceTemp().getValue();
   }
 
+  /* Stores whether the StopShooterCommand has seen the note */
+  public boolean isNoteShot(){
+    return noteShot;
+  }
+  public void setShot(boolean shot){
+    noteShot = shot;
+  }
+
+  /* Configures motor hardware */
   public void configureHardware(){
     TalonFXConfiguration configs = new TalonFXConfiguration();
 
@@ -216,8 +213,6 @@ public class Shooter extends DiagnosticsSubsystem{
 
     configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
     configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
-
-    
 
     topConfigError = topShooterMotor.getConfigurator().apply(configs);
     bottomConfigError = bottomShooterMotor.getConfigurator().apply(configs);
@@ -247,33 +242,21 @@ public class Shooter extends DiagnosticsSubsystem{
     return setDiagnosticsFeedback(result, ok);
   }
 
-  public void setBothShooterMotorsInMPS(double mps){
-    setTargetBottomVelocityInMPS(mps);
-    setTargetTopVelocityInMPS(mps);
-  }
-
-  public boolean isNoteShot(){
-    return noteShot;
-  }
-
-  public void setShot(boolean shot){
-    noteShot = shot;
-  }
-
+ 
   @Override
   public void initSendable(SendableBuilder builder)
   {
     builder.setSmartDashboardType("Shooter");
-    builder.addDoubleProperty("Target Top Motor Velocity", this::getTargetTopVelocityInMPS, null);
-    builder.addDoubleProperty("Target Bottom Motor Velocity", this::getTargetBottomVelocityInMPS, null);
-    builder.addDoubleProperty("Set Shooter", this::getTargetBottomVelocityInMPS, this::setBothShooterMotorsInMPS);
+   
     builder.addBooleanProperty("Note Seen", this::isNoteShot, this::setShot);
     
     builder.addDoubleProperty("Tof Range", this::getTofRange, null);
     builder.addDoubleProperty("Tof Freq", this::getTofFreq, null);
 
-    builder.addDoubleProperty("RunShooter Target Top Motor Velocity", this::getRunShooterTargetTopVelocityInMPS, this::setRunShooterTargetTopVelocityInMPS);
-    builder.addDoubleProperty("RunShooter Bottom Motor Velocity", this::getRunShooterTargetBottomVelocityInMPS, this::setRunShooterTargetBottomVelocityInMPS);
+    builder.addDoubleProperty("Debug Target Top Motor Velocity", this::getdebugTargetTopVelocityInMPS, this::setdebugTargetTopVelocityInMPS);
+    builder.addDoubleProperty("Debug Bottom Motor Velocity", this::getdebugTargetBottomVelocityInMPS, this::setdebugTargetBottomVelocityInMPS);
+    builder.addDoubleProperty("Target Top Motor Velocity", this::getTargetTopVelocityInMPS, null);
+    builder.addDoubleProperty("Target Bottom Motor Velocity", this::getTargetBottomVelocityInMPS, null);
     builder.addDoubleProperty("Commanded Top Motor Velocity", this::getCommandedTopVelocityInMPS, null);
     builder.addDoubleProperty("Commanded Bottom Motor Velocity", this::getCommandedBottomVelocityInMPS, null);
     builder.addDoubleProperty("Actual Top Motor Velocity", this::getCurrentTopVelocityInMPS, null);
@@ -283,6 +266,5 @@ public class Shooter extends DiagnosticsSubsystem{
 
     builder.addDoubleProperty("Bottom Roller Temp (C)", this::getBottomTemp, null);
     builder.addDoubleProperty("Top Roller Temp (c)", this::getTopTemp, null);
-  
   }
 }

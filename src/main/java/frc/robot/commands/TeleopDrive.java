@@ -106,7 +106,7 @@ public class TeleopDrive extends SchemaArbiter
     // if(Math.abs(rightX) < .15) {rightX = 0;}
 
     // ChassisSpeeds chassisSpeeds = new ChassisSpeeds(leftY * 0.5, leftX * 0.5, rightX); //debug
-    if (m_OI.getYButtonDriver())
+    if (m_OI.getDriverYButton())
     {
       pointAtTarget = !pointAtTarget;
     }

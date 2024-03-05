@@ -8,8 +8,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class OI extends DiagnosticsSubsystem
 {
@@ -47,11 +45,7 @@ public class OI extends DiagnosticsSubsystem
 
   /** This method will be called once per scheduler run */
   @Override
-  public void periodic() 
-  {
-
-    // You can add more smartdashboard printouts here for additional joysticks or buttons
-  }
+  public void periodic() {}
 
   public void zeroDriverController() 
   {
@@ -72,32 +66,26 @@ public class OI extends DiagnosticsSubsystem
     // "Clamping" the value makes sure that it's still between 1 and -1 even if we have added an offset to it
     return MathUtil.clamp(driverController.getRawAxis(0) - LEFT_X_ZERO, -1, 1);
   }
-
   public double getDriverLeftY() 
   {
     return MathUtil.clamp(driverController.getRawAxis(1) - LEFT_Y_ZERO, -1, 1);
   }
-
   public double getDriverRightX() 
   {
     return MathUtil.clamp(driverController.getRawAxis(4) - RIGHT_X_ZERO, -1, 1);
   }
-
   public double getDriverRightY() 
   {
     return MathUtil.clamp(driverController.getRawAxis(5) - RIGHT_Y_ZERO, -1, 1);
   }
-
   public double getDriverTranslateX()
   {
     return getDriverLeftX();
   }
-
   public double getDriverTranslateY()
   {
     return getDriverLeftY();
   }
-
   public double getDriverRotate()
   {
     return getDriverRightX();
@@ -108,38 +96,29 @@ public class OI extends DiagnosticsSubsystem
   {
     return driverController.getRawButton(i);
   }
-
   public double getDriverRightTrigger()
   {
     return driverController.getRawAxis(3);
   }
-
   public double getDriverLeftTrigger()
   {
     return driverController.getRawAxis(2);
   }
-
   public boolean getFieldCentricToggle()
   {
     return fieldCentricDebouncer.calculate(driverController.getRawButton(7));
   }
-
   public boolean getDriverLeftBumper(){
     return parkingBrakeDebouncer.calculate(driverController.getRawButton(5));
   }
-
   public boolean getDriverMenuButton(){
     return menuDriverButtonDebouncer.calculate(driverController.getRawButton(8));
   }
-
   public boolean getDriverAButton(){
     return aDriverButtonDebouncer.calculate(driverController.getRawButton(1));
   }
-
-
-  public boolean getYButtonDriver()
+  public boolean getDriverYButton()
   {
-    
     return yDriverButtonDebouncer.calculate(driverController.getRawButton(4));
   }
 
@@ -160,52 +139,41 @@ public class OI extends DiagnosticsSubsystem
     // "Clamping" the value makes sure that it's still between 1 and -1 even if we have added an offset to it
     return MathUtil.clamp(operatorController.getRawAxis(0) - LEFT_X_ZERO, -1, 1);
   }
-
   public double getOperatorLeftY() {
     return MathUtil.clamp(operatorController.getRawAxis(1) - LEFT_Y_ZERO, -1, 1);
   }
-
   public double getOperatorRightX() {
     return MathUtil.clamp(operatorController.getRawAxis(4) - RIGHT_X_ZERO, -1, 1);
   }
-
   public double getOperatorRightY() {
     return MathUtil.clamp(operatorController.getRawAxis(5) - RIGHT_Y_ZERO, -1, 1);
   }
-
+  
   /** Returns a specified button from the operator controller */
   public boolean getOperatorRawButton(int i) {
     return operatorController.getRawButton(i);
   }
-
   public boolean getOperatorAButton(){
     return getOperatorRawButton(1);
   }
-
   public boolean getOperatorXButton(){
     return getOperatorRawButton(3);
   }
-
   public boolean getOperatorYButton(){
     return getOperatorRawButton(4);
   }
-
   public boolean getOperatorBButton(){
     return getOperatorRawButton(2);
   }
-
   public boolean getOperatorRightTrigger(){
     return (operatorController.getRawAxis(3) > 0.5);
   }
-
   public boolean getOperatorLeftTrigger(){
     return (operatorController.getRawAxis(2) > 0.5);
   }
-
   public boolean getOperatorMenuButton() {
     return getOperatorRawButton(8);
   }
-
 
   @Override
   public void initSendable(SendableBuilder builder){

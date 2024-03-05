@@ -5,23 +5,16 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusCode;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
-import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class CollectorArm extends DiagnosticsSubsystem {
@@ -42,16 +35,12 @@ public class CollectorArm extends DiagnosticsSubsystem {
   MotorFault liftMotorFault;
   MotorFault extendMotorFault;
 
-  // Rate Limiters For Each Axis
-  // private final SlewRateLimiter liftLimiter;
-  // private final SlewRateLimiter extendLimiter;
-
   // Command For Each Axis
   public MotionMagicVoltage liftPositionVoltage;
   public MotionMagicVoltage extendPositionVoltage;
 
   // Map for profiled motion
-  private InterpolatingDoubleTreeMap armMap;
+  //private InterpolatingDoubleTreeMap armMap;
   
   // CANBus for this subsystem
   private static final String kCANbus = "CANivore";
@@ -59,19 +48,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private StatusCode configError_Extend;
   private StatusCode configError_Lift;
 
-  //TODO: Change all of these values
-  private final double liftLength = 0;
-  private final double armLength = 0;
-  // Approximage masses of arm segments for gravity compensation:
-  private final double liftArmMass = 0; 
-  private final double extendArmMass = 0; 
-  private final double gravityCompensationGain = 1.25;            // Increase this to increase the overall amount of gravity compensation.
-  private final double gravityCompensationLiftGain = 0.0125; // 1/80 gear ratio
-  private final double gravityCompensationExtendGain = 0.025;     // 1/40 gear ratio
-
   // Axis scaling and offset:
-  private final double liftAbsoluteOffset = 0;
-  private final double extendAbsoluteOffset = 0;
   private final double liftGearRatio = 25.0;
   private final double liftDriveRatio = 4.0;
   private final double extendGearRatio = 25.0;
@@ -79,14 +56,11 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private final double liftRadiansPerRotation = (2*Math.PI)/(liftDriveRatio*liftGearRatio);
   private final double extendMetersPerRotation = (2*Math.PI*extendPulleyRadius)/extendGearRatio;
 
+  private final double minLiftAngleRad = 0;
+  private final double maxLiftAngleRad = 2.09649; 
 
-  // TODO: update values in radians
-  private final double minLiftAngle = 0;
-  private final double maxLiftAngle = 2.09649; 
-
-  // TODO: update values (in meters)
-  private final double minExtend = -0.08;
-  private final double maxExtend = 0.107;
+  private final double minExtendMeters = -0.08;
+  private final double maxExtendMeters = 0.107;
 
   // Internal lift state variables:
   private double currentLiftAngle = 0;
@@ -94,13 +68,11 @@ public class CollectorArm extends DiagnosticsSubsystem {
   private double commandedLiftAngle = 0;
   private double targetLiftAngle = 0;
 
-
   // Internal extension state variables:
   private double currentExtendLength = 0;
   private double currentExtendVelocity = 0;
   private double commandedExtendLength = 0;
   private double targetExtendLength = 0;
-
   
   // PID gains for lift controller.
   private double lift_kP = 16;
@@ -117,18 +89,12 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   private POSE currentPose;
 
-  private boolean extendInterpolateFlag = true;
-
   /** Creates a new CollectorArm. */
   public CollectorArm() {
     liftMotor = new TalonFX(13, kCANbus); 
     extendMotor = new TalonFX(15, kCANbus);
     liftMotorFault = new MotorFault(liftMotor, 13);
     extendMotorFault = new MotorFault(extendMotor, 15);
-
-    // Rate limiter between target value and commanded value for smooth motion.
-    // liftLimiter = new SlewRateLimiter(0.5); 
-    // extendLimiter = new SlewRateLimiter(1); 
 
     // Position-based command.
     liftPositionVoltage = new MotionMagicVoltage(0).withSlot(0);
@@ -138,17 +104,15 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
     configureHardware();
 
-    armMap = new InterpolatingDoubleTreeMap();
-    setUpInterpolator();
+    // armMap = new InterpolatingDoubleTreeMap();
+    // setUpInterpolator();
   }
 
   @Override
   public void periodic() 
   {
     updateFeedback();
-    // if(extendInterpolateFlag){
-    //   targetExtendLength = interpolateExtendPosition(currentLiftAngle);
-    // }
+
     commandedExtendLength = limitExtendLength(targetExtendLength);
     commandedLiftAngle = limitLiftAngle(targetLiftAngle);
     runLiftMotor(commandedLiftAngle);
@@ -156,116 +120,100 @@ public class CollectorArm extends DiagnosticsSubsystem {
     updateDiagnostics();
   }
 
-
   private void updateFeedback() {
-    // Sensor angles should be divided by the appropriate ticks per radian
-    //currentLiftAngle = liftMotor.getPosition().refresh().getValue() * liftRadiansPerRotation - liftAbsoluteOffset;
     currentLiftAngle = liftMotor.getPosition().refresh().getValue();
-    SmartDashboard.putNumber("lift motor position rotations", liftMotor.getPosition().refresh().getValue());
-    currentLiftVelocity = liftMotor.getVelocity().refresh().getValueAsDouble() * liftRadiansPerRotation;
-    //currentExtendLength = extendMotor.getPosition().refresh().getValue() * extendMetersPerRotation - extendAbsoluteOffset;
     currentExtendLength = extendMotor.getPosition().refresh().getValue();
-    SmartDashboard.putNumber("Extend motor position rotations", extendMotor.getPosition().refresh().getValue());
+    currentLiftVelocity = liftMotor.getVelocity().refresh().getValueAsDouble() * liftRadiansPerRotation;
     currentExtendVelocity = extendMotor.getVelocity().refresh().getValueAsDouble() * extendMetersPerRotation;
   }
 
+  /* Limits lift angle in radians and axtend length meters */
   public double limitLiftAngle(double liftAngle) {
-    return MathUtil.clamp(liftAngle, minLiftAngle, maxLiftAngle);
+    return MathUtil.clamp(liftAngle, minLiftAngleRad, maxLiftAngleRad);
   }
-
   public double limitExtendLength(double extendLength) {
-    return MathUtil.clamp(extendLength, minExtend, maxExtend);
+    return MathUtil.clamp(extendLength, minExtendMeters, maxExtendMeters);
   }
 
+  /* Gets current lift angle in radians and extend length in meters */
   public double getCurrentLiftAngle() {
     return currentLiftAngle;
   }
-
   public double getCurrentExtendLength() {
     return currentExtendLength;
   }
 
+  /* Sets target lift angle in radians and extend length in meters */
   public void setTargetLiftAngle(double target) {
     targetLiftAngle = limitLiftAngle(target);
   }
-
   public void setTargetExtendLength(double target) {
     targetExtendLength = limitExtendLength(target);
   }
 
-  public void setPoseName(POSE pose) {
-    currentPose = pose;
-  }
-
-  // Returns target lift angle in radians
+  /* Returns target lift angle in radians and extend length in meters */
   public double getTargetLiftAngle() {
     return targetLiftAngle;
   }
-
-  // Returns target extend length in meters
   public double getTargetExtendLength() {
     return targetExtendLength;
   }
 
-  // Returns currently commanded lift angle (limited, rate limited) in radians.
+  /* Returns current commanded lift angle and extend length (limited with clamp) in radians and meters, respectively. */
   public double getCommandedLiftAngle() {
     return commandedLiftAngle;
   }
-
-  // Returns currenyl commanded extend length (limited, rate limited) in meters.
   public double getCommandedExtendLength() {
     return commandedExtendLength;
   }
 
-   public double getCurrentLiftVelocity() {
+  /* Returns actual lift velocity in radians/sec and actual extend velocity in meters/sec */
+  public double getCurrentLiftVelocity() {
     return currentLiftVelocity;
   }
-
   public double getCurrentExtendVelocity() {
     return currentExtendVelocity;
   }
 
+  /* Gets and sets POSE name */
+  public void setPoseName(POSE pose) {
+    currentPose = pose;
+  }
   public POSE getPoseName() {
     return currentPose;
   }
 
-  public void setExtendInterpolateFlag(boolean flagValue){
-    extendInterpolateFlag = flagValue;
-  }
-
-
-  public void setUpInterpolator() {
-    armMap.clear();
-
-    // Keys are lift angles, values are extension distances.
-    // Fill out the rest of the table (angle, extendLength)
-
-    armMap.put(0.0, 0.0); 
-    armMap.put(0.076416015625, 0.0);
-    armMap.put(0.122802734375, 0.0);
-    armMap.put(0.162109375, 0.0); //STOW 
-    armMap.put(0.2, 0.04);
-    armMap.put(0.21, 0.107177734375); 
-    armMap.put(0.2880859375, 0.107177734375);
-    armMap.put(0.400390625, -0.041005859375);
-    armMap.put(0.76171875, -0.0425390625);
-    armMap.put(1.313720703125, 0.030517578125);
-    armMap.put(1.9453125, 0.0966796875);
-    armMap.put(2.70654296875, 0.10986328125);
-
-    /*
-    Adding more points at a steeper slope near important positions will yield a
-    faster acceleration(limited by motion magic configs) to the target.
+  // public void setUpInterpolator() {
+  //   armMap.clear();
     
-    Right now it is tuned to be relatively fast
-    */
-  }
+  //   // Keys are lift angles, values are extension distances.
+  //   // Fill out the rest of the table (angle, extendLength)
 
-  /** Takes a lift angle and calculates the target extend length */
-  public double interpolateExtendPosition(double currentliftAngle){
-    return armMap.get(currentLiftAngle);
-  }
+  //   armMap.put(0.0, 0.0); 
+  //   armMap.put(0.076416015625, 0.0);
+  //   armMap.put(0.122802734375, 0.0);
+  //   armMap.put(0.162109375, 0.0); //STOW 
+  //   armMap.put(0.2, 0.04);
+  //   armMap.put(0.21, 0.107177734375); 
+  //   armMap.put(0.2880859375, 0.107177734375);
+  //   armMap.put(0.400390625, -0.041005859375);
+  //   armMap.put(0.76171875, -0.0425390625);
+  //   armMap.put(1.313720703125, 0.030517578125);
+  //   armMap.put(1.9453125, 0.0966796875);
+  //   armMap.put(2.70654296875, 0.10986328125);
 
+  //   /*
+  //   Adding more points at a steeper slope near important positions will yield a
+  //   faster acceleration(limited by motion magic configs) to the target.
+    
+  //   Right now it is tuned to be relatively fast
+  //   */
+  // }
+
+  // /** Takes a lift angle and calculates the target extend length */
+  // public double interpolateExtendPosition(double currentliftAngle){
+  //   return armMap.get(currentLiftAngle);
+  // }
 
   private void runLiftMotor(double liftAngle)
   {
@@ -285,8 +233,6 @@ public class CollectorArm extends DiagnosticsSubsystem {
     extendMotor.setControl(extendPositionVoltage.withPosition(extendLengthRotations)); 
   }
 
- 
-
   private void configureHardware(){
 
     TalonFXConfiguration extendConfigs = new TalonFXConfiguration();
@@ -296,10 +242,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     configError_Extend = extendMotor.getConfigurator().apply(new TalonFXConfiguration(), 0.5);
     
     liftConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-    // // liftConfigs.Feedback.RotorToSensorRatio = (150.0 / 7.0);
-     liftConfigs.Feedback.SensorToMechanismRatio = 1 / liftRadiansPerRotation;  // This should be used for remote CANCoder with continuous wrap.
-    // liftConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    // liftConfigs.ClosedLoopGeneral.ContinuousWrap = true;
+    liftConfigs.Feedback.SensorToMechanismRatio = 1 / liftRadiansPerRotation;
 
     liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 4; 
     liftConfigs.MotionMagic.MotionMagicAcceleration = 3; 
@@ -318,10 +261,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     liftMotorClosedLoopConfig.withKV(lift_kF);
 
     extendConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-    //extendConfigs.Feedback.RotorToSensorRatio = (150.0 / 7.0);
-    extendConfigs.Feedback.SensorToMechanismRatio = 1 / extendMetersPerRotation;  // This should be used for remote CANCoder with continuous wrap.
-    //extendConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    //extendConfigs.ClosedLoopGeneral.ContinuousWrap = true;
+    extendConfigs.Feedback.SensorToMechanismRatio = 1 / extendMetersPerRotation;
 
     extendConfigs.MotionMagic.MotionMagicCruiseVelocity = 1;
     extendConfigs.MotionMagic.MotionMagicAcceleration = 0.5;
@@ -339,17 +279,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     extendMotorClosedLoopConfig.withKD(extend_kD);
     extendMotorClosedLoopConfig.withKS(extend_kS);
 
-    var error1 = liftMotor.getConfigurator().apply(liftMotorClosedLoopConfig, 0.5);
-    if(!error1.isOK()){
-      System.err.print(String.format("LIFT MOTOR ERROR: %s", error1.toString()));
-      setDiagnosticsFeedback(error1.getDescription(), false);
-    }
-    
-    var error2 = extendMotor.getConfigurator().apply(extendMotorClosedLoopConfig, 0.5);
-    if(!error2.isOK()){
-      System.err.print(String.format("EXTEND MOTOR ERROR: %s", error2.toString()));
-      setDiagnosticsFeedback(error2.getDescription(), false);
-    } 
+    configError_Lift = liftMotor.getConfigurator().apply(liftMotorClosedLoopConfig, 0.5);
+    configError_Extend = extendMotor.getConfigurator().apply(extendMotorClosedLoopConfig, 0.5);
   }
 
   @Override
@@ -364,9 +295,6 @@ public class CollectorArm extends DiagnosticsSubsystem {
     builder.addDoubleProperty("Commanded Extend Length", this::getCommandedExtendLength, null);
     builder.addDoubleProperty("Current Lift Velocity", this::getCurrentLiftVelocity, null);
     builder.addDoubleProperty("Current Extend Velocity", this::getCurrentExtendVelocity, null);
-    
-    //builder.addBooleanProperty("ok", this::isOK, null);
-    //builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
   }
 
   @Override

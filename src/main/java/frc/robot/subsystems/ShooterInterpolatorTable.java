@@ -49,14 +49,6 @@ public class ShooterInterpolatorTable {
         pivotTable.put(5.03, -0.718);
         pivotTable.put(5.85, -0.747);
         pivotTable.put(6.61, -0.765); // not finalized
-        
-        // pivotTable.put(2.0, -0.25);
-        // pivotTable.put(2.53, -0.45);
-        // pivotTable.put(3.1, -0.54);
-        // pivotTable.put(3.76, -0.602);
-        // pivotTable.put(4.78, -0.695);
-        // pivotTable.put(5.83, -0.72); 
-        // pivotTable.put(6.0, -0.745); 
     }
 
     public void setUpFeederInterpolator(){
