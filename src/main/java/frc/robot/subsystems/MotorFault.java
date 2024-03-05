@@ -111,6 +111,6 @@ public class MotorFault {
 			counter++;
 			result += "Using fused CANcoder while unlicensed! ";}
 
-		return "Motor " + id + "has " + counter + " errors. " + result;
+		return "Motor " + id + " has " + counter + " errors. " + result;
 	}
 }
