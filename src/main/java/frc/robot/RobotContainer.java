@@ -79,9 +79,9 @@ public class RobotContainer {
   // SerialPort.Port serial_port = SerialPort.Port.kUSB;
 
   // The robot's subsystems and commands are defined here...
-  // private final Pivot m_pivot = new Pivot();
-  // private final Shooter m_shooter = new Shooter();
-  // private final Feeder m_feeder = new Feeder(); 
+  private final Pivot m_pivot = new Pivot();
+  private final Shooter m_shooter = new Shooter();
+  private final Feeder m_feeder = new Feeder(); 
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
 
@@ -143,12 +143,12 @@ public class RobotContainer {
     //CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_runShooterCommand);
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
-    // SmartDashboard.putData(m_collector);
-    // SmartDashboard.putData(m_collectorArm);
-    // SmartDashboard.putData(m_shooter);
-    // SmartDashboard.putData(m_feeder);
-    // SmartDashboard.putData(m_pivot);
-    // SmartDashboard.putData(m_rangeFinder);
+    SmartDashboard.putData(m_collector);
+    SmartDashboard.putData(m_collectorArm);
+    SmartDashboard.putData(m_shooter);
+    SmartDashboard.putData(m_feeder);
+    SmartDashboard.putData(m_pivot);
+    SmartDashboard.putData(m_rangeFinder);
 
     m_chooser.setDefaultOption("No Autonomous", kNoAuto);
     m_chooser.addOption("Red Close Snowplow Auto", kRedCloseSnowPlowAuto);
