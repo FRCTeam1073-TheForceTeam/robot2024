@@ -133,7 +133,7 @@ public class Shooter extends DiagnosticsSubsystem{
   }
 
   public double limitShooterVelocity(double maxVel) {
-    return MathUtil.clamp(maxVel, -28, 28);
+    return MathUtil.clamp(maxVel, -35, 35);
   }
 
   public double getTofRange(){

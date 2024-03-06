@@ -26,7 +26,12 @@ public class RunShooter extends Command {
   double currentBottomVel;
   double currentTopVel;
 
-  double count;
+  double currentRange;
+  double avgRange;
+
+  double velCount;
+
+  double rangeCount;
   
   /* Creates a new RunShooter. */
 
@@ -43,16 +48,31 @@ public class RunShooter extends Command {
   /* start shooter wheels to get them up to speed */
   @Override
   public void initialize() {
-    shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
-    shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
-    // shooterTopMPS = shooter.getRunShooterTargetBottomVelocityInMPS();
-    // shooterBottomMPS = shooter.getRunShooterTargetBottomVelocityInMPS();
-    count = 0;
+    // shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
+    // shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
+    shooterTopMPS = shooter.getRunShooterTargetBottomVelocityInMPS();
+    shooterBottomMPS = shooter.getRunShooterTargetBottomVelocityInMPS();
+    velCount = 0;
+    rangeCount = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+
+    // if(rangeCount < 20){
+    //   currentRange = rangefinder.getRange();
+    
+    //   avgRange = (0.5 * avgRange) + (0.5 * currentRange);
+    //   rangeCount++;
+    // }
+    // else if(rangeCount == 20){
+    //   shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
+    //   shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
+    //   rangeCount++;
+    // }
+
+
     currentBottomVel = shooter.getCurrentBottomVelocityInMPS();
     currentTopVel = shooter.getCurrentTopVelocityInMPS();
     
@@ -63,10 +83,10 @@ public class RunShooter extends Command {
     averageTopVel = (0.5 * averageTopVel) + (0.5 * currentTopVel);
 
     if((Math.abs(averageBottomVel - shooterBottomMPS) < 0.5) && (Math.abs(averageTopVel - shooterTopMPS) < 0.5)){
-      count++;
+      velCount++;
     }
-    else if(count > 0){
-      count--;
+    else if(velCount > 0){
+      velCount--;
     }
   }
 
@@ -87,7 +107,7 @@ public class RunShooter extends Command {
     // else{
     //   return false;
     // }
-    if(count > 20){
+    if(velCount > 20){
       return true;
     }
     else{
