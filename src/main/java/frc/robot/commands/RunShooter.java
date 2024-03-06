@@ -26,6 +26,8 @@ public class RunShooter extends Command {
   double currentBottomVel;
   double currentTopVel;
 
+  double range = 0;
+
   double count;
   
   /* Creates a new RunShooter. */
@@ -36,15 +38,36 @@ public class RunShooter extends Command {
     this.shooter = shooter;
     this.rangefinder = rangeFinder;
     this.shooterInterpolatorTable = new ShooterInterpolatorTable();
+    range = -1;
+    addRequirements(shooter);
+  }
+
+  public RunShooter(Shooter shooter, double range)
+  {
+    // for using the command when shooting from points with known ranges
+
+    this.shooter = shooter;
+    this.range = range;
+    this.shooterInterpolatorTable = new ShooterInterpolatorTable();
     addRequirements(shooter);
   }
 
 // Called when the command is initially scheduled.
   /* start shooter wheels to get them up to speed */
   @Override
-  public void initialize() {
-    shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
-    shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
+  public void initialize() 
+  {
+    if (range != -1) // if using rangefinder
+    {
+      shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
+      shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
+    }
+    else // if using a set range
+    {
+      shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(range);
+      shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(range);
+    }
+    
     // shooterTopMPS = shooter.getRunShooterTargetBottomVelocityInMPS();
     // shooterBottomMPS = shooter.getRunShooterTargetBottomVelocityInMPS();
     count = 0;

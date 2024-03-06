@@ -275,7 +275,7 @@ public class RobotContainer {
       case kBlueCloseMidline3Note:
         return BlueCloseMidline3Note.create(m_drivetrain);
       case kBlueFarMidline2Note:
-        return BlueFarMidline2Note.create(m_drivetrain);
+        return BlueFarMidline2Note.create(m_drivetrain, m_feeder, m_shooter, m_pivot, m_collector, m_collectorArm);
       case kBlueFarMidline3Note:
         return BlueFarMidline3Note.create(m_drivetrain);
       case kLeaveAuto:

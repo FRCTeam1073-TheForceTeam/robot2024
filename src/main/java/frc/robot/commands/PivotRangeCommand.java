@@ -22,19 +22,34 @@ public class PivotRangeCommand extends Command {
   double currentRange;
   double avgRange;
 
+  double range;
+
   double count;
 
-  public PivotRangeCommand(Pivot pivot, RangeFinder rangefinder) {
+  public PivotRangeCommand(Pivot pivot, RangeFinder rangefinder) 
+  {
+    // when we do not have a set range to shoot from
     this.pivot = pivot;
     this.rangefinder = rangefinder;
     pivotTable = new ShooterInterpolatorTable();
+    range = -1;
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(pivot);
+  }
+
+  public PivotRangeCommand(Pivot pivot, double range)
+  {
+    // when we have a set range to shoot from
+    this.pivot = pivot;
+    this.range = range;
+    pivotTable = new ShooterInterpolatorTable();
     addRequirements(pivot);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
+  public void initialize() 
+  {
     //targetPositionRad = pivotTable.interpolatePivotAngle(rangefinder.getRange());
     //targetPositionRad = pivot.getDebugPivotAngle();
     count = 0;
@@ -43,17 +58,27 @@ public class PivotRangeCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    if(count < 20){
-      currentRange = rangefinder.getRange();
-    
-      avgRange = (0.5 * avgRange) + (0.5 * currentRange);
-      count++;
-    }
-    else{
-      targetPositionRad = pivotTable.interpolatePivotAngle(avgRange);
+    if (range != -1)
+    {
+      targetPositionRad = pivotTable.interpolatePivotAngle(range);
       pivot.setTargetPositionInRad(targetPositionRad);
     }
+    else
+    {
+      if (count < 20)
+      {
+        currentRange = rangefinder.getRange();
+    
+        avgRange = (0.5 * avgRange) + (0.5 * currentRange);
+        count++;
+      }
+      else
+      {
+        targetPositionRad = pivotTable.interpolatePivotAngle(avgRange);
+        pivot.setTargetPositionInRad(targetPositionRad);
+      }
+    }
+    
   }
 
   // Called once the command ends or is interrupted.
