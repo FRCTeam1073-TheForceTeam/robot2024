@@ -20,6 +20,7 @@ import frc.robot.commands.CollectFeedCommand;
 import frc.robot.commands.CollectorArmTeleop;
 import frc.robot.commands.CollectorTeleop;
 import frc.robot.commands.LaunchFeederToSpeaker;
+import frc.robot.commands.RunFeeder;
 import frc.robot.commands.StartRecordingAutonomous;
 import frc.robot.commands.StartRecordingTeleop;
 import frc.robot.commands.StopRecording;
@@ -77,7 +78,7 @@ public class RobotContainer {
   private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm, m_OI);
   private final AmpShootCommand m_ampShootCommand = new AmpShootCommand();
   private final SubwooferShot m_subwooferShot = new SubwooferShot();
-
+  private final RunFeeder m_runFeeder = new RunFeeder(m_feeder, 25);
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private static final String kNoAuto = "No Autonomous";
@@ -164,7 +165,7 @@ public class RobotContainer {
     Trigger loadNoteToFeeder = new Trigger(m_OI::getOperatorLeftTrigger);
     loadNoteToFeeder.onTrue(m_collectAndFeed.runCollectFeedCommand(m_drivetrain, m_collector, m_collectorArm, m_pivot, m_feeder, m_shooter));
     
-    Trigger launchFeederToSpeaker = new Trigger(m_OI::getOperatorRightTrigger);
+    Trigger launchFeederToSpeaker = new Trigger(m_OI::getOperatorViewButton);
     launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot, m_rangeFinder));
 
     Trigger cancelCommand = new Trigger(m_OI::getOperatorBButton);
@@ -184,6 +185,9 @@ public class RobotContainer {
 
     Trigger subwooferShot = new Trigger(m_OI::getOperatorDPadDown);
     subwooferShot.onTrue(m_subwooferShot.runSubwooferShot(m_shooter, m_feeder, m_pivot));
+
+    Trigger runFeeder = new Trigger(m_OI::getOperatorRightTrigger);
+    runFeeder.onTrue(m_runFeeder);
 
     // System.out.println("Configuring buttons");
     // Trigger tagButton = new Trigger(m_OI::getXButton);
