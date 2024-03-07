@@ -9,10 +9,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.DriveThroughTrajectorySchema;
 import frc.robot.commands.DriveToPointSchema;
 import frc.robot.commands.SchemaDriveAuto;
-import frc.robot.commands.StartRecordingAutonomous;
 import frc.robot.subsystems.Drivetrain;
 
-public class BlueClose4Note 
+public class BlueWing4Note 
 {
     public static Command create(Drivetrain m_drivetrain)
     {

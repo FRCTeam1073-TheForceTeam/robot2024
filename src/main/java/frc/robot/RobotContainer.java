@@ -17,7 +17,7 @@ import frc.robot.commands.SchemaDriveAuto;
 import frc.robot.subsystems.Bling;
 import frc.robot.subsystems.Camera;
 import frc.robot.commands.TeleopDrive;
-import frc.robot.commands.autos.BlueClose4Note;
+import frc.robot.commands.autos.BlueWing4Note;
 import frc.robot.commands.autos.BlueCloseMidline2Note;
 import frc.robot.commands.autos.BlueCloseMidline3Note;
 import frc.robot.commands.autos.BlueFarMidline2Note;
@@ -96,6 +96,7 @@ public class RobotContainer {
   private final CollectorArmTeleop m_collectorArmTeleop = new CollectorArmTeleop(m_collectorArm, m_OI);
   private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm, m_OI);
   private final AmpShootCommand m_ampShootCommand = new AmpShootCommand();
+  private final HandoffCommand m_handoffCommand = new HandoffCommand();
 
 
 
@@ -104,7 +105,7 @@ public class RobotContainer {
   private static final String kRedCloseSnowPlowAuto = "Red Close Snowplow Auto";
   private static final String kRedFarSnowPlowAuto = "Red Far Snowplow Auto";
   private static final String kRedFar1Note = "Red Far 1 Note";
-  private static final String kBlueClose4Note = "Blue Close 4 Note";
+  private static final String kBlueWing4Note = "Blue Wing 4 Note";
   private static final String kRedCloseMidline2Note = "Red Close Midline 2 Note";
   private static final String kBlueCloseMidline2Note = "Blue Close Midline 2 Note";
   private static final String kBlueCloseMidline3Note = "Blue Close Midline 3 Note";
@@ -154,7 +155,7 @@ public class RobotContainer {
     m_chooser.addOption("Red Close Snowplow Auto", kRedCloseSnowPlowAuto);
     m_chooser.addOption("Red Far Snowplow Auto", kRedFarSnowPlowAuto);
     m_chooser.addOption("Red Far 1 Note", kRedFar1Note);
-    m_chooser.addOption("Blue Close 4 Note", kBlueClose4Note);
+    m_chooser.addOption("Blue Wing 4 Note", kBlueWing4Note);
     m_chooser.addOption("Red Close Midline 2 Note", kRedCloseMidline2Note);
     m_chooser.addOption("Blue Close Midline 2 Note", kBlueCloseMidline2Note);
     m_chooser.addOption("Blue Close Midline 3 Note", kBlueCloseMidline3Note);
@@ -266,18 +267,18 @@ public class RobotContainer {
         return RedFarSnowPlowAuto.create(m_drivetrain);
       case kRedFar1Note:
         return RedFar1Note.create(m_drivetrain);
-      case kBlueClose4Note:
-        return BlueClose4Note.create(m_drivetrain);
+      case kBlueWing4Note:
+        return BlueWing4Note.create(m_drivetrain);
       case kRedCloseMidline2Note:
-        return RedCloseMidline2Note.create(m_drivetrain);
+        return RedCloseMidline2Note.create(m_drivetrain, m_feeder, m_shooter, m_pivot, m_collector, m_collectorArm, m_handoffCommand);
       case kBlueCloseMidline2Note:
-        return BlueCloseMidline2Note.create(m_drivetrain);
+        return BlueCloseMidline2Note.create(m_drivetrain, m_feeder, m_shooter, m_pivot, m_collector, m_collectorArm, m_handoffCommand);
       case kBlueCloseMidline3Note:
-        return BlueCloseMidline3Note.create(m_drivetrain);
+        return BlueCloseMidline3Note.create(m_drivetrain, m_feeder, m_shooter, m_pivot, m_collector, m_collectorArm, m_handoffCommand);
       case kBlueFarMidline2Note:
-        return BlueFarMidline2Note.create(m_drivetrain, m_feeder, m_shooter, m_pivot, m_collector, m_collectorArm);
+        return BlueFarMidline2Note.create(m_drivetrain, m_feeder, m_shooter, m_pivot, m_collector, m_collectorArm, m_handoffCommand);
       case kBlueFarMidline3Note:
-        return BlueFarMidline3Note.create(m_drivetrain);
+        return BlueFarMidline3Note.create(m_drivetrain, m_feeder, m_shooter, m_pivot, m_collector, m_collectorArm, m_handoffCommand);
       case kLeaveAuto:
         return LeaveAuto.create(m_drivetrain);
       case kTestAuto:
