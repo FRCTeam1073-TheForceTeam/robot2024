@@ -24,7 +24,7 @@ import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.Shooter;
 
-public class BlueFarMidline2Note 
+public class BlueAmpL2 
 {
     public static Command create(Drivetrain m_drivetrain, Feeder feeder, Shooter shooter, Pivot pivot, 
         Collector collector, CollectorArm collectorArm, HandoffCommand handoffCommand)
