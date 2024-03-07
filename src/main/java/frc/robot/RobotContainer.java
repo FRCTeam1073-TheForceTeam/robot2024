@@ -126,7 +126,7 @@ public class RobotContainer {
   // private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_cameras);
   // private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_cameras);
   // private final StopRecording c_stopRecording = new StopRecording(m_cameras);
-  private final GetAprilTagInfo c_getAprilTagInfo = new GetAprilTagInfo(m_serial, m_camera2);
+  //private final GetAprilTagInfo c_getAprilTagInfo = new GetAprilTagInfo(m_serial, m_camera2, "1 or whatever");
 
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -166,8 +166,6 @@ public class RobotContainer {
     // m_chooser.addOption("Blue Far Midline 3 Note", kBlueFarMidline3Note);
     // m_chooser.addOption("Leave Auto", kLeaveAuto);
     // m_chooser.addOption("Test Auto", kTestAuto);
-
-
     SmartDashboard.putData("Auto Chooser", m_chooser);
 
     // Configure the trigger bindings
@@ -208,7 +206,8 @@ public class RobotContainer {
 
     // System.out.println("Configuring buttons");
     Trigger tagButton = new Trigger(m_OI::getXButtonDriver);
-    tagButton.onTrue(c_getAprilTagInfo);
+    //tagButton.onTrue(c_getAprilTagInfo);
+    tagButton.onTrue(new GetAprilTagInfo(m_serial, m_camera2, "2"));
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
 

@@ -32,8 +32,8 @@ public class Camera extends SubsystemBase {
   public void stopRecording(){
     serialComms.send(this.camID + ",di");
   }
-  public String getAprilTagInfo(){
-    serialComms.send(this.camID + ",ap");
+  public String getAprilTagInfo(String tagID){
+    serialComms.send(this.camID + ",ap," + tagID);
     return serialComms.receive();
   }
 

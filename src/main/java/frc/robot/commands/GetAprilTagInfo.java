@@ -14,13 +14,15 @@ public class GetAprilTagInfo extends Command {
   /** Creates a new getApriltTagInfo. */
   SerialComms serialComms;
   Camera camera;
+  String tagID;
   Timer timer;
   Boolean weAreFinished;
-  public GetAprilTagInfo(SerialComms serialComms, Camera camera) {
+  public GetAprilTagInfo(SerialComms serialComms, Camera camera, String tagID) {
     System.out.println("in GetAprilTagInfo command");
     // Use addRequirements() here to declare subsystem dependencies.
     this.camera = camera;
     this.serialComms = serialComms;
+    this.tagID = tagID;
     this.weAreFinished = false;
     addRequirements(camera, serialComms);
   }
@@ -33,7 +35,7 @@ public class GetAprilTagInfo extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    String aprilInfo = camera.getAprilTagInfo();
+    String aprilInfo = camera.getAprilTagInfo(this.tagID);
     System.out.println("sent for april tag");
     System.out.println(aprilInfo);
     this.weAreFinished = true;
