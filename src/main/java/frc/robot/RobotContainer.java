@@ -86,7 +86,6 @@ public class RobotContainer {
   private final OI m_OI = new OI();
 
   private final RangeFinder m_rangeFinder = new RangeFinder();
-  private final CollectorSequences m_collectAndFeed = new CollectorSequences();
   private final LaunchFeederToSpeakerSequence m_launchFeederToSpeaker = new LaunchFeederToSpeakerSequence();
   private final CancelCommand m_cancelCommand = new CancelCommand();
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
@@ -96,6 +95,7 @@ public class RobotContainer {
   private final CollectorArmTeleop m_collectorArmTeleop = new CollectorArmTeleop(m_collectorArm, m_OI);
   private final ArmPoseSequences m_armPoseTeleop = new ArmPoseSequences(m_collectorArm, m_OI);
   private final AmpShootCommand m_ampShootCommand = new AmpShootCommand();
+  private final CollectSequence m_collectSequence = new CollectSequence();
 
 
 
@@ -182,7 +182,7 @@ public class RobotContainer {
   private void configureBindings() // TODO: NSARGENT: is this legit? configureBindings() call up on line 82
   {
     Trigger loadNoteToFeeder = new Trigger(m_OI::getOperatorLeftTrigger);
-    loadNoteToFeeder.onTrue(m_collectAndFeed.runCollectFeedCommand(m_drivetrain, m_collector, m_collectorArm, m_pivot, m_feeder, m_shooter));
+    loadNoteToFeeder.onTrue(m_collectSequence.collectNote(m_collector, m_collectorArm));
     
     Trigger launchFeederToSpeaker = new Trigger(m_OI::getOperatorRightTrigger);
     launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot, m_rangeFinder));
