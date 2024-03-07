@@ -24,6 +24,7 @@ import frc.robot.commands.StartRecordingAutonomous;
 import frc.robot.commands.StartRecordingTeleop;
 import frc.robot.commands.StopRecording;
 import frc.robot.commands.SubwooferShot;
+import frc.robot.commands.PodiumShot;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.commands.autos.BlueClose4Note;
 import frc.robot.commands.autos.BlueCloseMidline2Note;
@@ -77,6 +78,7 @@ public class RobotContainer {
   private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm, m_OI);
   private final AmpShootCommand m_ampShootCommand = new AmpShootCommand();
   private final SubwooferShot m_subwooferShot = new SubwooferShot();
+  private final PodiumShot m_podiumShot = new PodiumShot();
 
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -185,6 +187,10 @@ public class RobotContainer {
     Trigger subwooferShot = new Trigger(m_OI::getOperatorDPadDown);
     subwooferShot.onTrue(m_subwooferShot.runSubwooferShot(m_shooter, m_feeder, m_pivot));
 
+    Trigger podiumShot = new Trigger(m_OI::getOperatorDPadUp);
+    podiumShot.onTrue(m_podiumShot.runPodiumShot(m_shooter, m_feeder, m_pivot));
+
+
     // System.out.println("Configuring buttons");
     // Trigger tagButton = new Trigger(m_OI::getXButton);
     // tagButton.onTrue(getTagData());
@@ -280,6 +286,10 @@ public class RobotContainer {
 
   public Command SpeakerShot(){
     return m_subwooferShot.runSubwooferShot(m_shooter, m_feeder, m_pivot);
+  }
+
+  public Command PodiumShot(){
+    return m_podiumShot.runPodiumShot(m_shooter, m_feeder, m_pivot);
   }
 
 }
