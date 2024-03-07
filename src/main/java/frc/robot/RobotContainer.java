@@ -116,7 +116,7 @@ public class RobotContainer {
   private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_cameras);
   private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_cameras);
   private final StopRecording c_stopRecording = new StopRecording(m_cameras);
-  private final GetAprilTagInfo c_getAprilTagInfo = new GetAprilTagInfo(m_serial, m_camera1);
+  private final GetAprilTagInfo c_getAprilTagInfo = new GetAprilTagInfo(m_serial, m_camera2);
 
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
