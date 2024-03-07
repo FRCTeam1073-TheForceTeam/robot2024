@@ -20,15 +20,15 @@ public class AmpShootCommand extends Command {
   public SequentialCommandGroup ampShot(Shooter m_shooter, Feeder m_feeder, Pivot m_pivot) {
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new SetPivotCommand(m_pivot, 0),
-        new SetShooterVel(m_shooter, 8, 8) //, m_rangefinder.getRange()),
+        new SetPivotAngle(m_pivot, 0, true),
+        new SetShooterVelocity(m_shooter, 8, 8, true) //, m_rangefinder.getRange()),
       ),
       //new WaitCommand(1),
       new ParallelCommandGroup(
-        new RunFeeder(m_feeder, 30),
+        new FeederShootCommand(m_feeder, 30),
         //new WaitCommand(1),
-        new StopShooter(m_shooter)
+        new WatchShooterForNote(m_shooter)
       ),
-      new SetPivotCommand(m_pivot, 0));
+      new SetPivotAngle(m_pivot, 0, true));
     }
   }

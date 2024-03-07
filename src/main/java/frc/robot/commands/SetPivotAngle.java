@@ -9,15 +9,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Pivot;
 
-public class PivotTestCommand extends Command {
-  /** Creates a new PivotTestCommand. */
+public class SetPivotAngle extends Command {
+  /** Creates a new SetPivotCommand. */
   private Pivot pivot;
   private double targetPositionRad;
-  private boolean isPivotOn;
+  private boolean wait;
 
-  public PivotTestCommand(Pivot pivot) {
+  public SetPivotAngle(Pivot pivot, double pivotAngle, boolean wait) {
     this.pivot = pivot;
-    targetPositionRad = pivot.getTestCommandTargetPositionInRad();
+    this.wait = wait;
+    targetPositionRad = pivotAngle;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(pivot);
   }
@@ -42,6 +43,9 @@ public class PivotTestCommand extends Command {
 
   @Override
   public boolean isFinished() {
-    return (pivot.getCurrentPositionInRad() >= (0.98 * targetPositionRad));
+    if(!wait) {
+      return true;
+    }
+    return (Math.abs(pivot.getCurrentPositionInRad()) >= Math.abs((0.98 * targetPositionRad)));
   }
 }

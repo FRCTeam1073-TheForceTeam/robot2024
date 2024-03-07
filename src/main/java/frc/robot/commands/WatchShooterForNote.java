@@ -13,7 +13,7 @@ import frc.robot.subsystems.ShooterInterpolatorTable;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
 
-public class StopShooter extends Command {
+public class WatchShooterForNote extends Command {
   private Shooter shooter;
   private double minRange;
   private double maxRange;
@@ -22,7 +22,7 @@ public class StopShooter extends Command {
   
   /* Creates a new StopShooter. */
 
-  public StopShooter(Shooter shooter) {
+  public WatchShooterForNote(Shooter shooter) {
     /* Range to calculate the speed needed */
     // Use addRequirements() here to declare subsystem dependencies.
     maxRange = 0.4;
@@ -51,8 +51,6 @@ public class StopShooter extends Command {
     }
     if(noteEntered && noteGone){
       shooter.setShot(true);
-      shooter.setTargetTopVelocityInMPS(0);
-      shooter.setTargetBottomVelocityInMPS(0);
     }
   }
 
@@ -66,6 +64,6 @@ public class StopShooter extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return shooter.getCurrentTopVelocityInMPS() == 0;
+    return shooter.isNoteShot();
   }
 }

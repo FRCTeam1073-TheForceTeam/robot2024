@@ -7,10 +7,10 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.CollectorTeleop;
 import frc.robot.commands.ArmPoseCommand;
-import frc.robot.commands.ArmPoseTeleop;
+import frc.robot.commands.ArmPoseSequences;
 import frc.robot.commands.CollectorArmTeleop;
 import frc.robot.commands.CollectorIntakeCommand;
-import frc.robot.commands.CollectorIntakeOutCommand;
+import frc.robot.commands.CollectorAmpCommand;
 import frc.robot.commands.DriveThroughTrajectorySchema;
 import frc.robot.commands.DriveToPointSchema;
 import frc.robot.commands.SchemaDriveAuto;
@@ -86,15 +86,15 @@ public class RobotContainer {
   private final OI m_OI = new OI();
 
   private final RangeFinder m_rangeFinder = new RangeFinder();
-  private final CollectFeedCommand m_collectAndFeed = new CollectFeedCommand();
-  private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
+  private final CollectorSequences m_collectAndFeed = new CollectorSequences();
+  private final LaunchFeederToSpeakerSequence m_launchFeederToSpeaker = new LaunchFeederToSpeakerSequence();
   private final CancelCommand m_cancelCommand = new CancelCommand();
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
   private final Collector m_collector = new Collector();
   private final CollectorArm m_collectorArm = new CollectorArm();
   private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_collectorArm, m_drivetrain, m_OI);
   private final CollectorArmTeleop m_collectorArmTeleop = new CollectorArmTeleop(m_collectorArm, m_OI);
-  private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm, m_OI);
+  private final ArmPoseSequences m_armPoseTeleop = new ArmPoseSequences(m_collectorArm, m_OI);
   private final AmpShootCommand m_ampShootCommand = new AmpShootCommand();
 
 

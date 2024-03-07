@@ -13,7 +13,7 @@ import frc.robot.subsystems.ShooterInterpolatorTable;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
 
-public class RunShooter extends Command {
+public class ShootAtRange extends Command {
   private Shooter shooter;
   private ShooterInterpolatorTable shooterInterpolatorTable;
   private RangeFinder rangefinder;
@@ -30,7 +30,7 @@ public class RunShooter extends Command {
   
   /* Creates a new RunShooter. */
 
-  public RunShooter(Shooter shooter, RangeFinder rangeFinder) {
+  public ShootAtRange(Shooter shooter, RangeFinder rangeFinder) {
     /* Range to calculate the speed needed */
     // Use addRequirements() here to declare subsystem dependencies.
     this.shooter = shooter;

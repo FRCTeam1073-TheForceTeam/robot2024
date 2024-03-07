@@ -11,24 +11,27 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 /** Add your docs here. */
-public class LaunchFeederToSpeaker extends SequentialCommandGroup{
+public class LaunchFeederToSpeakerSequence extends SequentialCommandGroup{
     
-  public LaunchFeederToSpeaker(){ //Shooter shooter, Feeder feeder, RangeFinder rangefinder
+  public LaunchFeederToSpeakerSequence(){ //Shooter shooter, Feeder feeder, RangeFinder rangefinder
 
     }
 
   public SequentialCommandGroup runLaunchFeedertoSpeaker(Shooter m_shooter, Feeder m_feeder, Pivot m_pivot, RangeFinder m_rangeFinder){
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new PivotRangeCommand(m_pivot, m_rangeFinder),
-        new RunShooter(m_shooter, m_rangeFinder) //, m_rangefinder.getRange()),
+        new SetPivotRange(m_pivot, m_rangeFinder, true),
+        new ShootAtRange(m_shooter, m_rangeFinder) //, m_rangefinder.getRange()),
       ),
       //new WaitCommand(1),
       new ParallelCommandGroup(
-        new RunFeeder(m_feeder, 30),
+        new FeederShootCommand(m_feeder, 30),
         //new WaitCommand(1),
-        new StopShooter(m_shooter)
+        new WatchShooterForNote(m_shooter)
       ),
-      new SetPivotCommand(m_pivot, 0));
+      new ParallelCommandGroup(
+        new SetShooterVelocity(m_shooter, 0, 0, true),
+        new SetPivotAngle(m_pivot, 0, true))
+      );
     }
 }

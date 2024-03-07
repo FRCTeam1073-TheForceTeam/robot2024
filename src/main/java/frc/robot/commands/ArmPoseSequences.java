@@ -10,12 +10,12 @@ import frc.robot.subsystems.CollectorArm;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.CollectorArm.POSE;
 
-public class ArmPoseTeleop extends Command {
+public class ArmPoseSequences extends Command {
   /** Creates a new ArmPoseCommand. */
   CollectorArm arm;
   OI oi;
 
-  public ArmPoseTeleop(CollectorArm arm, OI oi) {
+  public ArmPoseSequences(CollectorArm arm, OI oi) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.arm = arm;
     this.oi = oi;

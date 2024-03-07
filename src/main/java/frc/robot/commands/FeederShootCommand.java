@@ -7,14 +7,14 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Feeder;
 
-public class RunFeeder extends Command {
+public class FeederShootCommand extends Command {
   private Feeder feeder;
   double minRange;
   double maxRange;
   double feederTargetVelocityMPS;
 
   /** Creates a new RunFeeder. */
-  public RunFeeder(Feeder feeder, double feederTargetVelocityMPS) {
+  public FeederShootCommand(Feeder feeder, double feederTargetVelocityMPS) {
     this.feeder = feeder;
     this.feederTargetVelocityMPS = feederTargetVelocityMPS;
     // Use addRequirements() here to declare subsystem dependencies.

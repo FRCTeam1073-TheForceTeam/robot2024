@@ -24,11 +24,11 @@ public class CancelCommand extends Command {
   public SequentialCommandGroup cancel(Collector m_collector, CollectorArm m_collectorArm, Shooter m_shooter, Feeder m_feeder, Pivot m_pivot) {
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
-        new CollectorSpeedCommand(m_collector, 0),
+        new SetCollectorVelocity(m_collector, 0, true),
         new ArmPoseCommand(m_collectorArm, POSE.START),
-        new StopShooter(m_shooter),
-        new StopFeeder(m_feeder),
-        new SetPivotCommand(m_pivot, 0)
+        new WatchShooterForNote(m_shooter),
+        new SetFeederVelocity(m_feeder, 0, true),
+        new SetPivotAngle(m_pivot, 0, true)
       )
     );
   }

@@ -11,22 +11,23 @@ import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.ShooterInterpolatorTable;
 
-public class PivotRangeCommand extends Command {
+public class SetPivotRange extends Command {
   /** Creates a new SetPivotCommand. */
   private Pivot pivot;
   private RangeFinder rangefinder;
   private ShooterInterpolatorTable pivotTable;
   private double targetPositionRad;
-  private boolean isPivotOn;
 
   double currentRange;
   double avgRange;
 
   double count;
+  boolean debug;
 
-  public PivotRangeCommand(Pivot pivot, RangeFinder rangefinder) {
+  public SetPivotRange(Pivot pivot, RangeFinder rangefinder, boolean debug) {
     this.pivot = pivot;
     this.rangefinder = rangefinder;
+    this.debug = debug;
     pivotTable = new ShooterInterpolatorTable();
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(pivot);
@@ -43,16 +44,20 @@ public class PivotRangeCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    if(count < 20){
-      currentRange = rangefinder.getRange();
-    
-      avgRange = (0.5 * avgRange) + (0.5 * currentRange);
-      count++;
+    if(debug){
+      pivot.setTargetPositionInRad(pivot.getDebugPivotAngle());
     }
     else{
-      targetPositionRad = pivotTable.interpolatePivotAngle(avgRange);
-      pivot.setTargetPositionInRad(targetPositionRad);
+      if(count < 20){
+        currentRange = rangefinder.getRange();
+      
+        avgRange = (0.5 * avgRange) + (0.5 * currentRange);
+        count++;
+      }
+      else{
+        targetPositionRad = pivotTable.interpolatePivotAngle(avgRange);
+        pivot.setTargetPositionInRad(targetPositionRad);
+      }
     }
   }
 

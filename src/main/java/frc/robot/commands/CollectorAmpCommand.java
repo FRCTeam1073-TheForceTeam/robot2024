@@ -4,20 +4,16 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.CollectorArm;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.OI;
-import frc.robot.subsystems.CollectorArm.POSE;
 
-public class CollectorOuttakeCommand extends Command {
-  /** Creates a new CollectorTeleop. */
+public class CollectorAmpCommand extends Command {
+
   Collector m_collector;
   CollectorArm m_collectorArm;
   Drivetrain m_drivetrain;
-  OI m_OI;
   double minRange;
   double maxRange;
   double intakeRateThreshold;
@@ -29,11 +25,10 @@ public class CollectorOuttakeCommand extends Command {
   double tofCurrentValue;
   double tofOldValue;
 
-  double count = 0;
-
-
-
-  public CollectorOuttakeCommand(Collector collector, CollectorArm collectorArm, Drivetrain ds) {
+  /** Creates a new CollectorAmpCommand. 
+   * 
+  */
+  public CollectorAmpCommand(Collector collector, CollectorArm collectorArm, Drivetrain ds) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_collector = collector;
     m_collectorArm = collectorArm;
@@ -59,10 +54,10 @@ public class CollectorOuttakeCommand extends Command {
   @Override
   public void execute() {
     tofCurrentValue = m_collector.getRangeTOF(); 
-
+    
     //outtake
     if(tofCurrentValue < maxRange){
-      vel = 3;
+      vel = -6;
       m_collector.setTargetCollectorVelocity(vel); //meters per sec
     }
     else{

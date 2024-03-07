@@ -7,27 +7,31 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Feeder;
 
-public class StopFeeder extends Command {
+public class SetFeederVelocity extends Command {
 
-  Feeder m_feeder;
+  private Feeder m_feeder;
+  private double m_speed;
+  private boolean wait;
 
   /** Creates a new StopFeeder. */
-  public StopFeeder(Feeder feeder) {
+  public SetFeederVelocity(Feeder feeder, double speed, boolean wait) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_feeder = feeder;
-
+    m_speed = speed;
+    this.wait = wait;
     addRequirements(m_feeder);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_feeder.setTargetVelocityInMPS(0);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    m_feeder.setTargetVelocityInMPS(m_speed);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -38,6 +42,9 @@ public class StopFeeder extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    if(!wait) {
+      return true;
+    }
+    return (m_feeder.getCurrentVelocityInMPS() >= m_speed * 0.98);  
   }
 }
