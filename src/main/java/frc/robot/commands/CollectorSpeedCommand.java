@@ -4,22 +4,21 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.Collector;
 
-public class PivotTestCommand extends Command {
-  /** Creates a new PivotTestCommand. */
-  private Pivot pivot;
-  private double targetPositionRad;
-  private boolean isPivotOn;
+public class CollectorSpeedCommand extends Command {
 
-  public PivotTestCommand(Pivot pivot) {
-    this.pivot = pivot;
-    targetPositionRad = pivot.getTestCommandTargetPositionInRad();
+  Collector m_collector;
+  double speed;
+
+  /** Creates a new CollectorSpeedCommand. */
+  public CollectorSpeedCommand(Collector collector, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(pivot);
+    m_collector = collector;
+    this.speed = speed;
+
+    addRequirements(m_collector);
   }
 
   // Called when the command is initially scheduled.
@@ -29,19 +28,16 @@ public class PivotTestCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    pivot.setTargetPositionInRad(targetPositionRad);
+    m_collector.setTargetCollectorVelocity(speed);
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {
-
-  }
+  public void end(boolean interrupted) {}
 
   // Returns true when the command should end.
-
   @Override
   public boolean isFinished() {
-    return (pivot.getCurrentPositionInRad() >= (0.98 * targetPositionRad));
+    return true;
   }
 }

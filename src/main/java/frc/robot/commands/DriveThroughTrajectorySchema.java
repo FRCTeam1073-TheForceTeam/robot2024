@@ -2,16 +2,13 @@ package frc.robot.commands;
 
 import java.util.ArrayList;
 
-import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.MathUtils;
@@ -32,16 +29,21 @@ public class DriveThroughTrajectorySchema extends MotionSchema {
   InterpolatingDoubleTreeMap xTrajectory;
   InterpolatingDoubleTreeMap yTrajectory;
   InterpolatingDoubleTreeMap thetaTrajectory;
+  InterpolatingDoubleTreeMap xTrajectoryVelocity;
+  InterpolatingDoubleTreeMap yTrajectoryVelocity;
+  InterpolatingDoubleTreeMap thetaTrajectoryVelocity;
   PIDController xController;
   PIDController yController;
-  ProfiledPIDController thetaController;
-  TrapezoidProfile.Constraints thetaConstraints;
+  PIDController thetaController;
   double currentTime;
   double maxVelocity;
   double maxAngularVelocity;
   double maxAcceleration;
-  double alpha;
   double endTime;
+  double xVelocity;
+  double yVelocity;
+  double thetaVelocity;
+  double startTime;
 
   /** Constructs a DriveThroughTrajectory
    * 
@@ -65,27 +67,27 @@ public class DriveThroughTrajectorySchema extends MotionSchema {
     xTrajectory = new InterpolatingDoubleTreeMap();
     yTrajectory = new InterpolatingDoubleTreeMap(); 
     thetaTrajectory = new InterpolatingDoubleTreeMap();
+    xTrajectoryVelocity = new InterpolatingDoubleTreeMap();
+    yTrajectoryVelocity = new InterpolatingDoubleTreeMap();
+    thetaTrajectoryVelocity = new InterpolatingDoubleTreeMap();
+
     xController = new PIDController(
       1.0, 
-      0.0, 
-      0.02
+      0.05, 
+      0.01
     );
 
     yController = new PIDController(
       1.0, 
-      0.0, 
-      0.02
+      0.05, 
+      0.01
     );
 
-    thetaConstraints = new TrapezoidProfile.Constraints(3 * maxAngularVelocity, 4 * maxAcceleration);
-    thetaController = new ProfiledPIDController(
-      1.0, 
-      0.0,
-      0.1, 
-      thetaConstraints
+    thetaController = new PIDController(
+      1.2, 
+      0.05,
+      0.01
     );
-
-
   }
 
   /** Generates trajectory for robot to go through by creating different trajectory states for each waypoints
@@ -96,20 +98,42 @@ public class DriveThroughTrajectorySchema extends MotionSchema {
   public void generateTrajectory(ArrayList<Pose2d> wayPoints)
   {
     double trajectoryTime = 0;
+    double lastTrajectoryTime = 0;
     xTrajectory.clear();
     yTrajectory.clear();
     thetaTrajectory.clear();
+    xTrajectoryVelocity.clear();
+    yTrajectoryVelocity.clear();
+    thetaTrajectoryVelocity.clear();
     for(int i = 0; i < wayPoints.size(); i++)
     {
       xTrajectory.put(trajectoryTime, wayPoints.get(i).getX());
       yTrajectory.put(trajectoryTime, wayPoints.get(i).getY());
       thetaTrajectory.put(trajectoryTime, MathUtils.wrapAngleRadians(wayPoints.get(i).getRotation().getRadians()));
+      if (i == 0)
+      {
+        xTrajectoryVelocity.put(trajectoryTime, drivetrain.getChassisSpeeds().vxMetersPerSecond);
+        yTrajectoryVelocity.put(trajectoryTime, drivetrain.getChassisSpeeds().vyMetersPerSecond);
+        thetaTrajectoryVelocity.put(trajectoryTime, drivetrain.getChassisSpeeds().omegaRadiansPerSecond);
+      }
+      else
+      {
+        xTrajectoryVelocity.put(trajectoryTime, (wayPoints.get(i).getX() - wayPoints.get(i - 1).getX()) / (trajectoryTime - lastTrajectoryTime));
+        yTrajectoryVelocity.put(trajectoryTime, (wayPoints.get(i).getY() - wayPoints.get(i - 1).getY()) / (trajectoryTime - lastTrajectoryTime));
+        thetaTrajectoryVelocity.put(trajectoryTime, MathUtils.wrapAngleRadians(
+            wayPoints.get(i).getRotation().getRadians() - wayPoints.get(i - 1).getRotation().getRadians()
+          )
+            / (trajectoryTime - lastTrajectoryTime));
+      }
       //update time appropriately
       if(i < wayPoints.size() - 1)
       {
         Transform2d difference = new Transform2d(wayPoints.get(i), wayPoints.get(i + 1));
-        double tTime = difference.getTranslation().getNorm() / maxVelocity;
+        double distance = Math.sqrt(Math.pow(difference.getX(), 2) + Math.pow(difference.getY(), 2));
+        // double tTime = difference.getTranslation().getNorm() / maxVelocity;
+        double tTime = distance / maxVelocity;
         double rTime = Math.abs(difference.getRotation().getRadians()) / maxAngularVelocity;
+        lastTrajectoryTime = trajectoryTime;
         trajectoryTime += Math.max(tTime, rTime);
       }
     }
@@ -120,6 +144,7 @@ public class DriveThroughTrajectorySchema extends MotionSchema {
   @Override
   public void initialize(Drivetrain drivetrain) 
   {
+    startTime = Timer.getFPGATimestamp();
     currentTime = 0.01;
     startPose = drivetrain.getOdometry();
     posePoints = new ArrayList<Pose2d>();
@@ -129,8 +154,9 @@ public class DriveThroughTrajectorySchema extends MotionSchema {
     generateTrajectory(posePoints);
     xController.reset();
     yController.reset();
-    thetaController.reset(drivetrain.getHeadingRadians());
+    thetaController.reset();
     System.out.println("Drive Through Trajectory  " + posePoints.size());
+    System.out.println("End time: " + endTime);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -138,40 +164,44 @@ public class DriveThroughTrajectorySchema extends MotionSchema {
   @Override
   public void execute() 
   {
+    currentTime = Timer.getFPGATimestamp() - startTime;
     robotPose = drivetrain.getOdometry();
+
+    // double xError = xTrajectory.get(currentTime).doubleValue() - robotPose.getX();
+    // double yError = yTrajectory.get(currentTime).doubleValue() - robotPose.getY();
+    // double thetaError = MathUtils.wrapAngleRadians(thetaTrajectory.get(currentTime).doubleValue() - robotPose.getRotation().getRadians());
+
+    // double xVelocity = 1.5 * xError;
+    // double yVelocity = 1.5 * yError;
+    // double thetaVelocity  = 1.0 * thetaError;
+
+    // double xVelocity = xController.calculate(robotPose.getX(), xTrajectory.get(currentTime).doubleValue());
+    // double yVelocity = yController.calculate(robotPose.getY(), yTrajectory.get(currentTime).doubleValue());
+    // double thetaVelocity = thetaController.calculate(robotPose.getRotation().getRadians(), thetaTrajectory.get(currentTime).doubleValue());
+    if (currentTime >= endTime)
+    {
+      xVelocity = xController.calculate(robotPose.getX(), xTrajectory.get(currentTime).doubleValue());
+      yVelocity = yController.calculate(robotPose.getY(), yTrajectory.get(currentTime).doubleValue());
+      thetaVelocity = thetaController.calculate(robotPose.getRotation().getRadians(), thetaTrajectory.get(currentTime).doubleValue());
+    }
+    else
+    {
+      xVelocity = xController.calculate(robotPose.getX(), xTrajectory.get(currentTime).doubleValue()) + 0.2 * xTrajectoryVelocity.get(currentTime);
+      yVelocity = yController.calculate(robotPose.getY(), yTrajectory.get(currentTime).doubleValue()) + 0.2 * yTrajectoryVelocity.get(currentTime);
+      thetaVelocity = thetaController.calculate(robotPose.getRotation().getRadians(), thetaTrajectory.get(currentTime).doubleValue()) + 
+        0.2 * thetaTrajectoryVelocity.get(currentTime);
+    }
     
-    //Pose2d state = new Pose2d(-1,0, new Rotation2d(0));
-    // Transform2d difference = new Transform2d(robotPose, state);
-    // double xVelocity = -alpha * difference.getX();
-    // double yVelocity = alpha * difference.getY();
-    // double angularVelocity = -0.6 * difference.getRotation().getRadians();
-
-    xController.setSetpoint(xTrajectory.get(currentTime).doubleValue());
-    yController.setSetpoint(yTrajectory.get(currentTime).doubleValue());
-    thetaController.setGoal(thetaTrajectory.get(currentTime).doubleValue());
-
-    // double xVelocity = xController.calculate(robotPose.getX());
-    // double yVelocity = yController.calculate(robotPose.getY());
-    // double thetaVelocity  = thetaController.calculate(robotPose.getRotation().getRadians());
-
-    double xError = xTrajectory.get(currentTime).doubleValue() - robotPose.getX();
-    double yError = yTrajectory.get(currentTime).doubleValue() - robotPose.getY();
-    double thetaError = MathUtils.wrapAngleRadians(thetaTrajectory.get(currentTime).doubleValue() - robotPose.getRotation().getRadians());
-
-    double xVelocity = 0.5 * (Math.exp(1.0 * Math.abs(xError) - 1) * Math.signum(xError));
-    double yVelocity = 0.5 * (Math.exp(1.0 * Math.abs(yError) - 1) * Math.signum(yError));
-    double thetaVelocity  = 1.0 * (Math.exp(1.0 * Math.abs(thetaError) - 1) * Math.signum(thetaError));
 
     ChassisSpeeds speeds = new ChassisSpeeds(xVelocity, yVelocity, thetaVelocity);
 
     SmartDashboard.putNumber("Robot pose x", robotPose.getX());
     SmartDashboard.putNumber("Robot Pose y", robotPose.getY());
-    // SmartDashboard.putNumber("Difference X", difference.getX());
-    // SmartDashboard.putNumber("Difference y", difference.getY());
     SmartDashboard.putNumber("Trajectory Time", currentTime);
-    // SmartDashboard.putNumber("state X", goalState.getX());
-    // SmartDashboard.putNumber("state Y", goalState.getY());
-    // SmartDashboard.putNumber("state Rotation", goalState.getRotation().getRadians());
+
+    SmartDashboard.putNumber("Trajectory Velocity X", xTrajectoryVelocity.get(currentTime));
+    SmartDashboard.putNumber("Trajectory Velocity Y", yTrajectoryVelocity.get(currentTime));
+    SmartDashboard.putNumber("Trajectory Velocity Theta", thetaTrajectoryVelocity.get(currentTime));
 
     // xVelocity = MathUtil.clamp(xVelocity, -maxVelocity, maxVelocity);
     // yVelocity = MathUtil.clamp(yVelocity, -maxVelocity, maxVelocity);
@@ -181,21 +211,17 @@ public class DriveThroughTrajectorySchema extends MotionSchema {
     SmartDashboard.putNumber("Trajectory Speed Y", speeds.vyMetersPerSecond);
     SmartDashboard.putNumber("Trajectory Angular Speed", speeds.omegaRadiansPerSecond);
 
-
-//    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xVelocity, yVelocity, angularVelocity, 
-//      Rotation2d.fromDegrees(drivetrain.getHeading()));
-
     setTranslate(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, 1.0);
     setRotate(speeds.omegaRadiansPerSecond, 1.0);
     
-    if(currentTime < endTime)
-    {
-      currentTime += 0.02;
-    }
-    else
-    {
-      currentTime = endTime;
-    }
+    // if(currentTime < endTime)
+    // {
+    //   currentTime += 0.02;
+    // }
+    // else
+    // {
+    //   currentTime = endTime;
+    // }
   }
 
   // Called once the command ends or is interrupted.
@@ -210,10 +236,7 @@ public class DriveThroughTrajectorySchema extends MotionSchema {
   @Override
   public boolean isFinished() 
   {
-    var error = robotPose.minus(endPose);
-     
-    if ((Math.abs(error.getTranslation().getNorm()) < distanceTolerance || maxVelocity == 0)
-      && (Math.abs(error.getRotation().getRadians()) < angleTolerance || maxAngularVelocity == 0)) 
+    if (currentTime > endTime + 1.0) 
     {
       System.out.println("DriveThroughTrajectory Is Finished");
       return true;

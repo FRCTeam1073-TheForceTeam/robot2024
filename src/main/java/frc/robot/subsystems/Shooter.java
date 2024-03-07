@@ -6,18 +6,28 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DutyCycle;
 
 public class Shooter extends DiagnosticsSubsystem{
-  
   // Motors
   private final TalonFX topShooterMotor;
   private final TalonFX bottomShooterMotor;
+
+  private final DigitalInput shooterTof;
+  private final DutyCycle shooterTofDutyCycleInput;
+  private final double shooterTofScaleFactor = 3000000/4;
+  private double shooterTofFreq;
+  private double shooterTofRange;
+  private double shooterTofDutyCycle;
+  private double shooterTofMax;
 
   // Motor pid values
   private double p = 0.3;
@@ -28,13 +38,13 @@ public class Shooter extends DiagnosticsSubsystem{
   private final MotorFault topShooterMotorFault;
   private final MotorFault bottomShooterMotorFault;
 
-  // Configurator erros
+  // Configurator errors
   StatusCode topConfigError;
   StatusCode bottomConfigError;
 
   // Motor rate limiters
-  private final SlewRateLimiter topFlyWheelLimiter;
-  private final SlewRateLimiter bottomFlyWheelLimiter;
+  // private final SlewRateLimiter topFlyWheelLimiter;
+  // private final SlewRateLimiter bottomFlyWheelLimiter;
 
   // Velocity variables
   private double targetTopVelocityMPS;
@@ -46,11 +56,9 @@ public class Shooter extends DiagnosticsSubsystem{
   private double currentTopVelocityMPS;
   private double currentBottomVelocityMPS;
 
-  // Beam break sensor
-  private final DigitalInput shooterBeamBreak;
-
   // VelocityVoltage object
-  private VelocityVoltage shooterVelocityVoltage = new VelocityVoltage(0);
+  //private VelocityVoltage shooterVelocityVoltage = new VelocityVoltage(0);
+  private MotionMagicVelocityVoltage shooterVelocityVoltage;
 
   // CANbus for this subsystem
   private final String kCANbus = "CANivore";
@@ -62,20 +70,27 @@ public class Shooter extends DiagnosticsSubsystem{
    */
   private double shooterMetersPerRotation = 8 * Math.PI * 0.0254; // 0.0254 meters/inch
 
+  private boolean noteShot = false;
+
   /** Creates a new Shooter. **/
   public Shooter() {
     // topShooterMotor = new TalonFX(17, kCANbus); // Kraken 
     // bottomShooterMotor = new TalonFX(18, kCANbus); //Kraken 
-    topShooterMotor = new TalonFX(17);
-    bottomShooterMotor = new TalonFX(18);
-    shooterBeamBreak = new DigitalInput(2);
+    topShooterMotor = new TalonFX(17, kCANbus);
+    bottomShooterMotor = new TalonFX(18, kCANbus);
+    shooterTof = new DigitalInput(2);
+    shooterTofDutyCycleInput = new DutyCycle(shooterTof);
     topShooterMotorFault = new MotorFault(topShooterMotor, 17);
     bottomShooterMotorFault = new MotorFault(bottomShooterMotor, 18);
-    topFlyWheelLimiter = new SlewRateLimiter(8); //limits the rate of change to 1.5 units per seconds
-    bottomFlyWheelLimiter = new SlewRateLimiter(8); //limits the rate of change to 1.5 units per seconds
+    // topFlyWheelLimiter = new SlewRateLimiter(6); //limits the rate of change to 1.5 units per seconds
+    // bottomFlyWheelLimiter = new SlewRateLimiter(6); //limits the rate of change to 1.5 units per seconds
+    shooterVelocityVoltage = new MotionMagicVelocityVoltage(0).withSlot(0); 
 
+    shooterTofFreq = 0;
+    shooterTofRange = 0;
     targetTopVelocityMPS = 0;
     targetBottomVelocityMPS = 0;
+    shooterTofMax = 0.3;
 
     configureHardware();
 }
@@ -84,10 +99,18 @@ public class Shooter extends DiagnosticsSubsystem{
   public void periodic() {
     updateDiagnostics();
     updateFeedback();
-    // Calculate ratelimited commanded velocities in rotations/second based on meters/second target velocity
-    commandedTopVelocityMPS = topFlyWheelLimiter.calculate(-targetTopVelocityMPS);
-    commandedBottomVelocityMPS = bottomFlyWheelLimiter.calculate(-targetBottomVelocityMPS);
     
+    shooterTofFreq = shooterTofDutyCycleInput.getFrequency();
+    shooterTofDutyCycle = shooterTofDutyCycleInput.getOutput();
+    shooterTofRange = shooterTofDutyCycleInput.getOutput();
+    shooterTofRange = (shooterTofScaleFactor * (shooterTofDutyCycle / shooterTofFreq - 0.001)) / 1000;
+
+    // Calculate ratelimited commanded velocities in rotations/second based on meters/second target velocity
+    //commandedTopVelocityMPS = topFlyWheelLimiter.calculate(-targetTopVelocityMPS);
+    //commandedBottomVelocityMPS = bottomFlyWheelLimiter.calculate(-targetBottomVelocityMPS);
+    commandedTopVelocityMPS = limitShooterVelocity(-targetBottomVelocityMPS);
+    commandedBottomVelocityMPS = limitShooterVelocity(-targetBottomVelocityMPS);
+
     // Run the motors at the current commanded velocity
     topShooterMotor.setControl(shooterVelocityVoltage.withVelocity(commandedTopVelocityMPS / shooterMetersPerRotation));
     bottomShooterMotor.setControl(shooterVelocityVoltage.withVelocity(commandedBottomVelocityMPS / shooterMetersPerRotation));
@@ -103,9 +126,22 @@ public class Shooter extends DiagnosticsSubsystem{
   public void setTargetTopVelocityInMPS(double velocityMPS){
     targetTopVelocityMPS = velocityMPS;
   }
+
   public void setTargetBottomVelocityInMPS(double velocityMPS)
   {
     targetBottomVelocityMPS = velocityMPS;
+  }
+
+  public double limitShooterVelocity(double maxVel) {
+    return MathUtil.clamp(maxVel, -28, 28);
+  }
+
+  public double getTofRange(){
+    return shooterTofRange;
+  }
+
+  public double getTofFreq(){
+    return shooterTofFreq;
   }
 
   /* Gets the target velocities for the motors in meters per second */
@@ -148,13 +184,29 @@ public class Shooter extends DiagnosticsSubsystem{
     runShooterTargetBottomVelocityInMPS = velocityMPS;
   }
 
-  /* Uses the beam break sensor to detect if the note has entered the shooter */
-  public boolean noteIsInShooter(){
-    return shooterBeamBreak.get();
+  public double getTopVelocityError() {
+    return Math.abs(getCurrentTopVelocityInMPS()) - Math.abs(getCommandedTopVelocityInMPS());
+  }
+
+  public double getBottomVelocityError() {
+    return Math.abs(getCurrentBottomVelocityInMPS()) - Math.abs(getCommandedBottomVelocityInMPS());
+  }
+
+  public double getBottomTemp(){
+    return bottomShooterMotor.getDeviceTemp().getValue();
+  }
+
+  public double getTopTemp(){
+    return topShooterMotor.getDeviceTemp().getValue();
   }
 
   public void configureHardware(){
     TalonFXConfiguration configs = new TalonFXConfiguration();
+
+    configs.MotionMagic.MotionMagicCruiseVelocity = 25;
+    configs.MotionMagic.MotionMagicAcceleration = 30;
+    configs.MotionMagic.MotionMagicJerk = 30;
+
     configs.Slot0.kP = p;
     configs.Slot0.kI = i;
     configs.Slot0.kD = d;
@@ -165,6 +217,8 @@ public class Shooter extends DiagnosticsSubsystem{
     configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
     configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
 
+    
+
     topConfigError = topShooterMotor.getConfigurator().apply(configs);
     bottomConfigError = bottomShooterMotor.getConfigurator().apply(configs);
   }
@@ -172,9 +226,9 @@ public class Shooter extends DiagnosticsSubsystem{
   @Override
   public boolean updateDiagnostics(){
     String result = "";
-    boolean ok = false;
+    boolean ok = true;
     if (topShooterMotorFault.hasFaults()||
-    bottomShooterMotorFault.hasFaults());{
+    bottomShooterMotorFault.hasFaults()){
       ok = false;
       result += topShooterMotorFault.getFaults() +  bottomShooterMotorFault.getFaults();
     }
@@ -193,19 +247,42 @@ public class Shooter extends DiagnosticsSubsystem{
     return setDiagnosticsFeedback(result, ok);
   }
 
+  public void setBothShooterMotorsInMPS(double mps){
+    setTargetBottomVelocityInMPS(mps);
+    setTargetTopVelocityInMPS(mps);
+  }
+
+  public boolean isNoteShot(){
+    return noteShot;
+  }
+
+  public void setShot(boolean shot){
+    noteShot = shot;
+  }
+
   @Override
   public void initSendable(SendableBuilder builder)
   {
     builder.setSmartDashboardType("Shooter");
-    builder.addDoubleProperty("Target Top Motor Velocity", this::getTargetTopVelocityInMPS, this::setTargetTopVelocityInMPS);
-    builder.addDoubleProperty("Target Bottom Motor Velocity", this::getTargetBottomVelocityInMPS, this::setTargetBottomVelocityInMPS);
+    builder.addDoubleProperty("Target Top Motor Velocity", this::getTargetTopVelocityInMPS, null);
+    builder.addDoubleProperty("Target Bottom Motor Velocity", this::getTargetBottomVelocityInMPS, null);
+    builder.addDoubleProperty("Set Shooter", this::getTargetBottomVelocityInMPS, this::setBothShooterMotorsInMPS);
+    builder.addBooleanProperty("Note Seen", this::isNoteShot, this::setShot);
     
+    builder.addDoubleProperty("Tof Range", this::getTofRange, null);
+    builder.addDoubleProperty("Tof Freq", this::getTofFreq, null);
+
     builder.addDoubleProperty("RunShooter Target Top Motor Velocity", this::getRunShooterTargetTopVelocityInMPS, this::setRunShooterTargetTopVelocityInMPS);
     builder.addDoubleProperty("RunShooter Bottom Motor Velocity", this::getRunShooterTargetBottomVelocityInMPS, this::setRunShooterTargetBottomVelocityInMPS);
-    
     builder.addDoubleProperty("Commanded Top Motor Velocity", this::getCommandedTopVelocityInMPS, null);
     builder.addDoubleProperty("Commanded Bottom Motor Velocity", this::getCommandedBottomVelocityInMPS, null);
     builder.addDoubleProperty("Actual Top Motor Velocity", this::getCurrentTopVelocityInMPS, null);
     builder.addDoubleProperty("Actual Bottom Motor Velocity", this::getCurrentBottomVelocityInMPS, null);
+    builder.addDoubleProperty("Top Velocity Error", this::getTopVelocityError, null);
+    builder.addDoubleProperty("Bottom Velocity Error", this::getBottomVelocityError, null);
+
+    builder.addDoubleProperty("Bottom Roller Temp (C)", this::getBottomTemp, null);
+    builder.addDoubleProperty("Top Roller Temp (c)", this::getTopTemp, null);
+  
   }
 }

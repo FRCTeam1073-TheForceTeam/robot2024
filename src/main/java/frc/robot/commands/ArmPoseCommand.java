@@ -15,16 +15,19 @@ public class ArmPoseCommand extends Command {
 
   double m_targetLift;
   double m_targetExtend;
-  double m_liftTolerence = 0.01;
+  double m_liftTolerence = 0.03;
+  double m_extendTolerence = 0.025;
 
   boolean m_extendFlag;
 
-  /** Creates a new ArmPoseCommand. */
-  public ArmPoseCommand(CollectorArm arm, POSE pose, boolean extendInterpolateFlag) {
+  /** Creates a new ArmPoseCommand. 
+   * @param extendInterpolateFlag is set to true when you want to use the interpolator for extend
+  */
+  public ArmPoseCommand(CollectorArm arm, POSE pose) {
     // Use addRequirements() here to declare subsystem dependencies.
     m_arm = arm;
     m_pose = pose;
-    m_extendFlag = extendInterpolateFlag;
+    //m_extendFlag = extendInterpolateFlag;
   }
 
   // Called when the command is initially scheduled.
@@ -35,17 +38,20 @@ public class ArmPoseCommand extends Command {
         m_targetLift = 0.0;
         m_targetExtend = 0.0;
         break;
+      case STOW_INTERMEDIATE:
+        m_targetLift = 0.23;
+        m_targetExtend = 0.0;
       case STOW:
-        m_targetLift = 0.2;
-        m_targetExtend = 0.1047363281;
+        m_targetLift = 0.21;
+        m_targetExtend = 0.1067363281;
         break;
       case HANDOFF:
-        m_targetLift = 0.0;
-        m_targetExtend = 0.0;
+        m_targetLift = 0.21;
+        m_targetExtend = 0.1067363281;
         break;
       case AMP:
-        m_targetLift = 1.9453125;
-        m_targetExtend = 0.0966796875;
+        m_targetLift = 1.8453125;
+        m_targetExtend = 0.0;
         break;
     }
   }
@@ -54,9 +60,9 @@ public class ArmPoseCommand extends Command {
   @Override
   public void execute() {
     m_arm.setTargetLiftAngle(m_targetLift);
-    if(!m_extendFlag){
-      m_arm.setTargetExtendLength(m_targetExtend);
-    }
+    // if(!m_extendFlag){
+    m_arm.setTargetExtendLength(m_targetExtend);
+    //}
   }
 
   // Called once the command ends or is interrupted.
@@ -68,8 +74,9 @@ public class ArmPoseCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    double error = Math.abs(m_arm.getCurrentLiftAngle() - m_targetLift);
-    if(error < m_liftTolerence){
+    double liftError = Math.abs(m_arm.getCurrentLiftAngle() - m_targetLift);
+    double extendError = Math.abs(m_arm.getCurrentExtendLength() - m_targetExtend);
+    if((liftError < 0.02) && (extendError < 0.005)){
       return true;
     }
     else{

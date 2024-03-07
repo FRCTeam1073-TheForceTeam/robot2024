@@ -18,13 +18,23 @@ import frc.robot.commands.SchemaDriveAuto;
 import frc.robot.subsystems.Bling;
 import frc.robot.subsystems.Camera;
 import frc.robot.commands.TeleopDrive;
+import frc.robot.commands.autos.BlueClose4Note;
+import frc.robot.commands.autos.BlueCloseMidline2Note;
+import frc.robot.commands.autos.BlueCloseMidline3Note;
+import frc.robot.commands.autos.BlueFarMidline2Note;
+import frc.robot.commands.autos.BlueFarMidline3Note;
+import frc.robot.commands.autos.LeaveAuto;
+import frc.robot.commands.autos.RedCloseMidline2Note;
+import frc.robot.commands.autos.RedCloseSnowPlowAuto;
+import frc.robot.commands.autos.RedFar1Note;
+import frc.robot.commands.autos.RedFarSnowPlowAuto;
+import frc.robot.commands.autos.TestAuto;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.SerialComms;
 import frc.robot.subsystems.SwerveModuleConfig;
+
 import frc.robot.subsystems.CollectorArm.POSE;
-import frc.robot.subsystems.Collector;
-import frc.robot.subsystems.CollectorArm;
 
 import java.util.ArrayList;
 
@@ -73,7 +83,7 @@ import java.util.ArrayList;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  SerialPort.Port serial_port = SerialPort.Port.kUSB;
+  // SerialPort.Port serial_port = SerialPort.Port.kUSB;
 
   // The robot's subsystems and commands are defined here...
   private final Pivot m_pivot = new Pivot();
@@ -81,33 +91,34 @@ public class RobotContainer {
   private final Feeder m_feeder = new Feeder(); 
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
-  private final RangeFinder m_rangeFinder = new RangeFinder();
-  private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
-  
-  private final PivotTestCommand m_pivotTestCommand = new PivotTestCommand(m_pivot);
-  // private final ShooterTestCommand m_shooterTestCommand = new ShooterTestCommand(m_shooter, m_OI);
-  // private final FeederTestCommand m_feederTestCommand = new FeederTestCommand(m_feeder, m_OI);
-  // private final LoadFeeder loadFeeder = new LoadFeeder(m_feeder);
-  // private final RunFeeder runFeeder = new RunFeeder(m_feeder);
-  // private final SetShooterAngle setShooterAngle = new SetShooterAngle(m_feeder, 0);
-  // private final RunShooter runShooter = new RunShooter(m_shooter, 0, 0, 0);
 
-  private final StopShooter m_stopShooter = new StopShooter(m_shooter);
+  private final RangeFinder m_rangeFinder = new RangeFinder();
+  private final CollectFeedCommand m_collectAndFeed = new CollectFeedCommand();
+  private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
+  private final CancelCommand m_cancelCommand = new CancelCommand();
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
   private final Collector m_collector = new Collector();
   private final CollectorArm m_collectorArm = new CollectorArm();
   private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_collectorArm, m_drivetrain, m_OI);
   private final CollectorArmTeleop m_collectorArmTeleop = new CollectorArmTeleop(m_collectorArm, m_OI);
   private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm, m_OI);
+  private final AmpShootCommand m_ampShootCommand = new AmpShootCommand();
+
 
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private static final String kNoAuto = "No Autonomous";
-  // ex: private static final String auto1 = "auto 1";
-  private static final String kSnowPlowAuto = "Snowplow Auto";
+  private static final String kRedCloseSnowPlowAuto = "Red Close Snowplow Auto";
+  private static final String kRedFarSnowPlowAuto = "Red Far Snowplow Auto";
+  private static final String kRedFar1Note = "Red Far 1 Note";
+  private static final String kBlueClose4Note = "Blue Close 4 Note";
+  private static final String kRedCloseMidline2Note = "Red Close Midline 2 Note";
+  private static final String kBlueCloseMidline2Note = "Blue Close Midline 2 Note";
+  private static final String kBlueCloseMidline3Note = "Blue Close Midline 3 Note";
+  private static final String kBlueFarMidline2Note = "Blue Far Midline 2 Note";
+  private static final String kBlueFarMidline3Note = "Blue Far Midline 3 Note";
   private static final String kLeaveAuto = "Leave Auto";
   private static final String kTestAuto = "Test Auto";
-
   private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
   private final Camera m_camera1 = new Camera(m_serial, "1");  // camID is how SerialComms and the cameras themselves tells them apart
   private final Camera m_camera2 = new Camera(m_serial, "2");
@@ -126,14 +137,15 @@ public class RobotContainer {
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() 
-  { CommandScheduler.getInstance().setDefaultCommand(m_pivot, m_pivotTestCommand);
+  public RobotContainer()
+  {
     // CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_shooterTestCommand);
     //CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
-    //CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand);
+    CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_collectorArmTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
+    //CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_runShooterCommand);
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
     SmartDashboard.putData(m_collector);
@@ -144,7 +156,15 @@ public class RobotContainer {
     SmartDashboard.putData(m_rangeFinder);
 
     m_chooser.setDefaultOption("No Autonomous", kNoAuto);
-    m_chooser.addOption("Snowplow Auto", kSnowPlowAuto);
+    m_chooser.addOption("Red Close Snowplow Auto", kRedCloseSnowPlowAuto);
+    m_chooser.addOption("Red Far Snowplow Auto", kRedFarSnowPlowAuto);
+    m_chooser.addOption("Red Far 1 Note", kRedFar1Note);
+    m_chooser.addOption("Blue Close 4 Note", kBlueClose4Note);
+    m_chooser.addOption("Red Close Midline 2 Note", kRedCloseMidline2Note);
+    m_chooser.addOption("Blue Close Midline 2 Note", kBlueCloseMidline2Note);
+    m_chooser.addOption("Blue Close Midline 3 Note", kBlueCloseMidline3Note);
+    m_chooser.addOption("Blue Far Midline 2 Note", kBlueFarMidline2Note);
+    m_chooser.addOption("Blue Far Midline 3 Note", kBlueFarMidline3Note);
     m_chooser.addOption("Leave Auto", kLeaveAuto);
     m_chooser.addOption("Test Auto", kTestAuto);
 
@@ -166,14 +186,26 @@ public class RobotContainer {
    */
   private void configureBindings() // TODO: NSARGENT: is this legit? configureBindings() call up on line 82
   {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    //Trigger.getOperatorRawButton1.toggleOnTrue(loadNoteToFeeder());
-    
     Trigger loadNoteToFeeder = new Trigger(m_OI::getOperatorLeftTrigger);
-    loadNoteToFeeder.onTrue(new LoadFeeder(m_feeder));
+    loadNoteToFeeder.onTrue(m_collectAndFeed.runCollectFeedCommand(m_drivetrain, m_collector, m_collectorArm, m_pivot, m_feeder, m_shooter));
     
     Trigger launchFeederToSpeaker = new Trigger(m_OI::getOperatorRightTrigger);
-    launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder));
+    launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot, m_rangeFinder));
+
+    Trigger cancelCommand = new Trigger(m_OI::getOperatorBButton);
+    cancelCommand.onTrue(m_cancelCommand.cancel(m_collector, m_collectorArm, m_shooter, m_feeder, m_pivot));
+
+    Trigger armStartCommand = new Trigger(m_OI::getOperatorAButton);
+    armStartCommand.onTrue(m_armPoseTeleop.startPose());
+
+    Trigger armStowCommand = new Trigger(m_OI::getOperatorXButton);
+    armStowCommand.onTrue(m_armPoseTeleop.stowPose());
+
+    Trigger armAmpCommand = new Trigger(m_OI::getOperatorYButton);
+    armAmpCommand.onTrue(m_armPoseTeleop.ampPose());
+
+    Trigger ampShootCommand = new Trigger(m_OI::getOperatorMenuButton);
+    ampShootCommand.onTrue(m_ampShootCommand.ampShot(m_shooter, m_feeder, m_pivot));
 
     // System.out.println("Configuring buttons");
     Trigger tagButton = new Trigger(m_OI::getXButtonDriver);
@@ -181,11 +213,11 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
 
-    Trigger armStartPoseTrigger = new Trigger(m_OI::getOperatorAButton);
-    armStartPoseTrigger.onTrue(collectorScoreCommand());
+    // Trigger armStartPoseTrigger = new Trigger(m_OI::getOperatorAButton);
+    // armStartPoseTrigger.onTrue(collectorScoreCommand());
 
-    Trigger armAmpPoseTrigger = new Trigger(m_OI::getOperatorYButton);
-    armAmpPoseTrigger.onTrue(armAmpPoseCommand());
+    // Trigger armAmpPoseTrigger = new Trigger(m_OI::getOperatorYButton);
+    // armAmpPoseTrigger.onTrue(armAmpPoseCommand());
 
   }
 
@@ -195,11 +227,11 @@ public class RobotContainer {
     // Set allOK to the results of the printDiagnostics method for each subsystem, separated by &&
     allOK = true
       // ex. && m_subsystem.printDiagnostics(isDisabled)
-      && m_collector.printDiagnostics(isDisabled)
-      && m_collectorArm.printDiagnostics(isDisabled)
-      && m_shooter.printDiagnostics(isDisabled) 
-      && m_pivot.printDiagnostics(isDisabled) 
-      && m_feeder.printDiagnostics(isDisabled)
+      // && m_collector.printDiagnostics(isDisabled)
+      // && m_collectorArm.printDiagnostics(isDisabled)
+      // && m_shooter.printDiagnostics(isDisabled) 
+      // && m_pivot.printDiagnostics(isDisabled) 
+      // && m_feeder.printDiagnostics(isDisabled)
     ;
     //TODO: Add each subsystem
     SmartDashboard.putBoolean("Engine light", allOK);
@@ -214,18 +246,15 @@ public class RobotContainer {
     //SwerveModule.initPreferences();
   }
 
-  public Command testAuto()
+  public Command getTeleopCommand()
   {
     ArrayList<Pose2d> pointList = new ArrayList<Pose2d>();
     pointList.add(new Pose2d(2.0, 0.0, new Rotation2d(0)));
     pointList.add(new Pose2d(2.0, 1.0, new Rotation2d(0)));
     pointList.add(new Pose2d(4.0, 1.0, new Rotation2d(Math.PI)));
-    return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, pointList, 2.0, 2.0, 5.0), m_drivetrain);
-  }
-
-  public Command getTeleopCommand(){
-    //return new SequentialCommandGroup(c_startRecordingTeleop, c_getAprilTagInfo);
-    return c_startRecordingTeleop;
+    
+	// return c_startRecordingTeleop;
+	return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, pointList, 2.0, 2.0, 5.0), m_drivetrain);
   }
 
   /**
@@ -233,76 +262,46 @@ public class RobotContainer {
    * 
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
+  public Command getAutonomousCommand() 
+  {
     //TODO: addc_startRecordingAutonomous; to preexisting getAutonomousCommand
     
-    switch (m_chooser.getSelected()){
+    switch (m_chooser.getSelected())
+    {
       case kNoAuto:
         return null;
-      case kSnowPlowAuto:
-        return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7, 0, new Rotation2d(0)), 5, 1), m_drivetrain),
-          SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(7.0, 5.5, new Rotation2d(0)), 5, 1), m_drivetrain), c_startRecordingAutonomous);
+      case kRedCloseSnowPlowAuto:
+        return RedCloseSnowPlowAuto.create(m_drivetrain);
+      case kRedFarSnowPlowAuto:
+        return RedFarSnowPlowAuto.create(m_drivetrain);
+      case kRedFar1Note:
+        return RedFar1Note.create(m_drivetrain);
+      case kBlueClose4Note:
+        return BlueClose4Note.create(m_drivetrain);
+      case kRedCloseMidline2Note:
+        return RedCloseMidline2Note.create(m_drivetrain);
+      case kBlueCloseMidline2Note:
+        return BlueCloseMidline2Note.create(m_drivetrain);
+      case kBlueCloseMidline3Note:
+        return BlueCloseMidline3Note.create(m_drivetrain);
+      case kBlueFarMidline2Note:
+        return BlueFarMidline2Note.create(m_drivetrain);
+      case kBlueFarMidline3Note:
+        return BlueFarMidline3Note.create(m_drivetrain);
       case kLeaveAuto:
-        return new SequentialCommandGroup(SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(1.5, 0.0, new Rotation2d()), 1.5, 0), m_drivetrain), c_startRecordingAutonomous);
+        return LeaveAuto.create(m_drivetrain);
       case kTestAuto:
-        return new SequentialCommandGroup(testAuto(), c_startRecordingAutonomous);
+        return TestAuto.create(m_drivetrain);
       default:
         return null;
     }
-    // An example command will be run in autonomous
-
-    //return SchemaDriveAuto.create(new DriveToPointSchema(m_drivetrain, new Pose2d(-1.0, -1.0, new Rotation2d(0)), 0.5, 0.5), m_drivetrain);
-    //return new DriveToPointSchema(m_drivetrain, new Pose2d(1.0, 0, new Rotation2d(Math.PI / 2)), 0.5, 0.5);
-
-    // ArrayList<Pose2d> drivePoints = new ArrayList<>();
-    // drivePoints.clear();
-
-    // drivePoints.add(new Pose2d(-1, 0, new Rotation2d(0)));
-    //drivePoints.add(new Pose2d(1, 1, new Rotation2d(0)));
-    //drivePoints.add(new Pose2d(1, 1, new Rotation2d(Math.PI / 2)));
-    //drivePoints.add(new Pose2d(1, 1, new Rotation2d(0.9)));
-
-    //return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, drivePoints, 0.5, 0.5, 0.5, 1.0), m_drivetrain);
   }
 
   public Command getDisabledCommand() {
-    return c_stopRecording;
+    return null;
   }
 
   public Command launchFeederToSpeaker(){
-    return m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder);
-    // return new SequentialCommandGroup(
-    //   new RunShooter(m_shooter, 7.7), //, m_rangeFinder.getRange()),
-    //  new ParallelRaceGroup(
-    //    new RunFeeder(m_feeder, 30), 
-    //    new WaitCommand(1)),
-    //   new StopShooter(m_shooter),
-    //   new RunFeeder(m_feeder, 0)
-    // );
-  }
-
-  public Command armStartPoseCommand(){
-    return new ArmPoseCommand(m_collectorArm, POSE.START, false);
-  }
-
-  public Command armAmpPoseCommand(){
-    return new ArmPoseCommand(m_collectorArm, POSE.AMP, false);
-  }
-
-  public Command armTestCommand(){
-    return new SequentialCommandGroup(
-      new ArmPoseCommand(m_collectorArm, POSE.AMP, false),
-      new WaitCommand(2),
-      new ArmPoseCommand(m_collectorArm, POSE.START, false)
-    );
-  }
-
-  public Command collectorScoreCommand(){
-    return new SequentialCommandGroup(
-      new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
-      new ArmPoseCommand(m_collectorArm, POSE.AMP, false),
-      new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain),
-      new ArmPoseCommand(m_collectorArm, POSE.START, false)
-    );
+    return m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot, m_rangeFinder);
   }
 }

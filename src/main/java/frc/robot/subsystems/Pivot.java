@@ -9,6 +9,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -28,7 +29,7 @@ public class Pivot extends DiagnosticsSubsystem {
   private final double pivotGearRatio = 16 * 8.18 / 1;
   private final double pivotWheelRadius = 0.1429; //meters
   private final double pivotMeterPerRotations = pivotWheelRadius * 2 * Math.PI * pivotGearRatio;
-  private double pivotRotationsPerRadian = pivotGearRatio / (2 * Math.PI);
+  private double pivotRotationsPerRadian = -pivotGearRatio / (2 * Math.PI);
 
   // Pivot limits
   private final double minAngleRad = -.88;
@@ -40,12 +41,16 @@ public class Pivot extends DiagnosticsSubsystem {
   private double d = 0.0;
 
   // Position variables in rotations
+  private double testPositionRad;
   private double targetPositionRad;
   private double commandedPositionRad;
   private double currentPositionRad;
 
+  private double debugPivotAngle;
+
   // PositionVoltage object
-  private PositionVoltage pivotPositionVoltage = new PositionVoltage(0).withSlot(0);
+  //private PositionVoltage pivotPositionVoltage = new PositionVoltage(0).withSlot(0);
+  private MotionMagicVoltage pivotPositionVoltage = new MotionMagicVoltage(0).withSlot(0);
 
   // CANbus for this subsystem
   private final String kCANbus = "CANivore";
@@ -53,7 +58,7 @@ public class Pivot extends DiagnosticsSubsystem {
   /** Creates a new Pivot. */
   public Pivot() {
     //pivotMotor = new TalonFX(21, kCANbus); //Falcon
-    pivotMotor = new TalonFX(21);
+    pivotMotor = new TalonFX(21, kCANbus);
     pivotMotorFault = new MotorFault(pivotMotor, 21);
     pivotMotorFilter = new SlewRateLimiter(0.5); //limits the rate of change to 0.5 units per seconds
     pivotMotor.setPosition(0); //TODO - initialize position
@@ -68,7 +73,8 @@ public class Pivot extends DiagnosticsSubsystem {
     updateDiagnostics();
     updateFeedback();
     // This method will be called once per scheduler run
-    commandedPositionRad = pivotMotorFilter.calculate(MathUtil.clamp(targetPositionRad, minAngleRad, maxAngleRad));
+    //commandedPositionRad = pivotMotorFilter.calculate(MathUtil.clamp(targetPositionRad, minAngleRad, maxAngleRad));
+    commandedPositionRad = MathUtil.clamp(targetPositionRad, minAngleRad, maxAngleRad);
     pivotMotor.setControl(pivotPositionVoltage.withPosition(commandedPositionRad * pivotRotationsPerRadian));
   }
 
@@ -80,7 +86,12 @@ public class Pivot extends DiagnosticsSubsystem {
   /* Sets the desired motor position in radians */
   public void setTargetPositionInRad(double pivotMotorPositionRad)
   {
-    targetPositionRad  = pivotMotorPositionRad;
+    targetPositionRad = pivotMotorPositionRad;
+  }
+
+  public double getTestCommandTargetPositionInRad()
+  {
+    return testPositionRad;
   }
 
   /* Gets the desired motor position in radians */
@@ -108,6 +119,9 @@ public class Pivot extends DiagnosticsSubsystem {
     configs.Voltage.PeakForwardVoltage = 12;
     configs.Voltage.PeakReverseVoltage = -12;
 
+    configs.MotionMagic.MotionMagicCruiseVelocity = 16;
+    configs.MotionMagic.MotionMagicAcceleration = 15;
+    configs.MotionMagic.MotionMagicJerk = 0;
     // configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
     // configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
     //configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -119,7 +133,7 @@ public class Pivot extends DiagnosticsSubsystem {
     String result = "";
     boolean ok = true;
     if (
-    pivotMotorFault.hasFaults());{
+    pivotMotorFault.hasFaults()){
       ok = false;
       result += pivotMotorFault.getFaults();
     }
@@ -132,10 +146,20 @@ public class Pivot extends DiagnosticsSubsystem {
     return setDiagnosticsFeedback(result, ok);
   }
 
+  public double getDebugPivotAngle(){
+    return debugPivotAngle;
+  }
+
+  public void setDebugPivotAngle(double angle){
+    debugPivotAngle = angle;
+  }
+
   @Override
   public void initSendable(SendableBuilder builder)
   {
     builder.setSmartDashboardType("Pivot");
+    builder.addDoubleProperty("Debug Pivot Angle", this::getDebugPivotAngle, this::setDebugPivotAngle);
+    builder.addDoubleProperty("Pivot Test Command Motor Position", this::getTargetPositionInRad, null);
     builder.addDoubleProperty("Target Pivot Motor Position", this::getTargetPositionInRad, this::setTargetPositionInRad);
     builder.addDoubleProperty("Commanded Pivot Motor Position", this::getCommandedPositionInRad, null);
     builder.addDoubleProperty("Actual Pivot Motor Position", this::getCurrentPositionInRad, null);

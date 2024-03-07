@@ -60,9 +60,9 @@ public class Feeder extends DiagnosticsSubsystem {
   /** Creates a new Trigger. */
   public Feeder() {
     //feederMotor = new TalonFX(19, kCANbus); //Falcon
-    feederMotor = new TalonFX(19);
+    feederMotor = new TalonFX(19, kCANbus);
     feederMotorFault = new MotorFault(feederMotor, 19);
-    feederMotorLimiter = new SlewRateLimiter(5); //limits the rate of change to 0.5 units per seconds
+    feederMotorLimiter = new SlewRateLimiter(13); //limits the rate of change to 0.5 units per seconds
 
     feederTof = new DigitalInput(1);
     feederTofDutyCycleInput = new DutyCycle(feederTof);
@@ -154,7 +154,7 @@ public class Feeder extends DiagnosticsSubsystem {
   public boolean updateDiagnostics(){
     String result = "";
     boolean ok = true;
-    if (feederMotorFault.hasFaults());{
+    if (feederMotorFault.hasFaults()){
       ok = false;
     }
     if(!ok){
