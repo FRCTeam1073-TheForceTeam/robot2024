@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.ShooterInterpolatorTable;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
 
 public class RunShooter extends Command {
