@@ -206,6 +206,39 @@ public class OI extends DiagnosticsSubsystem
     return getOperatorRawButton(8);
   }
 
+  /** Returns a specified button from the DPad */
+  public boolean getOperatorDPadTopLeft(){
+    return (operatorController.getPOV() == 315);
+  }
+
+  public boolean getOperatorDPadLeft(){
+    return (operatorController.getPOV() == 270);
+  }
+
+  public boolean getOperatorDPadBottomLeft(){
+    return (operatorController.getPOV() == 225);
+  }
+
+  public boolean getOperatorDPadDown(){
+    return (operatorController.getPOV() == 180);
+  }
+
+  public boolean getOperatorDPadBottomRight(){
+    return (operatorController.getPOV() == 135);
+  }
+
+  public boolean getOperatorDPadRight(){
+    return (operatorController.getPOV() == 90);
+  }
+
+  public boolean getOperatorDPadTopRight(){
+    return (operatorController.getPOV() == 45);
+  }
+
+  public boolean getOperatorDPadUp(){
+    return (operatorController.getPOV() == 0);
+  }
+
 
   @Override
   public void initSendable(SendableBuilder builder){

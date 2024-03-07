@@ -4,18 +4,26 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.CollectorTeleop;
-import frc.robot.commands.ArmPoseCommand;
+import frc.robot.commands.AmpShootCommand;
 import frc.robot.commands.ArmPoseTeleop;
+import frc.robot.commands.CancelCommand;
+import frc.robot.commands.CollectFeedCommand;
 import frc.robot.commands.CollectorArmTeleop;
-import frc.robot.commands.CollectorIntakeCommand;
-import frc.robot.commands.CollectorIntakeOutCommand;
-import frc.robot.commands.DriveThroughTrajectorySchema;
-import frc.robot.commands.DriveToPointSchema;
-import frc.robot.commands.SchemaDriveAuto;
-import frc.robot.subsystems.Bling;
-import frc.robot.subsystems.Camera;
+import frc.robot.commands.CollectorTeleop;
+import frc.robot.commands.LaunchFeederToSpeaker;
+import frc.robot.commands.StartRecordingAutonomous;
+import frc.robot.commands.StartRecordingTeleop;
+import frc.robot.commands.StopRecording;
+import frc.robot.commands.SubwooferShot;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.commands.autos.BlueClose4Note;
 import frc.robot.commands.autos.BlueCloseMidline2Note;
@@ -28,46 +36,18 @@ import frc.robot.commands.autos.RedCloseSnowPlowAuto;
 import frc.robot.commands.autos.RedFar1Note;
 import frc.robot.commands.autos.RedFarSnowPlowAuto;
 import frc.robot.commands.autos.TestAuto;
+import frc.robot.subsystems.Bling;
+import frc.robot.subsystems.Camera;
+import frc.robot.subsystems.Collector;
+import frc.robot.subsystems.CollectorArm;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.OI;
+import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.SerialComms;
+import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.SwerveModuleConfig;
-
-import frc.robot.subsystems.CollectorArm.POSE;
-
-import java.util.ArrayList;
-
-import edu.wpi.first.wpilibj.DriverStation;
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.*;
-import frc.robot.subsystems.*;
-
-import java.util.ArrayList;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -96,7 +76,7 @@ public class RobotContainer {
   private final CollectorArmTeleop m_collectorArmTeleop = new CollectorArmTeleop(m_collectorArm, m_OI);
   private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm, m_OI);
   private final AmpShootCommand m_ampShootCommand = new AmpShootCommand();
-
+  private final SubwooferShot m_subwooferShot = new SubwooferShot();
 
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -202,6 +182,9 @@ public class RobotContainer {
     Trigger ampShootCommand = new Trigger(m_OI::getOperatorMenuButton);
     ampShootCommand.onTrue(m_ampShootCommand.ampShot(m_shooter, m_feeder, m_pivot));
 
+    Trigger subwooferShot = new Trigger(m_OI::getOperatorDPadDown);
+    subwooferShot.onTrue(m_subwooferShot.runSubwooferShot(m_shooter, m_feeder, m_pivot));
+
     // System.out.println("Configuring buttons");
     // Trigger tagButton = new Trigger(m_OI::getXButton);
     // tagButton.onTrue(getTagData());
@@ -294,4 +277,9 @@ public class RobotContainer {
   public Command launchFeederToSpeaker(){
     return m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot, m_rangeFinder);
   }
+
+  public Command SpeakerShot(){
+    return m_subwooferShot.runSubwooferShot(m_shooter, m_feeder, m_pivot);
+  }
+
 }
