@@ -215,6 +215,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
   //   return armMap.get(currentLiftAngle);
   // }
 
+  /* Runs lift motor at angle input in radians */
   private void runLiftMotor(double liftAngle)
   {
     // conversions: Position to drive toward in rotations = revolutations = 2pi
@@ -225,6 +226,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     liftMotor.setControl(liftPositionVoltage.withPosition(liftAngleRotations).withFeedForward(liftFeedForward));
   }
 
+  /* runs extend motor at length input in meters */
   private void runExtendMotor(double extendLength)
   {
     //double extendLengthRotations = (extendLength + extendAbsoluteOffset) / extendMetersPerRotation;

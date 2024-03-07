@@ -68,6 +68,7 @@ public class Collector extends DiagnosticsSubsystem {
     updateDiagnostics();
   }
   
+  /* Runs collector motor with input velocity */
   private void runCollectMotor(double vel)
   {
     collectMotor.setControl(collectorVelocityVoltage.withVelocity(vel / collectorMeterPerRotations)); //meters per rotation
