@@ -11,7 +11,7 @@ import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.ShooterInterpolatorTable;
 
-public class SetPivotRange extends Command {
+public class PivotToRangeCommand extends Command {
   /** Creates a new SetPivotCommand. */
   private Pivot pivot;
   private RangeFinder rangefinder;
@@ -24,7 +24,7 @@ public class SetPivotRange extends Command {
   double count;
   boolean debug;
 
-  public SetPivotRange(Pivot pivot, RangeFinder rangefinder, boolean debug) {
+  public PivotToRangeCommand(Pivot pivot, RangeFinder rangefinder, boolean debug) {
     this.pivot = pivot;
     this.rangefinder = rangefinder;
     this.debug = debug;

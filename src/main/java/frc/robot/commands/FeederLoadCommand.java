@@ -11,7 +11,7 @@ import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.OI;
 
 
-public class LoadFeeder extends Command {
+public class FeederLoadCommand extends Command {
   private Feeder feeder;
 
   double minRange;
@@ -23,7 +23,7 @@ public class LoadFeeder extends Command {
   double intakeFeederRateThreshold = 0.001;
   
   /** Creates a new LoadTrigger. */
-  public LoadFeeder(Feeder feeder, double feederTargetVelocityMPS) {
+  public FeederLoadCommand(Feeder feeder, double feederTargetVelocityMPS) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.feeder = feeder;
     this.feederTargetVelocityMPS = feederTargetVelocityMPS;

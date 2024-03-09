@@ -23,12 +23,20 @@ public class CollectSequence extends Command {
       case START:
         return new SequentialCommandGroup(
           new CollectorIntakeCommand(m_collector, m_collectorArm),
-          new ParallelCommandGroup(
-            new SequentialCommandGroup(
-              new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE),
-              new ArmPoseCommand(m_collectorArm, POSE.HANDOFF)
-            )
-          )
+          new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE),
+          new ArmPoseCommand(m_collectorArm, POSE.STOW)
+        );
+      case STOW:
+        return new SequentialCommandGroup(
+          new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE),
+          new ArmPoseCommand(m_collectorArm, POSE.START),
+          new CollectorIntakeCommand(m_collector, m_collectorArm),
+          new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE),
+          new ArmPoseCommand(m_collectorArm, POSE.STOW)
+        );
+      case AMP:
+        return new SequentialCommandGroup(
+          new CollectorAmpCommand(m_collector, m_collectorArm)
         );
       default:
         return null;

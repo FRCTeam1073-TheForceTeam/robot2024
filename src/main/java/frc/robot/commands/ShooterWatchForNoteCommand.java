@@ -13,7 +13,7 @@ import frc.robot.subsystems.ShooterInterpolatorTable;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
 
-public class WatchShooterForNote extends Command {
+public class ShooterWatchForNoteCommand extends Command {
   private Shooter shooter;
   private double minRange;
   private double maxRange;
@@ -22,7 +22,7 @@ public class WatchShooterForNote extends Command {
   
   /* Creates a new StopShooter. */
 
-  public WatchShooterForNote(Shooter shooter) {
+  public ShooterWatchForNoteCommand(Shooter shooter) {
     /* Range to calculate the speed needed */
     // Use addRequirements() here to declare subsystem dependencies.
     maxRange = 0.4;

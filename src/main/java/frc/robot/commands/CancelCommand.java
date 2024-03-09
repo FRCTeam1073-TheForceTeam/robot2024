@@ -26,7 +26,7 @@ public class CancelCommand extends Command {
       new ParallelCommandGroup(
         new SetCollectorVelocity(m_collector, 0, true),
         new ArmPoseCommand(m_collectorArm, POSE.START),
-        new WatchShooterForNote(m_shooter),
+        new ShooterWatchForNoteCommand(m_shooter),
         new SetFeederVelocity(m_feeder, 0, true),
         new SetPivotAngle(m_pivot, 0, true)
       )

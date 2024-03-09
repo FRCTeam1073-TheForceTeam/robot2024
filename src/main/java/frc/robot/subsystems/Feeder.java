@@ -127,7 +127,7 @@ public class Feeder extends DiagnosticsSubsystem {
   }
 
   /* Uses the beam break sensor to detect if the note has entered the trigger */
-  public boolean noteIsInTrigger(){
+  public boolean noteIsInFeeder(){
     if (feederTofRange < 12){
 
     }

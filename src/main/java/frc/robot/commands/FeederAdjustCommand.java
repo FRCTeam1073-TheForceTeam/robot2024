@@ -7,12 +7,12 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Feeder;
 
-public class AdjustFeed extends Command {
+public class FeederAdjustCommand extends Command {
   Feeder feeder;
   private double maxFeedRange = 0.04;
   private double minFeedRange = 0.035; //0.03
   /** Creates a new AdjustFeed. */
-  public AdjustFeed(Feeder feeder) {
+  public FeederAdjustCommand(Feeder feeder) {
     this.feeder = feeder;
     // Use addRequirements() here to declare subsystem dependencies.
   }

@@ -86,7 +86,7 @@ public class RobotContainer {
   private final OI m_OI = new OI();
 
   private final RangeFinder m_rangeFinder = new RangeFinder();
-  private final LaunchFeederToSpeakerSequence m_launchFeederToSpeaker = new LaunchFeederToSpeakerSequence();
+  private final ShooterSequences m_shootSequence = new ShooterSequences();
   private final CancelCommand m_cancelCommand = new CancelCommand();
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
   private final Collector m_collector = new Collector();
@@ -94,8 +94,8 @@ public class RobotContainer {
   private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_collectorArm, m_drivetrain, m_OI);
   private final CollectorArmTeleop m_collectorArmTeleop = new CollectorArmTeleop(m_collectorArm, m_OI);
   private final ArmPoseSequences m_armPoseTeleop = new ArmPoseSequences(m_collectorArm, m_OI);
-  private final AmpShootCommand m_ampShootCommand = new AmpShootCommand();
   private final CollectSequence m_collectSequence = new CollectSequence();
+  private final HandoffSequence m_handoffSequence = new HandoffSequence();
 
 
 
@@ -181,11 +181,11 @@ public class RobotContainer {
    */
   private void configureBindings() // TODO: NSARGENT: is this legit? configureBindings() call up on line 82
   {
-    Trigger loadNoteToFeeder = new Trigger(m_OI::getOperatorLeftTrigger);
-    loadNoteToFeeder.onTrue(m_collectSequence.collectNote(m_collector, m_collectorArm));
+    Trigger collectNote = new Trigger(m_OI::getOperatorLeftTrigger);
+    collectNote.onTrue(m_collectSequence.collectNote(m_collector, m_collectorArm));
     
-    Trigger launchFeederToSpeaker = new Trigger(m_OI::getOperatorRightTrigger);
-    launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot, m_rangeFinder));
+    Trigger shootNote = new Trigger(m_OI::getOperatorRightTrigger);
+    shootNote.onTrue(m_shootSequence.shootToSpeaker(m_handoffSequence, m_collectorArm, m_collector, m_shooter, m_feeder, m_pivot, m_rangeFinder));
 
     Trigger cancelCommand = new Trigger(m_OI::getOperatorBButton);
     cancelCommand.onTrue(m_cancelCommand.cancel(m_collector, m_collectorArm, m_shooter, m_feeder, m_pivot));
@@ -200,7 +200,7 @@ public class RobotContainer {
     armAmpCommand.onTrue(m_armPoseTeleop.ampPose());
 
     Trigger ampShootCommand = new Trigger(m_OI::getOperatorMenuButton);
-    ampShootCommand.onTrue(m_ampShootCommand.ampShot(m_shooter, m_feeder, m_pivot));
+    ampShootCommand.onTrue(m_shootSequence.shootToAmp(m_handoffSequence, m_collectorArm, m_collector, m_shooter, m_feeder, m_pivot));
 
     // System.out.println("Configuring buttons");
     // Trigger tagButton = new Trigger(m_OI::getXButton);
@@ -289,9 +289,5 @@ public class RobotContainer {
 
   public Command getDisabledCommand() {
     return null;
-  }
-
-  public Command launchFeederToSpeaker(){
-    return m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot, m_rangeFinder);
   }
 }
