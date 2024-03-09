@@ -39,19 +39,24 @@ public class ArmPoseCommand extends Command {
         m_targetExtend = 0.0;
         break;
       case STOW_INTERMEDIATE:
-        m_targetLift = 0.23;
+        m_targetLift = 0.28;
         m_targetExtend = 0.0;
+        break;
+      case STOW_INTERMEDIATE_2:
+        m_targetLift = 0.28;
+        m_targetExtend = 0.108;
+        break;
       case STOW:
-        m_targetLift = 0.21;
-        m_targetExtend = 0.1067363281;
+        m_targetLift = 0.24;
+        m_targetExtend = 0.108;
         break;
       case HANDOFF:
-        m_targetLift = 0.21;
-        m_targetExtend = 0.1067363281;
+        m_targetLift = 0.24;
+        m_targetExtend = 0.108;
         break;
       case AMP:
-        m_targetLift = 1.8453125;
-        m_targetExtend = 0.0;
+        m_targetLift = 1.9453125;
+        m_targetExtend = 0.05;
         break;
     }
   }
@@ -76,7 +81,7 @@ public class ArmPoseCommand extends Command {
   public boolean isFinished() {
     double liftError = Math.abs(m_arm.getCurrentLiftAngle() - m_targetLift);
     double extendError = Math.abs(m_arm.getCurrentExtendLength() - m_targetExtend);
-    if((liftError < 0.02) && (extendError < 0.005)){
+    if((liftError < 0.015) && (extendError < 0.005)){
       return true;
     }
     else{

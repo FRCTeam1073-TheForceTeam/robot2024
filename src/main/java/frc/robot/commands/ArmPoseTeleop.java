@@ -29,15 +29,25 @@ public class ArmPoseTeleop extends Command {
     );
   }
 
+  public SequentialCommandGroup stowIntermediatePose() {
+    return new SequentialCommandGroup(
+      new ArmPoseCommand(arm, POSE.STOW_INTERMEDIATE),
+      new ArmPoseCommand(arm, POSE.STOW_INTERMEDIATE_2)
+
+    );
+  }
+
   public SequentialCommandGroup stowPose() {
     return new SequentialCommandGroup(
       new ArmPoseCommand(arm, POSE.STOW_INTERMEDIATE),
+      new ArmPoseCommand(arm, POSE.STOW_INTERMEDIATE_2),
       new ArmPoseCommand(arm, POSE.STOW)
     );
   }
 
   public SequentialCommandGroup ampPose() {
     return new SequentialCommandGroup(
+      new ArmPoseCommand(arm, POSE.STOW_INTERMEDIATE),
       new ArmPoseCommand(arm, POSE.AMP)
     );
   }

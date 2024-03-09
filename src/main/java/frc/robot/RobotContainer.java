@@ -193,6 +193,9 @@ public class RobotContainer {
     Trigger armStartCommand = new Trigger(m_OI::getOperatorAButton);
     armStartCommand.onTrue(m_armPoseTeleop.startPose());
 
+    // Trigger armInterCommand = new Trigger(m_OI::getOperatorYButton);
+    // armInterCommand.onTrue(m_armPoseTeleop.stowIntermediatePose());
+
     Trigger armStowCommand = new Trigger(m_OI::getOperatorXButton);
     armStowCommand.onTrue(m_armPoseTeleop.stowPose());
 
