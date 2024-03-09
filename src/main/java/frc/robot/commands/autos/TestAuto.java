@@ -15,18 +15,20 @@ public class TestAuto
     public static Command create(Drivetrain m_drivetrain)
     {
         Path.Point point1 = new Path.Point(0.0, 0.0);
-        Path.Point point2 = new Path.Point(1.0, 0.0);
-        Path.Point point3 = new Path.Point(1.0, -1.0);
-        Path.Point point4 = new Path.Point(2.0, -0.5);
-        Path.Point point5 = new Path.Point(5.0, 0.0);
+        Path.Point point2 = new Path.Point(3.0, 0.0);
+        Path.Point point3 = new Path.Point(3.0, -3.0);
+        point2.blend_radius = 2.0;
 
         ArrayList<Segment> segments = new ArrayList<Segment>();
         segments.add(new Path.Segment(point1, point2, 0.0, 2.0));
-        segments.add(new Path.Segment(point2, point3, Math.PI / 2, 2.0));
-        segments.add(new Path.Segment(point3, point4, Math.PI, 2.0));
-        segments.add(new Path.Segment(point4, point5, Math.PI / 4, 2.0));
-        segments.add(new Path.Segment(point5, point1, 0.0, 2.0));
+        segments.add(new Path.Segment(point2, point3, 0, 2.0));
+        segments.get(0).width = 2.0;
+        
+        Path path = new Path(segments, 0);
 
-        return SchemaDriveAuto.create(new DrivePathSchema(m_drivetrain, new Path(segments, 0)), m_drivetrain);
+        path.pathGain = 1.5;
+        
+
+        return SchemaDriveAuto.create(new DrivePathSchema(m_drivetrain, path), m_drivetrain);
     }
 }

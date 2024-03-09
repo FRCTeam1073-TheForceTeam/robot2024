@@ -17,23 +17,21 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.CollectorArm.POSE;
 
 
-public class CollectFeedCommand extends Command 
+public class HandoffCommand extends Command 
 {
   /** Creates a new CollectShootCommand. */
-  public CollectFeedCommand() {
+  public HandoffCommand() {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
-  public SequentialCommandGroup runCollectFeedCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm, Pivot m_pivot, Feeder m_feeder, Shooter m_shooter) {
-    return new SequentialCommandGroup(
-      new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
+  public SequentialCommandGroup runHandoffCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm, Pivot m_pivot, Feeder m_feeder, Shooter m_shooter) {
+    return new SequentialCommandGroup(    
       new ParallelCommandGroup(
         new SequentialCommandGroup(
           new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE),
-          new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE_2),
           new ArmPoseCommand(m_collectorArm, POSE.HANDOFF)
         ),
-        new SetPivotCommand(m_pivot, -0.6)
+        new SetPivotCommand(m_pivot, -0.7)
       ),
       //new ParallelCommandGroup(
         

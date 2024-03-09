@@ -18,16 +18,26 @@ import frc.robot.commands.SchemaDriveAuto;
 import frc.robot.subsystems.Bling;
 import frc.robot.subsystems.Camera;
 import frc.robot.commands.TeleopDrive;
-import frc.robot.commands.autos.BlueClose4Note;
+import frc.robot.commands.autos.BlueWing4Note;
 import frc.robot.commands.autos.BlueCloseMidline2Note;
 import frc.robot.commands.autos.BlueCloseMidline3Note;
-import frc.robot.commands.autos.BlueFarMidline2Note;
+import frc.robot.commands.autos.BlueAmpL2;
 import frc.robot.commands.autos.BlueFarMidline3Note;
+import frc.robot.commands.autos.BlueSourceL1;
+import frc.robot.commands.autos.BlueSourceL2;
+import frc.robot.commands.autos.BlueSourceL3;
+import frc.robot.commands.autos.BlueSourceL4;
 import frc.robot.commands.autos.LeaveAuto;
+import frc.robot.commands.autos.RedCenterL1;
+import frc.robot.commands.autos.RedCenterL2;
 import frc.robot.commands.autos.RedCloseMidline2Note;
 import frc.robot.commands.autos.RedCloseSnowPlowAuto;
 import frc.robot.commands.autos.RedFar1Note;
 import frc.robot.commands.autos.RedFarSnowPlowAuto;
+import frc.robot.commands.autos.RedSourceL1;
+import frc.robot.commands.autos.RedSourceL2;
+import frc.robot.commands.autos.RedSourceL3;
+import frc.robot.commands.autos.RedSourceL4;
 import frc.robot.commands.autos.TestAuto;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
@@ -118,6 +128,7 @@ public class RobotContainer {
   // private static final String kBlueFarMidline3Note = "Blue Far Midline 3 Note";
   // private static final String kLeaveAuto = "Leave Auto";
   // private static final String kTestAuto = "Test Auto";
+
   private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
   private final Camera m_camera1 = new Camera(m_serial, "1");  // camID is how SerialComms and the cameras themselves tells them apart
   //private final Camera m_camera2 = new Camera(m_serial, "2");
