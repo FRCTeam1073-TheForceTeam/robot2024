@@ -23,10 +23,16 @@ import frc.robot.commands.autos.BlueCloseMidline3Note;
 import frc.robot.commands.autos.BlueAmpL2;
 import frc.robot.commands.autos.BlueFarMidline3Note;
 import frc.robot.commands.autos.LeaveAuto;
+import frc.robot.commands.autos.RedCenterL1;
+import frc.robot.commands.autos.RedCenterL2;
 import frc.robot.commands.autos.RedCloseMidline2Note;
 import frc.robot.commands.autos.RedCloseSnowPlowAuto;
 import frc.robot.commands.autos.RedFar1Note;
 import frc.robot.commands.autos.RedFarSnowPlowAuto;
+import frc.robot.commands.autos.RedSourceL1;
+import frc.robot.commands.autos.RedSourceL2;
+import frc.robot.commands.autos.RedSourceL3;
+import frc.robot.commands.autos.RedSourceL4;
 import frc.robot.commands.autos.TestAuto;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
@@ -162,7 +168,7 @@ public class RobotContainer {
     // CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_shooterTestCommand);
     //CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
-    CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand);
+    CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand); 
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_collectorArmTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_runShooterCommand);
@@ -312,17 +318,17 @@ public class RobotContainer {
       case kNoAuto:
         return null;
       case kRedSourceL1:
-        return null;
+        return RedSourceL1.create(m_drivetrain, m_shooter, m_pivot);
       case kRedSourceL2:
-        return null;
+        return RedSourceL2.create(m_drivetrain, m_shooter, m_pivot);
       case kRedSourceL3:
-        return null;
+        return RedSourceL3.create(m_drivetrain, m_shooter, m_pivot);
       case kRedSourceL4:
-        return null;
+        return RedSourceL4.create(m_drivetrain, m_shooter, m_pivot);
       case kRedCenterL1:
-        return null;
+        return RedCenterL1.create(m_drivetrain);
       case kRedCenterL2:
-        return null;
+        return RedCenterL2.create(m_drivetrain);
       case kRedCenterL3:
         return null;
       case kRedCenterL4:
@@ -371,9 +377,9 @@ public class RobotContainer {
         return RedCloseMidline2Note.create(m_drivetrain, m_feeder, m_shooter, m_pivot, m_collector, m_collectorArm, m_handoffCommand);
       case kBlueCloseMidline2Note:
         return BlueCloseMidline2Note.create(m_drivetrain, m_feeder, m_shooter, m_pivot, m_collector, m_collectorArm, m_handoffCommand);
-      case kBlueCloseMidline3Note:
+      case kBlueCloseMidline3Note: 
         return BlueCloseMidline3Note.create(m_drivetrain, m_feeder, m_shooter, m_pivot, m_collector, m_collectorArm, m_handoffCommand);
-      case kBlueFarMidline3Note:
+      case kBlueFarMidline3Note: 
         return BlueFarMidline3Note.create(m_drivetrain, m_feeder, m_shooter, m_pivot, m_collector, m_collectorArm, m_handoffCommand);
       case kLeaveAuto:
         return LeaveAuto.create(m_drivetrain);

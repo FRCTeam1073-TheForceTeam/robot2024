@@ -70,7 +70,7 @@ public class TeleopDrive extends SchemaArbiter
     addSchema(rotateSchema);
     addSchema(holdSchema);
     addSchema(targetSchema);
-    addSchema(turn180Schema);
+    // addSchema(turn180Schema);
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(ds);
   }
@@ -165,7 +165,7 @@ public class TeleopDrive extends SchemaArbiter
       rotateSchema.update(m_drivetrain);
       holdSchema.update(m_drivetrain);
       targetSchema.update(m_drivetrain);
-      turn180Schema.update(m_drivetrain);
+      // turn180Schema.update(m_drivetrain);
     }
     // else
     // {
