@@ -31,15 +31,18 @@ public class RedSourceL1
         ArrayList<Segment> segments = new ArrayList<Segment>();
         segments.add(new Segment(start, pathShootPoint, 0.853, 2.5));
 
+        Path path = new Path(segments, 0.853);
+        path.pathGain = 1.5;
+
         return new ParallelCommandGroup(
-            SchemaDriveAuto.create(new DrivePathSchema(drivetrain, new Path(segments, 0.853)), drivetrain)//,
-            // new SequentialCommandGroup(
-            //     new ParallelCommandGroup(
-            //         new RunShooter(shooter, range1),
-            //         new PivotRangeCommand(pivot, range1)
-            //     ),
-            //     new WaitForPoint(drivetrain, poseShootPoint, 0.1, 0.1)
-            // )
+            SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), drivetrain),
+            new SequentialCommandGroup(
+                new ParallelCommandGroup(
+                    new RunShooter(shooter, range1),
+                    new PivotRangeCommand(pivot, range1)
+                ),
+                new WaitForPoint(drivetrain, poseShootPoint, 0.1, 0.1)
+            )
         );
     }
     

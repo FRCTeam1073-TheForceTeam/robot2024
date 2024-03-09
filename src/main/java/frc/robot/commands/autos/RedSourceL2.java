@@ -27,7 +27,7 @@ public class RedSourceL2
         Path.Point avoidStagePost = new Path.Point(5.7, 0.75);
         Path.Point midlineNote2 = new Path.Point(8.6, 0.0);
         Path.Point stagePoint = new Path.Point(5.368, -2.37);
-        stagePoint.blend_radius = 0.6;
+        stagePoint.blend_radius = 1.0;
 
         Pose2d poseShootPoint = new Pose2d(3.5, 0.0, new Rotation2d(0.853));
         double range1 = 0.0;
@@ -39,8 +39,11 @@ public class RedSourceL2
         segments.add(new Segment(midlineNote2, stagePoint, 0.0, 3.0));
         segments.add(new Segment(stagePoint, pathShootPoint, 0.853, 3.0));
 
+        Path path = new Path(segments, 0.853);
+        path.pathGain = 1.5;
+
         return new ParallelCommandGroup(
-            SchemaDriveAuto.create(new DrivePathSchema(drivetrain, new Path(segments, 0.853)), drivetrain)//,
+            SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), drivetrain)//,
             // new SequentialCommandGroup(
             //     new ParallelCommandGroup(
             //         new RunShooter(shooter, range1),

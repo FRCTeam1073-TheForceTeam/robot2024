@@ -22,6 +22,10 @@ import frc.robot.commands.autos.BlueCloseMidline2Note;
 import frc.robot.commands.autos.BlueCloseMidline3Note;
 import frc.robot.commands.autos.BlueAmpL2;
 import frc.robot.commands.autos.BlueFarMidline3Note;
+import frc.robot.commands.autos.BlueSourceL1;
+import frc.robot.commands.autos.BlueSourceL2;
+import frc.robot.commands.autos.BlueSourceL3;
+import frc.robot.commands.autos.BlueSourceL4;
 import frc.robot.commands.autos.LeaveAuto;
 import frc.robot.commands.autos.RedCenterL1;
 import frc.robot.commands.autos.RedCenterL2;
@@ -342,13 +346,13 @@ public class RobotContainer {
       case kRedAmpL4:
         return null;
       case kBlueSourceL1:
-        return null;
+        return BlueSourceL1.create(m_drivetrain, m_shooter, m_pivot);
       case kBlueSourceL2:
-        return null;
+        return BlueSourceL2.create(m_drivetrain, m_shooter, m_pivot);
       case kBlueSourceL3:
-        return null;
+        return BlueSourceL3.create(m_drivetrain, m_shooter, m_pivot);
       case kBlueSourceL4:
-        return null;
+        return BlueSourceL4.create(m_drivetrain, m_shooter, m_pivot);
       case kBlueCenterL1:
         return null;
       case kBlueCenterL2:
