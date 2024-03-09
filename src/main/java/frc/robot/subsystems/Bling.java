@@ -12,7 +12,7 @@ public class Bling extends DiagnosticsSubsystem {
   public AddressableLED m_led;
   public AddressableLEDBuffer m_ledBuffer;
 
-  public int length = 24;
+  public int length = 48;
   public int slotLength;
   public int numSlots = 48;
   
@@ -51,7 +51,8 @@ public class Bling extends DiagnosticsSubsystem {
   public void periodic() {
     // This method will be called once per scheduler run
     m_led.setData(m_ledBuffer);
-    setBatteryBling(0);
+    //setBatteryBling(0);
+    setRGBAll(25, 5, 10);
   }
 
   /**
