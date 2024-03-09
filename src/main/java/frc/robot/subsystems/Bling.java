@@ -13,8 +13,9 @@ public class Bling extends DiagnosticsSubsystem {
   public AddressableLEDBuffer m_ledBuffer;
 
   public int length = 48;
-  public int slotLength;
   public int numSlots = 48;
+  public int qlength = 6;
+  public int qnum = 8;
   
   /**
    * Creates a new bling.
@@ -34,7 +35,6 @@ public class Bling extends DiagnosticsSubsystem {
     m_led.setLength(m_ledBuffer.getLength());
     m_led.setData(m_ledBuffer);
     m_led.start();
-    slotLength = (int) (m_ledBuffer.getLength() / (numSlots));
   }
 
   /**
@@ -51,8 +51,8 @@ public class Bling extends DiagnosticsSubsystem {
   public void periodic() {
     // This method will be called once per scheduler run
     m_led.setData(m_ledBuffer);
-    //setBatteryBling(0);
-    setRGBAll(25, 5, 10);
+    setBatteryBling(1);
+    //setRangeRGB(0, 6, 20, 5, 15);
   }
 
   /**
@@ -113,16 +113,10 @@ public class Bling extends DiagnosticsSubsystem {
     }
   }
 
-  /**
-   * Sets a slot of LEDs to one color.
-   * @param slotNumber
-   * @param r - the r value [0-255]
-   * @param g - the g value [0-255]
-   * @param b - the b value [0-255]
-   */
-  public void setSlotRGB(int slotNumber, int r, int g, int b) {
-    setRangeRGB(slotNumber*slotLength, slotLength, r, g, b);
+  // first quadrant is 0, second is 1, third is 2, etc...
+  public void setQuadRGB(int quad, int r, int g, int b){
 
+    setRangeRGB((quad * qlength), qlength, r, g, b);
   }
 
   /**
@@ -130,19 +124,18 @@ public class Bling extends DiagnosticsSubsystem {
    * Green when battery voltage is greater than 12
    * Blue when battery voltage is greater than 10
    * Red when battery voltage is less than or equal to 10
-   * @param slotNumber
-   */
-  public void setBatteryBling(int slotNumber) {
+   * @param quadNum */
+  public void setBatteryBling(int quadNum) {
     double volts = RobotController.getBatteryVoltage();
 
     if (volts > 12) {
-      setSlotRGB(slotNumber, 0, 255, 0);
+      setQuadRGB(quadNum, 0, 255, 0);
     }
     else if (volts > 10){
-      setSlotRGB(slotNumber, 0, 0, 255);
+      setQuadRGB(quadNum, 0, 0, 255);
     }
     else{
-      setSlotRGB(slotNumber, 255, 0, 0);
+      setQuadRGB(quadNum, 255, 0, 0);
     }
   }
 
