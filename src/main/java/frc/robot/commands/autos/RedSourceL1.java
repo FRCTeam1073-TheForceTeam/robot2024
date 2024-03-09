@@ -26,7 +26,7 @@ public class RedSourceL1
         Path.Point pathShootPoint = new Path.Point(3.5, 0.0);
 
         Pose2d poseShootPoint = new Pose2d(3.5, 0.0, new Rotation2d(0.853));
-        double range1 = 0.0;
+        double range1 = 4.0;
 
         ArrayList<Segment> segments = new ArrayList<Segment>();
         segments.add(new Segment(start, pathShootPoint, 0.853, 2.5));
@@ -47,3 +47,14 @@ public class RedSourceL1
     }
     
 }
+
+
+
+
+
+
+
+
+
+
+

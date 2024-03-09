@@ -133,7 +133,7 @@ public class Shooter extends DiagnosticsSubsystem{
   }
 
   public double limitShooterVelocity(double maxVel) {
-    return MathUtil.clamp(maxVel, -28, 28);
+    return MathUtil.clamp(maxVel, -40, 40);
   }
 
   public double getTofRange(){
@@ -204,8 +204,8 @@ public class Shooter extends DiagnosticsSubsystem{
     TalonFXConfiguration configs = new TalonFXConfiguration();
 
     configs.MotionMagic.MotionMagicCruiseVelocity = 25;
-    configs.MotionMagic.MotionMagicAcceleration = 30;
-    configs.MotionMagic.MotionMagicJerk = 30;
+    configs.MotionMagic.MotionMagicAcceleration = 20;
+    configs.MotionMagic.MotionMagicJerk = 25;
 
     configs.Slot0.kP = p;
     configs.Slot0.kI = i;

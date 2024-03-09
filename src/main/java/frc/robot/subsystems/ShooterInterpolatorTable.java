@@ -32,17 +32,33 @@ public class ShooterInterpolatorTable {
         shooterVelocityTable.put(6.55, 24.8); // 29.8
         shooterVelocityTable.put(7.3, 27.0); //32
 
+
+        shooterVelocityTable.put(0.0, 25.0); // offset: 0
+        shooterVelocityTable.put(2.73, 22.0);
+        shooterVelocityTable.put(3.02, 23.0); // offset: 10 inches left
+        shooterVelocityTable.put(3.86, 24.0); // offset: 11-12 inches left
+        shooterVelocityTable.put(4.07, 27.0); // offset: 13.5 inches left
+        shooterVelocityTable.put(4.7, 28.0); // offset: 6 inches left
+        shooterVelocityTable.put(5.0, 29.0); // close enough
+        shooterVelocityTable.put(5.65, 32.0); // offset: 13.5 inches left
+        shooterVelocityTable.put(6.17, 32.0); // offset: 6 inches left
+        shooterVelocityTable.put(6.82, 34.0); // close enough
+
         // ex: shooterVelocityTable.put(0.0, 0.0);;
     }
 
         public void setUpPivotInterpolator(){
         //first value is the range, sceond value is the pivot angle
         pivotTable.put(0.0, 0.0); // offset: 0
-        pivotTable.put(2.05, -0.3); // offset: 10 inches left
-        pivotTable.put(3.55, -0.505); // offset: 11-12 inches left
-        pivotTable.put(4.99, -0.718); // offset: 13.5 inches left
-        pivotTable.put(6.55, -0.788); // offset: 6 inches left
-        pivotTable.put(7.3, -0.82); // close enough
+        pivotTable.put(2.73, -0.5);
+        pivotTable.put(3.02, -0.51); // offset: 10 inches left
+        pivotTable.put(3.86, -0.58); // offset: 11-12 inches left
+        pivotTable.put(4.07, -0.64); // offset: 13.5 inches left
+        pivotTable.put(4.7, -0.69); // offset: 6 inches left
+        pivotTable.put(5.0, -0.7); // close enough
+        pivotTable.put(5.65, -0.7415); // offset: 13.5 inches left
+        pivotTable.put(6.17, -0.755); // offset: 6 inches left
+        pivotTable.put(6.82, -0.7605); // close enough
     }
 
     public void setUpFeederInterpolator(){

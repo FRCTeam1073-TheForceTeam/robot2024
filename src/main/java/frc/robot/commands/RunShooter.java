@@ -84,7 +84,7 @@ public class RunShooter extends Command {
     averageBottomVel = (0.5 * averageBottomVel) + (0.5 * currentBottomVel);
     averageTopVel = (0.5 * averageTopVel) + (0.5 * currentTopVel);
 
-    if((Math.abs(averageBottomVel - shooterBottomMPS) < 0.5) && (Math.abs(averageTopVel - shooterTopMPS) < 0.5)){
+    if((Math.abs(averageBottomVel - shooterBottomMPS) < 0.55) && (Math.abs(averageTopVel - shooterTopMPS) < 0.55)){
       count++;
     }
     else if(count > 0){
