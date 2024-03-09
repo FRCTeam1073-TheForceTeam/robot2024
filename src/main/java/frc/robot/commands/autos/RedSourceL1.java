@@ -29,13 +29,13 @@ public class RedSourceL1
         Path.Point start = new Path.Point(0.0, 0.0);
         Path.Point pathShootPoint = new Path.Point(3.5, 0.0);
 
-        Pose2d poseShootPoint = new Pose2d(3.5, 0.0, new Rotation2d(0.768));
-        double range1 = 4.3;
+        Pose2d poseShootPoint = new Pose2d(3.5, 0.0, new Rotation2d(0.83));
+        double range1 = 4.1;
 
         ArrayList<Segment> segments = new ArrayList<Segment>();
-        segments.add(new Segment(start, pathShootPoint, 0.768, 2.5));
+        segments.add(new Segment(start, pathShootPoint, 0.83, 2.5));
 
-        Path path = new Path(segments, 0.768);
+        Path path = new Path(segments, 0.83 );
         path.pathGain = 1.5;
 
         return new ParallelCommandGroup(

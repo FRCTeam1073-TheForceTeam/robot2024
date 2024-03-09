@@ -26,23 +26,23 @@ public class ShooterInterpolatorTable {
        shooterVelocityTable.clear();
         //first value is the range, sceond value is the speed/velocity
         shooterVelocityTable.put(0.0, 25.0); //old:25
-        shooterVelocityTable.put(2.05, 15.0); //20
-        shooterVelocityTable.put(3.55, 18.0); //23
-        shooterVelocityTable.put(4.99, 22.0); //27
-        shooterVelocityTable.put(6.55, 24.8); // 29.8
-        shooterVelocityTable.put(7.3, 27.0); //32
+        shooterVelocityTable.put(1.26, 25.0); //20
+        shooterVelocityTable.put(2.67, 22.0); //23
+        shooterVelocityTable.put(2.93, 23.0); //27
+        shooterVelocityTable.put(3.58, 24.0); // 29.8
+        shooterVelocityTable.put(4.07, 27.0); //32
 
 
-        shooterVelocityTable.put(0.0, 25.0); // offset: 0
-        shooterVelocityTable.put(2.73, 22.0);
-        shooterVelocityTable.put(3.02, 23.0); // offset: 10 inches left
-        shooterVelocityTable.put(3.86, 24.0); // offset: 11-12 inches left
-        shooterVelocityTable.put(4.07, 27.0); // offset: 13.5 inches left
-        shooterVelocityTable.put(4.7, 28.0); // offset: 6 inches left
-        shooterVelocityTable.put(5.0, 29.0); // close enough
-        shooterVelocityTable.put(5.65, 32.0); // offset: 13.5 inches left
-        shooterVelocityTable.put(6.17, 32.0); // offset: 6 inches left
-        shooterVelocityTable.put(6.82, 34.0); // close enough
+        shooterVelocityTable.put(4.7, 28.0); // offset: 0
+        shooterVelocityTable.put(5.0, 29.0);
+        shooterVelocityTable.put(5.65, 32.0); // offset: 10 inches left
+        shooterVelocityTable.put(6.17, 32.0); // offset: 11-12 inches left
+        shooterVelocityTable.put(6.82, 34.0); // offset: 13.5 inches left
+        // shooterVelocityTable.put(4.7, 28.0); // offset: 6 inches left
+        // shooterVelocityTable.put(5.0, 29.0); // close enough
+        // shooterVelocityTable.put(5.65, 32.0); // offset: 13.5 inches left
+        // shooterVelocityTable.put(6.17, 32.0); // offset: 6 inches left
+        // shooterVelocityTable.put(6.82, 34.0); // close enough
 
         // ex: shooterVelocityTable.put(0.0, 0.0);;
     }
