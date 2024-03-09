@@ -206,8 +206,8 @@ public class RobotContainer {
 
     // System.out.println("Configuring buttons");
     Trigger tagButton = new Trigger(m_OI::getXButtonDriver);
-    //tagButton.onTrue(c_getAprilTagInfo);
-    tagButton.onTrue(new GetAprilTagInfo(m_serial, m_camera2, "2"));
+    //tagButton.onTrue(c_getAprilTagInfo);  // old and busted
+    tagButton.onTrue(new GetAprilTagInfo(m_serial, m_camera2, "2")); // new hotness
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
 

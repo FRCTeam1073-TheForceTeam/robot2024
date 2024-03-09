@@ -6,9 +6,6 @@ package frc.robot.subsystems;
 
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -36,14 +33,9 @@ public class SerialComms extends SubsystemBase{
       return;
     }
     message = message.concat("\n");
-    //System.out.println(String.format("in send() message we're about to send as string: %s", message));
     byte[] messageAsBytes = message.getBytes(StandardCharsets.US_ASCII);
-    //System.out.println(String.format("message we're about to send as bytes: %s", messageAsBytes));
-    //System.out.println(String.format("message we're about to send as bytes converted back to ASCII string: %s", new String(messageAsBytes, StandardCharsets.US_ASCII)));
     for(int i=0; i < messageAsBytes.length; i++) {
       byte[] arrayofone = {messageAsBytes[i]};
-      //System.out.println(String.format("arrayofone: %s", arrayofone[0]));
-      //System.out.println(String.format("i: %s", i));
       serialPort.write(arrayofone, 1);
     }
   }
@@ -66,8 +58,6 @@ public class SerialComms extends SubsystemBase{
         char dataAsChar = new String(data, StandardCharsets.US_ASCII).toCharArray()[0];
 
         msgAsString = msgAsString.concat(dataAsStr);
-        //System.out.println(String.format("msgAsString thus far: %s", msgAsString));
-        //System.out.println(String.format("byte we just received as string: |%s|", dataAsStr));
         if(dataAsChar == '\n') {
           System.out.println("should have just gotten a newline");
           System.out.println(String.format("full msg we received as string: %s", msgAsString));
@@ -85,7 +75,6 @@ public class SerialComms extends SubsystemBase{
     System.out.println(String.format("msg received as string: %s", receivedString));
     return receivedString;
   }
-
   @Override
   public void periodic() {
   }
