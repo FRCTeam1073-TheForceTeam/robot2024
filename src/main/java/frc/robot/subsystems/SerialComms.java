@@ -8,6 +8,7 @@ package frc.robot.subsystems;
 import java.nio.charset.StandardCharsets;
 
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -18,7 +19,7 @@ public class SerialComms extends SubsystemBase{
   public SerialComms(SerialPort.Port portUSB) {
     this.portUSB = portUSB;
     try {
-      serialPort = new SerialPort(2000000, portUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
+      serialPort = new SerialPort(1000000, portUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
       serialPort.setFlowControl(SerialPort.FlowControl.kNone);
       System.out.println("set serialPort and flowcontrol");
     }
@@ -58,23 +59,24 @@ public class SerialComms extends SubsystemBase{
         char dataAsChar = new String(data, StandardCharsets.US_ASCII).toCharArray()[0];
 
         msgAsString = msgAsString.concat(dataAsStr);
-        if(dataAsChar == '\n') {
+        if(dataAsChar == '\n') {  
           System.out.println("should have just gotten a newline");
           System.out.println(String.format("full msg we received as string: %s", msgAsString));
+          SmartDashboard.putString("SerialCommReceivedMsg", msgAsString);
           return msgAsString;
         }
       }
     }
   }
   
-  static String transact(String message){
-    System.out.println(String.format("sending message, as a String: %s", message));
-    send(message);
+  // static String transact(String message){
+  //   System.out.println(String.format("sending message, as a String: %s", message));
+  //   send(message);
 
-    String receivedString = receive();
-    System.out.println(String.format("msg received as string: %s", receivedString));
-    return receivedString;
-  }
+  //   String receivedString = receive();
+  //   System.out.println(String.format("msg received as string: %s", receivedString));
+  //   return receivedString;
+  // }
   @Override
   public void periodic() {
   }

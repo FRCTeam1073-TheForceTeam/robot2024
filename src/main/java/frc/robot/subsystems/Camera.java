@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 // import java.util.ArrayList;
 import java.lang.Thread;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Camera extends SubsystemBase {
@@ -32,8 +33,11 @@ public class Camera extends SubsystemBase {
   public void stopRecording(){
     serialComms.send(this.camID + ",di");
   }
-  public String getAprilTagInfo(String tagID){
-    serialComms.send(this.camID + ",ap," + tagID);
+  
+  public String getAprilTagInfo(String tagID) {
+    String outgoingMsg = this.camID + ",ap," + tagID;
+    SmartDashboard.putString("CameraOutgoingMsg", outgoingMsg);
+    serialComms.send(outgoingMsg);
     return serialComms.receive();
   }
 

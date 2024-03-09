@@ -120,8 +120,9 @@ public class RobotContainer {
   // private static final String kTestAuto = "Test Auto";
   private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
   private final Camera m_camera1 = new Camera(m_serial, "1");  // camID is how SerialComms and the cameras themselves tells them apart
-  private final Camera m_camera2 = new Camera(m_serial, "2");
-  public final Camera[] m_cameras = {m_camera1, m_camera2};
+  //private final Camera m_camera2 = new Camera(m_serial, "2");
+  //public final Camera[] m_cameras = {m_camera1, m_camera2};
+  public final Camera[] m_cameras = {m_camera1};
 
   // private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_cameras);
   // private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_cameras);
@@ -207,7 +208,7 @@ public class RobotContainer {
     // System.out.println("Configuring buttons");
     Trigger tagButton = new Trigger(m_OI::getXButtonDriver);
     //tagButton.onTrue(c_getAprilTagInfo);  // old and busted
-    tagButton.onTrue(new GetAprilTagInfo(m_serial, m_camera2, "2")); // new hotness
+    tagButton.onTrue(new GetAprilTagInfo(m_serial, m_camera1, "4"));
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
 
@@ -244,13 +245,7 @@ public class RobotContainer {
     //SwerveModule.initPreferences();
   }
 
-  public Command getTeleopCommand()
-  {
-    // ArrayList<Pose2d> pointList = new ArrayList<Pose2d>();
-    // pointList.add(new Pose2d(2.0, 0.0, new Rotation2d(0)));
-    // pointList.add(new Pose2d(2.0, 1.0, new Rotation2d(0)));
-    // pointList.add(new Pose2d(4.0, 1.0, new Rotation2d(Math.PI)));
-	  // return SchemaDriveAuto.create(new DriveThroughTrajectorySchema(m_drivetrain, pointList, 2.0, 2.0, 5.0), m_drivetrain);
+  public Command getTeleopCommand() {
     return null;
   }
 

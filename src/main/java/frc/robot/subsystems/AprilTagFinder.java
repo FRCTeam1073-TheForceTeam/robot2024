@@ -34,21 +34,21 @@ public class AprilTagFinder extends DiagnosticsSubsystem {
 
   public void getAprilTagInfo(String tagid) { //unless it's an int
     //camera stuff
-    String visibleTags = camera.getAprilTagInfo("0");
-    //1,ap,1,2,3,4,5,11,12,13,14,15
-    // tagid, xcenter, ycenter, area, z
-    String[] args = visibleTags.split(",");
-    for(int i=0; i < args.length; i+=5) {  // presuming there's six vals per tag, figure it out later
-      //tags.put("tagid", visibleTagsButAList[i+0]);
-      String tagID = args[i];
-      Map<String, String> tagStats = new HashMap<String, String>();
-      tagStats.put("xcenter", args[i+1]);
-      tagStats.put("xcenter", args[i+2]);
-      // and so on
-      tags.put(tagID, tagStats);
+    // String visibleTags = camera.getAprilTagInfo("0");
+    // //1,ap,1,2,3,4,5,11,12,13,14,15
+    // // tagid, xcenter, ycenter, area, z
+    // String[] args = visibleTags.split(",");
+    // for(int i=0; i < args.length; i+=5) {  // presuming there's six vals per tag, figure it out later
+    //   //tags.put("tagid", visibleTagsButAList[i+0]);
+    //   String tagID = args[i];
+    //   Map<String, String> tagStats = new HashMap<String, String>();
+    //   tagStats.put("xcenter", args[i+1]);
+    //   tagStats.put("xcenter", args[i+2]);
+    //   // and so on
+    //   tags.put(tagID, tagStats);
 
-      }
-      tags.put(tagid, stats);
+    //   }
+    //   tags.put(tagid, stats);
   }
 
   @Override
