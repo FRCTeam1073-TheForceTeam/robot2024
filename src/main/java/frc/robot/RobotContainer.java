@@ -349,13 +349,13 @@ public class RobotContainer {
       case kRedAmpL4:
         return null;
       case kBlueSourceL1:
-        return BlueSourceL1.create(m_drivetrain, m_shooter, m_pivot);
+        return BlueSourceL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
       case kBlueSourceL2:
-        return BlueSourceL2.create(m_drivetrain, m_shooter, m_pivot);
+        return BlueSourceL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kBlueSourceL3:
-        return BlueSourceL3.create(m_drivetrain, m_shooter, m_pivot);
+        return BlueSourceL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kBlueSourceL4:
-        return BlueSourceL4.create(m_drivetrain, m_shooter, m_pivot);
+        return BlueSourceL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kBlueCenterL1:
         return null;
       case kBlueCenterL2:
