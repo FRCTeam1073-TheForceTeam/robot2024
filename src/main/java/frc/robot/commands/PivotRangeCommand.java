@@ -11,7 +11,8 @@ import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.ShooterInterpolatorTable;
 
-public class PivotRangeCommand extends Command {
+public class PivotRangeCommand extends Command 
+{
   /** Creates a new SetPivotCommand. */
   private Pivot pivot;
   private RangeFinder rangefinder;
@@ -22,13 +23,27 @@ public class PivotRangeCommand extends Command {
   double currentRange;
   double avgRange;
 
+  double range;
+
   double count;
 
-  public PivotRangeCommand(Pivot pivot, RangeFinder rangefinder) {
+  public PivotRangeCommand(Pivot pivot, RangeFinder rangefinder) 
+  {
+    // when we do not have a set range to shoot from
     this.pivot = pivot;
     this.rangefinder = rangefinder;
     pivotTable = new ShooterInterpolatorTable();
+    range = -1;
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(pivot);
+  }
+
+  public PivotRangeCommand(Pivot pivot, double range)
+  {
+    // when we have a set range to shoot from
+    this.pivot = pivot;
+    this.range = range;
+    pivotTable = new ShooterInterpolatorTable();
     addRequirements(pivot);
   }
 
@@ -43,17 +58,27 @@ public class PivotRangeCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    // if(count < 20){
-    //   currentRange = rangefinder.getRange();
-    
-    //   avgRange = (0.5 * avgRange) + (0.5 * currentRange);
-    //   count++;
-    // }
-    // else{
-      // targetPositionRad = pivotTable.interpolatePivotAngle(avgRange);
+    if (range != -1)
+    {
+      targetPositionRad = pivotTable.interpolatePivotAngle(range);
       pivot.setTargetPositionInRad(targetPositionRad);
-    // }
+    }
+    else
+    {
+      if (count < 20)
+      {
+        currentRange = rangefinder.getRange();
+    
+        avgRange = (0.5 * avgRange) + (0.5 * currentRange);
+        count++;
+      }
+      else
+      {
+        targetPositionRad = pivotTable.interpolatePivotAngle(avgRange);
+        pivot.setTargetPositionInRad(targetPositionRad);
+      }
+    }
+    
   }
 
   // Called once the command ends or is interrupted.
