@@ -56,7 +56,7 @@ public class RunShooter extends Command {
   @Override
   public void initialize() 
   {
-    if (range != -1) // if using rangefinder
+    if (range == -1) // if using rangefinder
     {
       shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
       shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());

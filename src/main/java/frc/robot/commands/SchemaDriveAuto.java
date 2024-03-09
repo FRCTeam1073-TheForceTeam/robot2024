@@ -17,7 +17,7 @@ public class SchemaDriveAuto
 
     public static Command create(DrivePathSchema pathSchema, Drivetrain drivetrain)
     {
-        arbiter = new SchemaArbiter(drivetrain, false, true);
+        arbiter = new SchemaArbiter(drivetrain, true, true);
         arbiter.addSchema(pathSchema);
 
         return arbiter;
