@@ -29,6 +29,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
   public static enum POSE{
     START,
     STOW_INTERMEDIATE,
+    STOW_INTERMEDIATE_2,
     STOW,
     HANDOFF,
     AMP
@@ -86,7 +87,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   // TODO: update values (in meters)
   private final double minExtend = -0.08;
-  private final double maxExtend = 0.107;
+  private final double maxExtend = 0.108;
 
   // Internal lift state variables:
   private double currentLiftAngle = 0;
@@ -104,10 +105,10 @@ public class CollectorArm extends DiagnosticsSubsystem {
   
   // PID gains for lift controller.
   private double lift_kP = 16;
-  private double lift_kI = 6;
+  private double lift_kI = 7.5;
   private double lift_kD = 1.5;
   private double lift_kF = 0;
-  private double lift_kG = 0.8;
+  private double lift_kG = 0.9;
 
   // PID gains for extension controller.
   private double extend_kP = 145;
@@ -139,7 +140,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     configureHardware();
 
     armMap = new InterpolatingDoubleTreeMap();
-    setUpInterpolator();
+    //setUpInterpolator();
   }
 
   @Override
@@ -234,32 +235,32 @@ public class CollectorArm extends DiagnosticsSubsystem {
   }
 
 
-  public void setUpInterpolator() {
-    armMap.clear();
+  // public void setUpInterpolator() {
+  //   armMap.clear();
 
-    // Keys are lift angles, values are extension distances.
-    // Fill out the rest of the table (angle, extendLength)
+  //   // Keys are lift angles, values are extension distances.
+  //   // Fill out the rest of the table (angle, extendLength)
 
-    armMap.put(0.0, 0.0); 
-    armMap.put(0.076416015625, 0.0);
-    armMap.put(0.122802734375, 0.0);
-    armMap.put(0.162109375, 0.0); //STOW 
-    armMap.put(0.2, 0.04);
-    armMap.put(0.21, 0.107177734375); 
-    armMap.put(0.2880859375, 0.107177734375);
-    armMap.put(0.400390625, -0.041005859375);
-    armMap.put(0.76171875, -0.0425390625);
-    armMap.put(1.313720703125, 0.030517578125);
-    armMap.put(1.9453125, 0.0966796875);
-    armMap.put(2.70654296875, 0.10986328125);
+  //   armMap.put(0.0, 0.0); 
+  //   armMap.put(0.076416015625, 0.0);
+  //   armMap.put(0.122802734375, 0.0);
+  //   armMap.put(0.162109375, 0.0); //STOW 
+  //   armMap.put(0.2, 0.04);
+  //   armMap.put(0.21, 0.107177734375); 
+  //   armMap.put(0.2880859375, 0.107177734375);
+  //   armMap.put(0.400390625, -0.041005859375);
+  //   armMap.put(0.76171875, -0.0425390625);
+  //   armMap.put(1.313720703125, 0.030517578125);
+  //   armMap.put(1.9453125, 0.0966796875);
+  //   armMap.put(2.70654296875, 0.10986328125);
 
-    /*
-    Adding more points at a steeper slope near important positions will yield a
-    faster acceleration(limited by motion magic configs) to the target.
+  //   /*
+  //   Adding more points at a steeper slope near important positions will yield a
+  //   faster acceleration(limited by motion magic configs) to the target.
     
-    Right now it is tuned to be relatively fast
-    */
-  }
+  //   Right now it is tuned to be relatively fast
+  //   */
+  // }
 
   /** Takes a lift angle and calculates the target extend length */
   public double interpolateExtendPosition(double currentliftAngle){
@@ -302,7 +303,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     // liftConfigs.ClosedLoopGeneral.ContinuousWrap = true;
 
     liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 4; 
-    liftConfigs.MotionMagic.MotionMagicAcceleration = 3; 
+    liftConfigs.MotionMagic.MotionMagicAcceleration = 2; 
     liftConfigs.MotionMagic.MotionMagicJerk = 0;
 
     liftMotor.getConfigurator().apply(liftConfigs);

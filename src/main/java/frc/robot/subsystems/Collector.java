@@ -37,9 +37,9 @@ public class Collector extends DiagnosticsSubsystem {
   private final double tofCollectorScaleFactor = 3000000/4; // for 50cm (irs16a): 3/4 million || for 130 cm (irs17a): 2 million || for 300 cm (irs17a): 4 million
 
 
-  private final double collectorGearRatio = 12.0/18.0;
+  private final double collectorGearRatio = 3.0/1.0;
   private final double collectorWheelRadius = 0.0254; //meters
-  private final double collectorMeterPerRotations = collectorWheelRadius * 2 * Math.PI * collectorGearRatio;
+  private final double collectorMeterPerRotations = -collectorWheelRadius * 2 * Math.PI * collectorGearRatio;
 
   //private final SlewRateLimiter collectorLimiter;
 
@@ -50,7 +50,7 @@ public class Collector extends DiagnosticsSubsystem {
   private double collect_kP = 0.27;
   private double collect_kI = 0;
   private double collect_kD = 0.001;
-  private double collect_kF = 0;
+  private double collect_kF = 0.15;
 
   /** Creates a new Collector. */
   public Collector() {
