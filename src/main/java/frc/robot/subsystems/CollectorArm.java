@@ -303,7 +303,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     // liftConfigs.ClosedLoopGeneral.ContinuousWrap = true;
 
     liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 4; 
-    liftConfigs.MotionMagic.MotionMagicAcceleration = 1; 
+    liftConfigs.MotionMagic.MotionMagicAcceleration = 2; 
     liftConfigs.MotionMagic.MotionMagicJerk = 0;
 
     liftMotor.getConfigurator().apply(liftConfigs);

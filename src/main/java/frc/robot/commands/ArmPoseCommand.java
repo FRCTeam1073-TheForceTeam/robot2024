@@ -15,8 +15,8 @@ public class ArmPoseCommand extends Command {
 
   double m_targetLift;
   double m_targetExtend;
-  double m_liftTolerence = 0.03;
-  double m_extendTolerence = 0.025;
+  double m_liftTolerence = 0.015;
+  double m_extendTolerence = 0.005;
 
   boolean m_extendFlag;
 
@@ -28,6 +28,15 @@ public class ArmPoseCommand extends Command {
     m_arm = arm;
     m_pose = pose;
     //m_extendFlag = extendInterpolateFlag;
+    addRequirements(arm);
+  }
+
+  public ArmPoseCommand(CollectorArm arm, POSE pose, double liftTolerence, double extendTolerence){
+    m_arm = arm;
+    m_pose = pose;
+
+    m_liftTolerence = liftTolerence;
+    m_extendTolerence = extendTolerence;
   }
 
   // Called when the command is initially scheduled.
@@ -39,11 +48,11 @@ public class ArmPoseCommand extends Command {
         m_targetExtend = 0.0;
         break;
       case STOW_INTERMEDIATE:
-        m_targetLift = 0.28;
+        m_targetLift = 0.27;
         m_targetExtend = 0.0;
         break;
       case STOW_INTERMEDIATE_2:
-        m_targetLift = 0.28;
+        m_targetLift = 0.27;
         m_targetExtend = 0.108;
         break;
       case STOW:
@@ -81,7 +90,7 @@ public class ArmPoseCommand extends Command {
   public boolean isFinished() {
     double liftError = Math.abs(m_arm.getCurrentLiftAngle() - m_targetLift);
     double extendError = Math.abs(m_arm.getCurrentExtendLength() - m_targetExtend);
-    if((liftError < 0.015) && (extendError < 0.005)){
+    if((liftError < m_liftTolerence) && (extendError < m_extendTolerence)){
       return true;
     }
     else{
