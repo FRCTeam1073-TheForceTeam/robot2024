@@ -14,7 +14,7 @@ public class Bling extends DiagnosticsSubsystem {
 
   public int length = 24;
   public int slotLength;
-  public int numSlots = 8;
+  public int numSlots = 48;
   
   /**
    * Creates a new bling.
