@@ -34,10 +34,13 @@ public class Camera extends SubsystemBase {
     serialComms.send(this.camID + ",di");
   }
   
-  public String getAprilTagInfo(String tagID) {
+  public void getAprilTagInfo(String tagID) {
     String outgoingMsg = this.camID + ",ap," + tagID;
     SmartDashboard.putString("CameraOutgoingMsg", outgoingMsg);
     serialComms.send(outgoingMsg);
+  }
+
+  public String receiveAprilTagInfo() {
     return serialComms.receive();
   }
 

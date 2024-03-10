@@ -4,55 +4,56 @@
 
 package frc.robot.subsystems;
 
-import java.util.Dictionary;
-import java.util.HashMap;
-import java.util.Map;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class AprilTagFinder extends DiagnosticsSubsystem {
+public class AprilTagFinder extends SubsystemBase {
   /** Creates a new AprilTagFinder. */
   private Camera camera;
-  public int tagID = 0;
-  public double centerX = 0.0;
-  public double centerY = 0.0;
-  public double area = 0.0;
-  public Map<String, Map<String, String>> tags = new HashMap<String, Map<String, String>>();
-
+  public SerialComms serialcomms;
+  public boolean waiting;
+  public int counter;
+  
+  // map stuff might look something like this:
+  // public Map<String, Map<String, String>> tags = new HashMap<String, Map<String, String>>();
   // tags = {
   //   '8': {'xcenter': 10, 'ycenter': 11},
   //   '2': {'xcenter': 5, 'ycenter': 7}
   // }
 
-  public AprilTagFinder(Camera camera) {
-    tagID = 0;
-    centerX = 0.0;
-    centerY = 0.0;
-    area = 0.0;
-  }
-  
-  public void PublishToSmartDashboard() {
+  public AprilTagFinder(Camera camera, SerialComms serialcomms) {
+    this.serialcomms = serialcomms;
+    this.camera = camera;
+    this.waiting = false;
+    this.counter = 0;
   }
 
-  public void getAprilTagInfo(String tagid) { //unless it's an int
-    //camera stuff
-    // String visibleTags = camera.getAprilTagInfo("0");
-    // //1,ap,1,2,3,4,5,11,12,13,14,15
-    // // tagid, xcenter, ycenter, area, z
-    // String[] args = visibleTags.split(",");
-    // for(int i=0; i < args.length; i+=5) {  // presuming there's six vals per tag, figure it out later
-    //   //tags.put("tagid", visibleTagsButAList[i+0]);
-    //   String tagID = args[i];
-    //   Map<String, String> tagStats = new HashMap<String, String>();
-    //   tagStats.put("xcenter", args[i+1]);
-    //   tagStats.put("xcenter", args[i+2]);
-    //   // and so on
-    //   tags.put(tagID, tagStats);
-
-    //   }
-    //   tags.put(tagid, stats);
+  public void update(String sargeant) {
+    SmartDashboard.putString("AprilTagInfo", sargeant);
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    if (this.counter == 25) {
+        this.counter = 0;
+        this.waiting = false;
+        // TODO: clear the map
+        // this.map = {};
+    }
+
+    if (this.waiting == false) {
+        camera.getAprilTagInfo("0");
+        this.waiting = true;
+    }
+    else {
+      String info = camera.receiveAprilTagInfo();
+      if (info != "") {
+        this.update(info);
+      }
+      else {
+        this.counter += 1;
+      }
+    }
   }
 }
