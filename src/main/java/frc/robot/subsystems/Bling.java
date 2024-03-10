@@ -173,7 +173,7 @@ public class Bling extends DiagnosticsSubsystem {
     double tofFeederValue = feeder.getTofRange(); 
 
     if (tofFeederValue <= 0.2) {
-      setQuadRGB(quadNum, 255, 120, 0);
+      setQuadRGB(quadNum, 255, 80, 0);
     }
     else{
       setQuadRGB(quadNum, 255, 0, 0);

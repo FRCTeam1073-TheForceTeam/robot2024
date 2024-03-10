@@ -74,6 +74,7 @@ public class Shooter extends DiagnosticsSubsystem{
 
   /** Creates a new Shooter. **/
   public Shooter() {
+    super.setSubsystem("Shooter");
     // topShooterMotor = new TalonFX(17, kCANbus); // Kraken 
     // bottomShooterMotor = new TalonFX(18, kCANbus); //Kraken 
     topShooterMotor = new TalonFX(17, kCANbus);
@@ -263,7 +264,8 @@ public class Shooter extends DiagnosticsSubsystem{
   @Override
   public void initSendable(SendableBuilder builder)
   {
-    builder.setSmartDashboardType("Shooter");
+    //builder.setSmartDashboardType("Shooter");
+    super.initSendable(builder);
     builder.addDoubleProperty("Target Top Motor Velocity", this::getTargetTopVelocityInMPS, null);
     builder.addDoubleProperty("Target Bottom Motor Velocity", this::getTargetBottomVelocityInMPS, null);
     builder.addDoubleProperty("Set Shooter", this::getTargetBottomVelocityInMPS, this::setBothShooterMotorsInMPS);

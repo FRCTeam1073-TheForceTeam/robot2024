@@ -16,6 +16,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Pivot extends DiagnosticsSubsystem {
 
@@ -58,6 +59,7 @@ public class Pivot extends DiagnosticsSubsystem {
 
   /** Creates a new Pivot. */
   public Pivot() {
+    super.setSubsystem("Pivot");
     //pivotMotor = new TalonFX(21, kCANbus); //Falcon
     pivotMotor = new TalonFX(21, kCANbus);
     pivotMotorFault = new MotorFault(pivotMotor, 21);
@@ -166,7 +168,8 @@ public class Pivot extends DiagnosticsSubsystem {
   @Override
   public void initSendable(SendableBuilder builder)
   {
-    builder.setSmartDashboardType("Pivot");
+    super.initSendable(builder);
+    //builder.setSmartDashboardType("Pivot");
     builder.addDoubleProperty("Debug Pivot Angle", this::getDebugPivotAngle, this::setDebugPivotAngle);
     builder.addDoubleProperty("Pivot Test Command Motor Position", this::getTargetPositionInRad, null);
     builder.addDoubleProperty("Target Pivot Motor Position", this::getTargetPositionInRad, this::setTargetPositionInRad);

@@ -27,6 +27,8 @@ public class PivotRangeCommand extends Command
 
   double count;
 
+  boolean isWaiting = true;
+
   public PivotRangeCommand(Pivot pivot, RangeFinder rangefinder) 
   {
     // when we do not have a set range to shoot from
@@ -52,6 +54,8 @@ public class PivotRangeCommand extends Command
   public void initialize() {
     //targetPositionRad = pivotTable.interpolatePivotAngle(rangefinder.getRange());
     //targetPositionRad = pivot.getDebugPivotAngle();
+    isWaiting = true;
+    avgRange = 0.0;
     count = 0;
   }
 
@@ -60,6 +64,7 @@ public class PivotRangeCommand extends Command
   public void execute() {
     if (range != -1)
     {
+      isWaiting = false;
       targetPositionRad = pivotTable.interpolatePivotAngle(range);
       pivot.setTargetPositionInRad(targetPositionRad);
     }
@@ -67,13 +72,15 @@ public class PivotRangeCommand extends Command
     {
       if (count < 20)
       {
+        isWaiting = true;
         currentRange = rangefinder.getRange();
     
-        avgRange = (0.5 * avgRange) + (0.5 * currentRange);
+        avgRange = (0.2 * avgRange) + (0.8 * currentRange);
         count++;
       }
       else
       {
+        isWaiting = false;
         targetPositionRad = pivotTable.interpolatePivotAngle(avgRange);
         pivot.setTargetPositionInRad(targetPositionRad);
         pivot.setPivotRangeCommandAngle(targetPositionRad);
@@ -93,6 +100,6 @@ public class PivotRangeCommand extends Command
   @Override
   public boolean isFinished() {
     var error = Math.abs(pivot.getCurrentPositionInRad() - targetPositionRad);
-    return (error <= 0.05);
+    return (!isWaiting && (error <= 0.05));
   }
 }
