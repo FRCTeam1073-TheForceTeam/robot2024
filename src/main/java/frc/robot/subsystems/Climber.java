@@ -17,9 +17,10 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 public class Climber extends DiagnosticsSubsystem {
   private final String kCANbus = "CANivore";
 
-  private final double gearRatio = 1.0; // TODO: Get from hardware.
-  private final double winchDiameter = 0.02; // TODO: Get from hardware.
-  private final double metersPerRotation = winchDiameter * Math.PI / gearRatio;
+  private final double gearRatio = 21; // TODO: Get from hardware.
+  private final double winchDiameter = 0.01905; // TODO: Get from hardware. .75 inches
+  private final double rightMetersPerRotation = winchDiameter * Math.PI / gearRatio;
+  private final double leftMetersPerRotation = -winchDiameter * Math.PI / gearRatio;
 
   private TalonFX left, right;   // Left and right motors wrt to robot +X forward. left is on +Y side. right is on -Y side.
   private VelocityVoltage leftVelocityVoltage, rightVelocityVoltage;
@@ -30,6 +31,11 @@ public class Climber extends DiagnosticsSubsystem {
   private double rightPosition = 0.0;
   private double leftVelocity = 0.0;
   private double rightVelocity = 0.0;
+
+  private double minLeftPosition = 0;
+  private double minRightPosition = 0;
+  private double maxLeftPosition = 0.2735;
+  private double maxRightPosition = 0.2735;
 
   /** Creates a new Climber. */
   public Climber() {
@@ -45,25 +51,48 @@ public class Climber extends DiagnosticsSubsystem {
   @Override
   public void periodic() {
     // Update state feedback:
-    leftPosition = left.getPosition().refresh().getValue() * metersPerRotation;
-    rightPosition =  right.getPosition().refresh().getValue() * metersPerRotation;
-    leftVelocity = left.getVelocity().refresh().getValue() * metersPerRotation;
-    rightVelocity = right.getVelocity().refresh().getValue() * metersPerRotation;
+    leftPosition = left.getPosition().refresh().getValue() * leftMetersPerRotation;
+    rightPosition =  right.getPosition().refresh().getValue() * rightMetersPerRotation;
+    leftVelocity = left.getVelocity().refresh().getValue() * leftMetersPerRotation;
+    rightVelocity = right.getVelocity().refresh().getValue() * rightMetersPerRotation;
 
 
     // TODO: Check limits and don't drive past them:
 
     
     // Send down current command:
-    left.setControl(leftVelocityVoltage.withVelocity((leftTargetVelocity / metersPerRotation)));
-    right.setControl(rightVelocityVoltage.withVelocity((rightTargetVelocity / metersPerRotation)));
+    left.setControl(leftVelocityVoltage.withVelocity((leftTargetVelocity / leftMetersPerRotation)));
+    right.setControl(rightVelocityVoltage.withVelocity((rightTargetVelocity / rightMetersPerRotation)));
 
   }
 
-
+  /**
+   * @param leftVelocity velocity is positive when climber is going up
+   * @param rightVelocity velocity is positive when climber is going up
+   */
   public void setVelocities(double leftVelocity, double rightVelocity) {
-    leftTargetVelocity = leftVelocity;
-    rightTargetVelocity = rightVelocity;
+    if(leftPosition <= minLeftPosition){
+      leftTargetVelocity = Math.max(leftVelocity, 0);
+    }
+    else if(leftPosition >= maxLeftPosition){
+      leftTargetVelocity = Math.min(leftVelocity, 0);
+    }
+    else{
+      leftTargetVelocity = leftVelocity;
+    }
+
+    if(rightPosition <= minRightPosition){
+      rightTargetVelocity = Math.max(rightVelocity, 0);
+    }
+    else if(leftPosition >= maxRightPosition){
+      rightTargetVelocity = Math.min(rightVelocity, 0);
+    }
+    else{
+      rightTargetVelocity = rightVelocity;
+    }
+
+    // leftTargetVelocity = leftVelocity;
+    // rightTargetVelocity = rightVelocity;
   }
 
   public double getLeftPosition() {
@@ -121,7 +150,7 @@ public class Climber extends DiagnosticsSubsystem {
 
         // PID Loop settings for left velocity control:
         var leftMotorClosedLoopConfig = new Slot0Configs();
-        leftMotorClosedLoopConfig.withKP(1);
+        leftMotorClosedLoopConfig.withKP(0.3);
         leftMotorClosedLoopConfig.withKI(0.0);
         leftMotorClosedLoopConfig.withKD(0.0);
         leftMotorClosedLoopConfig.withKV(0.05);
@@ -134,7 +163,7 @@ public class Climber extends DiagnosticsSubsystem {
 
         // PID Loop settings for right velocity control:
         var rightMotorClosedLoopConfig = new Slot0Configs();
-        rightMotorClosedLoopConfig.withKP(1);
+        rightMotorClosedLoopConfig.withKP(0.3);
         rightMotorClosedLoopConfig.withKI(0.0);
         rightMotorClosedLoopConfig.withKD(0.0);
         rightMotorClosedLoopConfig.withKV(0.05);
@@ -147,6 +176,9 @@ public class Climber extends DiagnosticsSubsystem {
 
         left.setNeutralMode(NeutralModeValue.Brake);
         right.setNeutralMode(NeutralModeValue.Brake);
+
+        left.setPosition(0);
+        right.setPosition(0);
 
         System.out.println("Climber configured.");
 

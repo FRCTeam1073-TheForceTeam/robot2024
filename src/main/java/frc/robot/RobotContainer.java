@@ -100,6 +100,7 @@ public class RobotContainer {
   private final Feeder m_feeder = new Feeder(); 
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
+  private final Climber m_climber = new Climber();
 
   private final RangeFinder m_rangeFinder = new RangeFinder();
   private final CollectFeedCommand m_collectAndFeed = new CollectFeedCommand();
@@ -113,6 +114,7 @@ public class RobotContainer {
   private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm, m_OI);
   private final AmpShootCommand m_ampShootCommand = new AmpShootCommand();
   private final HandoffCommand m_handoffCommand = new HandoffCommand();
+  private final ClimberTeleop m_ClimberTeleop = new ClimberTeleop(m_climber, m_OI);
 
 
 
@@ -179,6 +181,7 @@ public class RobotContainer {
     //CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand); 
+    CommandScheduler.getInstance().setDefaultCommand(m_climber, m_ClimberTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_collectorArmTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_runShooterCommand);
@@ -190,6 +193,7 @@ public class RobotContainer {
     SmartDashboard.putData(m_feeder);
     SmartDashboard.putData(m_pivot);
     SmartDashboard.putData(m_rangeFinder);
+    SmartDashboard.putData(m_climber);
 
     m_chooser.setDefaultOption("No Autonomous", kNoAuto);
 
