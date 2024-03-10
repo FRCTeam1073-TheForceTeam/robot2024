@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.CollectorArm;
 import frc.robot.subsystems.Drivetrain;
@@ -44,7 +45,10 @@ public class CollectFeedCommand extends Command
       ),
       new ParallelCommandGroup(
         new ArmPoseCommand(m_collectorArm, POSE.START),
-        new AdjustFeed(m_feeder)
+        new ParallelDeadlineGroup(
+          new WaitCommand(0.25),
+          new AdjustFeed(m_feeder)
+        )
       )
       //new SetPivotCommand(m_pivot, -0.74)
     );

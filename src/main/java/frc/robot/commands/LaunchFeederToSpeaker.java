@@ -21,7 +21,6 @@ public class LaunchFeederToSpeaker extends SequentialCommandGroup{
   public SequentialCommandGroup runLaunchFeedertoSpeaker(Shooter m_shooter, Feeder m_feeder, Pivot m_pivot, RangeFinder m_rangeFinder){
     return new SequentialCommandGroup(
       new ParallelCommandGroup(
-        //new AdjustFeed(m_feeder),
         new PivotRangeCommand(m_pivot, m_rangeFinder),
         new RunShooter(m_shooter, m_rangeFinder) //, m_rangefinder.getRange()),
       ),
@@ -30,7 +29,6 @@ public class LaunchFeederToSpeaker extends SequentialCommandGroup{
         new StopShooter(m_shooter),
         new RunFeeder(m_feeder, 30)
         //new WaitCommand(1),
-        
       ),
       new SetPivotCommand(m_pivot, 0));
     }

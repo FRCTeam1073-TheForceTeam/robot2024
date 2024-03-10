@@ -47,6 +47,7 @@ public class Pivot extends DiagnosticsSubsystem {
   private double currentPositionRad;
 
   private double debugPivotAngle;
+  private double pivotRangeCommandAngle;
 
   // PositionVoltage object
   //private PositionVoltage pivotPositionVoltage = new PositionVoltage(0).withSlot(0);
@@ -110,6 +111,14 @@ public class Pivot extends DiagnosticsSubsystem {
     return currentPositionRad;
   }
 
+  public void  setPivotRangeCommandAngle(double angle){
+    pivotRangeCommandAngle = angle;
+  }
+
+  public double  getPivotRangeCommandAngle(){
+    return pivotRangeCommandAngle;
+  }
+
   public void configureHardware(){
     TalonFXConfiguration configs = new TalonFXConfiguration();
     configs.Slot0.kP = p;
@@ -163,5 +172,7 @@ public class Pivot extends DiagnosticsSubsystem {
     builder.addDoubleProperty("Target Pivot Motor Position", this::getTargetPositionInRad, this::setTargetPositionInRad);
     builder.addDoubleProperty("Commanded Pivot Motor Position", this::getCommandedPositionInRad, null);
     builder.addDoubleProperty("Actual Pivot Motor Position", this::getCurrentPositionInRad, null);
+
+    builder.addDoubleProperty("Pivot Range Commanded angle", this::getPivotRangeCommandAngle, null);
   }
 }

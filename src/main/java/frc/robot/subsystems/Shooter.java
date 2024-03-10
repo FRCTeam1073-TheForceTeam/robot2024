@@ -210,7 +210,7 @@ public class Shooter extends DiagnosticsSubsystem{
     configs.Slot0.kP = p;
     configs.Slot0.kI = i;
     configs.Slot0.kD = d;
-    configs.Slot0.kV = 0.12;
+    configs.Slot0.kV = 0.113;
     configs.Voltage.PeakForwardVoltage = 8;
     configs.Voltage.PeakReverseVoltage = -8;
 

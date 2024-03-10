@@ -51,7 +51,7 @@ public class PivotRangeCommand extends Command
   @Override
   public void initialize() {
     //targetPositionRad = pivotTable.interpolatePivotAngle(rangefinder.getRange());
-    targetPositionRad = pivot.getDebugPivotAngle();
+    //targetPositionRad = pivot.getDebugPivotAngle();
     count = 0;
   }
 
@@ -76,6 +76,7 @@ public class PivotRangeCommand extends Command
       {
         targetPositionRad = pivotTable.interpolatePivotAngle(avgRange);
         pivot.setTargetPositionInRad(targetPositionRad);
+        pivot.setPivotRangeCommandAngle(targetPositionRad);
       }
     }
     
