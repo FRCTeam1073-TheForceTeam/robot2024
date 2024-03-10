@@ -14,6 +14,7 @@ public class Bling extends DiagnosticsSubsystem {
   public AddressableLEDBuffer m_ledBuffer;
   public Collector collector;
   public Feeder feeder;
+  public Shooter shooter;
 
   public int length = 48;
   public int numSlots = 48;
@@ -32,7 +33,7 @@ public class Bling extends DiagnosticsSubsystem {
    * @return the entry's value or the given default value
    * @return the buffer length
    */
-  public Bling(Collector collector, Feeder feeder) {
+  public Bling(Collector collector, Feeder feeder, Shooter shooter) {
     m_led = new AddressableLED(0);
     m_ledBuffer = new AddressableLEDBuffer(length);
     m_led.setLength(m_ledBuffer.getLength());
@@ -40,7 +41,7 @@ public class Bling extends DiagnosticsSubsystem {
     m_led.start();
     this.collector = collector;
     this.feeder = feeder;
-    
+    this.shooter = shooter;
   }
 
   /**
@@ -195,29 +196,33 @@ public class Bling extends DiagnosticsSubsystem {
     int m_rainbowFirstPixelHue1 = 0;
     int m_rainbowFirstPixelHue2 = 0;
 
-    for (var i = 0; i < m_ledBuffer.getLength()/2; i++) {
-      // Calculate the hue - hue is easier for rainbows because the color
-      // shape is a circle so only one value needs to precess
-      final var hue = (m_rainbowFirstPixelHue1 + (i * 180 / m_ledBuffer.getLength())) % 180;
-      // Set the value
-      m_ledBuffer.setHSV(i, hue, 255, 128);
-    }
-    // Increase by to make the rainbow "move"
-    m_rainbowFirstPixelHue1 += 3;
-    // Check bounds
-    m_rainbowFirstPixelHue1 %= 180;
+    double tofShooterValue = shooter.getTofRange();
 
-    for (var i = m_ledBuffer.getLength()/2; i < m_ledBuffer.getLength(); i++) {
-      // Calculate the hue - hue is easier for rainbows because the color
-      // shape is a circle so only one value needs to precess
-      final var hue = (m_rainbowFirstPixelHue2 + (i * 180 / m_ledBuffer.getLength())) % 180;
-      // Set the value
-      m_ledBuffer.setHSV(i, hue, 255, 128);
+    if (tofShooterValue < 0.4){
+      for (var i = 0; i < m_ledBuffer.getLength()/2; i++) {
+        // Calculate the hue - hue is easier for rainbows because the color
+        // shape is a circle so only one value needs to precess
+        final var hue1 = (m_rainbowFirstPixelHue1 + (i * 180 / m_ledBuffer.getLength())) % 180;
+        // Set the value
+        m_ledBuffer.setHSV(i, hue1, 255, 128);
+      }
+      // Increase by to make the rainbow "move"
+      m_rainbowFirstPixelHue1 += 3;
+      // Check bounds
+      m_rainbowFirstPixelHue1 %= 180;
+
+      for (var i = m_ledBuffer.getLength()/2; i < m_ledBuffer.getLength(); i++) {
+        // Calculate the hue - hue is easier for rainbows because the color
+        // shape is a circle so only one value needs to precess
+        final var hue2 = (m_rainbowFirstPixelHue2 + (i * 180 / m_ledBuffer.getLength())) % 180;
+        // Set the value
+        m_ledBuffer.setHSV(i, hue2, 255, 128);
+      }
+      // Increase by to make the rainbow "move"
+      m_rainbowFirstPixelHue2 += 3;
+      // Check bounds
+      m_rainbowFirstPixelHue2 %= 180;
     }
-    // Increase by to make the rainbow "move"
-    m_rainbowFirstPixelHue2 += 3;
-    // Check bounds
-    m_rainbowFirstPixelHue2 %= 180;
   }
 
   // Initialize preferences for this class:
