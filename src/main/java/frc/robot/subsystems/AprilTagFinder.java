@@ -17,7 +17,7 @@ public class AprilTagFinder extends SubsystemBase {
   public SerialComms serialcomms;
   public boolean waiting;
   public int counter;
-  public String tagID = "-1";
+  public String tagID = "-1";  // use the SetAprilTagID to modify
   public Map<String, Map<String, String>> tags = new HashMap<String, Map<String, String>>();
   // https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html
   // map example. given:
@@ -38,8 +38,6 @@ public class AprilTagFinder extends SubsystemBase {
     this.camera = camera;
     this.waiting = false;
     this.counter = 0;
-    this.tagID = tagID;
-    this.tags = tags;
   }
   // TODO: add System.currentTimeMillis() to inner maps, age out existing entries (do age outs before puts)
   public void update(String[] info) {
@@ -73,6 +71,7 @@ public class AprilTagFinder extends SubsystemBase {
 
   @Override
   public void periodic() {
+    SmartDashboard.putString("AprilTagFinderDesiredID", this.tagID);
     // if -1, don't bother
     if (this.tagID == "-1") {
       return;
