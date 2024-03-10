@@ -33,27 +33,23 @@ public class Camera extends SubsystemBase {
   public void stopRecording(){
     serialComms.send(this.camID + ",di");
   }
-  
-  public void getAprilTagInfo(String tagID) {
+
+  public void requestAprilTags(String tagID) {
     String outgoingMsg = this.camID + ",ap," + tagID;
     SmartDashboard.putString("CameraOutgoingMsg", outgoingMsg);
     serialComms.send(outgoingMsg);
   }
 
-  public String receiveAprilTagInfo() {
-    return serialComms.receive();
+  public String[] getAprilTagInfo() {
+    // splitting on commas first. literally every caller wants this.
+    String msgString = serialComms.receive();
+    SmartDashboard.putString("CameraIncomingMsg", msgString);
+    String[] msgStringArray = msgString.split(",");
+    return msgStringArray;
   }
 
   @Override
   public void periodic() {
-    // System.out.println("getting apriltag data");
-    // getAprilTag();
-    // try {
-    //   Thread.sleep(1000);
-    // }
-    // catch (final InterruptedException e) {
-    //   throw new RuntimeException(e);
-    // }
   }
 }
 
