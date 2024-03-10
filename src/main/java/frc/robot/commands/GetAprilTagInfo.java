@@ -34,7 +34,7 @@ public class GetAprilTagInfo extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    String aprilInfo = camera.getAprilTagInfo(this.tagID);
+    String aprilInfo = String.join(",", camera.getAprilTagInfo());
     System.out.println("sent for april tag");
     System.out.println(aprilInfo);
     this.weAreFinished = true;

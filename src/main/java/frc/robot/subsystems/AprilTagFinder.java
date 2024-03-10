@@ -4,10 +4,13 @@
 
 package frc.robot.subsystems;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-// TODO: figure out when/how to clear tags. how long before they should they age out?
+// TODO: figure out when or how to clear tags. how long before they should they age out?
 //       note: periodic() wipes the map after ~0.5s without the camera returning any tags, whether it replies with no tags or stops replying entirely.
 public class AprilTagFinder extends SubsystemBase {
   private Camera camera;
@@ -40,29 +43,30 @@ public class AprilTagFinder extends SubsystemBase {
   public void update(String[] info) {
     if (info.length < 3) {
       // System.out.println(String.format("Camera %s reporting no visible apriltags", info[0]));
-      return null;  // or just "return;" I forget
+      return;  // or just "return;" I forget
     }
     // if we do have tags, example:
     // args could be ["1", "ap", "2", "128", "178", "57", "45", "4", "127", "177", "56", "44"]
     // camera ID 1, apriltag command, two tags.
     // e.g. for tag id 2: xcenter, ycenter, tag area, and z-axis thing would be 128, 178, 57, 45.
-    cameraID = args[0];
-    cmd = args[1];
-    for (i=2; i<args.length; i+=5) {
+    String cameraID = info[0];
+    String cmd = info[1];
+    for (int i=2; i<info.length; i+=5) {
       // start at 2 instead of 0. we don't care about args[0] and args[1] in here, so skip 'em.
-      tagID = args[i]; //on first iteration, args[2] is "2".
+      String tagID = info[i]; //on first iteration, args[2] is "2".
       // build an inner map for this tag's info
-      Map<String, String> inner = new HashMap<String, Map<String, String>>();
-      inner.put("xcenter", args[i+1]);
-      inner.put("ycenter", args[i+2]);
-      inner.put("area", args[i+3]);
-      inner.put("zaxisorwhatever", args[i+4]);
+      Map<String, String> inner = new HashMap<String, String>();
+      inner.put("xcenter", info[i+1]);
+      inner.put("ycenter", info[i+2]);
+      inner.put("area", info[i+3]);
+      inner.put("zaxisorwhatever", info[i+4]);
       // this tag's items end at i+4. the next tag's ID is at i+5.
       // because we start the first iteration at 2, i == 7 at the top of the second iteration (2 + 5 = 7) and the tag ID is args[7].
       // if there were a third tag, its ID would be args[12] (7 + 5 = 12)
 
       // finally, add this tag's ID and info to the public tags map.
       this.tags.put(tagID, inner);
+    }
   }
 
   @Override
@@ -75,12 +79,12 @@ public class AprilTagFinder extends SubsystemBase {
     }
 
     if (this.waiting == false) {
-        this.camera.getAprilTagInfo("0");  // 0 gets all visible tags
+        this.camera.requestAprilTags("0");  // 0 gets all visible tags
         this.waiting = true;
     }
     else {
-      String info = this.camera.receiveAprilTagInfo();
-      if (info != "") {
+      String[] info = this.camera.getAprilTagInfo();
+      if (info.length > 0) { // double check an empty response is actually an empty String[]
         // we got a response. stop waiting and update.
         // note: ["1", "ap"] is a legit response, just means we don't see tags.
         this.update(info);
