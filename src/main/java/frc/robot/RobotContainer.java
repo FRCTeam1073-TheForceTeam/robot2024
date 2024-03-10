@@ -21,6 +21,10 @@ import frc.robot.commands.autos.BlueWing4Note;
 import frc.robot.commands.autos.BlueCloseMidline2Note;
 import frc.robot.commands.autos.BlueCloseMidline3Note;
 import frc.robot.commands.autos.BlueAmpL2;
+import frc.robot.commands.autos.BlueCenterL1;
+import frc.robot.commands.autos.BlueCenterL2;
+import frc.robot.commands.autos.BlueCenterL3;
+import frc.robot.commands.autos.BlueCenterL4;
 import frc.robot.commands.autos.BlueFarMidline3Note;
 import frc.robot.commands.autos.BlueSourceL1;
 import frc.robot.commands.autos.BlueSourceL2;
@@ -29,6 +33,8 @@ import frc.robot.commands.autos.BlueSourceL4;
 import frc.robot.commands.autos.LeaveAuto;
 import frc.robot.commands.autos.RedCenterL1;
 import frc.robot.commands.autos.RedCenterL2;
+import frc.robot.commands.autos.RedCenterL3;
+import frc.robot.commands.autos.RedCenterL4;
 import frc.robot.commands.autos.RedCloseMidline2Note;
 import frc.robot.commands.autos.RedCloseSnowPlowAuto;
 import frc.robot.commands.autos.RedFar1Note;
@@ -333,13 +339,13 @@ public class RobotContainer {
       case kRedSourceL4:
         return RedSourceL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kRedCenterL1:
-        return RedCenterL1.create(m_drivetrain);
+        return RedCenterL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
       case kRedCenterL2:
-        return RedCenterL2.create(m_drivetrain);
+        return RedCenterL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kRedCenterL3:
-        return null;
+        return RedCenterL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kRedCenterL4:
-        return null;
+        return RedCenterL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kRedAmpL1:
         return null;
       case kRedAmpL2:
@@ -357,13 +363,13 @@ public class RobotContainer {
       case kBlueSourceL4:
         return BlueSourceL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kBlueCenterL1:
-        return null;
+        return BlueCenterL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
       case kBlueCenterL2:
-        return null;
+        return BlueCenterL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kBlueCenterL3:
-        return null;
+        return BlueCenterL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kBlueCenterL4:
-        return null;
+        return BlueCenterL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kBlueAmpL1:
         return null;
       case kBlueAmpL2:
