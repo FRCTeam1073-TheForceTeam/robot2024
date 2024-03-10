@@ -58,8 +58,8 @@ public class RunShooter extends Command {
   {
     if (range == -1) // if using rangefinder
     {
-      shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
-      shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
+      shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getFilteredRange());
+      shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getFilteredRange());
     }
     else // if using a set range
     {
