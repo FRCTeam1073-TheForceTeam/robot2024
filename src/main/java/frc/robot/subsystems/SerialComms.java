@@ -66,17 +66,12 @@ public class SerialComms extends SubsystemBase{
           return msgAsString;
         }
       }
+      else {
+        return "";
+      }
     }
   }
   
-  // static String transact(String message){
-  //   System.out.println(String.format("sending message, as a String: %s", message));
-  //   send(message);
-
-  //   String receivedString = receive();
-  //   System.out.println(String.format("msg received as string: %s", receivedString));
-  //   return receivedString;
-  // }
   @Override
   public void periodic() {
   }
