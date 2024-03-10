@@ -7,8 +7,9 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+// TODO: figure out when/how to clear tags. how long before they should they age out?
+//       note: periodic() wipes the map after ~0.5s without the camera returning any tags, whether it replies with no tags or stops replying entirely.
 public class AprilTagFinder extends SubsystemBase {
-  /** Creates a new AprilTagFinder. */
   private Camera camera;
   public SerialComms serialcomms;
   public boolean waiting;
@@ -37,9 +38,13 @@ public class AprilTagFinder extends SubsystemBase {
   }
 
   public void update(String[] info) {
-    // example:
-    // args is ["1", "ap", "2", "128", "178", "57", "45", "4", "127", "177", "56", "44"]
-    // that's camera ID 1, apriltag command, two tags.
+    if (info.length < 3) {
+      // System.out.println(String.format("Camera %s reporting no visible apriltags", info[0]));
+      return null;  // or just "return;" I forget
+    }
+    // if we do have tags, example:
+    // args could be ["1", "ap", "2", "128", "178", "57", "45", "4", "127", "177", "56", "44"]
+    // camera ID 1, apriltag command, two tags.
     // e.g. for tag id 2: xcenter, ycenter, tag area, and z-axis thing would be 128, 178, 57, 45.
     cameraID = args[0];
     cmd = args[1];
@@ -63,20 +68,24 @@ public class AprilTagFinder extends SubsystemBase {
   @Override
   public void periodic() {
     if (this.counter == 25) {  // 25 periodic() iterations is roughly a half second. adjust to taste.
-      this.counter = 0;
+      // too long without an update. stop waiting, reset counter, clear map (too old to be useful)
       this.waiting = false;
-      // clear the map! it's too outdated to use.
+      this.counter = 0;
       this.tags.clear();
     }
 
     if (this.waiting == false) {
-        this.camera.getAprilTagInfo("0");
+        this.camera.getAprilTagInfo("0");  // 0 gets all visible tags
         this.waiting = true;
     }
     else {
       String info = this.camera.receiveAprilTagInfo();
       if (info != "") {
+        // we got a response. stop waiting and update.
+        // note: ["1", "ap"] is a legit response, just means we don't see tags.
         this.update(info);
+        this.waiting = false;
+        this.counter = 0;
       }
       else {
         this.counter += 1;
