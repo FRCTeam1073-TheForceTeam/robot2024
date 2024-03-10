@@ -20,8 +20,6 @@ public class Bling extends DiagnosticsSubsystem {
   public int qlength = 6;
   public int qnum = 8;
 
-  double tofCollectorValue;
-  double tofFeederValue;
   
   /**
    * Creates a new bling.
@@ -42,10 +40,6 @@ public class Bling extends DiagnosticsSubsystem {
     m_led.setData(m_ledBuffer);
     m_led.start();
 
-    m_collector = new Collector();
-    tofCollectorValue = 0;
-    m_feeder = new Feeder();
-    tofFeederValue = 0;
     
   }
 
@@ -54,9 +48,6 @@ public class Bling extends DiagnosticsSubsystem {
    */
   public void initialize() {
     clearLEDs();
-    
-    tofCollectorValue = m_collector.getRangeTOF(); 
-    tofFeederValue = m_feeder.getTofRange(); 
   }
 
   /**
@@ -163,8 +154,9 @@ public class Bling extends DiagnosticsSubsystem {
    * Red when Note isn't collected
    * @param quadNum */
   public void setCollectedBling(int quadNum) {
+    double tofCollectorValue = m_collector.getRangeTOF(); 
 
-    if (tofCollectorValue <= 0.72) {
+    if (tofCollectorValue <= 0.4) {
       setQuadRGB(quadNum, 255, 225, 0);
     }
     else{
@@ -178,13 +170,24 @@ public class Bling extends DiagnosticsSubsystem {
    * Red when Note isn't collected
    * @param quadNum */
   public void setFeededBling(int quadNum) {
+    double tofFeederValue = m_feeder.getTofRange(); 
 
-    if (tofCollectorValue <= 0.27) {
+    if (tofFeederValue <= 0.2) {
       setQuadRGB(quadNum, 255, 140, 0);
     }
     else{
       setQuadRGB(quadNum, 255, 0, 0);
     }
+  }
+
+  /**
+   * TODO:// get vision people to fill this out???
+   * Sets the aligned bling to:
+   * Green when Note is aligned?
+   * Red when Note isn't aligned?
+   * @param quadNum */
+  public void setAlignedBling(int quadNum) {
+
   }
 
   // Initialize preferences for this class:
