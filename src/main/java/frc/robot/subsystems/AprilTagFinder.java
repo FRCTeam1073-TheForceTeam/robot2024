@@ -17,6 +17,7 @@ public class AprilTagFinder extends SubsystemBase {
   public SerialComms serialcomms;
   public boolean waiting;
   public int counter;
+  public String tagID = "-1";
   public Map<String, Map<String, String>> tags = new HashMap<String, Map<String, String>>();
   // https://docs.oracle.com/javase/8/docs/api/java/util/HashMap.html
   // map example. given:
@@ -37,9 +38,10 @@ public class AprilTagFinder extends SubsystemBase {
     this.camera = camera;
     this.waiting = false;
     this.counter = 0;
+    this.tagID = tagID;
     this.tags = tags;
   }
-
+  // TODO: add System.currentTimeMillis() to inner maps, age out existing entries (do age outs before puts)
   public void update(String[] info) {
     if (info.length < 3) {
       // System.out.println(String.format("Camera %s reporting no visible apriltags", info[0]));
@@ -53,7 +55,7 @@ public class AprilTagFinder extends SubsystemBase {
     String cmd = info[1];
     for (int i=2; i<info.length; i+=5) {
       // start at 2 instead of 0. we don't care about args[0] and args[1] in here, so skip 'em.
-      String tagID = info[i]; //on first iteration, args[2] is "2".
+      String thisTagID = info[i]; //on first iteration, args[2] is "2".
       // build an inner map for this tag's info
       Map<String, String> inner = new HashMap<String, String>();
       inner.put("xcenter", info[i+1]);
@@ -65,17 +67,23 @@ public class AprilTagFinder extends SubsystemBase {
       // if there were a third tag, its ID would be args[12] (7 + 5 = 12)
 
       // finally, add this tag's ID and info to the public tags map.
-      this.tags.put(tagID, inner);
+      this.tags.put(thisTagID, inner);
     }
   }
 
   @Override
   public void periodic() {
+    // if -1, don't bother
+    if (this.tagID == "-1") {
+      return;
+    }
+
     if (this.counter == 25) {  // 25 periodic() iterations is roughly a half second. adjust to taste.
       // too long without an update. stop waiting, reset counter, clear map (too old to be useful)
       this.waiting = false;
       this.counter = 0;
       this.tags.clear();
+      SmartDashboard.putString("AprilTagFinderTimedout", String.format("hit counter %s", System.currentTimeMillis()));
     }
 
     if (this.waiting == false) {
