@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj.RobotController;
 public class Bling extends DiagnosticsSubsystem {
   public AddressableLED m_led;
   public AddressableLEDBuffer m_ledBuffer;
-  public Collector m_collector;
-  public Feeder m_feeder;
+  public Collector collector;
+  public Feeder feeder;
 
   public int length = 48;
   public int numSlots = 48;
@@ -33,13 +33,14 @@ public class Bling extends DiagnosticsSubsystem {
    * @return the entry's value or the given default value
    * @return the buffer length
    */
-  public Bling() {
+  public Bling(Collector collector, Feeder feeder) {
     m_led = new AddressableLED(0);
     m_ledBuffer = new AddressableLEDBuffer(length);
     m_led.setLength(m_ledBuffer.getLength());
     m_led.setData(m_ledBuffer);
     m_led.start();
-
+    this.collector = collector;
+    this.feeder = feeder;
     
   }
 
@@ -60,7 +61,6 @@ public class Bling extends DiagnosticsSubsystem {
     setBatteryBling(1);
     setCollectedBling(4);
     setFeededBling(5);
-
     //setRangeRGB(0, 6, 20, 5, 15);
   }
 
@@ -154,7 +154,7 @@ public class Bling extends DiagnosticsSubsystem {
    * Red when Note isn't collected
    * @param quadNum */
   public void setCollectedBling(int quadNum) {
-    double tofCollectorValue = m_collector.getRangeTOF(); 
+    double tofCollectorValue = collector.getRangeTOF(); 
 
     if (tofCollectorValue <= 0.4) {
       setQuadRGB(quadNum, 255, 225, 0);
@@ -170,7 +170,7 @@ public class Bling extends DiagnosticsSubsystem {
    * Red when Note isn't collected
    * @param quadNum */
   public void setFeededBling(int quadNum) {
-    double tofFeederValue = m_feeder.getTofRange(); 
+    double tofFeederValue = feeder.getTofRange(); 
 
     if (tofFeederValue <= 0.2) {
       setQuadRGB(quadNum, 255, 140, 0);
