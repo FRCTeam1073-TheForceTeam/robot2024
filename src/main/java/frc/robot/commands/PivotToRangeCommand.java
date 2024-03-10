@@ -36,7 +36,7 @@ public class PivotToRangeCommand extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    //targetPositionRad = pivotTable.interpolatePivotAngle(rangefinder.getRange());
+    targetPositionRad = pivotTable.interpolatePivotAngle(rangefinder.getRange());
     //targetPositionRad = pivot.getDebugPivotAngle();
     count = 0;
   }
@@ -47,18 +47,18 @@ public class PivotToRangeCommand extends Command {
     if(debug){
       pivot.setTargetPositionInRad(pivot.getDebugPivotAngle());
     }
-    else{
-      if(count < 20){
-        currentRange = rangefinder.getRange();
+    // else{
+      // if(count < 20){
+      //   currentRange = rangefinder.getRange();
       
-        avgRange = (0.5 * avgRange) + (0.5 * currentRange);
-        count++;
-      }
-      else{
-        targetPositionRad = pivotTable.interpolatePivotAngle(avgRange);
+      //   avgRange = (0.5 * avgRange) + (0.5 * currentRange);
+      //   count++;
+      // }
+      // else{
+      //   targetPositionRad = pivotTable.interpolatePivotAngle(avgRange);
         pivot.setTargetPositionInRad(targetPositionRad);
-      }
-    }
+      // }
+    // }
   }
 
   // Called once the command ends or is interrupted.

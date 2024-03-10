@@ -54,7 +54,7 @@ public class CollectorAmpCommand extends Command {
     
     //outtake
     if(tofCurrentValue < maxRange){
-      vel = -6;
+      vel = -15;
       m_collector.setTargetCollectorVelocity(vel); //meters per sec
     }
     else{

@@ -25,30 +25,24 @@ public class ShooterInterpolatorTable {
     public void setUpShooterInterpolator(){
        shooterVelocityTable.clear();
         //first value is the range, sceond value is the speed/velocity
-        shooterVelocityTable.put(2.11, 15.0);
-        shooterVelocityTable.put(2.75, 20.0);
-        shooterVelocityTable.put(2.93, 20.0);
-        shooterVelocityTable.put(3.64, 20.0);
-        shooterVelocityTable.put(4.18, 20.0);
-        shooterVelocityTable.put(4.66, 24.8);
-        shooterVelocityTable.put(5.03, 24.9);
-        shooterVelocityTable.put(5.85, 25.0);
-        shooterVelocityTable.put(6.61, 25.1);
+        shooterVelocityTable.put(0.0, 25.0); //old:25
+        shooterVelocityTable.put(2.05, 15.0); //20
+        shooterVelocityTable.put(3.55, 18.0); //23
+        shooterVelocityTable.put(4.99, 22.0); //27
+        shooterVelocityTable.put(6.55, 24.8); // 29.8
+        shooterVelocityTable.put(7.3, 27.0); //32
 
         // ex: shooterVelocityTable.put(0.0, 0.0);;
     }
 
         public void setUpPivotInterpolator(){
         //first value is the range, sceond value is the pivot angle
-        pivotTable.put(2.11, -0.3);
-        pivotTable.put(2.75, -0.46);
-        pivotTable.put(2.93, -0.5);
-        pivotTable.put(3.64, -0.578);
-        pivotTable.put(4.18, -0.63);
-        pivotTable.put(4.66, -0.7);
-        pivotTable.put(5.03, -0.718);
-        pivotTable.put(5.85, -0.747);
-        pivotTable.put(6.61, -0.765); // not finalized
+        pivotTable.put(0.0, 0.0); // offset: 0
+        pivotTable.put(2.05, -0.3); // offset: 10 inches left
+        pivotTable.put(3.55, -0.505); // offset: 11-12 inches left
+        pivotTable.put(4.99, -0.718); // offset: 13.5 inches left
+        pivotTable.put(6.55, -0.788); // offset: 6 inches left
+        pivotTable.put(7.3, -0.82); // close enough
         
         // pivotTable.put(2.0, -0.25);
         // pivotTable.put(2.53, -0.45);

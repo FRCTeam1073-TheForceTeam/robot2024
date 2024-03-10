@@ -5,18 +5,6 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.CollectorTeleop;
-import frc.robot.commands.ArmPoseCommand;
-import frc.robot.commands.ArmPoseSequences;
-import frc.robot.commands.CollectorArmTeleop;
-import frc.robot.commands.CollectorIntakeCommand;
-import frc.robot.commands.CollectorAmpCommand;
-import frc.robot.commands.DriveThroughTrajectorySchema;
-import frc.robot.commands.DriveToPointSchema;
-import frc.robot.commands.SchemaDriveAuto;
-import frc.robot.subsystems.Bling;
-import frc.robot.subsystems.Camera;
-import frc.robot.commands.TeleopDrive;
 import frc.robot.commands.autos.BlueClose4Note;
 import frc.robot.commands.autos.BlueCloseMidline2Note;
 import frc.robot.commands.autos.BlueCloseMidline3Note;
@@ -28,11 +16,6 @@ import frc.robot.commands.autos.RedCloseSnowPlowAuto;
 import frc.robot.commands.autos.RedFar1Note;
 import frc.robot.commands.autos.RedFarSnowPlowAuto;
 import frc.robot.commands.autos.TestAuto;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.OI;
-import frc.robot.subsystems.SerialComms;
-import frc.robot.subsystems.SwerveModuleConfig;
-
 import frc.robot.subsystems.CollectorArm.POSE;
 
 import java.util.ArrayList;
@@ -202,6 +185,9 @@ public class RobotContainer {
     Trigger ampShootCommand = new Trigger(m_OI::getOperatorMenuButton);
     ampShootCommand.onTrue(m_shootSequence.shootToAmp(m_handoffSequence, m_collectorArm, m_collector, m_shooter, m_feeder, m_pivot));
 
+    // Trigger armInterCommand = new Trigger(m_OI::getOperatorYButton);
+    // armInterCommand.onTrue(m_armPoseTeleop.stowIntermediatePose());
+    
     // System.out.println("Configuring buttons");
     // Trigger tagButton = new Trigger(m_OI::getXButton);
     // tagButton.onTrue(getTagData());

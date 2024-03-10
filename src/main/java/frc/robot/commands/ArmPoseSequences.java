@@ -24,20 +24,27 @@ public class ArmPoseSequences extends Command {
 
   public SequentialCommandGroup startPose() {
     return new SequentialCommandGroup(
-      new ArmPoseCommand(arm, POSE.STOW_INTERMEDIATE),
+      new ArmPoseCommand(arm, POSE.STOW_INTERMEDIATE, 0.035, 0.015),
       new ArmPoseCommand(arm, POSE.START)
     );
   }
 
+  // public SequentialCommandGroup stowIntermediatePose() {
+  //   return new SequentialCommandGroup(
+  //     new ArmPoseCommand(arm, POSE.STOW_INTERMEDIATE, 0.01, 0.02),
+  //     new ArmPoseCommand(arm, POSE.STOW_INTERMEDIATE_2)
+
   public SequentialCommandGroup stowPose() {
     return new SequentialCommandGroup(
-      new ArmPoseCommand(arm, POSE.STOW_INTERMEDIATE),
+      new ArmPoseCommand(arm, POSE.STOW_INTERMEDIATE, 0.025, 0.02),
+      new ArmPoseCommand(arm, POSE.STOW_INTERMEDIATE_2, 0.01, 0.03),
       new ArmPoseCommand(arm, POSE.STOW)
     );
   }
 
   public SequentialCommandGroup ampPose() {
     return new SequentialCommandGroup(
+      new ArmPoseCommand(arm, POSE.STOW_INTERMEDIATE, 0.055, 0.02),
       new ArmPoseCommand(arm, POSE.AMP)
     );
   }

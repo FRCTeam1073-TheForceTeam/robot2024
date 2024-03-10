@@ -30,7 +30,7 @@ public class CollectorTeleop extends Command {
   double tofOldValue;
 
   double count = 0;
-
+  double extraIntakeCounter = 2;
 
 
   public CollectorTeleop(Collector collector, CollectorArm collectorArm, Drivetrain ds, OI oi) {
@@ -72,11 +72,12 @@ public class CollectorTeleop extends Command {
 
     if(tofCurrentValue > maxRange){
       isCollectable = true;
+      extraIntakeCounter = 2;
     }
     
     if(m_OI.getOperatorRawButton(5)) //outtake
     {
-      vel = 3;
+      vel = 10;
       m_collector.setTargetCollectorVelocity(vel); //meters per sec
 
       if(tofCurrentValue > maxRange){
@@ -85,7 +86,7 @@ public class CollectorTeleop extends Command {
     }
     else if(m_OI.getOperatorRawButton(6)) //intake
     {
-      vel = (0.05 * Math.abs(m_drivetrain.getChassisSpeeds().vxMetersPerSecond)) + 3;
+      vel = (0.05 * Math.abs(m_drivetrain.getChassisSpeeds().vxMetersPerSecond)) + 15;
       m_collector.setTargetCollectorVelocity(-vel); //meters per sec
 
       if(tofCurrentValue > maxRange){
@@ -96,11 +97,17 @@ public class CollectorTeleop extends Command {
       //if(m_collector.getRangeTOF() < minRange){
       if(!isCollectable){ // use the rate to decide when to stop
         if(m_collectorArm.getPoseName() == POSE.AMP){
+          vel = 25;
           m_collector.setTargetCollectorVelocity(-vel);
         }
         else{
-          m_collector.setTargetCollectorVelocity(0);
-          isCollected = true;
+          if(extraIntakeCounter == 0){
+            m_collector.setTargetCollectorVelocity(0);
+            isCollected = true;
+          }
+          else{
+            extraIntakeCounter--;
+          }
         }
       }
     }

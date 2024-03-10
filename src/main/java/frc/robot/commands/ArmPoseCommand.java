@@ -15,8 +15,8 @@ public class ArmPoseCommand extends Command {
 
   double m_targetLift;
   double m_targetExtend;
-  double m_liftTolerence = 0.03;
-  double m_extendTolerence = 0.025;
+  double m_liftTolerance = 0.015;
+  double m_extendTolerance = 0.005;
 
   boolean m_extendFlag;
 
@@ -28,6 +28,15 @@ public class ArmPoseCommand extends Command {
     m_arm = arm;
     m_pose = pose;
     //m_extendFlag = extendInterpolateFlag;
+    addRequirements(arm);
+  }
+
+  public ArmPoseCommand(CollectorArm arm, POSE pose, double liftTolerance, double extendTolerance){
+    m_arm = arm;
+    m_pose = pose;
+
+    m_liftTolerance = liftTolerance;
+    m_extendTolerance = extendTolerance;
   }
 
   // Called when the command is initially scheduled.
@@ -39,19 +48,24 @@ public class ArmPoseCommand extends Command {
         m_targetExtend = 0.0;
         break;
       case STOW_INTERMEDIATE:
-        m_targetLift = 0.23;
+        m_targetLift = 0.27;
         m_targetExtend = 0.0;
+        break;
+      case STOW_INTERMEDIATE_2:
+        m_targetLift = 0.27;
+        m_targetExtend = 0.108;
+        break;
       case STOW:
-        m_targetLift = 0.21;
-        m_targetExtend = 0.1067363281;
+        m_targetLift = 0.24;
+        m_targetExtend = 0.108;
         break;
       case HANDOFF:
-        m_targetLift = 0.21;
-        m_targetExtend = 0.1067363281;
+        m_targetLift = 0.24;
+        m_targetExtend = 0.108;
         break;
       case AMP:
-        m_targetLift = 1.8453125;
-        m_targetExtend = 0.0;
+        m_targetLift = 1.9453125;
+        m_targetExtend = 0.05;
         break;
     }
   }
@@ -76,7 +90,7 @@ public class ArmPoseCommand extends Command {
   public boolean isFinished() {
     double liftError = Math.abs(m_arm.getCurrentLiftAngle() - m_targetLift);
     double extendError = Math.abs(m_arm.getCurrentExtendLength() - m_targetExtend);
-    if((liftError < 0.02) && (extendError < 0.005)){
+    if((liftError < m_liftTolerance) && (extendError < m_extendTolerance)){
       return true;
     }
     else{

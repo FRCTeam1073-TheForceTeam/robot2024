@@ -27,6 +27,7 @@ public class CollectorIntakeCommand extends Command {
   double tofOldValue;
 
   double count = 0;
+  double extraIntakeCounter = 2;
 
   /** Creates a new CollectorIntakeCommand. 
    * <p> This command is used for intaking into the collector from the ground
@@ -78,8 +79,9 @@ public class CollectorIntakeCommand extends Command {
     //if(m_collector.getRangeTOF() < minRange){
     if(isCollectable){ // use the rate to decide when to stop
       //vel = (0.05 * Math.abs(m_drivetrain.getChassisSpeeds().vxMetersPerSecond)) + 3;
-      vel = 3;
+      vel = 15;
       m_collector.setTargetCollectorVelocity(-vel); //meters per sec
+      extraIntakeCounter = 2;
     }
     else{
       if(m_collectorArm.getPoseName() == POSE.AMP || m_collectorArm.getPoseName() == POSE.HANDOFF){
@@ -92,7 +94,7 @@ public class CollectorIntakeCommand extends Command {
     }
 
     if((isCollected && (count < 20))){ // check if it is collected and at the stow position and run for 50 loops
-      m_collector.setTargetCollectorVelocity(0.5);
+      // m_collector.setTargetCollectorVelocity(0.5);
       count++;
     }
 
@@ -102,7 +104,13 @@ public class CollectorIntakeCommand extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    m_collector.setTargetCollectorVelocity(0);
+    if(extraIntakeCounter == 0){
+      m_collector.setTargetCollectorVelocity(0);
+      extraIntakeCounter--;
+    }
+    else{
+      extraIntakeCounter--;
+    }
   }
 
   // Returns true when the command should end.

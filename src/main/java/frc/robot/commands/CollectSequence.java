@@ -32,6 +32,7 @@ public class CollectSequence extends Command {
           new ArmPoseCommand(m_collectorArm, POSE.START),
           new CollectorIntakeCommand(m_collector, m_collectorArm),
           new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE),
+          new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE_2),
           new ArmPoseCommand(m_collectorArm, POSE.STOW)
         );
       case AMP:
