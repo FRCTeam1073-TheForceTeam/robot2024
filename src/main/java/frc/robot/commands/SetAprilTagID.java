@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.AprilTagFinder;
 
 public class SetAprilTagID extends Command {
-  // TODO: set the AprilTagFinder subsystem's "tagID" member
   String tagID = "-1";
   AprilTagFinder aprilTagFinder;
   public SetAprilTagID(AprilTagFinder aprilTagFinder, String tagID) {
