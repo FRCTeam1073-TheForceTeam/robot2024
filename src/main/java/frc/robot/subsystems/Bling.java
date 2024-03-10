@@ -19,7 +19,6 @@ public class Bling extends DiagnosticsSubsystem {
   public int numSlots = 48;
   public int qlength = 6;
   public int qnum = 8;
-
   
   /**
    * Creates a new bling.
@@ -61,6 +60,8 @@ public class Bling extends DiagnosticsSubsystem {
     setBatteryBling(1);
     setCollectedBling(4);
     setFeededBling(5);
+    setRainbowBling();
+
     //setRangeRGB(0, 6, 20, 5, 15);
   }
 
@@ -166,14 +167,14 @@ public class Bling extends DiagnosticsSubsystem {
 
   /**
    * Sets the feeder bling to:
-   * Orange when Note is collected
+   * Blue when Note is collected
    * Red when Note isn't collected
    * @param quadNum */
   public void setFeededBling(int quadNum) {
     double tofFeederValue = feeder.getTofRange(); 
 
     if (tofFeederValue <= 0.2) {
-      setQuadRGB(quadNum, 255, 80, 0);
+      setQuadRGB(quadNum, 0, 0, 255);
     }
     else{
       setQuadRGB(quadNum, 255, 0, 0);
@@ -188,6 +189,35 @@ public class Bling extends DiagnosticsSubsystem {
    * @param quadNum */
   public void setAlignedBling(int quadNum) {
 
+  }
+
+  public void setRainbowBling(){
+    int m_rainbowFirstPixelHue1 = 0;
+    int m_rainbowFirstPixelHue2 = 0;
+
+    for (var i = 0; i < m_ledBuffer.getLength()/2; i++) {
+      // Calculate the hue - hue is easier for rainbows because the color
+      // shape is a circle so only one value needs to precess
+      final var hue = (m_rainbowFirstPixelHue1 + (i * 180 / m_ledBuffer.getLength())) % 180;
+      // Set the value
+      m_ledBuffer.setHSV(i, hue, 255, 128);
+    }
+    // Increase by to make the rainbow "move"
+    m_rainbowFirstPixelHue1 += 3;
+    // Check bounds
+    m_rainbowFirstPixelHue1 %= 180;
+
+    for (var i = m_ledBuffer.getLength()/2; i < m_ledBuffer.getLength(); i++) {
+      // Calculate the hue - hue is easier for rainbows because the color
+      // shape is a circle so only one value needs to precess
+      final var hue = (m_rainbowFirstPixelHue2 + (i * 180 / m_ledBuffer.getLength())) % 180;
+      // Set the value
+      m_ledBuffer.setHSV(i, hue, 255, 128);
+    }
+    // Increase by to make the rainbow "move"
+    m_rainbowFirstPixelHue2 += 3;
+    // Check bounds
+    m_rainbowFirstPixelHue2 %= 180;
   }
 
   // Initialize preferences for this class:
