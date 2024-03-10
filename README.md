@@ -40,7 +40,8 @@ Swerve module #0 is front left, #1 is front right, #2 is back left, and #3 is ba
 | Leader Feeder Motor   |  19    | CANivore |
 | Follower Feeder Motor |  20    | CANivore |
 | Pivot Motor           |  21    | CANivore |
-| Climber Motor #1      |  22    | CANivore |
+| Climber Motor left    |  22    | CANivore |
+| Climber Motor right   |  23    | CANivore |
 
 | Digital IO            | Port   |
 | --------------------- | ------ |
