@@ -123,7 +123,7 @@ Swerve module #0 is front left, #1 is front right, #2 is back left, and #3 is ba
 |1               |                                   |
 |2               |                                   |
 |3               | Battery                           |
-|4               |                                   |
-|5               |                                   |
-|6               |                                   |
+|4               | Collected (Yellow)                |
+|5               | In Feeder (Orange)                |
+|6               | Alignment                         |
 |7               |                                   |

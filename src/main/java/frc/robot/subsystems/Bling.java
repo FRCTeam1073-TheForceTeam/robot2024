@@ -8,14 +8,20 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.RobotController;
 
+
 public class Bling extends DiagnosticsSubsystem {
   public AddressableLED m_led;
   public AddressableLEDBuffer m_ledBuffer;
+  public Collector m_collector;
+  public Feeder m_feeder;
 
   public int length = 48;
   public int numSlots = 48;
   public int qlength = 6;
   public int qnum = 8;
+
+  double tofCollectorValue;
+  double tofFeederValue;
   
   /**
    * Creates a new bling.
@@ -35,6 +41,12 @@ public class Bling extends DiagnosticsSubsystem {
     m_led.setLength(m_ledBuffer.getLength());
     m_led.setData(m_ledBuffer);
     m_led.start();
+
+    m_collector = new Collector();
+    tofCollectorValue = 0;
+    m_feeder = new Feeder();
+    tofFeederValue = 0;
+    
   }
 
   /**
@@ -42,6 +54,9 @@ public class Bling extends DiagnosticsSubsystem {
    */
   public void initialize() {
     clearLEDs();
+    
+    tofCollectorValue = m_collector.getRangeTOF(); 
+    tofFeederValue = m_feeder.getTofRange(); 
   }
 
   /**
@@ -52,6 +67,9 @@ public class Bling extends DiagnosticsSubsystem {
     // This method will be called once per scheduler run
     m_led.setData(m_ledBuffer);
     setBatteryBling(1);
+    setCollectedBling(4);
+    setFeededBling(5);
+
     //setRangeRGB(0, 6, 20, 5, 15);
   }
 
@@ -133,6 +151,36 @@ public class Bling extends DiagnosticsSubsystem {
     }
     else if (volts > 10){
       setQuadRGB(quadNum, 0, 0, 255);
+    }
+    else{
+      setQuadRGB(quadNum, 255, 0, 0);
+    }
+  }
+
+  /**
+   * Sets the collector bling to:
+   * Yellow when Note is collected
+   * Red when Note isn't collected
+   * @param quadNum */
+  public void setCollectedBling(int quadNum) {
+
+    if (tofCollectorValue <= 0.72) {
+      setQuadRGB(quadNum, 255, 225, 0);
+    }
+    else{
+      setQuadRGB(quadNum, 255, 0, 0);
+    }
+  }
+
+  /**
+   * Sets the feeder bling to:
+   * Orange when Note is collected
+   * Red when Note isn't collected
+   * @param quadNum */
+  public void setFeededBling(int quadNum) {
+
+    if (tofCollectorValue <= 0.27) {
+      setQuadRGB(quadNum, 255, 140, 0);
     }
     else{
       setQuadRGB(quadNum, 255, 0, 0);
