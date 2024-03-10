@@ -15,9 +15,9 @@ import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.CollectorArm.POSE;
 
-public class CancelCommand extends Command {
+public class CancelSequence extends Command {
   /** Creates a new CancelCommand. */
-  public CancelCommand() {
+  public CancelSequence() {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 

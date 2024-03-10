@@ -87,7 +87,7 @@ public class RobotContainer {
 
   private final RangeFinder m_rangeFinder = new RangeFinder();
   private final ShooterSequences m_shootSequence = new ShooterSequences();
-  private final CancelCommand m_cancelCommand = new CancelCommand();
+  private final CancelSequence m_cancelCommand = new CancelSequence();
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
   private final Collector m_collector = new Collector();
   private final CollectorArm m_collectorArm = new CollectorArm();
