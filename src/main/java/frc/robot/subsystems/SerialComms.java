@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems;
 
-
 import java.nio.charset.StandardCharsets;
 
 import edu.wpi.first.wpilibj.SerialPort;
@@ -13,26 +12,25 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 public class SerialComms extends SubsystemBase{
-  private static SerialPort serialPort;
   private SerialPort.Port portUSB;
+  SerialPort serialPort = new SerialPort(1000000, portUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
 
-  public SerialComms(SerialPort.Port portUSB) {
-    this.portUSB = portUSB;
-    try {
-      serialPort = new SerialPort(1000000, portUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
-      serialPort.setFlowControl(SerialPort.FlowControl.kNone);
-      System.out.println("set serialPort and flowcontrol");
-    }
-    catch (Exception e) {
-      System.out.println("Could not open serial port!");
-      serialPort = null;
-    }
+  public SerialComms() {
+    //try {
+    // serialPort = new SerialPort(1000000, portUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
+    // serialPort.setFlowControl(SerialPort.FlowControl.kNone);
+    //System.out.println("set serialPort and flowcontrol");
+    // }
+    // catch (Exception e) {
+    //   System.out.println("Could not open serial port!");
+    //   serialPort = null;
+    // }
   }
 
-  public static void send(String message) {
-    if(serialPort == null){
-      return;
-    }
+  public void send(String message) {
+    // if(serialPort == null){
+    //   return;
+    // }
     message = message.concat("\n");
     byte[] messageAsBytes = message.getBytes(StandardCharsets.US_ASCII);
     for(int i=0; i < messageAsBytes.length; i++) {
@@ -41,7 +39,7 @@ public class SerialComms extends SubsystemBase{
     }
   }
 
-  public static String receive() {
+  public String receive() {
     if(serialPort == null){
       return "";
     }

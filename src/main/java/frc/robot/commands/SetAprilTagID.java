@@ -13,26 +13,17 @@ public class SetAprilTagID extends Command {
   public SetAprilTagID(AprilTagFinder aprilTagFinder, String tagID) {
     this.tagID = tagID;
     this.aprilTagFinder = aprilTagFinder;
-
-    // Use addRequirements() here to declare subsystem dependencies.
-    // namely AprilTagSubsystem
+    addRequirements(aprilTagFinder);
   }
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {}
-
-  // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
     this.aprilTagFinder.tagID = this.tagID;
   }
 
-  // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {}
 
-  // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     return true;

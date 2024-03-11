@@ -72,6 +72,7 @@ public class AprilTagFinder extends SubsystemBase {
   @Override
   public void periodic() {
     SmartDashboard.putString("AprilTagFinderDesiredID", this.tagID);
+    SmartDashboard.putString("AprilTagFinderStoredIDs", this.tags.keySet().toString());
     // if -1, don't bother
     if (this.tagID == "-1") {
       return;

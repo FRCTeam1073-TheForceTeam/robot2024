@@ -43,6 +43,7 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.SerialComms;
 import frc.robot.subsystems.SwerveModuleConfig;
+import frc.robot.commands.SetAprilTagID;
 
 import frc.robot.subsystems.CollectorArm.POSE;
 
@@ -63,6 +64,7 @@ import frc.robot.commands.StartRecordingTeleop;
 import frc.robot.commands.GetAprilTagInfo;
 import frc.robot.commands.StopRecording;
 import frc.robot.subsystems.Camera;
+import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.SerialComms;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -79,6 +81,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.*;
@@ -129,11 +132,12 @@ public class RobotContainer {
   // private static final String kLeaveAuto = "Leave Auto";
   // private static final String kTestAuto = "Test Auto";
 
-  private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
+  private final SerialComms m_serial = new SerialComms();
   private final Camera m_camera1 = new Camera(m_serial, "1");  // camID is how SerialComms and the cameras themselves tells them apart
   //private final Camera m_camera2 = new Camera(m_serial, "2");
   //public final Camera[] m_cameras = {m_camera1, m_camera2};
   public final Camera[] m_cameras = {m_camera1};
+  public final AprilTagFinder m_aprilTagFinder = new AprilTagFinder(m_camera1, m_serial);
 
   // private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_cameras);
   // private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_cameras);
@@ -216,10 +220,14 @@ public class RobotContainer {
     // Trigger ampShootCommand = new Trigger(m_OI::getOperatorMenuButton);
     // ampShootCommand.onTrue(m_ampShootCommand.ampShot(m_shooter, m_feeder, m_pivot));
 
-    // System.out.println("Configuring buttons");
-    Trigger tagButton = new Trigger(m_OI::getXButtonDriver);
-    //tagButton.onTrue(c_getAprilTagInfo);  // old and busted
-    tagButton.onTrue(new GetAprilTagInfo(m_serial, m_camera1, "4"));
+    // tagButton.onTrue(new GetAprilTagInfo(m_serial, m_camera1, "4"));
+    Trigger tagButton1 = new Trigger(m_OI::getXButtonDriver);
+    tagButton1.onTrue(new SetAprilTagID(m_aprilTagFinder, "1"));
+
+    Trigger tagButton4 = new Trigger(m_OI::getYButtonDriver);
+    tagButton4.onTrue(new SetAprilTagID(m_aprilTagFinder, "4"));
+
+
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
 
