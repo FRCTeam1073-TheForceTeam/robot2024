@@ -12,8 +12,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 public class SerialComms extends SubsystemBase{
-  private SerialPort.Port portUSB;
-  SerialPort serialPort = new SerialPort(1000000, portUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
+  SerialPort serialPort = new SerialPort(1000000, SerialPort.Port.kUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
 
   public SerialComms() {
     //try {
