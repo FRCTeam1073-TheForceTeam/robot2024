@@ -72,6 +72,9 @@ public class Shooter extends DiagnosticsSubsystem{
 
   private boolean noteShot = false;
 
+
+  private boolean commandedToShoot = false;
+
   /** Creates a new Shooter. **/
   public Shooter() {
     super.setSubsystem("Shooter");
@@ -199,6 +202,14 @@ public class Shooter extends DiagnosticsSubsystem{
 
   public double getTopTemp(){
     return topShooterMotor.getDeviceTemp().getValue();
+  }
+
+  public void setCommandedToShoot(boolean readyToShoot){
+    commandedToShoot = readyToShoot;
+  }
+
+  public boolean getCommandedToShoot(){
+    return commandedToShoot;
   }
 
   public void configureHardware(){

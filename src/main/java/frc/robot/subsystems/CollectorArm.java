@@ -302,8 +302,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     // liftConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     // liftConfigs.ClosedLoopGeneral.ContinuousWrap = true;
 
-    liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 4; 
-    liftConfigs.MotionMagic.MotionMagicAcceleration = 2; 
+    liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 3; 
+    liftConfigs.MotionMagic.MotionMagicAcceleration = 4; 
     liftConfigs.MotionMagic.MotionMagicJerk = 0;
 
     liftMotor.getConfigurator().apply(liftConfigs);
@@ -325,7 +325,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     //extendConfigs.ClosedLoopGeneral.ContinuousWrap = true;
 
     extendConfigs.MotionMagic.MotionMagicCruiseVelocity = 1;
-    extendConfigs.MotionMagic.MotionMagicAcceleration = 0.5;
+    extendConfigs.MotionMagic.MotionMagicAcceleration = 0.7;
     extendConfigs.MotionMagic.MotionMagicJerk = 0;
 
     extendMotor.getConfigurator().apply(extendConfigs);

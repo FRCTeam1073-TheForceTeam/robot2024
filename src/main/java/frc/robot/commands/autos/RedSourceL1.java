@@ -45,7 +45,7 @@ public class RedSourceL1
                     new RunShooter(shooter, range1),
                     new PivotRangeCommand(pivot, range1)
                 ),
-                new WaitForPoint(drivetrain, poseShootPoint, 0.25, 0.15),
+                new WaitForPoint(drivetrain, poseShootPoint, 0.3, 0.25),
                 new ParallelCommandGroup(
                     new RunFeeder(feeder, 30),
                     new StopShooter(shooter)

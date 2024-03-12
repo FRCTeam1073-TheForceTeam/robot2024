@@ -16,13 +16,15 @@ public class SetShooterVel extends Command {
   private Shooter shooter;
   double targetTopVel;
   double targetBottomVel;
+  boolean readyToShoot;
   
   /** Creates a new SetShooterAngle. */
-  public SetShooterVel(Shooter m_shooter, double targetTopVel, double targetBottomVel) {
+  public SetShooterVel(Shooter m_shooter, double targetTopVel, double targetBottomVel, boolean readyToShoot) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.shooter = m_shooter;
     this.targetTopVel = targetTopVel;
     this.targetBottomVel = targetBottomVel;
+    this.readyToShoot = readyToShoot;
   }
 
   // Called when the command is initially scheduled.
@@ -30,6 +32,10 @@ public class SetShooterVel extends Command {
   public void initialize() {
     shooter.setTargetBottomVelocityInMPS(targetBottomVel);
     shooter.setTargetTopVelocityInMPS(targetTopVel);
+
+    if(!readyToShoot){
+      shooter.setCommandedToShoot(readyToShoot);
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -39,7 +45,7 @@ public class SetShooterVel extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-
+    shooter.setCommandedToShoot(readyToShoot);
   }
 
   // Returns true when the command should end.

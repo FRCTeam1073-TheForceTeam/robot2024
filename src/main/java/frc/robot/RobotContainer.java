@@ -112,6 +112,7 @@ public class RobotContainer {
   private final RangeFinder m_rangeFinder = new RangeFinder();
   private final CollectFeedCommand m_collectAndFeed = new CollectFeedCommand();
   private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
+  private final SetShots m_setShots = new SetShots();
   private final CancelCommand m_cancelCommand = new CancelCommand();
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
   private final Collector m_collector = new Collector();
@@ -119,7 +120,6 @@ public class RobotContainer {
   private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_collectorArm, m_drivetrain, m_OI);
   private final CollectorArmTeleop m_collectorArmTeleop = new CollectorArmTeleop(m_collectorArm, m_OI);
   private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm, m_OI);
-  private final AmpShootCommand m_ampShootCommand = new AmpShootCommand();
   private final HandoffCommand m_handoffCommand = new HandoffCommand();
   private final ClimberTeleop m_ClimberTeleop = new ClimberTeleop(m_climber, m_OI);
 
@@ -188,7 +188,7 @@ public class RobotContainer {
     //CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand); 
-    CommandScheduler.getInstance().setDefaultCommand(m_climber, m_ClimberTeleop);
+    //CommandScheduler.getInstance().setDefaultCommand(m_climber, m_ClimberTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_collectorArmTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_runShooterCommand);
@@ -267,23 +267,26 @@ public class RobotContainer {
     Trigger launchFeederToSpeaker = new Trigger(m_OI::getOperatorRightTrigger);
     launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot, m_rangeFinder));
 
+    Trigger subwooferSpinUp = new Trigger(m_OI::getOperatorDPadDown);
+    subwooferSpinUp.onTrue(m_setShots.runSubwooferShot(m_pivot, m_shooter));
+
+    Trigger podiumSpinUp = new Trigger(m_OI::getOperatorDPadLeft);
+    podiumSpinUp.onTrue(m_setShots.runPodiumShot(m_pivot, m_shooter));
+
+    Trigger farSpinUp = new Trigger(m_OI::getOperatorDPadUp);
+    farSpinUp.onTrue(m_setShots.runFarShot(m_pivot, m_shooter));
+
     Trigger cancelCommand = new Trigger(m_OI::getOperatorBButton);
     cancelCommand.onTrue(m_cancelCommand.cancel(m_collector, m_collectorArm, m_shooter, m_feeder, m_pivot));
 
     Trigger armStartCommand = new Trigger(m_OI::getOperatorAButton);
     armStartCommand.onTrue(m_armPoseTeleop.startPose());
 
-    // Trigger armInterCommand = new Trigger(m_OI::getOperatorYButton);
-    // armInterCommand.onTrue(m_armPoseTeleop.stowIntermediatePose());
-
     Trigger armStowCommand = new Trigger(m_OI::getOperatorXButton);
     armStowCommand.onTrue(m_armPoseTeleop.stowPose());
 
     Trigger armAmpCommand = new Trigger(m_OI::getOperatorYButton);
     armAmpCommand.onTrue(m_armPoseTeleop.ampPose());
-
-    Trigger ampShootCommand = new Trigger(m_OI::getOperatorMenuButton);
-    ampShootCommand.onTrue(m_ampShootCommand.ampShot(m_shooter, m_feeder, m_pivot));
 
     // System.out.println("Configuring buttons");
     // Trigger tagButton = new Trigger(m_OI::getXButton);

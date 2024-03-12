@@ -206,6 +206,21 @@ public class OI extends DiagnosticsSubsystem
     return getOperatorRawButton(8);
   }
 
+  public boolean getOperatorDPadUp(){
+    return (operatorController.getPOV() == 0);
+  }
+
+  public boolean getOperatorDPadDown(){
+    return (operatorController.getPOV() == 180);
+  }
+
+  public boolean getOperatorDPadLeft(){
+    return (operatorController.getPOV() == 270);
+  }
+
+  public boolean getOperatorDPadRight(){
+    return (operatorController.getPOV() == 90);
+  }
 
   @Override
   public void initSendable(SendableBuilder builder){

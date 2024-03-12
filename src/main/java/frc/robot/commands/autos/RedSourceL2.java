@@ -41,11 +41,11 @@ public class RedSourceL2
         double range1 = 4.3;
 
         ArrayList<Segment> segments = new ArrayList<Segment>();
-        segments.add(new Segment(start, pathShootPoint, 0.768, 3.0));
-        segments.add(new Segment(pathShootPoint, avoidStagePost, 0.0, 3.0));
-        segments.add(new Segment(avoidStagePost, midlineNote2, 0.0, 3.0));
-        segments.add(new Segment(midlineNote2, stagePoint, 0.0, 3.0));
-        segments.add(new Segment(stagePoint, pathShootPoint, 0.768, 3.0));
+        segments.add(new Segment(start, pathShootPoint, 0.768, 2.5));
+        segments.add(new Segment(pathShootPoint, avoidStagePost, 0.0, 2.5));
+        segments.add(new Segment(avoidStagePost, midlineNote2, 0.0, 2.5));
+        segments.add(new Segment(midlineNote2, stagePoint, 0.0, 2.5));
+        segments.add(new Segment(stagePoint, pathShootPoint, 0.768, 2.5));
 
         Path path = new Path(segments, 0.768);
         path.pathGain = 1.5;

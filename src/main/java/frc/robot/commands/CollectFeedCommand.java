@@ -30,15 +30,12 @@ public class CollectFeedCommand extends Command
       new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
       new ParallelCommandGroup(
         new SequentialCommandGroup(
-          new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE),
-          new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE_2),
+          new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE, 0.08, 0.02),
+          new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE_2, 0.02, 0.01),
           new ArmPoseCommand(m_collectorArm, POSE.HANDOFF)
         ),
         new SetPivotCommand(m_pivot, -0.6)
       ),
-      //new ParallelCommandGroup(
-        
-      //),
       new ParallelDeadlineGroup(
         new LoadFeeder(m_feeder, 1.5),
         new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain)
@@ -49,8 +46,8 @@ public class CollectFeedCommand extends Command
           new WaitCommand(0.25),
           new AdjustFeed(m_feeder)
         )
-      )
-      //new SetPivotCommand(m_pivot, -0.74)
+      ),
+      new SetShooterVel(m_shooter, 0, 0, false)
     );
   }
 }
