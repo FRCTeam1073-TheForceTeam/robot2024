@@ -38,6 +38,7 @@ public class RedCenterL2
         ArrayList<Segment> segments = new ArrayList<Segment>();
         segments.add(new Segment(start, shootPoint, 0, 2.5));
         segments.add(new Segment(shootPoint, wingNote7, 0, 2.5));
+        segments.add(new Segment(wingNote7, shootPoint, 0, 2.5));
 
         Path path = new Path(segments, 0);
         path.pathGain = 1.5;

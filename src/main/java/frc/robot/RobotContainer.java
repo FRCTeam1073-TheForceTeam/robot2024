@@ -20,7 +20,10 @@ import frc.robot.commands.TeleopDrive;
 import frc.robot.commands.autos.BlueWing4Note;
 import frc.robot.commands.autos.BlueCloseMidline2Note;
 import frc.robot.commands.autos.BlueCloseMidline3Note;
+import frc.robot.commands.autos.BlueAmpL1;
 import frc.robot.commands.autos.BlueAmpL2;
+import frc.robot.commands.autos.BlueAmpL3;
+import frc.robot.commands.autos.BlueAmpL4;
 import frc.robot.commands.autos.BlueCenterL1;
 import frc.robot.commands.autos.BlueCenterL2;
 import frc.robot.commands.autos.BlueCenterL3;
@@ -31,6 +34,10 @@ import frc.robot.commands.autos.BlueSourceL2;
 import frc.robot.commands.autos.BlueSourceL3;
 import frc.robot.commands.autos.BlueSourceL4;
 import frc.robot.commands.autos.LeaveAuto;
+import frc.robot.commands.autos.RedAmpL1;
+import frc.robot.commands.autos.RedAmpL2;
+import frc.robot.commands.autos.RedAmpL3;
+import frc.robot.commands.autos.RedAmpL4;
 import frc.robot.commands.autos.RedCenterL1;
 import frc.robot.commands.autos.RedCenterL2;
 import frc.robot.commands.autos.RedCenterL3;
@@ -353,13 +360,13 @@ public class RobotContainer {
       case kRedCenterL4:
         return RedCenterL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kRedAmpL1:
-        return null;
+        return RedAmpL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
       case kRedAmpL2:
-        return null;
+        return RedAmpL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kRedAmpL3:
-        return null;
+        return RedAmpL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kRedAmpL4:
-        return null;
+        return RedAmpL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kBlueSourceL1:
         return BlueSourceL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
       case kBlueSourceL2:
@@ -377,13 +384,13 @@ public class RobotContainer {
       case kBlueCenterL4:
         return BlueCenterL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kBlueAmpL1:
-        return null;
+        return BlueAmpL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
       case kBlueAmpL2:
-        return BlueAmpL2.create(m_drivetrain, m_feeder, m_shooter, m_pivot, m_collector, m_collectorArm, m_handoffCommand);
+        return BlueAmpL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm); 
       case kBlueAmpL3:
-        return null;
+        return BlueAmpL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kBlueAmpL4:
-        return null;
+        return BlueAmpL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kRedCloseSnowPlowAuto:
         return RedCloseSnowPlowAuto.create(m_drivetrain);
       case kRedFarSnowPlowAuto:
