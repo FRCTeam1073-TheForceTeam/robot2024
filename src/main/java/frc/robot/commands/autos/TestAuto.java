@@ -26,7 +26,7 @@ public class TestAuto
         
         Path path = new Path(segments, 0);
 
-        path.pathGain = 1.5;
+        path.transverseVelocity = 1.5;
         
 
         return SchemaDriveAuto.create(new DrivePathSchema(m_drivetrain, path), m_drivetrain);

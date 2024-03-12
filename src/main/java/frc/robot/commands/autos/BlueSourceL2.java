@@ -48,7 +48,7 @@ public class BlueSourceL2
         segments.add(new Segment(stagePoint, pathShootPoint, -0.768, 3.0));
 
         Path path = new Path(segments, -0.768);
-        path.pathGain = 1.5;
+        path.transverseVelocity = 1.5;
 
         return new ParallelCommandGroup(
             SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), drivetrain),

@@ -108,8 +108,8 @@ public class Path
 
     public ArrayList<Segment> segments; // The path is a list of segments.
     public double finalOrientation = 0.0;    // The orientation goal to hit at the end of the entire path.
-    public double pathGain = 1.0; // Gain applied to getting onto path.
-    public double travelGain = 1.0; // Gain applied to traveling along path.
+    public double transverseVelocity = 1.0; // Maximum velocity for getting onto path (transverse velocity)
+    // public double travelGain = 1.0; // Gain applied to traveling along path.
 
     /**
      * Create a path with a set of segments and a given final orientation where we stop.
@@ -221,10 +221,10 @@ public class Path
             double proportion = path_offset / seg.width; /// 0 when we're dead-on, 1 when were at the offset.
 
             // Drive along the path and towards the path in proportion to error:
-            Vp = (path_pos.minus(pos).times(proportion * pathGain)).plus(seg.dir.times((1.0 - proportion)*travelGain));
+            Vp = (path_pos.minus(pos).times(proportion * transverseVelocity)).plus(seg.dir.times((1.0 - proportion)*seg.velocity));
         } else {
-            // Drive only toward the path:
-            Vp = path_pos.minus(pos).div(path_offset).times(pathGain);
+            // Drive only toward the path to get back on it.
+            Vp = path_pos.minus(pos).div(path_offset).times(transverseVelocity);
         }
 
         // Set our leading position
@@ -234,7 +234,7 @@ public class Path
         pp.set(0,0,pp.get(0,0));
         pp.set(1,0,pp.get(1,0));   
         
-        // Project the computed position onto the path segment as well.
+        // Project the computed position onto the path segment as well to stay on segment and hit endpoints exactly.
         Vector<N2> ppp = new Vector<N2>(N2.instance);  /// projected path position point.
         double notused = distanceToSegment(seg.start.position, seg.end.position, seg.length, pp, ppp);
 

@@ -59,7 +59,7 @@ public class Feeder extends DiagnosticsSubsystem {
 
   /** Creates a new Trigger. */
   public Feeder() {
-    //feederMotor = new TalonFX(19, kCANbus); //Falcon
+    super.setSubsystem("Feeder");
     feederMotor = new TalonFX(19, kCANbus);
     feederMotorFault = new MotorFault(feederMotor, 19);
     feederMotorLimiter = new SlewRateLimiter(13); //limits the rate of change to 0.5 units per seconds
@@ -177,7 +177,7 @@ public class Feeder extends DiagnosticsSubsystem {
   @Override
   public void initSendable(SendableBuilder builder)
   {
-    builder.setSmartDashboardType("Shooter");
+    super.initSendable(builder);
     builder.addDoubleProperty("Tof Range", this::getTofRange, null);
     builder.addDoubleProperty("Tof Freq", this::getTofFreq, null);
     builder.addDoubleProperty("Target Feeder Velocity", this::getTargetVelocityInMPS, this::setTargetVelocityInMPS);

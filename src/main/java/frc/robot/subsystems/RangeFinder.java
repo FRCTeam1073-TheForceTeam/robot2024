@@ -17,6 +17,7 @@ public class RangeFinder extends DiagnosticsSubsystem {
     double timestamp = 0.0;
 
     public RangeFinder () {
+        super.setSubsystem("RangeFinder");
         serialPort.setFlowControl(SerialPort.FlowControl.kNone);
         
         triggerCommand[0] = 0x5a;
@@ -105,7 +106,7 @@ public class RangeFinder extends DiagnosticsSubsystem {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType("Rangefinder");
+        super.initSendable(builder);
         builder.addDoubleProperty("Range", this::getRange, null);
         builder.addDoubleProperty("Intensity", this::getIntensity, null);
         builder.addDoubleProperty("Timestamp", this::getTimestamp, null);

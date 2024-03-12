@@ -169,7 +169,6 @@ public class Pivot extends DiagnosticsSubsystem {
   public void initSendable(SendableBuilder builder)
   {
     super.initSendable(builder);
-    //builder.setSmartDashboardType("Pivot");
     builder.addDoubleProperty("Debug Pivot Angle", this::getDebugPivotAngle, this::setDebugPivotAngle);
     builder.addDoubleProperty("Pivot Test Command Motor Position", this::getTargetPositionInRad, null);
     builder.addDoubleProperty("Target Pivot Motor Position", this::getTargetPositionInRad, this::setTargetPositionInRad);

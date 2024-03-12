@@ -59,7 +59,6 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    m_robotContainer.printAllFalseDiagnostics();
 
     coopTime = MathUtil.clamp(Timer.getMatchTime() - 90, 0, 45);
     SmartDashboard.putNumber("Remaining Coopertition Time", coopTime);
@@ -76,7 +75,9 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+      m_robotContainer.printAllFalseDiagnostics();
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override

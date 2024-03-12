@@ -44,6 +44,8 @@ public class Drivetrain extends DiagnosticsSubsystem
   /** Creates a new DriveSubsystem. */
   public Drivetrain()
   {
+    super.setSubsystem("Drivetrain");
+
     pigeon2 = new Pigeon2(13);
     var error = pigeon2.getConfigurator().apply(new Pigeon2Configuration());
     if (!error.isOK()) 
@@ -114,6 +116,12 @@ public class Drivetrain extends DiagnosticsSubsystem
     maximumLinearSpeed = Preferences.getDouble("Drive.MaximumLinearSpeed", 3.5);
     // Initial chassis speeds are zero:
     targetChassisSpeeds = new ChassisSpeeds(0,0,0);
+
+
+    // Add each module as a child for debugging:
+    for (int mod = 0; mod < 4; ++mod) {
+      addChild(String.format("Module[%d]", mod), modules[mod]);
+    }
   }
 
   // Initialize preferences for this class:
@@ -140,7 +148,8 @@ public class Drivetrain extends DiagnosticsSubsystem
 
   @Override
   public void initSendable(SendableBuilder builder){
-    builder.setSmartDashboardType("Drivetrain");
+    super.initSendable(builder);
+    // builder.setSmartDashboardType("Drivetrain");
     builder.addBooleanProperty("ParkingBrake", this::getParkingBrake, null);
     builder.addDoubleProperty("Odo X", this.getOdometry()::getX, null);
     builder.addDoubleProperty("Odo Y", this.getOdometry()::getY, null);
@@ -151,11 +160,6 @@ public class Drivetrain extends DiagnosticsSubsystem
     builder.addDoubleProperty("Target Omega", this::getTargetOmega, null);
     builder.addDoubleProperty("Pitch", this::getPitch, null);
     builder.addDoubleProperty("Roll", this::getRoll, null);
-
-    // Add each module to the sendable setup:
-    for (int mod = 0; mod < 4; ++mod) {
-      modules[mod].initSendable(builder);
-    }
   }
 
   @Override

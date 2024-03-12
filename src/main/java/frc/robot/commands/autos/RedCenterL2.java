@@ -41,7 +41,7 @@ public class RedCenterL2
         segments.add(new Segment(wingNote7, shootPoint, 0, 2.5));
 
         Path path = new Path(segments, 0);
-        path.pathGain = 1.5;
+        path.transverseVelocity = 1.5;
 
         return new ParallelCommandGroup(
             SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), drivetrain),
