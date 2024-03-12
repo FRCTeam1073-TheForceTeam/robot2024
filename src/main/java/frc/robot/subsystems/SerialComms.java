@@ -13,61 +13,26 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SerialComms extends SubsystemBase{
   SerialPort serialPort = new SerialPort(1000000, SerialPort.Port.kUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
+  
+  byte bytes[];
 
   public SerialComms() {
-    //try {
-    // serialPort = new SerialPort(1000000, portUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
-    // serialPort.setFlowControl(SerialPort.FlowControl.kNone);
-    //System.out.println("set serialPort and flowcontrol");
-    // }
-    // catch (Exception e) {
-    //   System.out.println("Could not open serial port!");
-    //   serialPort = null;
-    // }
   }
 
-  public void send(String message) {
-    // if(serialPort == null){
-    //   return;
-    // }
-    message = message.concat("\n");
-    byte[] messageAsBytes = message.getBytes(StandardCharsets.US_ASCII);
-    for(int i=0; i < messageAsBytes.length; i++) {
-      byte[] arrayofone = {messageAsBytes[i]};
-      serialPort.write(arrayofone, 1);
-    }
+  public void send(byte[] msg) {
+    serialPort.write(msg, 8);
+    serialPort.flush();
   }
 
-  public String receive() {
-    if(serialPort == null){
-      return "";
+  public byte[] receive(){
+    int bytestoread = serialPort.getBytesReceived();
+    if (bytestoread >= 8 ) {
+      bytes = serialPort.read(8);
     }
-    System.out.println("in receive");
-    //ArrayList<Byte> msg = new ArrayList<Byte>();
-    String msgAsString = new String();
-
-    while(true) {
-      int recvd = serialPort.getBytesReceived();
-
-      if(recvd != 0){
-        //System.out.println("recvd was not zero");
-        byte[] data = serialPort.read(1);
-        String dataAsStr = new String(data, StandardCharsets.US_ASCII);
-        char dataAsChar = new String(data, StandardCharsets.US_ASCII).toCharArray()[0];
-
-        msgAsString = msgAsString.concat(dataAsStr);
-        if(dataAsChar == '\n') {  
-          System.out.println("should have just gotten a newline");
-          System.out.println(String.format("full msg we received as string: %s", msgAsString));
-          SmartDashboard.putString("SerialCommReceivedMsg", msgAsString);
-          return msgAsString;
-        }
-      }
-      else {
-        return "";
-      }
-    }
+    return bytes;
   }
+
+  
   
   @Override
   public void periodic() {

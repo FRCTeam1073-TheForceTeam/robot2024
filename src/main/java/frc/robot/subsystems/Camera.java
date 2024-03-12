@@ -22,22 +22,11 @@ public class Camera extends SubsystemBase {
     System.out.println(String.format("camID: %s", camID));
   }
 
-  public void startRecordingTeleop(){
-    serialComms.send(this.camID + ",ti");
-  }
 
-  public void startRecordingAutonomous(){
-    serialComms.send(this.camID + ",ai");
-  }
-
-  public void stopRecording(){
-    serialComms.send(this.camID + ",di");
-  }
-
-  public void requestAprilTags(String tagID) {
-    String outgoingMsg = this.camID + ",ap," + tagID;
-    SmartDashboard.putString("CameraOutgoingMsg", outgoingMsg);
-    serialComms.send(outgoingMsg);
+  
+  public void requestAprilTags() {
+      byte[] rawbytes = {0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00};
+      this.serialComms.send(rawbytes);
   }
 
   public String[] getAprilTagInfo() {
