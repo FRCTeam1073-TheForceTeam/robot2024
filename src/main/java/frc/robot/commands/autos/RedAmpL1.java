@@ -3,6 +3,7 @@ package frc.robot.commands.autos;
 import java.util.ArrayList;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.commands.DrivePathSchema;
@@ -25,15 +26,15 @@ public class RedAmpL1
     public static Command create(Drivetrain drivetrain, Shooter shooter, Pivot pivot, Feeder feeder)
     {
         Path.Point start = new Path.Point(0.0, 0.0);
-        Path.Point shootPoint = new Path.Point();
+        Path.Point shootPoint = new Path.Point(2.077, 0.52);
 
         double range1 = 0.0;
-        Pose2d poseShootPoint = new Pose2d();
+        Pose2d poseShootPoint = new Pose2d(2.077, 0.52, new Rotation2d(-0.26));
 
         ArrayList<Segment> segments = new ArrayList<Segment>();
-        segments.add(new Segment(start, shootPoint, 0.0, 2.5));
+        segments.add(new Segment(start, shootPoint, -0.26, 2.5));
 
-        Path path = new Path(segments, 0.0);
+        Path path = new Path(segments, -0.26);
 
         return new ParallelCommandGroup(
             SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), drivetrain),

@@ -25,16 +25,16 @@ public class RedCenterL1
     public static Command create(Drivetrain drivetrain, Shooter shooter, Pivot pivot, Feeder feeder)
     {
         Path.Point start = new Path.Point(0.0, 0.0);
-        Path.Point shootPoint = new Path.Point(1.5, 0.0);
+        Path.Point shootPoint = new Path.Point(1.31, 0.35);
 
         double range1 = 0.0;
 
         Pose2d poseShootPoint = new Pose2d();
 
         ArrayList<Segment> segments = new ArrayList<Segment>();
-        segments.add(new Segment(start, shootPoint, 0, 2.5));
+        segments.add(new Segment(start, shootPoint, 0.175, 1.5));
 
-        Path path = new Path(segments, 0.0);
+        Path path = new Path(segments, 0.175);
 
         return new ParallelCommandGroup(
             SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), drivetrain),
