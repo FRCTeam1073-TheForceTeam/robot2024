@@ -25,7 +25,7 @@ public class AprilTagFinder extends SubsystemBase {
   public SerialComms serialcomms;
   public boolean waiting_for_response = false;
   public int wait_counter = 0;
-  public int tagID = 6;  // use the SetAprilTagID to modify
+  public int tagID = 4;  // use the SetAprilTagID to modify
   public byte output_buffer[] = new byte[8];
   public TagData tag_data = new TagData();
   public int send_counter = 0;
@@ -101,7 +101,7 @@ public class AprilTagFinder extends SubsystemBase {
 
     if (this.waiting_for_response == false) {
         // this.camera.requestAprilTags("0");  // 0 gets all visible tags
-        output_buffer[0] = 2;
+        output_buffer[0] = 1;
         output_buffer[1] = 3; // Request april tags.
         output_buffer[2] = (byte) this.tagID; // Request specific tag ID.
 

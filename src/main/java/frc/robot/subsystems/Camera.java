@@ -23,10 +23,10 @@ public class Camera extends SubsystemBase {
   }
 
 
-  
+
   public void requestAprilTags() {
-      byte[] rawbytes = {0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00};
-      this.serialComms.send(rawbytes);
+      // byte[] rawbytes = {0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00};
+      // this.serialComms.send(rawbytes);
   }
 
   public String[] getAprilTagInfo() {
