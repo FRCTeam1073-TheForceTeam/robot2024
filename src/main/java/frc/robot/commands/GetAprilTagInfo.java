@@ -23,7 +23,7 @@ public class GetAprilTagInfo extends Command {
     this.serialComms = serialComms;
     this.tagID = tagID;
     this.weAreFinished = false;
-    addRequirements(camera, serialComms);
+    // addRequirements(camera, serialComms);
   }
 
   // Called when the command is initially scheduled.

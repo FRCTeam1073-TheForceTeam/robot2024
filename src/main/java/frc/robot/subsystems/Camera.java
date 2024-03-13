@@ -30,11 +30,12 @@ public class Camera extends SubsystemBase {
   }
 
   public String[] getAprilTagInfo() {
-    String msgString = serialComms.receive();
-    SmartDashboard.putString("CameraIncomingMsg", msgString);
+    // String msgString = serialComms.receive();
+    // SmartDashboard.putString("CameraIncomingMsg", msgString);
   // we don't do this in SerialComms because other subsystems might not use the comma-separated system we do
-    String[] msgStringArray = msgString.split(",");
-    return msgStringArray;
+    // String[] msgStringArray = msgString.split(",");
+    // return msgStringArray;
+    return null;
   }
 
   @Override

@@ -32,7 +32,7 @@ public class StartRecordingAutonomous extends Command {
     this.weAreFinished = false;
     System.out.println("in StartRecordingAutonomous.java execute(), starting autonomous recording");
     for (int i = 0; i < cameras.length; i++){
-      cameras[i].startRecordingAutonomous();
+      // cameras[i].startRecordingAutonomous();
     }
     // TODO: listen for a reponse before finishing, ideally retry
     this.weAreFinished = true;

@@ -4,38 +4,45 @@
 
 package frc.robot.subsystems;
 
-import java.nio.charset.StandardCharsets;
-
 import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
-public class SerialComms extends SubsystemBase{
+/**
+ * This is a serialport utility class for binary 8 byte message procotol.
+ */
+public class SerialComms {
+
   SerialPort serialPort = new SerialPort(1000000, SerialPort.Port.kUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
   
   byte bytes[];
 
   public SerialComms() {
+
   }
 
+  /**
+   * Send an entire binary message to serial port.
+   * @param msg
+   */
   public void send(byte[] msg) {
-    serialPort.write(msg, 8);
+    serialPort.write(msg, msg.length);
     serialPort.flush();
   }
 
-  public byte[] receive(){
+  /**
+   * Receive all the bytes available at the serial port if >= 8 bytes and return.
+   * Else return null.
+   * @return
+   */
+  public byte[] receive() {
     int bytestoread = serialPort.getBytesReceived();
     if (bytestoread >= 8 ) {
-      bytes = serialPort.read(8);
+      bytes = serialPort.read(bytestoread);
+      return bytes;
+    } else {
+      return null;
     }
-    return bytes;
   }
-
   
-  
-  @Override
-  public void periodic() {
-  }
 }
 

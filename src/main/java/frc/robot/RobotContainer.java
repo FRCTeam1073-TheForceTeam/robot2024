@@ -133,11 +133,11 @@ public class RobotContainer {
   // private static final String kTestAuto = "Test Auto";
 
   private final SerialComms m_serial = new SerialComms();
-  private final Camera m_camera1 = new Camera(m_serial, "1");  // camID is how SerialComms and the cameras themselves tells them apart
+  // private final Camera m_camera1 = new Camera(m_serial, "1");  // camID is how SerialComms and the cameras themselves tells them apart
   //private final Camera m_camera2 = new Camera(m_serial, "2");
   //public final Camera[] m_cameras = {m_camera1, m_camera2};
-  public final Camera[] m_cameras = {m_camera1};
-  public final AprilTagFinder m_aprilTagFinder = new AprilTagFinder(m_camera1, m_serial);
+  // public final Camera[] m_cameras = {m_camera1};
+  public final AprilTagFinder m_aprilTagFinder = new AprilTagFinder(m_serial);
 
   // private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_cameras);
   // private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_cameras);
@@ -221,11 +221,11 @@ public class RobotContainer {
     // ampShootCommand.onTrue(m_ampShootCommand.ampShot(m_shooter, m_feeder, m_pivot));
 
     // tagButton.onTrue(new GetAprilTagInfo(m_serial, m_camera1, "4"));
-    Trigger tagButton1 = new Trigger(m_OI::getXButtonDriver);
-    tagButton1.onTrue(new SetAprilTagID(m_aprilTagFinder, "1"));
+    // Trigger tagButton1 = new Trigger(m_OI::getXButtonDriver);
+    // tagButton1.onTrue(new SetAprilTagID(m_aprilTagFinder, "1"));
 
-    Trigger tagButton4 = new Trigger(m_OI::getYButtonDriver);
-    tagButton4.onTrue(new SetAprilTagID(m_aprilTagFinder, "4"));
+    // Trigger tagButton4 = new Trigger(m_OI::getYButtonDriver);
+    // tagButton4.onTrue(new SetAprilTagID(m_aprilTagFinder, "4"));
 
 
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,

@@ -29,7 +29,7 @@ public class StartRecordingTeleop extends Command {
   public void execute() {
     this.weAreFinished = false;
     for (int i = 0; i < cameras.length; i++){
-    cameras[i].startRecordingTeleop();
+    // cameras[i].startRecordingTeleop();
     // TODO: listen for a reponse before finishing, ideally retry
     this.weAreFinished = true;
   }

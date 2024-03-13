@@ -28,7 +28,7 @@ public class StopRecording extends Command {
     System.out.println("in StopRecording.java exec()");
     for (int i = 0; i < cameras.length; i++){
 
-    cameras[i].stopRecording();
+    // cameras[i].stopRecording();
   }
 }
 
