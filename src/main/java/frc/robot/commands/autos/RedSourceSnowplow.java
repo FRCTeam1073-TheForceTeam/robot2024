@@ -22,37 +22,47 @@ import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.Shooter;
 
-public class RedAmpL1 
+public class RedSourceSnowplow 
 {
     public static Command create(Drivetrain drivetrain, Shooter shooter, Pivot pivot, Feeder feeder)
     {
         Path.Point start = new Path.Point(0.0, 0.0);
-        Path.Point avoidNote = new Path.Point(0.63, 0.85);
-        Path.Point shootPoint = new Path.Point(2.077, 0.52);
+        Path.Point pathShootPoint = new Path.Point(3.5, 0.0);
+        Path.Point midlineLeft = new Path.Point(6.5, 0); // fake points for now
+        Path.Point midlineRight = new Path.Point(6.5, -5); // this one too
 
-        double range1 = 3.15;
-        Pose2d poseShootPoint = new Pose2d(2.077, 0.52, new Rotation2d(-0.26));
+        Pose2d poseShootPoint = new Pose2d(3.5, 0.0, new Rotation2d(0.83));
+        double range1 = 4.1;
 
-        ArrayList<Segment> segments = new ArrayList<Segment>();
-        segments.add(new Segment(start, avoidNote, 0.0, 2.5));
-        segments.add(new Segment(avoidNote, shootPoint, -0.26, 2.5));
+        ArrayList<Segment> segments1 = new ArrayList<Segment>();
+        segments1.add(new Segment(start, pathShootPoint, 0.83, 2.5));
 
-        Path path = new Path(segments, -0.26);
+        ArrayList<Segment> segments2 = new ArrayList<Segment>();
+        segments2.add(new Segment(pathShootPoint, midlineLeft, 0.0, 2.5));
+        segments2.add(new Segment(midlineLeft, midlineRight, 0.0, 2.5));
 
-        return new ParallelCommandGroup(
-            SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), drivetrain),
-            new SequentialCommandGroup(
+        Path path1 = new Path(segments1, 0.83);
+        path1.transverseVelocity = 1.5;
+
+        Path path2 = new Path(segments1, 0.0);
+
+        return new SequentialCommandGroup(
+            new ParallelCommandGroup(
+                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path1), drivetrain),
                 new ParallelCommandGroup(
                     new RunShooter(shooter, range1),
                     new PivotRangeCommand(pivot, range1)
-                ),
-                new WaitForPoint(drivetrain, poseShootPoint, 0.35, 0.25),
+                )
+            ),
+            new WaitForPoint(drivetrain, poseShootPoint, 0.3, 0.25),
+            new SequentialCommandGroup(                
                 new ParallelCommandGroup(
                     new RunFeeder(feeder, 30),
                     new StopShooter(shooter)
                 ),
                 new SetPivotCommand(pivot, 0.0)
-            )
+            ), 
+            SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), drivetrain)
         );
-    }
+    }    
 }
