@@ -119,7 +119,7 @@ public class RobotContainer {
   private final CollectorArm m_collectorArm = new CollectorArm();
   private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_collectorArm, m_drivetrain, m_OI);
   private final CollectorArmTeleop m_collectorArmTeleop = new CollectorArmTeleop(m_collectorArm, m_OI);
-  private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm, m_OI);
+  private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm);
   private final HandoffCommand m_handoffCommand = new HandoffCommand();
   private final ClimberTeleop m_ClimberTeleop = new ClimberTeleop(m_climber, m_OI);
 

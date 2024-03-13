@@ -28,8 +28,10 @@ public class CollectorArm extends DiagnosticsSubsystem {
   
   public static enum POSE{
     START,
-    STOW_INTERMEDIATE,
+    STOW_INTERMEDIATE_1,
     STOW_INTERMEDIATE_2,
+    STOW_INTERMEDIATE_3,
+    STOW_INTERMEDIATE_4,
     STOW,
     HANDOFF,
     AMP
@@ -104,7 +106,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   
   // PID gains for lift controller.
-  private double lift_kP = 16;
+  private double lift_kP = 20;
   private double lift_kI = 7.5;
   private double lift_kD = 1.5;
   private double lift_kF = 0;
@@ -302,8 +304,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     // liftConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     // liftConfigs.ClosedLoopGeneral.ContinuousWrap = true;
 
-    liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 3; 
-    liftConfigs.MotionMagic.MotionMagicAcceleration = 4; 
+    liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 2; 
+    liftConfigs.MotionMagic.MotionMagicAcceleration = 4.5; 
     liftConfigs.MotionMagic.MotionMagicJerk = 0;
 
     liftMotor.getConfigurator().apply(liftConfigs);

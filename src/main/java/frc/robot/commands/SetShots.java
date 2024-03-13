@@ -32,7 +32,7 @@ public class SetShots extends Command {
 
   public ParallelCommandGroup runFarShot(Pivot m_pivot, Shooter m_shooter){
     return new ParallelCommandGroup(
-      new SetPivotCommand(m_pivot, -0.755),
+      new SetPivotCommand(m_pivot, -0.7415),
       new SetShooterVel(m_shooter, 32, 32, true)
     );
   }

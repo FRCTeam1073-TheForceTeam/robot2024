@@ -26,14 +26,16 @@ public class CollectFeedCommand extends Command
   }
 
   public SequentialCommandGroup runCollectFeedCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm, Pivot m_pivot, Feeder m_feeder, Shooter m_shooter) {
+    ArmPoseTeleop armCommands = new ArmPoseTeleop(m_collectorArm);
     return new SequentialCommandGroup(
       new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
       new ParallelCommandGroup(
-        new SequentialCommandGroup(
-          new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE, 0.08, 0.02),
-          new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE_2, 0.02, 0.01),
-          new ArmPoseCommand(m_collectorArm, POSE.HANDOFF)
-        ),
+        // new SequentialCommandGroup(
+        //   new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE_1, 0.08, 0.02),
+        //   new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE_2, 0.02, 0.01),
+        //   new ArmPoseCommand(m_collectorArm, POSE.HANDOFF)
+        // ),
+        armCommands.stowPose(),
         new SetPivotCommand(m_pivot, -0.6)
       ),
       new ParallelDeadlineGroup(

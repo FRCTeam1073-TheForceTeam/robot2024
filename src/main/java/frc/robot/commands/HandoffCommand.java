@@ -28,7 +28,7 @@ public class HandoffCommand extends Command
     return new SequentialCommandGroup(    
       new ParallelCommandGroup(
         new SequentialCommandGroup(
-          new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE),
+          new ArmPoseCommand(m_collectorArm, POSE.STOW_INTERMEDIATE_1),
           new ArmPoseCommand(m_collectorArm, POSE.HANDOFF)
         ),
         new SetPivotCommand(m_pivot, -0.7)
