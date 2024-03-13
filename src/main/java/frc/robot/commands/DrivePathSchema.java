@@ -108,11 +108,17 @@ public class DrivePathSchema extends MotionSchema {
       return; // Don't run.
     }
 
+    
+
     currentTime = Timer.getFPGATimestamp() - startTime;
     robotPose = drivetrain.getOdometry();
     
     // Compute position and velocity desired from where we actually are:
     PathFeedback pathFeedback = path.getPathFeedback(currentSegmentIndex, robotPose);
+
+    maxVelocity = pathFeedback.velocity.norm();
+    maxAngularVelocity = pathFeedback.velocity.norm();
+    
 
     if (currentSegmentIndex >= path.segments.size() - 1)
     {

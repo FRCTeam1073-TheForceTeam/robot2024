@@ -50,6 +50,7 @@ import frc.robot.commands.autos.RedSourceL1;
 import frc.robot.commands.autos.RedSourceL2;
 import frc.robot.commands.autos.RedSourceL3;
 import frc.robot.commands.autos.RedSourceL4;
+import frc.robot.commands.autos.RedSourceSnowplow;
 import frc.robot.commands.autos.TestAuto;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
@@ -139,6 +140,7 @@ public class RobotContainer {
   private static final String kRedAmpL2 = "Red Amp L2";
   private static final String kRedAmpL3 = "Red Amp L3";
   private static final String kRedAmpL4 = "Red Amp L4";
+  private static final String kRedSourceSnowplow = "Red Source Snowplow";
   private static final String kBlueSourceL1 = "Blue Source L1";
   private static final String kBlueSourceL2 = "Blue Source L2";
   private static final String kBlueSourceL3 = "Blue Source L3";
@@ -218,6 +220,7 @@ public class RobotContainer {
     m_chooser.addOption("Red Amp L2", kRedAmpL2);
     m_chooser.addOption("Red Amp L3", kRedAmpL3);
     m_chooser.addOption("Red Amp L4", kRedAmpL4);
+    m_chooser.addOption("Red Source Snowplow", kRedSourceSnowplow);
     m_chooser.addOption("Blue Source L1", kBlueSourceL1);
     m_chooser.addOption("Blue Source L2", kBlueSourceL2);
     m_chooser.addOption("Blue Source L3", kBlueSourceL3);
@@ -370,6 +373,8 @@ public class RobotContainer {
         return RedAmpL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kRedAmpL4:
         return RedAmpL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
+      case kRedSourceSnowplow:
+        return RedSourceSnowplow.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
       case kBlueSourceL1:
         return BlueSourceL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
       case kBlueSourceL2:
