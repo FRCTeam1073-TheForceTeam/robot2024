@@ -37,43 +37,51 @@ public class BlueSourceL2
         Path.Point stagePoint = new Path.Point(5.368, 2.37);
         stagePoint.blend_radius = 1.0;
 
-        Pose2d poseShootPoint = new Pose2d(3.5, 0.0, new Rotation2d(0.853));
-        double range1 = 0.0;
+        Pose2d poseShootPoint = new Pose2d(3.5, 0.0, new Rotation2d(-0.768));
+        double range1 = 4.3;
 
-        ArrayList<Segment> segments = new ArrayList<Segment>();
-        segments.add(new Segment(start, pathShootPoint, -0.768, 3.0));
-        segments.add(new Segment(pathShootPoint, avoidStagePost, 0.0, 3.0));
-        segments.add(new Segment(avoidStagePost, midlineNote2, 0.0, 3.0));
-        segments.add(new Segment(midlineNote2, stagePoint, 0.0, 3.0));
-        segments.add(new Segment(stagePoint, pathShootPoint, -0.768, 3.0));
+        ArrayList<Segment> segments1 = new ArrayList<Segment>();
+        segments1.add(new Segment(start, pathShootPoint, -0.768, 2.5));
+        
 
-        Path path = new Path(segments, -0.768);
-        path.transverseVelocity = 1.5;
+        ArrayList<Segment> segments2 = new ArrayList<Segment>();
+        segments2.add(new Segment(pathShootPoint, avoidStagePost, 0.0, 2.5));
+        segments2.add(new Segment(avoidStagePost, midlineNote2, 0.0, 2.5));
+        segments2.add(new Segment(midlineNote2, stagePoint, 0.0, 2.5));
+        segments2.add(new Segment(stagePoint, pathShootPoint, -0.768, 2.5));
 
-        return new ParallelCommandGroup(
-            SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), drivetrain),
-            new SequentialCommandGroup(
-                new ParallelCommandGroup(
-                    new RunShooter(shooter, range1),
-                    new PivotRangeCommand(pivot, range1)
-                ),
-                new WaitForPoint(drivetrain, poseShootPoint, 0.25, 0.15),
+        Path path1 = new Path(segments1, -0.768);
+        path1.transverseVelocity = 1.5;
+
+        Path path2 = new Path(segments2, -0.768);
+
+
+        return new SequentialCommandGroup(
+            new ParallelCommandGroup(
+                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path1), drivetrain)
+            ),
+            new WaitForPoint(drivetrain, poseShootPoint, 0.3, 0.25),
+            new SequentialCommandGroup(                
                 new ParallelCommandGroup(
                     new RunFeeder(feeder, 30),
                     new StopShooter(shooter)
                 ),
-                new SetPivotCommand(pivot, 0.0), 
-                collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter),
+                new SetPivotCommand(pivot, 0.0)
+            ), 
+            new ParallelCommandGroup(
+                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), drivetrain),
                 new ParallelCommandGroup(
                     new RunShooter(shooter, range1),
                     new PivotRangeCommand(pivot, range1)
-                ),
-                new WaitForPoint(drivetrain, poseShootPoint, 0.25, 0.15),
-                new ParallelCommandGroup(
-                    new RunFeeder(feeder, 30),
-                    new StopShooter(shooter)
                 )
+            ),
+            new SequentialCommandGroup(                
+                new ParallelCommandGroup(
+                    new RunFeeder(feeder, 30),
+                    new StopShooter(shooter)
+                ),
+                new SetPivotCommand(pivot, 0.0)
             )
         );
-    }    
+    } 
 }
