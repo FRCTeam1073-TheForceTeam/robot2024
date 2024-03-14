@@ -4,35 +4,39 @@
 
 package frc.robot.subsystems;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-// TODO: figure out when or how to clear tags. how long before they should they age out?
-//       note: periodic() wipes the map after ~0.5s without the camera returning any tags, whether it replies with no tags or stops replying entirely.
 public class AprilTagFinder extends SubsystemBase {
 
-  // April tag data
+  // Sensed target data type:
   public class TagData {
     public int id = -1;
     public int cx = 0;
     public int cy = 0;
     public int area = 0;
     public double timestamp = 0;
+
+    public boolean isValid() {
+      if (id == -1) return false;
+      else return true;
+    }
   }
 
+  // COmmunications:
   public SerialComms serialcomms;
   public boolean waiting_for_response = false;
+  public int sendCounter = 0;
+  public int recvCounter = 0;
+
+  // Internal subsystem data:
   public int wait_counter = 0;
-  public int tagID = 10;  // use the SetAprilTagID to modify
+  public int searchTagID = 10;  // use the SetSearchTagID to modify
   public int camID = 1;  // Camera ID to send to
   public byte outputBuffer[] = new byte[8];
   public TagData tagData = new TagData();
-  public int sendCounter = 0;
-  public int recvCounter = 0;
+
 
   public AprilTagFinder(SerialComms serialcomms) {
     this.serialcomms = serialcomms;
@@ -44,15 +48,18 @@ public class AprilTagFinder extends SubsystemBase {
     }
   }
 
-
   /// Sets the tagID we're searching for.
-  public void setTagId(int id) {
-    this.tagID = id; // We're searching for this ID on next cycle.
+  public void setSearchTagId(int id) {
+    this.searchTagID = id; // We're searching for this ID on next cycle.
   }
 
   /// Returns the current tag data found.
-  public TagData getTagData() {
+  public TagData getCurrentTagData() {
     return tagData;
+  }
+
+  public boolean tagFound() {
+    return this.tagData.isValid();
   }
 
 
@@ -77,18 +84,18 @@ public class AprilTagFinder extends SubsystemBase {
   @Override
   public void periodic() {
 
-    SmartDashboard.putNumber("AprilTagFinderDesiredID", this.tagID);
+
     // if -1, don't bother doing anything.
-    if (this.tagID == -1) {
+    if (this.searchTagID == -1) {
       this.tagData.id = -1;
     } else if (this.waiting_for_response == false) {
        // We're not waiting for an answer, so send a new request.
         outputBuffer[0] = (byte) (this.camID & 0xFF); // Camera ID.
         outputBuffer[1] = 0x03; // Command: Find april tag = 3
-        outputBuffer[2] = (byte) (this.tagID & 0xFF); // Request specific tag ID.
+        outputBuffer[2] = (byte) (this.searchTagID & 0xFF); // Request specific tag ID.
 
         // Send request to camerea:
-        SmartDashboard.putRaw("SerialCommsSendRaw", outputBuffer);
+        // SmartDashboard.putRaw("SerialCommsSendRaw", outputBuffer);
         this.serialcomms.send(outputBuffer);
         this.sendCounter +=1; // We sent a packet.
        
@@ -102,7 +109,7 @@ public class AprilTagFinder extends SubsystemBase {
       if (this.wait_counter >= 25) {
         this.waiting_for_response = false;
         this.wait_counter = 0;
-        SmartDashboard.putString("AprilTagFinderTimedout", String.format("hit counter %s", System.currentTimeMillis()));
+        SmartDashboard.putString("AprilTag/Status", String.format("Timeout at %d", System.currentTimeMillis()));
         // Our tag data is too old, clear it:
         this.tagData.id = -1;
       } else {
@@ -120,13 +127,18 @@ public class AprilTagFinder extends SubsystemBase {
       }
     }
 
-    SmartDashboard.putNumber("AprilTag SendCounter", sendCounter);
-    SmartDashboard.putNumber("AprilTag RecvCounter", recvCounter);
 
-    SmartDashboard.putNumber("AprilTag ID", this.tagData.id);
-    SmartDashboard.putNumber("AprilTag X", this.tagData.cx);
-    SmartDashboard.putNumber("AprilTag Y", this.tagData.cy);
-    SmartDashboard.putNumber("AprilTag Area", this.tagData.area);
+    // Subsystem feedback:
+    SmartDashboard.putNumber("AprilTag/Send", sendCounter);
+    SmartDashboard.putNumber("AprilTag/Recv", recvCounter);
+    SmartDashboard.putNumber("AprilTag/DesiredID", this.searchTagID);
+
+    // Found tag feedback:
+    SmartDashboard.putNumber("AprilTag/ID", this.tagData.id);
+    SmartDashboard.putNumber("AprilTag/X", this.tagData.cx);
+    SmartDashboard.putNumber("AprilTag/Y", this.tagData.cy);
+    SmartDashboard.putNumber("AprilTag/Area", this.tagData.area);
+    SmartDashboard.putBoolean("AprilTag/Valid", this.tagData.isValid()); // Allows dashboard indicator.
   }
 
 }

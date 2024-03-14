@@ -13,11 +13,23 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class SerialComms {
 
-  SerialPort serialPort = new SerialPort(1000000, SerialPort.Port.kUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
-  
+  SerialPort serialPort;
   byte bytes[];
+  public int sendCounter = 0;
+  public int recvCounter = 0;
 
   public SerialComms() {
+
+    try {
+      serialPort = new SerialPort(1000000, SerialPort.Port.kUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
+      SmartDashboard.putBoolean("SerialComms/Status", true); // Dashboard indicator.
+      SmartDashboard.putString("SerialComms/Info", "Port Open"); // Dashboard indicator.
+
+    } catch (Exception e) {
+      serialPort = null;
+      SmartDashboard.putBoolean("SerialComms/Status", false); // Dashboard indicator.
+      SmartDashboard.putString("SerialComms/Info", "Failed To Open"); // Dashboard indicator.
+    }
 
   }
 
@@ -26,9 +38,28 @@ public class SerialComms {
    * @param msg
    */
   public void send(byte[] msg) {
-    SmartDashboard.putRaw("SerialCommsSendRaw", msg);
-    serialPort.write(msg, msg.length);
-    serialPort.flush();
+    if (serialPort != null) {
+      // SmartDashboard.putRaw("SerialComms/SendRaw", msg);
+      try {
+        serialPort.write(msg, msg.length);
+        serialPort.flush();
+        sendCounter += 1; // We sent a message.
+        SmartDashboard.putNumber("SerialComms/Send", sendCounter);
+      }
+      catch (Exception e) {
+        SmartDashboard.putBoolean("SerialComms/Status", false); // Dashboard indicator.
+        SmartDashboard.putString("SerialComms/Info", "Write Exception"); // Dashboard indicator.
+
+        try {
+          serialPort.close();
+        } catch (Exception ee) {
+          // Nothing to do we tried.
+          serialPort = null; // Drop the port object.
+        }
+      }
+    } else {
+      // TODO: Attempt to recover?
+    }
   }
 
   /**
@@ -37,10 +68,30 @@ public class SerialComms {
    * @return
    */
   public byte[] receive() {
-    int bytestoread = serialPort.getBytesReceived();
-    if (bytestoread >= 8 ) {
-      bytes = serialPort.read(bytestoread);
-      return bytes;
+    if (serialPort != null) {
+      try {
+        int bytestoread = serialPort.getBytesReceived();
+        if (bytestoread >= 8 ) {
+          bytes = serialPort.read(bytestoread);
+          // We got a message.
+          recvCounter += 1;
+          SmartDashboard.putNumber("SerialComms/Recv", recvCounter);
+          return bytes;
+        } else {
+          return null;
+        }
+      } catch (Exception e) {
+        SmartDashboard.putBoolean("SerialComms/Status", false);
+        SmartDashboard.putString("SerialComms/Info", "Read Exception"); // Dashboard indicator.
+
+        try {
+          serialPort.close();
+        } catch (Exception ee) {
+          // Nothing to do... we tried.
+        }
+        serialPort = null; // Drop the object.
+        return null;
+      }
     } else {
       return null;
     }
