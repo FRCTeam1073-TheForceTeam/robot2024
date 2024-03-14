@@ -28,8 +28,8 @@ public class RedSourceSnowplow
     {
         Path.Point start = new Path.Point(0.0, 0.0);
         Path.Point pathShootPoint = new Path.Point(3.5, 0.0);
-        Path.Point midlineLeft = new Path.Point(6.5, 0); // fake points for now
-        Path.Point midlineRight = new Path.Point(6.5, -5); // this one too
+        Path.Point midlineLeft = new Path.Point(8.26, 1.48); 
+        Path.Point midlineRight = new Path.Point(8.26, -3.49); 
 
         Pose2d poseShootPoint = new Pose2d(3.5, 0.0, new Rotation2d(0.83));
         double range1 = 4.1;
@@ -38,13 +38,13 @@ public class RedSourceSnowplow
         segments1.add(new Segment(start, pathShootPoint, 0.83, 2.5));
 
         ArrayList<Segment> segments2 = new ArrayList<Segment>();
-        segments2.add(new Segment(pathShootPoint, midlineLeft, 0.0, 2.5));
-        segments2.add(new Segment(midlineLeft, midlineRight, 0.0, 2.5));
+        segments2.add(new Segment(pathShootPoint, midlineLeft, Math.PI / 4, 2.5));
+        segments2.add(new Segment(midlineLeft, midlineRight, Math.PI / 4, 2.5));
 
         Path path1 = new Path(segments1, 0.83);
         path1.transverseVelocity = 1.5;
 
-        Path path2 = new Path(segments1, 0.0);
+        Path path2 = new Path(segments1, Math.PI / 4);
 
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
