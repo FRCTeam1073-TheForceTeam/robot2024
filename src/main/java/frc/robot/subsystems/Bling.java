@@ -20,6 +20,7 @@ public class Bling extends DiagnosticsSubsystem {
   public int numSlots = 48;
   public int qlength = 6;
   public int qnum = 8;
+
   
   /**
    * Creates a new bling.
@@ -203,7 +204,7 @@ public class Bling extends DiagnosticsSubsystem {
     int m_rainbowFirstPixelHue2 = 0;
     int count2 = 0;
 
-    if (shooter.getCurrentTopVelocityInMPS() > 2 && shooter.getCurrentBottomVelocityInMPS() > 2){
+    if (shooter.getCurrentTopVelocityInMPS() > shooter.getTargetTopVelocityInMPS() - 2 && shooter.getCurrentBottomVelocityInMPS() > shooter.getTargetBottomVelocityInMPS() - 2){
       for (var i = 0; i < m_ledBuffer.getLength()/2; i++) {
           // Calculate the hue - hue is easier for rainbows because the color
           // shape is a circle so only one value needs to precess
