@@ -49,7 +49,7 @@ public class CollectFeedCommand extends Command
           new AdjustFeed(m_feeder)
         )
       ),
-      new SetShooterVel(m_shooter, 0, 0, false)
+      new SetShooterVel(m_shooter, 15, 15, false)
     );
   }
 }

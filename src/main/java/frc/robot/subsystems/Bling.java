@@ -64,7 +64,6 @@ public class Bling extends DiagnosticsSubsystem {
     setFeededBling(4, 5);
     setAlignedBling(2, 3, 6, 7);
     setRainbowBling();
-  
     //setRangeRGB(0, 6, 20, 5, 15);
   }
 
@@ -204,7 +203,7 @@ public class Bling extends DiagnosticsSubsystem {
     int m_rainbowFirstPixelHue2 = 0;
     int count2 = 0;
 
-    if (shooter.getCurrentTopVelocityInMPS() > shooter.getTargetTopVelocityInMPS() - 2 && shooter.getCurrentBottomVelocityInMPS() > shooter.getTargetBottomVelocityInMPS() - 2){
+    if (shooter.getCurrentTopVelocityInMPS() > (shooter.getTargetTopVelocityInMPS() - 2) && shooter.getCurrentBottomVelocityInMPS() > (shooter.getTargetBottomVelocityInMPS() - 2)){
       for (var i = 0; i < m_ledBuffer.getLength()/2; i++) {
           // Calculate the hue - hue is easier for rainbows because the color
           // shape is a circle so only one value needs to precess
