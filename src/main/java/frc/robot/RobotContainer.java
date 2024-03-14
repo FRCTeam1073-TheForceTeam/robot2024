@@ -111,8 +111,11 @@ public class RobotContainer {
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
   private final Climber m_climber = new Climber();
-
   private final RangeFinder m_rangeFinder = new RangeFinder();
+  private final SerialComms m_serial = new SerialComms();
+  private final AprilTagFinder m_aprilTagFinder = new AprilTagFinder(m_serial);
+
+
   private final CollectFeedCommand m_collectAndFeed = new CollectFeedCommand();
   private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
   private final SetShotsSequences m_setShotsSequences = new SetShotsSequences();
@@ -125,6 +128,7 @@ public class RobotContainer {
   private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm);
   private final HandoffCommand m_handoffCommand = new HandoffCommand();
   private final ClimberTeleop m_ClimberTeleop = new ClimberTeleop(m_climber, m_OI);
+  private final SpeakerTagAllianceSearch m_allianceSearch = new SpeakerTagAllianceSearch(m_aprilTagFinder);
 
 
 
@@ -167,8 +171,7 @@ public class RobotContainer {
   private static final String kBlueFarMidline3Note = "Blue Far Midline 3 Note";
   private static final String kLeaveAuto = "Leave Auto";
   private static final String kTestAuto = "Test Auto";
-  private final SerialComms m_serial = new SerialComms();
-  private final AprilTagFinder m_aprilTagFinder = new AprilTagFinder(m_serial);
+  
 
   // private final Camera m_camera1 = new Camera(m_serial, "1");  // camID is how SerialComms and the cameras themselves tells them apart
   // private final Camera m_camera2 = new Camera(m_serial, "2");
@@ -196,6 +199,8 @@ public class RobotContainer {
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_collectorArmTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_runShooterCommand);
+    CommandScheduler.getInstance().setDefaultCommand(m_aprilTagFinder, m_allianceSearch);
+    
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
     SmartDashboard.putData(m_collector);

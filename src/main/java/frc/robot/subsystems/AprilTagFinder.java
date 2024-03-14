@@ -32,7 +32,7 @@ public class AprilTagFinder extends SubsystemBase {
 
   // Internal subsystem data:
   public int wait_counter = 0;
-  public int searchTagID = 10;  // use the SetSearchTagID to modify
+  public static int searchTagID = -1;  // use the SetSearchTagID to modify
   public int camID = 1;  // Camera ID to send to
   public byte outputBuffer[] = new byte[8];
   public TagData tagData = new TagData();
