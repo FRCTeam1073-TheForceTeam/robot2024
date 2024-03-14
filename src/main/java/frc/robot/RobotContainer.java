@@ -15,7 +15,7 @@ import frc.robot.commands.DriveThroughTrajectorySchema;
 import frc.robot.commands.DriveToPointSchema;
 import frc.robot.commands.SchemaDriveAuto;
 import frc.robot.subsystems.Bling;
-import frc.robot.subsystems.Camera;
+// import frc.robot.subsystems.Camera;
 import frc.robot.commands.TeleopDrive;
 import frc.robot.commands.autos.BlueWing4Note;
 import frc.robot.commands.autos.BlueCloseMidline2Note;
@@ -65,6 +65,7 @@ import java.util.ArrayList;
 import edu.wpi.first.wpilibj.DriverStation;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -166,17 +167,16 @@ public class RobotContainer {
   private static final String kBlueFarMidline3Note = "Blue Far Midline 3 Note";
   private static final String kLeaveAuto = "Leave Auto";
   private static final String kTestAuto = "Test Auto";
-  private final SerialComms m_serial = new SerialComms(SerialPort.Port.kUSB);
-  private final Camera m_camera1 = new Camera(m_serial, "1");  // camID is how SerialComms and the cameras themselves tells them apart
-  private final Camera m_camera2 = new Camera(m_serial, "2");
-  private final Camera[] m_cameras = {m_camera1, m_camera2};
+  private final SerialComms m_serial = new SerialComms();
+  private final AprilTagFinder m_aprilTagFinder = new AprilTagFinder(m_serial);
 
-  private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_cameras);
-  private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_cameras);
-  private final StopRecording c_stopRecording = new StopRecording(m_cameras);
+  // private final Camera m_camera1 = new Camera(m_serial, "1");  // camID is how SerialComms and the cameras themselves tells them apart
+  // private final Camera m_camera2 = new Camera(m_serial, "2");
+  // private final Camera[] m_cameras = {m_camera1, m_camera2};
 
-  // and so on for however many cameras we have
-
+  // private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_cameras);
+  // private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_cameras);
+  // private final StopRecording c_stopRecording = new StopRecording(m_cameras);
 
 
   // Replace with CommandPS4Controller or CommandJoystick if needed

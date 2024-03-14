@@ -4,83 +4,99 @@
 
 package frc.robot.subsystems;
 
-
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-
 import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
-public class SerialComms extends SubsystemBase{
-  private static SerialPort serialPort;
-  private SerialPort.Port portUSB;
+/**
+ * This is a serialport utility class for binary 8 byte message procotol.
+ */
+public class SerialComms {
 
-  public SerialComms(SerialPort.Port portUSB) {
-    this.portUSB = portUSB;
+  SerialPort serialPort = null;
+  byte bytes[];
+  public int sendCounter = 0;
+  public int recvCounter = 0;
+
+  public SerialComms() {
+
     try {
-      serialPort = new SerialPort(2000000, portUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
-      serialPort.setFlowControl(SerialPort.FlowControl.kNone);
-      System.out.println("set serialPort and flowcontrol");
-    }
-    catch (Exception e) {
-      System.out.println("Could not open serial port!");
+      serialPort = new SerialPort(1000000, SerialPort.Port.kUSB,8,SerialPort.Parity.kNone,SerialPort.StopBits.kOne);
+      SmartDashboard.putBoolean("SerialComms/Status", true); // Dashboard indicator.
+      SmartDashboard.putString("SerialComms/Info", "Port Open"); // Dashboard indicator.
+
+    } catch (Exception e) {
       serialPort = null;
+      SmartDashboard.putBoolean("SerialComms/Status", false); // Dashboard indicator.
+      SmartDashboard.putString("SerialComms/Info", "Failed To Open"); // Dashboard indicator.
     }
+
   }
 
-  public static void send(String message) {
-    message = message.concat("\n");
-    System.out.println(String.format("in send() message we're about to send as string: %s", message));
-    byte[] messageAsBytes = message.getBytes(StandardCharsets.US_ASCII);
-    System.out.println(String.format("message we're about to send as bytes: %s", messageAsBytes));
-    System.out.println(String.format("message we're about to send as bytes converted back to ASCII string: %s", new String(messageAsBytes, StandardCharsets.US_ASCII)));
-    for(int i=0; i < messageAsBytes.length; i++) {
-      byte[] arrayofone = {messageAsBytes[i]};
-      System.out.println(String.format("arrayofone: %s", arrayofone[0]));
-      System.out.println(String.format("i: %s", i));
-      serialPort.write(arrayofone, 1);
-    }
-    System.out.println("bottom of SerialComms.send()");
-  }
+  /**
+   * Send an entire binary message to serial port.
+   * @param msg
+   */
+  public void send(byte[] msg) {
+    if (serialPort != null) {
+      // SmartDashboard.putRaw("SerialComms/SendRaw", msg);
+      try {
+        serialPort.write(msg, msg.length);
+        serialPort.flush();
+        sendCounter += 1; // We sent a message.
+        SmartDashboard.putNumber("SerialComms/Send", sendCounter);
+      }
+      catch (Exception e) {
+        SmartDashboard.putBoolean("SerialComms/Status", false); // Dashboard indicator.
+        SmartDashboard.putString("SerialComms/Info", "Write Exception"); // Dashboard indicator.
 
-  public static String receive() {
-    System.out.println("in receive");
-    ArrayList<Byte> msg = new ArrayList<Byte>();
-
-    while(true) {
-      int recvd = serialPort.getBytesReceived();
-
-      if(recvd != 0){
-        System.out.println("recvd was not zero");
-        byte[] data = serialPort.read(1);
-        System.out.println(String.format("byte data recvd: %s", data));
-        msg.add(data[0]);
-
-        // dataString is the byte we just received cast to a String so we can compare to newline without hardcoding the ord() or something
-        String dataString = new String(data, StandardCharsets.US_ASCII);
-        System.out.println(String.format("byte we just received as string: %s", dataString));
-        if(dataString == "\n") {
-          String msgAsString = msg.toString();
-          System.out.println("full msg we received as string:");
-          System.out.println(msgAsString);
-          return msgAsString;
+        try {
+          serialPort.close();
+          serialPort = null;
+        } catch (Exception ee) {
+          // Nothing to do we tried.
+          serialPort = null; // Drop the port object.
         }
       }
+    } else {
+      // TODO: Attempt to recover?
     }
   }
 
-  public static String transact(String message){
-    System.out.println(String.format("sending message, as a String: %s", message));
-    send(message);
+  /**
+   * Receive all the bytes available at the serial port if >= 8 bytes and return.
+   * Else return null.
+   * @return
+   */
+  public byte[] receive() {
+    if (serialPort != null) {
+      try {
+        int bytestoread = serialPort.getBytesReceived();
+        if (bytestoread >= 8 ) {
+          bytes = serialPort.read(bytestoread);
+          // We got a message.
+          recvCounter += 1;
+          SmartDashboard.putNumber("SerialComms/Recv", recvCounter);
+          return bytes;
+        } else {
+          return null;
+        }
+      } catch (Exception e) {
+        SmartDashboard.putBoolean("SerialComms/Status", false);
+        SmartDashboard.putString("SerialComms/Info", "Read Exception"); // Dashboard indicator.
 
-    String receivedString = receive();
-    System.out.println(String.format("msg received as string: %s", receivedString));
-    return receivedString;
+        try {
+          serialPort.close();
+        } catch (Exception ee) {
+          // Nothing to do... we tried.
+        }
+        serialPort = null; // Drop the object.
+        return null;
+      }
+    } else {
+      return null;
+    }
   }
-
-  @Override
-  public void periodic() {
-  }
+  
 }
 
