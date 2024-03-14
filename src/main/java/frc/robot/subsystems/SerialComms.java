@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 /**
@@ -25,6 +26,7 @@ public class SerialComms {
    * @param msg
    */
   public void send(byte[] msg) {
+    SmartDashboard.putRaw("SerialCommsSendRaw", msg);
     serialPort.write(msg, msg.length);
     serialPort.flush();
   }

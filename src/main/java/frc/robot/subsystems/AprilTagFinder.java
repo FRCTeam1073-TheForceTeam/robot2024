@@ -27,7 +27,7 @@ public class AprilTagFinder extends SubsystemBase {
   public SerialComms serialcomms;
   public boolean waiting_for_response = false;
   public int wait_counter = 0;
-  public int tagID = 4;  // use the SetAprilTagID to modify
+  public int tagID = 10;  // use the SetAprilTagID to modify
   public int camID = 1;  // Camera ID to send to
   public byte outputBuffer[] = new byte[8];
   public TagData tagData = new TagData();
@@ -64,9 +64,9 @@ public class AprilTagFinder extends SubsystemBase {
     }
 
     tagData.id = response[2]; // ID of the found tag.
-    tagData.cx = response[3] * 4; // Undo packing so it fits a byte.
-    tagData.cy = response[4] * 4; // Undo packing so it fits a byte.
-    tagData.area = response[5] * 64; // Undo packing so it fits a byte.
+    tagData.cx = response[3]; // Undo packing so it fits a byte.
+    tagData.cy = response[4]; // Undo packing so it fits a byte.
+    tagData.area = response[5]; // Undo packing so it fits a byte.
     tagData.timestamp = Timer.getFPGATimestamp();
   }
 
@@ -80,10 +80,13 @@ public class AprilTagFinder extends SubsystemBase {
     } else if (this.waiting_for_response == false) {
        // We're not waiting for an answer, so send a new request.
         outputBuffer[0] = (byte) (this.camID & 0xFF); // Camera ID.
-        outputBuffer[1] = 3; // Command: Find april tag = 3
+        outputBuffer[1] = 0x03; // Command: Find april tag = 3
         outputBuffer[2] = (byte) (this.tagID & 0xFF); // Request specific tag ID.
+        
+
 
         // Send request to camerea:
+        SmartDashboard.putRaw("SerialCommsSendRaw", outputBuffer);
         this.serialcomms.send(outputBuffer);
         this.sendCounter +=1; // We sent a packet.
        
