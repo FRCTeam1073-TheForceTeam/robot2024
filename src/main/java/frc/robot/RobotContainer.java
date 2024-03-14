@@ -5,7 +5,6 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.GetAprilTagInfo;
 import frc.robot.commands.CollectorTeleop;
 import frc.robot.commands.ArmPoseCommand;
 import frc.robot.commands.ArmPoseTeleop;
@@ -43,7 +42,6 @@ import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.SerialComms;
 import frc.robot.subsystems.SwerveModuleConfig;
-import frc.robot.commands.SetAprilTagID;
 
 import frc.robot.subsystems.CollectorArm.POSE;
 
@@ -59,10 +57,7 @@ import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.commands.StartRecordingAutonomous;
-import frc.robot.commands.StartRecordingTeleop;
-import frc.robot.commands.GetAprilTagInfo;
-import frc.robot.commands.StopRecording;
+
 import frc.robot.subsystems.Camera;
 import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.SerialComms;

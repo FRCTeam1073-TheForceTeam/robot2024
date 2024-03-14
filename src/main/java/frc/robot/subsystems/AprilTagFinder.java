@@ -64,9 +64,13 @@ public class AprilTagFinder extends SubsystemBase {
     }
 
     tagData.id = response[2]; // ID of the found tag.
-    tagData.cx = (byte) (response[3] * 2 & 0xFF); // Undo packing so it fits a byte.
-    tagData.cy = (byte) (response[4] * 2 & 0xFF); // Undo packing so it fits a byte.
-    tagData.area = (byte) (response[5] * 64 & 0xFF); // Undo packing so it fits a byte.
+    //tagData.cx = response[3] * 2; // Undo packing so it fits a byte.
+    tagData.cx = (response[3] & 0xFF) * 2; // Undo packing so it fits a byte.
+    //tagData.cy = response[4] * 2; // Undo packing so it fits a byte.
+    //tagData.cy = Byte.toUnsignedInt(response[4]) * 2;
+    tagData.cy = (response[4] & 0xFF) * 2;
+    //tagData.area = response[5] * 64; // Undo packing so it fits a byte.
+    tagData.area = (response[5] & 0xFF) * 64;
     tagData.timestamp = Timer.getFPGATimestamp();
   }
 
@@ -82,8 +86,6 @@ public class AprilTagFinder extends SubsystemBase {
         outputBuffer[0] = (byte) (this.camID & 0xFF); // Camera ID.
         outputBuffer[1] = 0x03; // Command: Find april tag = 3
         outputBuffer[2] = (byte) (this.tagID & 0xFF); // Request specific tag ID.
-        
-
 
         // Send request to camerea:
         SmartDashboard.putRaw("SerialCommsSendRaw", outputBuffer);
