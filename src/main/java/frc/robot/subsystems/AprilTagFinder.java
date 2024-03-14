@@ -64,9 +64,9 @@ public class AprilTagFinder extends SubsystemBase {
     }
 
     tagData.id = response[2]; // ID of the found tag.
-    tagData.cx = response[3]; // Undo packing so it fits a byte.
-    tagData.cy = response[4]; // Undo packing so it fits a byte.
-    tagData.area = response[5]; // Undo packing so it fits a byte.
+    tagData.cx = (byte) (response[3] * 2 & 0xFF); // Undo packing so it fits a byte.
+    tagData.cy = (byte) (response[4] * 2 & 0xFF); // Undo packing so it fits a byte.
+    tagData.area = (byte) (response[5] * 64 & 0xFF); // Undo packing so it fits a byte.
     tagData.timestamp = Timer.getFPGATimestamp();
   }
 
