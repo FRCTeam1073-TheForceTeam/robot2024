@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.Shooter;
 
-public class SetShots extends Command {
+public class SetShotsSequences extends Command {
   /** Creates a new SetShots. */
-  public SetShots() {
+  public SetShotsSequences() {
     // Use addRequirements() here to declare subsystem dependencies.
   }
 

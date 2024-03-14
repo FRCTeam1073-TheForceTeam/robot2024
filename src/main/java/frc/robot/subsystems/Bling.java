@@ -60,7 +60,8 @@ public class Bling extends DiagnosticsSubsystem {
     m_led.setData(m_ledBuffer);
     setBatteryBling(1);
     setCollectedBling(4);
-    setFeededBling(5);
+    setFeededBling(4, 5);
+    setAlignedBling(2, 3, 6, 7);
     setRainbowBling();
   
     //setRangeRGB(0, 6, 20, 5, 15);
@@ -171,14 +172,16 @@ public class Bling extends DiagnosticsSubsystem {
    * Blue when Note is collected
    * Red when Note isn't collected
    * @param quadNum */
-  public void setFeededBling(int quadNum) {
+  public void setFeededBling(int quadNum1, int quadNum2) {
     double tofFeederValue = feeder.getTofRange(); 
 
     if (tofFeederValue <= 0.2) {
-      setQuadRGB(quadNum, 0, 0, 255);
+      setQuadRGB(quadNum1, 0, 0, 255);
+      setQuadRGB(quadNum2, 0, 0, 255);
     }
     else{
-      setQuadRGB(quadNum, 255, 0, 0);
+      setQuadRGB(quadNum1, 255, 0, 0);
+      setQuadRGB(quadNum2, 255, 0, 0);
     }
   }
 
@@ -188,8 +191,11 @@ public class Bling extends DiagnosticsSubsystem {
    * Green when Note is aligned?
    * Red when Note isn't aligned?
    * @param quadNum */
-  public void setAlignedBling(int quadNum) {
-
+  public void setAlignedBling(int quadNum1, int quadNum2, int quadNum3, int quadNum4) {
+     setQuadRGB(quadNum1, 255, 0, 0);
+     setQuadRGB(quadNum2, 255, 0, 0);
+     setQuadRGB(quadNum3, 255, 0, 0);
+     setQuadRGB(quadNum4, 255, 0, 0);
   }
 
   public void setRainbowBling(){

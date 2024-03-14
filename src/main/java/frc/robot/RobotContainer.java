@@ -113,7 +113,7 @@ public class RobotContainer {
   private final RangeFinder m_rangeFinder = new RangeFinder();
   private final CollectFeedCommand m_collectAndFeed = new CollectFeedCommand();
   private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
-  private final SetShots m_setShots = new SetShots();
+  private final SetShotsSequences m_setShotsSequences = new SetShotsSequences();
   private final CancelCommand m_cancelCommand = new CancelCommand();
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
   private final Collector m_collector = new Collector();
@@ -271,13 +271,13 @@ public class RobotContainer {
     launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot, m_rangeFinder));
 
     Trigger subwooferSpinUp = new Trigger(m_OI::getOperatorDPadDown);
-    subwooferSpinUp.onTrue(m_setShots.runSubwooferShot(m_pivot, m_shooter));
+    subwooferSpinUp.onTrue(m_setShotsSequences.runSubwooferShot(m_pivot, m_shooter));
 
     Trigger podiumSpinUp = new Trigger(m_OI::getOperatorDPadLeft);
-    podiumSpinUp.onTrue(m_setShots.runPodiumShot(m_pivot, m_shooter));
+    podiumSpinUp.onTrue(m_setShotsSequences.runPodiumShot(m_pivot, m_shooter));
 
     Trigger farSpinUp = new Trigger(m_OI::getOperatorDPadUp);
-    farSpinUp.onTrue(m_setShots.runFarShot(m_pivot, m_shooter));
+    farSpinUp.onTrue(m_setShotsSequences.runFarShot(m_pivot, m_shooter));
 
     Trigger cancelCommand = new Trigger(m_OI::getOperatorBButton);
     cancelCommand.onTrue(m_cancelCommand.cancel(m_collector, m_collectorArm, m_shooter, m_feeder, m_pivot));
