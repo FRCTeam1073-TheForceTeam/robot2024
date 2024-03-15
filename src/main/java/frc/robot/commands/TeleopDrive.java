@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
 
@@ -35,7 +36,9 @@ public class TeleopDrive extends SchemaArbiter
   TeleopHeadingHoldSchema holdSchema;
   PointAtTargetSchema targetSchema;
   Turn180Schema turn180Schema;
+  AlignToSpeakerSchema alignSchema;
   boolean pointAtTarget;
+  AprilTagFinder aprilTagFinder;
 
   PIDController snapPidProfile;
 
@@ -45,7 +48,7 @@ public class TeleopDrive extends SchemaArbiter
 
 
   /** Creates a new Teleop. */
-  public TeleopDrive(Drivetrain ds, OI oi) 
+  public TeleopDrive(Drivetrain ds, OI oi, AprilTagFinder finder) 
   {
     super(ds, true, false);
     super.setName("Teleop Drive");
@@ -59,14 +62,17 @@ public class TeleopDrive extends SchemaArbiter
       0.05, 
       0.0, 
       0.0);
+    aprilTagFinder = finder;
     translateSchema = new TeleopTranslateSchema(m_OI, maximumLinearVelocity);
     rotateSchema = new TeleopRotateSchema(m_OI, maximumRotationVelocity);
     holdSchema = new TeleopHeadingHoldSchema(m_OI);
     targetSchema = new PointAtTargetSchema(maximumRotationVelocity, new Pose2d(2.5, 0.0, new Rotation2d()), 1.75);
+    alignSchema = new AlignToSpeakerSchema(aprilTagFinder, m_OI);
     addSchema(translateSchema);
     addSchema(rotateSchema);
     addSchema(holdSchema);
     addSchema(targetSchema);
+    addSchema(alignSchema);
     // addSchema(turn180Schema);
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(ds);
@@ -122,11 +128,14 @@ public class TeleopDrive extends SchemaArbiter
     SmartDashboard.putBoolean("Rotate Schema Active", rotateSchema.getActive());
     SmartDashboard.putBoolean("Target Schema Active", targetSchema.getActive());
 
-    if (m_OI.getFieldCentricToggle() && lastRobotCentricButton == false)
-    {
-      fieldCentric = !fieldCentric;
+    if(m_OI.getDriverRightBumper()){
+      fieldCentric = false;
+      setFieldCentric(false);
     }
-    lastRobotCentricButton = m_OI.getFieldCentricToggle();
+    else{
+      fieldCentric = true;
+      setFieldCentric(true);
+    }
     SmartDashboard.putBoolean("Field Centric", fieldCentric);
     SmartDashboard.putBoolean("Parking Brake", parked);
 
@@ -162,6 +171,7 @@ public class TeleopDrive extends SchemaArbiter
       rotateSchema.update(m_drivetrain);
       holdSchema.update(m_drivetrain);
       targetSchema.update(m_drivetrain);
+      alignSchema.update(drivetrain);
       // turn180Schema.update(m_drivetrain);
     }
     // else

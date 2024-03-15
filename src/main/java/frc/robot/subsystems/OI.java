@@ -21,6 +21,7 @@ public class OI extends DiagnosticsSubsystem
   public Debouncer parkingBrakeDebouncer = new Debouncer(0.05);
   public Debouncer menuDriverButtonDebouncer = new Debouncer(0.05);
   public Debouncer aDriverButtonDebouncer = new Debouncer(0.05);
+  public Debouncer bDriverButtonDebouncer = new Debouncer(0.05);
   public Debouncer yDriverButtonDebouncer = new Debouncer(0.05);
 
   // Declares the "zero" value variables (which allow us to compensate for joysticks that are a little off)
@@ -119,13 +120,17 @@ public class OI extends DiagnosticsSubsystem
     return driverController.getRawAxis(2);
   }
 
-  public boolean getFieldCentricToggle()
-  {
-    return fieldCentricDebouncer.calculate(driverController.getRawButton(7));
-  }
+  // public boolean getFieldCentricToggle()
+  // {
+  //   return fieldCentricDebouncer.calculate(driverController.getRawButton(7));
+  // }
 
   public boolean getDriverLeftBumper(){
     return parkingBrakeDebouncer.calculate(driverController.getRawButton(5));
+  }
+
+  public boolean getDriverRightBumper(){
+    return fieldCentricDebouncer.calculate(driverController.getRawButton(6));
   }
 
   public boolean getDriverMenuButton(){
@@ -136,6 +141,9 @@ public class OI extends DiagnosticsSubsystem
     return aDriverButtonDebouncer.calculate(driverController.getRawButton(1));
   }
 
+  public boolean getDriverBButton(){
+    return bDriverButtonDebouncer.calculate(driverController.getRawButton(2));
+  }
 
   public boolean getYButtonDriver()
   {

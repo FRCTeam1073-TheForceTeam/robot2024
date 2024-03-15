@@ -29,11 +29,11 @@ public class ClimberTeleop extends Command {
   @Override
   public void execute() {
     double leftVelocity = -m_oi.getOperatorLeftY();
-    if(Math.abs(leftVelocity) < 0.05){
+    if(Math.abs(leftVelocity) < 0.1){
       leftVelocity = 0;
     }
     double rightVelocity = -m_oi.getOperatorRightY();
-    if(Math.abs(rightVelocity) < 0.05){
+    if(Math.abs(rightVelocity) < 0.1){
       rightVelocity = 0;
     }
 

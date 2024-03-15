@@ -120,7 +120,7 @@ public class RobotContainer {
   private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
   private final SetShotsSequences m_setShotsSequences = new SetShotsSequences();
   private final CancelCommand m_cancelCommand = new CancelCommand();
-  private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI);
+  private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI, m_aprilTagFinder);
   private final Collector m_collector = new Collector();
   private final CollectorArm m_collectorArm = new CollectorArm();
   private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_collectorArm, m_drivetrain, m_OI);
