@@ -73,7 +73,7 @@ public class Pivot extends DiagnosticsSubsystem {
 
   @Override
   public void periodic() {
-    updateDiagnostics();
+    // updateDiagnostics();
     updateFeedback();
     // This method will be called once per scheduler run
     //commandedPositionRad = pivotMotorFilter.calculate(MathUtil.clamp(targetPositionRad, minAngleRad, maxAngleRad));

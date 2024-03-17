@@ -36,6 +36,7 @@ public class AprilTagFinder extends SubsystemBase {
   public int camID = 1;  // Camera ID to send to
   public byte outputBuffer[] = new byte[8];
   public TagData tagData = new TagData();
+  private boolean aligned;
 
 
   public AprilTagFinder(SerialComms serialcomms) {
@@ -127,6 +128,8 @@ public class AprilTagFinder extends SubsystemBase {
       }
     }
 
+    aligned = Math.abs(tagData.cx - 160) <= 10;
+
 
     // Subsystem feedback:
     SmartDashboard.putNumber("AprilTag/Send", sendCounter);
@@ -139,6 +142,7 @@ public class AprilTagFinder extends SubsystemBase {
     SmartDashboard.putNumber("AprilTag/Y", this.tagData.cy);
     SmartDashboard.putNumber("AprilTag/Area", this.tagData.area);
     SmartDashboard.putBoolean("AprilTag/Valid", this.tagData.isValid()); // Allows dashboard indicator.
+    SmartDashboard.putBoolean("AprilTag/Aligned", aligned);
   }
 
 }

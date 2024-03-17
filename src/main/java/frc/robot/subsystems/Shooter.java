@@ -101,7 +101,7 @@ public class Shooter extends DiagnosticsSubsystem{
  
   @Override
   public void periodic() {
-    updateDiagnostics();
+    // updateDiagnostics();
     updateFeedback();
     
     shooterTofFreq = shooterTofDutyCycleInput.getFrequency();

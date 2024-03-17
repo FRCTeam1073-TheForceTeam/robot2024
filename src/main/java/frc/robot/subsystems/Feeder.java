@@ -78,7 +78,7 @@ public class Feeder extends DiagnosticsSubsystem {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    updateDiagnostics();
+    // updateDiagnostics();
     updateFeedback();
 
     feederTofFreq = feederTofDutyCycleInput.getFrequency();
@@ -174,6 +174,18 @@ public class Feeder extends DiagnosticsSubsystem {
     return setDiagnosticsFeedback(result, ok);
   }
 
+  public boolean hasNote()
+  {
+    if (getTofRange() < 0.2)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
   @Override
   public void initSendable(SendableBuilder builder)
   {
@@ -183,5 +195,6 @@ public class Feeder extends DiagnosticsSubsystem {
     builder.addDoubleProperty("Target Feeder Velocity", this::getTargetVelocityInMPS, this::setTargetVelocityInMPS);
     builder.addDoubleProperty("Commanded Feeder Velocity", this::getCommandedVelocityInMPS, null);
     builder.addDoubleProperty("Actual Feeder Velocity", this::getCurrentVelocityInMPS, null);
+    builder.addBooleanProperty("Feeder Has Note", this::hasNote, null);
   }
 }

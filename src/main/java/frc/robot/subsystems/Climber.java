@@ -34,8 +34,8 @@ public class Climber extends DiagnosticsSubsystem {
 
   private double minLeftPosition = 0;
   private double minRightPosition = 0;
-  private double maxLeftPosition = 0.2735;
-  private double maxRightPosition = 0.2735;
+  private double maxLeftPosition = 0.254;
+  private double maxRightPosition = 0.254;
 
   /** Creates a new Climber. */
   public Climber() {
@@ -84,7 +84,7 @@ public class Climber extends DiagnosticsSubsystem {
     if(rightPosition <= minRightPosition){
       rightTargetVelocity = Math.max(rightVelocity, 0);
     }
-    else if(leftPosition >= maxRightPosition){
+    else if(rightPosition >= maxRightPosition){
       rightTargetVelocity = Math.min(rightVelocity, 0);
     }
     else{

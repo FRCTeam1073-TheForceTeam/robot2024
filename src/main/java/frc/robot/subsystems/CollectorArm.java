@@ -156,7 +156,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     commandedLiftAngle = limitLiftAngle(targetLiftAngle);
     runLiftMotor(commandedLiftAngle);
     runExtendMotor(commandedExtendLength);
-    updateDiagnostics();
+    // updateDiagnostics();
   }
 
 

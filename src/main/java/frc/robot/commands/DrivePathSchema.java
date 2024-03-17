@@ -87,6 +87,11 @@ public class DrivePathSchema extends MotionSchema {
       CommandScheduler.getInstance().schedule(path.segments.get(currentSegmentIndex).entryCommand);
     }
 
+    if (currentSegmentIndex != -1 && path.segments.get(currentSegmentIndex).entryActivate != null)
+    {
+      path.segments.get(currentSegmentIndex).entryActivate.activate(path.segments.get(currentSegmentIndex).entryActivateValue);
+    }
+
     xController.reset();
     yController.reset();
     thetaController.reset();
@@ -191,6 +196,16 @@ public class DrivePathSchema extends MotionSchema {
       CommandScheduler.getInstance().schedule(seg.exitCommand);
     }
 
+    if (seg.entryActivate != null)
+    {
+      seg.entryActivate.activate(seg.entryActivateValue);
+    }
+
+    if (seg.exitActivate != null)
+    {
+      seg.exitActivate.activate(seg.exitActivateValue);
+    }
+
     // Move to next path segment:
     currentSegmentIndex = currentSegmentIndex + 1;
     if (currentSegmentIndex >= path.segments.size()) 
@@ -205,6 +220,11 @@ public class DrivePathSchema extends MotionSchema {
       if (seg.entryCommand != null) 
       {
         CommandScheduler.getInstance().schedule(seg.entryCommand);
+      }
+
+      if (seg.entryActivate != null)
+      {
+        seg.entryActivate.activate(seg.entryActivateValue);
       }
     }
   }

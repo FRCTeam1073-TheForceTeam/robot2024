@@ -195,12 +195,12 @@ public class RobotContainer {
     //CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand); 
-    //CommandScheduler.getInstance().setDefaultCommand(m_climber, m_ClimberTeleop);
+    CommandScheduler.getInstance().setDefaultCommand(m_climber, m_ClimberTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_collectorArmTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_runShooterCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_aprilTagFinder, m_allianceSearch);
-    
+
     SmartDashboard.putData(m_drivetrain);
     SmartDashboard.putData(m_OI);
     SmartDashboard.putData(m_collector);
@@ -360,7 +360,7 @@ public class RobotContainer {
       case kRedSourceL1:
         return RedSourceL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
       case kRedSourceL2:
-        return RedSourceL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
+        return RedSourceL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder);
       case kRedSourceL3:
         return RedSourceL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kRedSourceL4:
@@ -386,7 +386,7 @@ public class RobotContainer {
       case kBlueSourceL1:
         return BlueSourceL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
       case kBlueSourceL2:
-        return BlueSourceL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
+        return BlueSourceL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder);
       case kBlueSourceL3:
         return BlueSourceL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kBlueSourceL4:
@@ -428,7 +428,7 @@ public class RobotContainer {
       case kLeaveAuto:
         return LeaveAuto.create(m_drivetrain);
       case kTestAuto:
-        return TestAuto.create(m_drivetrain);
+        return TestAuto.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       default:
         return null;
     }

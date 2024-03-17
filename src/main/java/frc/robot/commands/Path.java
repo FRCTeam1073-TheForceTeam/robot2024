@@ -65,6 +65,10 @@ public class Path
         public double translation_weight = 1.0; // Desired translation weight along this segment.
         public Command entryCommand = null; // Command to schedule when segment is entered.
         public Command exitCommand = null;  // Command to schedule when segment is exited.
+        public Activate entryActivate = null;
+        public Activate exitActivate = null;
+        public boolean entryActivateValue = false;
+        public boolean exitActivateValue = false;
 
         public Segment(Point start, Point end, double orientation, double velocity) 
         {

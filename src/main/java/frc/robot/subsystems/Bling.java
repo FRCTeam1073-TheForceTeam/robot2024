@@ -63,12 +63,27 @@ public class Bling extends DiagnosticsSubsystem {
   public void periodic() {
     // This method will be called once per scheduler run
     m_led.setData(m_ledBuffer);
-    setBatteryBling(1);
-    setCollectedBling(4);
-    setFeededBling(4, 5);
-    setAlignedBling(2, 3, 6, 7);
-    setRainbowBling();
-    //setRangeRGB(0, 6, 20, 5, 15);
+    setBatteryBling();
+    setAlignedBling(); //TODO: needs an if statement
+    // boolean shooterBling = setRainbowBling();
+    double tofCollectorValue = collector.getRangeTOF();
+    double tofFeederValue = feeder.getTofRange();
+    if(tofCollectorValue <= 0.42){
+      setCollectedBling();
+    }
+    else if(tofFeederValue <= 0.2){
+      if(shooter.getCurrentTopVelocityInMPS() > (shooter.getTargetTopVelocityInMPS() - 2)
+        && shooter.getCurrentTopVelocityInMPS() > 20
+        && shooter.getCurrentBottomVelocityInMPS() > (shooter.getTargetBottomVelocityInMPS() - 2)){
+          setShooterBling();
+      }
+      else{
+        setFeededBling();
+      }
+    }
+    else{
+      setNoNoteBling();
+    }
   }
 
   /**
@@ -141,52 +156,61 @@ public class Bling extends DiagnosticsSubsystem {
    * Blue when battery voltage is greater than 10
    * Red when battery voltage is less than or equal to 10
    * @param quadNum */
-  public void setBatteryBling(int quadNum) {
+  public void setBatteryBling() {
     double volts = RobotController.getBatteryVoltage();
 
     if (volts > 12) {
-      setQuadRGB(quadNum, 0, 255, 0);
+      setQuadRGB(1, 0, 255, 0);
+      setQuadRGB(2, 0, 255, 0);
     }
     else if (volts > 10){
-      setQuadRGB(quadNum, 0, 0, 255);
+      setQuadRGB(1, 0, 0, 255);
+      setQuadRGB(2, 0, 0, 255);
     }
     else{
-      setQuadRGB(quadNum, 255, 0, 0);
+      setQuadRGB(1, 255, 0, 0);
+      setQuadRGB(2, 255, 0, 0);
     }
   }
 
   /**
-   * Sets the collector bling to:
-   * Yellow when Note is collected
-   * Red when Note isn't collected
-   * @param quadNum */
-  public void setCollectedBling(int quadNum) {
-    double tofCollectorValue = collector.getRangeTOF(); 
-
-    if (tofCollectorValue <= 0.42) {
-      setQuadRGB(quadNum, 255, 225, 0);
-    }
-    else{
-      setQuadRGB(quadNum, 255, 0, 0);
-    }
+   * Sets the collector bling to orange.
+   */
+  public void setCollectedBling() {
+    setQuadRGB(4, 0, 0, 0);
+    setQuadRGB(5, 0, 0, 0);
+    setQuadRGB(6, 85, 55, 0);
+    setQuadRGB(7, 85, 55, 0);
   }
 
   /**
-   * Sets the feeder bling to:
-   * Blue when Note is collected
-   * Red when Note isn't collected
-   * @param quadNum */
-  public void setFeededBling(int quadNum1, int quadNum2) {
-    double tofFeederValue = feeder.getTofRange(); 
+   * Sets the feeder bling to orange.
+   */
+  public void setFeededBling() {
+    setQuadRGB(4, 85, 55, 0);
+    setQuadRGB(5, 85, 55, 0);
+    setQuadRGB(6, 85, 55, 0);
+    setQuadRGB(7, 85, 55, 0);
+  }
 
-    if (tofFeederValue <= 0.2) {
-      setQuadRGB(quadNum1, 0, 0, 255);
-      setQuadRGB(quadNum2, 0, 0, 255);
-    }
-    else{
-      setQuadRGB(quadNum1, 255, 0, 0);
-      setQuadRGB(quadNum2, 255, 0, 0);
-    }
+  /**
+   * Clears the note bling ring.
+   */
+  public void setNoNoteBling(){
+    setQuadRGB(4, 0, 0, 0);
+    setQuadRGB(5, 0, 0, 0);
+    setQuadRGB(6, 0, 0, 0);
+    setQuadRGB(7, 0, 0, 0);
+  }
+
+  /**
+   * Sets the note bling ring to green.
+   */
+  public void setShooterBling(){
+    setQuadRGB(4, 0, 255, 0);
+    setQuadRGB(5, 0, 255, 0);
+    setQuadRGB(6, 0, 255, 0);
+    setQuadRGB(7, 0, 255, 0);
   }
 
   /**
@@ -195,45 +219,54 @@ public class Bling extends DiagnosticsSubsystem {
    * Green when Note is aligned?
    * Red when Note isn't aligned?
    * @param quadNum */
-  public void setAlignedBling(int quadNum1, int quadNum2, int quadNum3, int quadNum4) {
-     setQuadRGB(quadNum1, 255, 0, 0);
-     setQuadRGB(quadNum2, 255, 0, 0);
-     setQuadRGB(quadNum3, 255, 0, 0);
-     setQuadRGB(quadNum4, 255, 0, 0);
+  public void setAlignedBling() {
+    //  setQuadRGB(quadNum1, 255, 0, 0);
+    //  setQuadRGB(quadNum2, 255, 0, 0);
+     setQuadRGB(0, 255, 0, 0);
+     setQuadRGB(3, 255, 0, 0);
   }
 
-  public void setRainbowBling(){
+  public boolean setRainbowBling(){
     int m_rainbowFirstPixelHue1 = 0;
     int m_rainbowFirstPixelHue2 = 0;
     int count2 = 0;
+    boolean rainbow = false;
+
+    if(time > 100){
+      time = 0;
+    }
     
-    if (time < 100){
-      if (shooter.getCurrentTopVelocityInMPS() > (shooter.getTargetTopVelocityInMPS() - 2) && shooter.getCurrentTopVelocityInMPS() > 8 && shooter.getCurrentBottomVelocityInMPS() > (shooter.getTargetBottomVelocityInMPS() - 2)){
-        for (var i = 0; i < m_ledBuffer.getLength()/2; i++) {
-            // Calculate the hue - hue is easier for rainbows because the color
-            // shape is a circle so only one value needs to precess
+    if (shooter.getCurrentTopVelocityInMPS() > (shooter.getTargetTopVelocityInMPS() - 2)
+        && shooter.getCurrentTopVelocityInMPS() > 20
+        && shooter.getCurrentBottomVelocityInMPS() > (shooter.getTargetBottomVelocityInMPS() - 2)){
+      rainbow = true;
+      for (var i = 0; i < m_ledBuffer.getLength()/2; i++) {
+
+        if(time == 0){
+          // Calculate the hue - hue is easier for rainbows because the color
+          // shape is a circle so only one value needs to precess
           final var hue1 = (m_rainbowFirstPixelHue1 + (i * 180 / m_ledBuffer.getLength()*2)) % 180;
-            // Set the value
+          // Set the value
           m_ledBuffer.setHSV(i, hue1, 255, 128);
         }
+        if (time < 100){
           // Increase by to make the rainbow "move"
           m_rainbowFirstPixelHue1 += 3;
           // Check bounds
           m_rainbowFirstPixelHue1 %= 180;
 
-        for (var i = m_ledBuffer.getLength()/2; i < m_ledBuffer.getLength(); i++) {
-          final var hue2 = (m_rainbowFirstPixelHue2 + (count2 * 180 / m_ledBuffer.getLength()*2)) % 180;
-          m_ledBuffer.setHSV(i, hue2, 255, 128);
-          count2++;
-        }
+          for (var j = m_ledBuffer.getLength()/2; j < m_ledBuffer.getLength(); j++) {
+            final var hue2 = (m_rainbowFirstPixelHue2 + (count2 * 180 / m_ledBuffer.getLength()*2)) % 180;
+            m_ledBuffer.setHSV(i, hue2, 255, 128);
+            count2++;
+          }
           m_rainbowFirstPixelHue2 += 3;
           m_rainbowFirstPixelHue2 %= 180;
+        }
+        time++;
       }
-      time++;
     }
-    else{
-      time = 0;
-    }
+    return rainbow;
   }
 
   // Initialize preferences for this class:
