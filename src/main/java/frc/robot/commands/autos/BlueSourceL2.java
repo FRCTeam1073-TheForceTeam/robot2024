@@ -40,7 +40,7 @@ public class BlueSourceL2
         Path.Point stagePoint = new Path.Point(5.368, 2.37);
         stagePoint.blend_radius = 1.0;
 
-        double range1 = 4.0;
+        double range1 = 3.7;
 
         ArrayList<Segment> segments1 = new ArrayList<Segment>();
         segments1.add(new Segment(start, pathShootPoint, -0.768, 3.0));

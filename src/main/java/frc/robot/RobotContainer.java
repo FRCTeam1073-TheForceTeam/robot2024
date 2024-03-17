@@ -211,7 +211,6 @@ public class RobotContainer {
     SmartDashboard.putData(m_rangeFinder);
     SmartDashboard.putData(m_climber);
 
-    
 
     m_chooser.setDefaultOption("No Autonomous", kNoAuto);
 
