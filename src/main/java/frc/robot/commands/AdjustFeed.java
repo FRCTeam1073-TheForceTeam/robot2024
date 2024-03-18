@@ -9,8 +9,8 @@ import frc.robot.subsystems.Feeder;
 
 public class AdjustFeed extends Command {
   Feeder feeder;
-  private double maxFeedRange = 0.04;
-  private double minFeedRange = 0.035; //0.03
+  private double maxFeedRange = 0.037;
+  private double minFeedRange = 0.03; //0.03
   /** Creates a new AdjustFeed. */
   public AdjustFeed(Feeder feeder) {
     this.feeder = feeder;

@@ -16,6 +16,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Pivot extends DiagnosticsSubsystem {
 
@@ -47,6 +48,7 @@ public class Pivot extends DiagnosticsSubsystem {
   private double currentPositionRad;
 
   private double debugPivotAngle;
+  private double pivotRangeCommandAngle;
 
   // PositionVoltage object
   //private PositionVoltage pivotPositionVoltage = new PositionVoltage(0).withSlot(0);
@@ -57,6 +59,7 @@ public class Pivot extends DiagnosticsSubsystem {
 
   /** Creates a new Pivot. */
   public Pivot() {
+    super.setSubsystem("Pivot");
     //pivotMotor = new TalonFX(21, kCANbus); //Falcon
     pivotMotor = new TalonFX(21, kCANbus);
     pivotMotorFault = new MotorFault(pivotMotor, 21);
@@ -70,7 +73,7 @@ public class Pivot extends DiagnosticsSubsystem {
 
   @Override
   public void periodic() {
-    updateDiagnostics();
+    // updateDiagnostics();
     updateFeedback();
     // This method will be called once per scheduler run
     //commandedPositionRad = pivotMotorFilter.calculate(MathUtil.clamp(targetPositionRad, minAngleRad, maxAngleRad));
@@ -110,6 +113,14 @@ public class Pivot extends DiagnosticsSubsystem {
     return currentPositionRad;
   }
 
+  public void  setPivotRangeCommandAngle(double angle){
+    pivotRangeCommandAngle = angle;
+  }
+
+  public double  getPivotRangeCommandAngle(){
+    return pivotRangeCommandAngle;
+  }
+
   public void configureHardware(){
     TalonFXConfiguration configs = new TalonFXConfiguration();
     configs.Slot0.kP = p;
@@ -119,8 +130,9 @@ public class Pivot extends DiagnosticsSubsystem {
     configs.Voltage.PeakForwardVoltage = 12;
     configs.Voltage.PeakReverseVoltage = -12;
 
-    configs.MotionMagic.MotionMagicCruiseVelocity = 16;
-    configs.MotionMagic.MotionMagicAcceleration = 15;
+    configs.MotionMagic.MotionMagicCruiseVelocity = 15;
+    //configs.MotionMagic.MotionMagicAcceleration = 35;
+    configs.MotionMagic.MotionMagicAcceleration = 80;
     configs.MotionMagic.MotionMagicJerk = 0;
     // configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
     // configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
@@ -157,11 +169,13 @@ public class Pivot extends DiagnosticsSubsystem {
   @Override
   public void initSendable(SendableBuilder builder)
   {
-    builder.setSmartDashboardType("Pivot");
+    super.initSendable(builder);
     builder.addDoubleProperty("Debug Pivot Angle", this::getDebugPivotAngle, this::setDebugPivotAngle);
     builder.addDoubleProperty("Pivot Test Command Motor Position", this::getTargetPositionInRad, null);
     builder.addDoubleProperty("Target Pivot Motor Position", this::getTargetPositionInRad, this::setTargetPositionInRad);
     builder.addDoubleProperty("Commanded Pivot Motor Position", this::getCommandedPositionInRad, null);
     builder.addDoubleProperty("Actual Pivot Motor Position", this::getCurrentPositionInRad, null);
+
+    builder.addDoubleProperty("Pivot Range Commanded angle", this::getPivotRangeCommandAngle, null);
   }
 }

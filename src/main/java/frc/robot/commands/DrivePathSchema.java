@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -86,6 +87,11 @@ public class DrivePathSchema extends MotionSchema {
       CommandScheduler.getInstance().schedule(path.segments.get(currentSegmentIndex).entryCommand);
     }
 
+    if (currentSegmentIndex != -1 && path.segments.get(currentSegmentIndex).entryActivate != null)
+    {
+      path.segments.get(currentSegmentIndex).entryActivate.activate(path.segments.get(currentSegmentIndex).entryActivateValue);
+    }
+
     xController.reset();
     yController.reset();
     thetaController.reset();
@@ -101,12 +107,21 @@ public class DrivePathSchema extends MotionSchema {
     if (currentSegmentIndex < 0) 
     {
       System.out.println("DrivePathSchema: Invalid segment index.");
+      // Stop:
+      setTranslate(0,0,1);
+      setRotate(0,1);
+      return; // Don't run.
     }
+
     currentTime = Timer.getFPGATimestamp() - startTime;
     robotPose = drivetrain.getOdometry();
     
     // Compute position and velocity desired from where we actually are:
     PathFeedback pathFeedback = path.getPathFeedback(currentSegmentIndex, robotPose);
+
+    maxVelocity = pathFeedback.velocity.norm();
+    maxAngularVelocity = pathFeedback.velocity.norm();
+    
 
     if (currentSegmentIndex >= path.segments.size() - 1)
     {
@@ -122,37 +137,39 @@ public class DrivePathSchema extends MotionSchema {
       thetaVelocity = thetaController.calculate(robotPose.getRotation().getRadians(), path.getPathOrientation(currentSegmentIndex, robotPose)); 
     }
     
+    // Clamp to maximums for safety:
+    xVelocity = MathUtil.clamp(xVelocity, -maxVelocity, maxVelocity);
+    yVelocity = MathUtil.clamp(yVelocity, -maxVelocity, maxVelocity);
+    thetaVelocity = MathUtil.clamp(thetaVelocity, -maxAngularVelocity, maxAngularVelocity);
 
-    ChassisSpeeds speeds = new ChassisSpeeds(xVelocity, yVelocity, thetaVelocity);
+    // Create (field-centric) chassis speeds:
+    ChassisSpeeds fcSpeeds = new ChassisSpeeds(xVelocity, yVelocity, thetaVelocity);
 
     SmartDashboard.putNumber("Robot pose x", robotPose.getX());
     SmartDashboard.putNumber("Robot Pose y", robotPose.getY());
-    SmartDashboard.putNumber("Trajectory Time", currentTime);
+    // SmartDashboard.putNumber("Trajectory Time", currentTime);
 
-    SmartDashboard.putNumber("Trajectory Velocity X", pathFeedback.velocity.get(0,0));
-    SmartDashboard.putNumber("Trajectory Velocity Y", pathFeedback.velocity.get(1,0));
+    SmartDashboard.putNumber("Traj FB Velocity X", pathFeedback.velocity.get(0,0));
+    SmartDashboard.putNumber("Traj FB Velocity Y", pathFeedback.velocity.get(1,0));
 
-    // xVelocity = MathUtil.clamp(xVelocity, -maxVelocity, maxVelocity);
-    // yVelocity = MathUtil.clamp(yVelocity, -maxVelocity, maxVelocity);
-    // angularVelocity = MathUtil.clamp(angularVelocity, -maxAngularVelocity, maxAngularVelocity);
-
-    SmartDashboard.putNumber("Trajectory Speed X", speeds.vxMetersPerSecond);
-    SmartDashboard.putNumber("Trajectory Speed Y", speeds.vyMetersPerSecond);
-    SmartDashboard.putNumber("Trajectory Angular Speed", speeds.omegaRadiansPerSecond);
+    SmartDashboard.putNumber("Trajectory Speed X", fcSpeeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("Trajectory Speed Y", fcSpeeds.vyMetersPerSecond);
+    SmartDashboard.putNumber("Trajectory Angular Speed", fcSpeeds.omegaRadiansPerSecond);
 
     SmartDashboard.putNumber("Segment Index", currentSegmentIndex);
 
-    // Controlled drive command with weights from our path segment feedback:
-    setTranslate(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, pathFeedback.translation_weight);
-    setRotate(speeds.omegaRadiansPerSecond, pathFeedback.orientation_weight);
+    // Controlled drive command with weights from our path segment feedback, set our two channels of schema output/w weights.
+    setTranslate(fcSpeeds.vxMetersPerSecond, fcSpeeds.vyMetersPerSecond, pathFeedback.translation_weight);
+    setRotate(fcSpeeds.omegaRadiansPerSecond, pathFeedback.orientation_weight);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) 
   {
-    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0,0,0, Rotation2d.fromDegrees(drivetrain.getHeadingDegrees()));
-    drivetrain.setTargetChassisSpeeds(chassisSpeeds);
+    // Set our schema output to full stop.
+    setTranslate(0,0,1);
+    setRotate(0,1);
   }
 
   // Returns true when the command should end.
@@ -161,19 +178,30 @@ public class DrivePathSchema extends MotionSchema {
 
   if (currentSegmentIndex < 0) return true; // Finished if we don't have a good index.
 
+  // Otherwise check our segment, and manage command launch as we move along segments.
   Path.Segment seg = path.segments.get(currentSegmentIndex);
   if (path.atEndPoint(currentSegmentIndex, drivetrain.getOdometry())) 
   {
 
-    // Cancel comamnd for this segment:
+    // Cancel entry comamnd for this segment:
     if (seg.entryCommand != null) 
     {
       CommandScheduler.getInstance().cancel(seg.entryCommand);
     }
-    // Kick off our exit command:
+    // Kick off our exit command for this segment:
     if (seg.exitCommand != null) 
     {
       CommandScheduler.getInstance().schedule(seg.exitCommand);
+    }
+
+    if (seg.entryActivate != null)
+    {
+      seg.entryActivate.activate(seg.entryActivateValue);
+    }
+
+    if (seg.exitActivate != null)
+    {
+      seg.exitActivate.activate(seg.exitActivateValue);
     }
 
     // Move to next path segment:
@@ -190,6 +218,11 @@ public class DrivePathSchema extends MotionSchema {
       if (seg.entryCommand != null) 
       {
         CommandScheduler.getInstance().schedule(seg.entryCommand);
+      }
+
+      if (seg.entryActivate != null)
+      {
+        seg.entryActivate.activate(seg.entryActivateValue);
       }
     }
   }

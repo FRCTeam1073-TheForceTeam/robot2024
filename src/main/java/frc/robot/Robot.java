@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -39,7 +40,9 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-  
+
+    // Last but not least start up a camera server to get basic driver feedback.
+    CameraServer.startAutomaticCapture();
   }
 
   /**
@@ -56,7 +59,6 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-    m_robotContainer.printAllFalseDiagnostics();
 
     coopTime = MathUtil.clamp(Timer.getMatchTime() - 90, 0, 45);
     SmartDashboard.putNumber("Remaining Coopertition Time", coopTime);
@@ -73,7 +75,9 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+      m_robotContainer.printAllFalseDiagnostics();
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
@@ -84,6 +88,7 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
+    m_robotContainer.autonomousInit();
   }
 
   /** This function is called periodically during autonomous. */

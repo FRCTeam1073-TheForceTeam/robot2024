@@ -22,15 +22,15 @@ public class Camera extends SubsystemBase {
   }
 
   public void startRecordingTeleop(){
-    serialComms.send(String.format("%s,ti", this.camID));
+    // serialComms.send(String.format("%s,ti", this.camID));
   }
 
   public void startRecordingAutonomous(){
-    serialComms.send(String.format("%s,ai", this.camID));
+    // serialComms.send(String.format("%s,ai", this.camID));
   }
 
   public void stopRecording(){
-    serialComms.send(String.format("%s,di", this.camID));
+    // serialComms.send(String.format("%s,di", this.camID));
   }
 
   @Override

@@ -72,8 +72,12 @@ public class Shooter extends DiagnosticsSubsystem{
 
   private boolean noteShot = false;
 
+
+  private boolean commandedToShoot = false;
+
   /** Creates a new Shooter. **/
   public Shooter() {
+    super.setSubsystem("Shooter");
     // topShooterMotor = new TalonFX(17, kCANbus); // Kraken 
     // bottomShooterMotor = new TalonFX(18, kCANbus); //Kraken 
     topShooterMotor = new TalonFX(17, kCANbus);
@@ -97,7 +101,7 @@ public class Shooter extends DiagnosticsSubsystem{
  
   @Override
   public void periodic() {
-    updateDiagnostics();
+    // updateDiagnostics();
     updateFeedback();
     
     shooterTofFreq = shooterTofDutyCycleInput.getFrequency();
@@ -133,7 +137,7 @@ public class Shooter extends DiagnosticsSubsystem{
   }
 
   public double limitShooterVelocity(double maxVel) {
-    return MathUtil.clamp(maxVel, -28, 28);
+    return MathUtil.clamp(maxVel, -40, 40);
   }
 
   public double getTofRange(){
@@ -200,17 +204,27 @@ public class Shooter extends DiagnosticsSubsystem{
     return topShooterMotor.getDeviceTemp().getValue();
   }
 
+  public void setCommandedToShoot(boolean readyToShoot){
+    commandedToShoot = readyToShoot;
+  }
+
+  public boolean getCommandedToShoot(){
+    return commandedToShoot;
+  }
+
   public void configureHardware(){
     TalonFXConfiguration configs = new TalonFXConfiguration();
 
     configs.MotionMagic.MotionMagicCruiseVelocity = 25;
-    configs.MotionMagic.MotionMagicAcceleration = 30;
-    configs.MotionMagic.MotionMagicJerk = 30;
+    // configs.MotionMagic.MotionMagicAcceleration = 20;
+    configs.MotionMagic.MotionMagicAcceleration = 50;
+    // configs.MotionMagic.MotionMagicJerk = 25;
+    configs.MotionMagic.MotionMagicJerk = 50;
 
     configs.Slot0.kP = p;
     configs.Slot0.kI = i;
     configs.Slot0.kD = d;
-    configs.Slot0.kV = 0.12;
+    configs.Slot0.kV = 0.113;
     configs.Voltage.PeakForwardVoltage = 8;
     configs.Voltage.PeakReverseVoltage = -8;
 
@@ -263,7 +277,8 @@ public class Shooter extends DiagnosticsSubsystem{
   @Override
   public void initSendable(SendableBuilder builder)
   {
-    builder.setSmartDashboardType("Shooter");
+    //builder.setSmartDashboardType("Shooter");
+    super.initSendable(builder);
     builder.addDoubleProperty("Target Top Motor Velocity", this::getTargetTopVelocityInMPS, null);
     builder.addDoubleProperty("Target Bottom Motor Velocity", this::getTargetBottomVelocityInMPS, null);
     builder.addDoubleProperty("Set Shooter", this::getTargetBottomVelocityInMPS, this::setBothShooterMotorsInMPS);

@@ -12,10 +12,12 @@ public class RangeFinder extends DiagnosticsSubsystem {
     private final double elevationFactor = 0.94293; //0.97237; //compensating for the fact that it's not level: cos(angle of rangeFinder)
 
     double range = 0.0;
+    double filtered_range = 0.0;
     double intensity = 0.0; // starts to die at under 0.005
     double timestamp = 0.0;
 
     public RangeFinder () {
+        super.setSubsystem("RangeFinder");
         serialPort.setFlowControl(SerialPort.FlowControl.kNone);
         
         triggerCommand[0] = 0x5a;
@@ -60,6 +62,9 @@ public class RangeFinder extends DiagnosticsSubsystem {
         int dl = (message[2] & 0xFF);
         int dh = (message[3] & 0xFF);
         range = ((dl + 255 * dh) * 0.01) * elevationFactor;
+
+        // IIR filter:
+        filtered_range = 0.8 * filtered_range + 0.2 * range; 
         
         int il = (message[4] & 0xFF);
         int ih = (message[5] & 0xFF);
@@ -70,6 +75,10 @@ public class RangeFinder extends DiagnosticsSubsystem {
 
     public double getRange() {
         return range;
+    }
+
+    public double getFilteredRange() {
+        return filtered_range;
     }
 
     public double getIntensity() {
@@ -97,7 +106,7 @@ public class RangeFinder extends DiagnosticsSubsystem {
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType("Rangefinder");
+        super.initSendable(builder);
         builder.addDoubleProperty("Range", this::getRange, null);
         builder.addDoubleProperty("Intensity", this::getIntensity, null);
         builder.addDoubleProperty("Timestamp", this::getTimestamp, null);

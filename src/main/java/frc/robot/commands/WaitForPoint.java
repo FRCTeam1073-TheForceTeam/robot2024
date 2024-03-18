@@ -52,7 +52,7 @@ public class WaitForPoint extends Command {
   public boolean isFinished() {
     Transform2d delta = point.minus(drivetrain.getOdometry());
 
-    if (delta.getTranslation().getNorm() < posTolerance && delta.getRotation().getRadians() < angTolerance)
+    if (Math.abs(delta.getTranslation().getNorm()) < posTolerance && Math.abs(delta.getRotation().getRadians()) < angTolerance)
       return true;
     else
       return false;

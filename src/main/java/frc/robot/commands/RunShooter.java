@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.ShooterInterpolatorTable;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 
 
 public class RunShooter extends Command {
@@ -26,6 +25,8 @@ public class RunShooter extends Command {
   double currentBottomVel;
   double currentTopVel;
 
+  double range = 0;
+
   double count;
   
   /* Creates a new RunShooter. */
@@ -36,15 +37,36 @@ public class RunShooter extends Command {
     this.shooter = shooter;
     this.rangefinder = rangeFinder;
     this.shooterInterpolatorTable = new ShooterInterpolatorTable();
+    range = -1;
+    addRequirements(shooter);
+  }
+
+  public RunShooter(Shooter shooter, double range)
+  {
+    // for using the command when shooting from points with known ranges
+
+    this.shooter = shooter;
+    this.range = range;
+    this.shooterInterpolatorTable = new ShooterInterpolatorTable();
     addRequirements(shooter);
   }
 
 // Called when the command is initially scheduled.
   /* start shooter wheels to get them up to speed */
   @Override
-  public void initialize() {
-    shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
-    shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getRange());
+  public void initialize() 
+  {
+    if (range == -1) // if using rangefinder
+    {
+      shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getFilteredRange());
+      shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getFilteredRange());
+    }
+    else // if using a set range
+    {
+      shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(range);
+      shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(range);
+    }
+    
     // shooterTopMPS = shooter.getRunShooterTargetBottomVelocityInMPS();
     // shooterBottomMPS = shooter.getRunShooterTargetBottomVelocityInMPS();
     count = 0;
@@ -62,7 +84,7 @@ public class RunShooter extends Command {
     averageBottomVel = (0.5 * averageBottomVel) + (0.5 * currentBottomVel);
     averageTopVel = (0.5 * averageTopVel) + (0.5 * currentTopVel);
 
-    if((Math.abs(averageBottomVel - shooterBottomMPS) < 0.5) && (Math.abs(averageTopVel - shooterTopMPS) < 0.5)){
+    if((Math.abs(averageBottomVel - shooterBottomMPS) < 0.55) && (Math.abs(averageTopVel - shooterTopMPS) < 0.55)){
       count++;
     }
     else if(count > 0){

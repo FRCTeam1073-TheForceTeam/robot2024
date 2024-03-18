@@ -11,7 +11,8 @@ import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.ShooterInterpolatorTable;
 
-public class PivotRangeCommand extends Command {
+public class PivotRangeCommand extends Command 
+{
   /** Creates a new SetPivotCommand. */
   private Pivot pivot;
   private RangeFinder rangefinder;
@@ -22,38 +23,70 @@ public class PivotRangeCommand extends Command {
   double currentRange;
   double avgRange;
 
+  double range;
+
   double count;
 
-  public PivotRangeCommand(Pivot pivot, RangeFinder rangefinder) {
+  boolean isWaiting = true;
+
+  public PivotRangeCommand(Pivot pivot, RangeFinder rangefinder) 
+  {
+    // when we do not have a set range to shoot from
     this.pivot = pivot;
     this.rangefinder = rangefinder;
     pivotTable = new ShooterInterpolatorTable();
+    range = -1;
     // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(pivot);
+  }
+
+  public PivotRangeCommand(Pivot pivot, double range)
+  {
+    // when we have a set range to shoot from
+    this.pivot = pivot;
+    this.range = range;
+    pivotTable = new ShooterInterpolatorTable();
     addRequirements(pivot);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    targetPositionRad = pivotTable.interpolatePivotAngle(rangefinder.getRange());
-    //targetPositionRad = pivot.getDebugPivotAngle();
+    // targetPositionRad = pivotTable.interpolatePivotAngle(rangefinder.getRange());
+    // targetPositionRad = pivot.getDebugPivotAngle();
+    isWaiting = true;
+    avgRange = 0.0;
     count = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-
-    // if(count < 20){
-    //   currentRange = rangefinder.getRange();
-    
-    //   avgRange = (0.5 * avgRange) + (0.5 * currentRange);
-    //   count++;
-    // }
-    // else{
-      // targetPositionRad = pivotTable.interpolatePivotAngle(avgRange);
+    if (range != -1)
+    {
+      isWaiting = false;
+      targetPositionRad = pivotTable.interpolatePivotAngle(range);
       pivot.setTargetPositionInRad(targetPositionRad);
-    // }
+    }
+    else
+    {
+      if (count < 20)
+      {
+        isWaiting = true;
+        currentRange = rangefinder.getRange();
+    
+        avgRange = (0.2 * avgRange) + (0.8 * currentRange);
+        count++;
+      }
+      else
+      {
+        isWaiting = false;
+        targetPositionRad = pivotTable.interpolatePivotAngle(avgRange);
+        pivot.setTargetPositionInRad(targetPositionRad);
+        pivot.setPivotRangeCommandAngle(targetPositionRad);
+      }
+    }
+    
   }
 
   // Called once the command ends or is interrupted.
@@ -67,6 +100,6 @@ public class PivotRangeCommand extends Command {
   @Override
   public boolean isFinished() {
     var error = Math.abs(pivot.getCurrentPositionInRad() - targetPositionRad);
-    return (error <= 0.05);
+    return (!isWaiting && (error <= 0.05));
   }
 }

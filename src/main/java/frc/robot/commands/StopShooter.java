@@ -59,8 +59,7 @@ public class StopShooter extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    // shooter.setTargetTopVelocityInMPS(0);
-    // shooter.setTargetBottomVelocityInMPS(0);
+    shooter.setCommandedToShoot(false);
   }
 
   // Returns true when the command should end.

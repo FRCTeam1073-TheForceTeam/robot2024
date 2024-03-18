@@ -59,7 +59,7 @@ public class Feeder extends DiagnosticsSubsystem {
 
   /** Creates a new Trigger. */
   public Feeder() {
-    //feederMotor = new TalonFX(19, kCANbus); //Falcon
+    super.setSubsystem("Feeder");
     feederMotor = new TalonFX(19, kCANbus);
     feederMotorFault = new MotorFault(feederMotor, 19);
     feederMotorLimiter = new SlewRateLimiter(13); //limits the rate of change to 0.5 units per seconds
@@ -78,7 +78,7 @@ public class Feeder extends DiagnosticsSubsystem {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    updateDiagnostics();
+    // updateDiagnostics();
     updateFeedback();
 
     feederTofFreq = feederTofDutyCycleInput.getFrequency();
@@ -174,14 +174,27 @@ public class Feeder extends DiagnosticsSubsystem {
     return setDiagnosticsFeedback(result, ok);
   }
 
+  public boolean hasNote()
+  {
+    if (getTofRange() < 0.2)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
   @Override
   public void initSendable(SendableBuilder builder)
   {
-    builder.setSmartDashboardType("Shooter");
+    super.initSendable(builder);
     builder.addDoubleProperty("Tof Range", this::getTofRange, null);
     builder.addDoubleProperty("Tof Freq", this::getTofFreq, null);
     builder.addDoubleProperty("Target Feeder Velocity", this::getTargetVelocityInMPS, this::setTargetVelocityInMPS);
     builder.addDoubleProperty("Commanded Feeder Velocity", this::getCommandedVelocityInMPS, null);
     builder.addDoubleProperty("Actual Feeder Velocity", this::getCurrentVelocityInMPS, null);
+    builder.addBooleanProperty("Feeder Has Note", this::hasNote, null);
   }
 }

@@ -5,7 +5,9 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.*;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -19,16 +21,20 @@ public class LaunchFeederToSpeaker extends SequentialCommandGroup{
 
   public SequentialCommandGroup runLaunchFeedertoSpeaker(Shooter m_shooter, Feeder m_feeder, Pivot m_pivot, RangeFinder m_rangeFinder){
     return new SequentialCommandGroup(
-      new ParallelCommandGroup(
+      new ConditionalCommand(
+        new NWSetShooterVel(m_shooter, 0, 0),
+        new ParallelCommandGroup(
         new PivotRangeCommand(m_pivot, m_rangeFinder),
         new RunShooter(m_shooter, m_rangeFinder) //, m_rangefinder.getRange()),
+        ),
+        m_shooter::getCommandedToShoot
       ),
-      //new WaitCommand(1),
-      new ParallelCommandGroup(
-        new RunFeeder(m_feeder, 30),
+      new ParallelDeadlineGroup(
+        new StopShooter(m_shooter),
+        new RunFeeder(m_feeder, 30)
         //new WaitCommand(1),
-        new StopShooter(m_shooter)
       ),
-      new SetPivotCommand(m_pivot, 0));
-    }
+      new SetPivotCommand(m_pivot, 0)
+    );
+  }
 }

@@ -75,8 +75,7 @@ public class Collector extends DiagnosticsSubsystem {
     tof1Freq = tof1DutyCycleInput.getFrequency();
     tof1DutyCycle = tof1DutyCycleInput.getOutput();
     tof1Range = tofCollectorScaleFactor * (tof1DutyCycle / tof1Freq - 0.001) / 1000; //supposedly in meters
-
-    updateDiagnostics();
+    // updateDiagnostics();
   }
   
   private void runCollectMotor(double vel)
@@ -134,6 +133,18 @@ public class Collector extends DiagnosticsSubsystem {
     configError = collectMotor.getConfigurator().apply(collectMotorClosedLoopConfig, 0.5);
   }
 
+  public boolean hasNote()
+  {
+    if (getRangeTOF() < 0.42)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
   @Override
   public void initSendable(SendableBuilder builder)
   {
@@ -142,6 +153,7 @@ public class Collector extends DiagnosticsSubsystem {
     builder.addDoubleProperty("Actual Velocity", this::getActualCollectorVelocity, null);
     builder.addDoubleProperty("Commanded Velocity", this::getCommandedCollectorVelocity, null);
     builder.addDoubleProperty("tofCollectorRange", this::getRangeTOF, null);
+    builder.addBooleanProperty("Collector Has Note", this::hasNote, null);
     //builder.addBooleanProperty("ok", this::isOK, null);
     //builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
   }

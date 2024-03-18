@@ -19,7 +19,7 @@ public class RunFeeder extends Command {
     this.feederTargetVelocityMPS = feederTargetVelocityMPS;
     // Use addRequirements() here to declare subsystem dependencies.
     minRange = 0.2;
-    maxRange = 0.3;
+    maxRange = 0.27;
   }
 
 // Called when the command is initially scheduled.
