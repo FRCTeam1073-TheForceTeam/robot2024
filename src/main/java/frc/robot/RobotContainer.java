@@ -146,15 +146,6 @@ public class RobotContainer {
   private static final String kBlueAmpL2 = "Blue Amp L2";
   private static final String kBlueAmpL3 = "Blue Amp L3";
   private static final String kBlueAmpL4 = "Blue Amp L4";
-
-  private static final String kRedCloseSnowPlowAuto = "Red Close Snowplow Auto";
-  private static final String kRedFarSnowPlowAuto = "Red Far Snowplow Auto";
-  private static final String kRedFar1Note = "Red Far 1 Note";
-  private static final String kBlueWing4Note = "Blue Wing 4 Note";
-  private static final String kRedCloseMidline2Note = "Red Close Midline 2 Note";
-  private static final String kBlueCloseMidline2Note = "Blue Close Midline 2 Note";
-  private static final String kBlueCloseMidline3Note = "Blue Close Midline 3 Note";
-  private static final String kBlueFarMidline3Note = "Blue Far Midline 3 Note";
   private static final String kLeaveAuto = "Leave Auto";
   private static final String kTestAuto = "Test Auto";
   
@@ -226,16 +217,6 @@ public class RobotContainer {
     m_chooser.addOption("Blue Amp L2", kBlueAmpL2);
     m_chooser.addOption("Blue Amp L3", kBlueAmpL3);
     m_chooser.addOption("Blue Amp L4", kBlueAmpL4); 
-
-    m_chooser.addOption("Red Close Snowplow Auto", kRedCloseSnowPlowAuto);
-    m_chooser.addOption("Red Far Snowplow Auto", kRedFarSnowPlowAuto);
-    m_chooser.addOption("Red Far 1 Note", kRedFar1Note);
-    m_chooser.addOption("Blue Wing 4 Note", kBlueWing4Note);
-    m_chooser.addOption("Red Close Midline 2 Note", kRedCloseMidline2Note);
-    m_chooser.addOption("Blue Close Midline 2 Note", kBlueCloseMidline2Note);
-    m_chooser.addOption("Blue Close Midline 3 Note", kBlueCloseMidline3Note);
-    m_chooser.addOption("Blue Amp L2", kBlueAmpL2);
-    m_chooser.addOption("Blue Far Midline 3 Note", kBlueFarMidline3Note);
     m_chooser.addOption("Leave Auto", kLeaveAuto);
     m_chooser.addOption("Test Auto", kTestAuto);
 
@@ -412,22 +393,6 @@ public class RobotContainer {
         return BlueAmpL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kBlueAmpL4:
         return BlueAmpL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
-      case kRedCloseSnowPlowAuto:
-        return RedCloseSnowPlowAuto.create(m_drivetrain);
-      case kRedFarSnowPlowAuto:
-        return RedFarSnowPlowAuto.create(m_drivetrain);
-      case kRedFar1Note:
-        return RedFar1Note.create(m_drivetrain);
-      case kBlueWing4Note:
-        return BlueWing4Note.create(m_drivetrain);
-      case kRedCloseMidline2Note:
-        return RedCloseMidline2Note.create(m_drivetrain, m_feeder, m_shooter, m_pivot, m_collector, m_collectorArm, m_handoffCommand);
-      case kBlueCloseMidline2Note:
-        return BlueCloseMidline2Note.create(m_drivetrain, m_feeder, m_shooter, m_pivot, m_collector, m_collectorArm, m_handoffCommand);
-      case kBlueCloseMidline3Note: 
-        return BlueCloseMidline3Note.create(m_drivetrain, m_feeder, m_shooter, m_pivot, m_collector, m_collectorArm, m_handoffCommand);
-      case kBlueFarMidline3Note: 
-        return BlueFarMidline3Note.create(m_drivetrain, m_feeder, m_shooter, m_pivot, m_collector, m_collectorArm, m_handoffCommand);
       case kLeaveAuto:
         return LeaveAuto.create(m_drivetrain);
       case kTestAuto:
