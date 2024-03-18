@@ -28,19 +28,22 @@ public class ClimberTeleop extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double leftVelocity = -m_oi.getOperatorLeftY();
-    if(Math.abs(leftVelocity) < 0.1){
-      leftVelocity = 0;
-    }
-    double rightVelocity = -m_oi.getOperatorRightY();
-    if(Math.abs(rightVelocity) < 0.1){
-      rightVelocity = 0;
-    }
+    if(!m_oi.getCollectMode()){
+      double leftVelocity = -m_oi.getOperatorLeftY();
+      if(Math.abs(leftVelocity) < 0.1){
+        leftVelocity = 0;
+      }
+      double rightVelocity = -m_oi.getOperatorRightY();
+      if(Math.abs(rightVelocity) < 0.1){
+        rightVelocity = 0;
+      }
 
-    rightVelocity *= 0.1;
-    leftVelocity *= 0.1;
+      rightVelocity *= 0.1;
+      leftVelocity *= 0.1;
 
-    m_climber.setVelocities(leftVelocity, rightVelocity);
+      m_climber.setVelocities(leftVelocity, rightVelocity);
+    }
+    
   }
 
   // Called once the command ends or is interrupted.

@@ -42,7 +42,7 @@ public class AlignSpeakerAutoSchema extends MotionSchema implements Activate
     if (apriltag.isValid() && active)
     {
       rotation = 0.01 * (160 - apriltag.cx);
-      MathUtil.clamp(rotation, -0.5, 0.5);
+      MathUtil.clamp(rotation, -0.7, 0.7);
 
       setRotate(rotation, 1.0);
     }

@@ -68,7 +68,7 @@ public class Bling extends DiagnosticsSubsystem {
     // boolean shooterBling = setRainbowBling();
     double tofCollectorValue = collector.getRangeTOF();
     double tofFeederValue = feeder.getTofRange();
-    if(tofCollectorValue <= 0.42){
+    if(tofCollectorValue <= 0.72){
       setCollectedBling();
     }
     else if(tofFeederValue <= 0.2){

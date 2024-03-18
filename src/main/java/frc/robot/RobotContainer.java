@@ -5,18 +5,6 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.CollectorTeleop;
-import frc.robot.commands.ArmPoseCommand;
-import frc.robot.commands.ArmPoseTeleop;
-import frc.robot.commands.CollectorArmTeleop;
-import frc.robot.commands.CollectorIntakeCommand;
-import frc.robot.commands.CollectorIntakeOutCommand;
-import frc.robot.commands.DriveThroughTrajectorySchema;
-import frc.robot.commands.DriveToPointSchema;
-import frc.robot.commands.SchemaDriveAuto;
-import frc.robot.subsystems.Bling;
-// import frc.robot.subsystems.Camera;
-import frc.robot.commands.TeleopDrive;
 import frc.robot.commands.autos.BlueWing4Note;
 import frc.robot.commands.autos.BlueCloseMidline2Note;
 import frc.robot.commands.autos.BlueCloseMidline3Note;
@@ -53,16 +41,13 @@ import frc.robot.commands.autos.RedSourceL3;
 import frc.robot.commands.autos.RedSourceL4;
 import frc.robot.commands.autos.RedSourceSnowplow;
 import frc.robot.commands.autos.TestAuto;
-import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.OI;
-import frc.robot.subsystems.SerialComms;
-import frc.robot.subsystems.SwerveModuleConfig;
-
 import frc.robot.subsystems.CollectorArm.POSE;
 
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 
 import edu.wpi.first.apriltag.AprilTag;
@@ -90,6 +75,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 import frc.robot.Constants.OperatorConstants;
+// import frc.robot.subsystems.Camera;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
 
@@ -196,7 +182,7 @@ public class RobotContainer {
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand); 
     CommandScheduler.getInstance().setDefaultCommand(m_climber, m_ClimberTeleop);
-    //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_collectorArmTeleop);
+    CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_collectorArmTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_runShooterCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_aprilTagFinder, m_allianceSearch);
@@ -312,6 +298,24 @@ public class RobotContainer {
 
   }
 
+  public void autonomousInit()
+  {
+    if (m_aprilTagFinder != null)
+    {
+      if(DriverStation.getAlliance().isPresent())
+      {
+        if (DriverStation.getAlliance().get() == Alliance.Blue)
+        {
+          m_aprilTagFinder.setSearchTagId(7);
+        }
+        else
+        {
+          m_aprilTagFinder.setSearchTagId(4);
+        }
+      }
+    }
+  }
+
   public void printAllFalseDiagnostics(){
     boolean isDisabled = DriverStation.isDisabled();
     boolean allOK = true;
@@ -359,7 +363,7 @@ public class RobotContainer {
       case kRedSourceL1:
         return RedSourceL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
       case kRedSourceL2:
-        return RedSourceL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder);
+        return RedSourceL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder);
       case kRedSourceL3:
         return RedSourceL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kRedSourceL4:
@@ -385,7 +389,7 @@ public class RobotContainer {
       case kBlueSourceL1:
         return BlueSourceL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
       case kBlueSourceL2:
-        return BlueSourceL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder);
+        return BlueSourceL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder);
       case kBlueSourceL3:
         return BlueSourceL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kBlueSourceL4:

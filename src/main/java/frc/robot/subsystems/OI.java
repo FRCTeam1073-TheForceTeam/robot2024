@@ -29,6 +29,7 @@ public class OI extends DiagnosticsSubsystem
   private double LEFT_Y_ZERO;
   private double RIGHT_X_ZERO;
   private double RIGHT_Y_ZERO;
+  private boolean manualCollectMode = true;
 
   /** Creates a new OI. */
   public OI() 
@@ -50,8 +51,18 @@ public class OI extends DiagnosticsSubsystem
   @Override
   public void periodic() 
   {
-
+    if(getOperatorMenuButton()){
+      setCollectMode(!manualCollectMode);
+    }
     // You can add more smartdashboard printouts here for additional joysticks or buttons
+  }
+
+  public boolean getCollectMode(){
+    return manualCollectMode;
+  }
+
+  public void setCollectMode(boolean collect){
+    manualCollectMode = collect;
   }
 
   public void zeroDriverController() 
@@ -210,6 +221,10 @@ public class OI extends DiagnosticsSubsystem
     return (operatorController.getRawAxis(2) > 0.5);
   }
 
+  public boolean getOperatorViewButton() {
+    return getOperatorRawButton(7);
+  }
+
   public boolean getOperatorMenuButton() {
     return getOperatorRawButton(8);
   }
@@ -241,6 +256,7 @@ public class OI extends DiagnosticsSubsystem
     builder.addDoubleProperty("Operator Right X", this::getOperatorRightX, null);
     builder.addDoubleProperty("Operator Left Y", this::getOperatorLeftY, null);
     builder.addDoubleProperty("Operator Left X", this::getOperatorLeftX, null);
+    builder.addBooleanProperty("Manual Collect Mode", this::getCollectMode, null);
 
   }
 }

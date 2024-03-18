@@ -24,26 +24,33 @@ import frc.robot.subsystems.CollectorArm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.Shooter;
 
 public class BlueSourceL2 
 {
     public static Command create(Drivetrain drivetrain, Shooter shooter, Pivot pivot, Feeder feeder, 
-        CollectFeedCommand collectCommand, Collector collector, CollectorArm collectorArm, AprilTagFinder finder)
+        CollectFeedCommand collectCommand, Collector collector, CollectorArm collectorArm, AprilTagFinder finder, RangeFinder rangeFinder)
     {
         AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(finder);
 
         Path.Point start = new Path.Point(0.0, 0.0);
         Path.Point pathShootPoint = new Path.Point(3.5, 0.0);
         Path.Point avoidStagePost = new Path.Point(5.7, -0.75);
-        Path.Point midlineNote2 = new Path.Point(7.6, 0.75);
+        Path.Point midlineNote2 = new Path.Point(8.1, 0.85);
         Path.Point stagePoint = new Path.Point(5.368, 2.37);
         stagePoint.blend_radius = 1.0;
+        // avoidStagePost.blend_radius = 0.6;
 
-        double range1 = 3.7;
+        double range1 = 4.55;
 
         ArrayList<Segment> segments1 = new ArrayList<Segment>();
         segments1.add(new Segment(start, pathShootPoint, -0.768, 3.0));
+        
+        segments1.get(0).entryActivateValue = true;
+        segments1.get(0).entryActivate = alignSchema;
+        segments1.get(0).exitActivateValue = false;
+        segments1.get(0).exitActivate = alignSchema;
         
 
         ArrayList<Segment> segments2 = new ArrayList<Segment>();
@@ -65,11 +72,13 @@ public class BlueSourceL2
 
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
-                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path1), drivetrain),
+                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path1), new AlignSpeakerAutoSchema(finder), drivetrain), 
                 new RunShooter(shooter, range1),
                 new PivotRangeCommand(pivot, range1)
             ),
             new SequentialCommandGroup(
+                new RunShooter(shooter, rangeFinder),
+                new PivotRangeCommand(pivot, rangeFinder),
                 new ParallelCommandGroup(
                     new RunFeeder(feeder, 30),
                     new NWStopShooter(shooter)

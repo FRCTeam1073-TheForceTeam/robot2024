@@ -223,7 +223,6 @@ public class Path
 
         if (path_offset < segments.get(segmentIndex).width) {
             double proportion = path_offset / seg.width; /// 0 when we're dead-on, 1 when were at the offset.
-
             // Drive along the path and towards the path in proportion to error:
             Vp = (path_pos.minus(pos).times(proportion * transverseVelocity)).plus(seg.dir.times((1.0 - proportion)*seg.velocity));
         } else {

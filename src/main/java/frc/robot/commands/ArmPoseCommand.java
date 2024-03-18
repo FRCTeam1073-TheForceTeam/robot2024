@@ -48,12 +48,13 @@ public class ArmPoseCommand extends Command {
         m_targetExtend = 0.0;
         break;
       case STOW_INTERMEDIATE_1:
-        m_targetLift = 0.25;
+        // m_targetLift = 0.25;
+        m_targetLift = 0.6;
         m_targetExtend = 0.0;
         break;
       case STOW_INTERMEDIATE_2:
-        m_targetLift = 0.26;
-        m_targetExtend = 0.03;
+        m_targetLift = 0.7;
+        m_targetExtend = 0.05;
         break;
       case STOW_INTERMEDIATE_3:
         m_targetLift = 0.27;
@@ -64,11 +65,11 @@ public class ArmPoseCommand extends Command {
         m_targetExtend = 0.1;
         break;
       case STOW:
-        m_targetLift = 0.24;
+        m_targetLift = 0.27;
         m_targetExtend = 0.108;
         break;
       case HANDOFF:
-        m_targetLift = 0.24;
+        m_targetLift = 0.35;
         m_targetExtend = 0.108;
         break;
       case AMP:

@@ -75,7 +75,6 @@ public class Collector extends DiagnosticsSubsystem {
     tof1Freq = tof1DutyCycleInput.getFrequency();
     tof1DutyCycle = tof1DutyCycleInput.getOutput();
     tof1Range = tofCollectorScaleFactor * (tof1DutyCycle / tof1Freq - 0.001) / 1000; //supposedly in meters
-
     // updateDiagnostics();
   }
   

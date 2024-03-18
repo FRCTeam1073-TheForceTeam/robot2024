@@ -152,8 +152,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     // if(extendInterpolateFlag){
     //   targetExtendLength = interpolateExtendPosition(currentLiftAngle);
     // }
-    commandedExtendLength = limitExtendLength(targetExtendLength);
-    commandedLiftAngle = limitLiftAngle(targetLiftAngle);
+    commandedExtendLength = targetExtendLength;
+    commandedLiftAngle = targetLiftAngle;
     runLiftMotor(commandedLiftAngle);
     runExtendMotor(commandedExtendLength);
     // updateDiagnostics();
@@ -170,6 +170,13 @@ public class CollectorArm extends DiagnosticsSubsystem {
     currentExtendLength = extendMotor.getPosition().refresh().getValue();
     SmartDashboard.putNumber("Extend motor position rotations", extendMotor.getPosition().refresh().getValue());
     currentExtendVelocity = extendMotor.getVelocity().refresh().getValueAsDouble() * extendMetersPerRotation;
+  }
+
+  public void resetMotors(){
+    liftMotor.setPosition(0);
+    extendMotor.setPosition(0);
+    setTargetExtendLength(0);
+    setTargetLiftAngle(0);
   }
 
   public double limitLiftAngle(double liftAngle) {
@@ -194,6 +201,14 @@ public class CollectorArm extends DiagnosticsSubsystem {
 
   public void setTargetExtendLength(double target) {
     targetExtendLength = limitExtendLength(target);
+  }
+
+  public void setTargetLiftAngleNotLimited(double target) {
+    targetLiftAngle = target;
+  }
+
+  public void setTargetExtendLengthNotLimited(double target) {
+    targetExtendLength = target;
   }
 
   public void setPoseName(POSE pose) {
@@ -304,7 +319,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     // liftConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     // liftConfigs.ClosedLoopGeneral.ContinuousWrap = true;
 
-    liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 2; 
+    // liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 2.0;
+    liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 1.0; 
     liftConfigs.MotionMagic.MotionMagicAcceleration = 4.5; 
     liftConfigs.MotionMagic.MotionMagicJerk = 0;
 
@@ -327,7 +343,8 @@ public class CollectorArm extends DiagnosticsSubsystem {
     //extendConfigs.ClosedLoopGeneral.ContinuousWrap = true;
 
     extendConfigs.MotionMagic.MotionMagicCruiseVelocity = 1;
-    extendConfigs.MotionMagic.MotionMagicAcceleration = 0.7;
+    // extendConfigs.MotionMagic.MotionMagicAcceleration = 0.7;
+    extendConfigs.MotionMagic.MotionMagicAcceleration = 2.0;
     extendConfigs.MotionMagic.MotionMagicJerk = 0;
 
     extendMotor.getConfigurator().apply(extendConfigs);

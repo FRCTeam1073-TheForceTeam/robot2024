@@ -113,8 +113,6 @@ public class DrivePathSchema extends MotionSchema {
       return; // Don't run.
     }
 
-    
-
     currentTime = Timer.getFPGATimestamp() - startTime;
     robotPose = drivetrain.getOdometry();
     

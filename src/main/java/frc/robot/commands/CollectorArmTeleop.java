@@ -35,16 +35,30 @@ public class CollectorArmTeleop extends Command {
     // commandedLength = oi.getOperatorLeftY();
     
 
-    // B Button
-    if(oi.getOperatorRawButton(2)) {
-      arm.setTargetExtendLength(0);
-      arm.setTargetLiftAngle(0);
+    // // B Button
+    // if(oi.getOperatorRawButton(2)) {
+    //   arm.setTargetExtendLength(0);
+    //   arm.setTargetLiftAngle(0);
+    // }
+    // // Y Button
+    // if(oi.getOperatorRawButton(4)) {
+    //   arm.setTargetExtendLength(-0.05);
+    //   arm.setTargetLiftAngle(2);
+    // }
+    if(oi.getCollectMode()){
+      double leftVelocity = oi.getOperatorLeftY();
+      double rightVelocity = -oi.getOperatorRightY();
+      if((Math.abs(leftVelocity) > 0.1) || (Math.abs(rightVelocity) > 0.1)){
+        rightVelocity *= 0.8;
+        leftVelocity *= 0.4;
+        double currentAngle = arm.getCurrentLiftAngle();
+        double currentExtend = arm.getCurrentExtendLength();
+        arm.setTargetLiftAngleNotLimited(currentAngle + rightVelocity*.02);
+        arm.setTargetExtendLengthNotLimited(currentExtend + leftVelocity*.02);
+      }
     }
-    // Y Button
-    if(oi.getOperatorRawButton(4)) {
-      arm.setTargetExtendLength(-0.05);
-      arm.setTargetLiftAngle(2);
-
+    if(oi.getOperatorViewButton()){
+      arm.resetMotors();
     }
   }
 

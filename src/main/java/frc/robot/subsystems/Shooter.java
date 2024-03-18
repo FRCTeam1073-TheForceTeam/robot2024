@@ -216,8 +216,10 @@ public class Shooter extends DiagnosticsSubsystem{
     TalonFXConfiguration configs = new TalonFXConfiguration();
 
     configs.MotionMagic.MotionMagicCruiseVelocity = 25;
-    configs.MotionMagic.MotionMagicAcceleration = 20;
-    configs.MotionMagic.MotionMagicJerk = 25;
+    // configs.MotionMagic.MotionMagicAcceleration = 20;
+    configs.MotionMagic.MotionMagicAcceleration = 50;
+    // configs.MotionMagic.MotionMagicJerk = 25;
+    configs.MotionMagic.MotionMagicJerk = 50;
 
     configs.Slot0.kP = p;
     configs.Slot0.kI = i;
