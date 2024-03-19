@@ -314,19 +314,14 @@ public class CollectorArm extends DiagnosticsSubsystem {
     configError_Extend = extendMotor.getConfigurator().apply(new TalonFXConfiguration(), 0.5);
     
     liftConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-    // // liftConfigs.Feedback.RotorToSensorRatio = (150.0 / 7.0);
-     liftConfigs.Feedback.SensorToMechanismRatio = 1 / liftRadiansPerRotation;  // This should be used for remote CANCoder with continuous wrap.
-    // liftConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    // liftConfigs.ClosedLoopGeneral.ContinuousWrap = true;
+    liftConfigs.Feedback.SensorToMechanismRatio = 1 / liftRadiansPerRotation;  // This should be used for remote CANCoder with continuous wrap.
 
-    // liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 2.0;
     liftConfigs.MotionMagic.MotionMagicCruiseVelocity = 1.0; 
     liftConfigs.MotionMagic.MotionMagicAcceleration = 4.5; 
     liftConfigs.MotionMagic.MotionMagicJerk = 0;
 
     liftMotor.getConfigurator().apply(liftConfigs);
     liftMotor.setPosition(0);
-
     liftMotor.setNeutralMode(NeutralModeValue.Brake);
 
     // PID loop setting for lift motor
@@ -337,13 +332,9 @@ public class CollectorArm extends DiagnosticsSubsystem {
     liftMotorClosedLoopConfig.withKV(lift_kF);
 
     extendConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
-    //extendConfigs.Feedback.RotorToSensorRatio = (150.0 / 7.0);
     extendConfigs.Feedback.SensorToMechanismRatio = 1 / extendMetersPerRotation;  // This should be used for remote CANCoder with continuous wrap.
-    //extendConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-    //extendConfigs.ClosedLoopGeneral.ContinuousWrap = true;
-
+  
     extendConfigs.MotionMagic.MotionMagicCruiseVelocity = 1;
-    // extendConfigs.MotionMagic.MotionMagicAcceleration = 0.7;
     extendConfigs.MotionMagic.MotionMagicAcceleration = 2.0;
     extendConfigs.MotionMagic.MotionMagicJerk = 0;
 

@@ -15,6 +15,7 @@ public class Bling extends DiagnosticsSubsystem {
   public Collector collector;
   public Feeder feeder;
   public Shooter shooter;
+  public AprilTagFinder aprilTagFinder;
 
   public int length = 48;
   public int numSlots = 48;
@@ -36,7 +37,7 @@ public class Bling extends DiagnosticsSubsystem {
    * @return the entry's value or the given default value
    * @return the buffer length
    */
-  public Bling(Collector collector, Feeder feeder, Shooter shooter) {
+  public Bling(Collector collector, Feeder feeder, Shooter shooter, AprilTagFinder aprilTagFinder) {
     m_led = new AddressableLED(0);
     m_ledBuffer = new AddressableLEDBuffer(length);
     m_led.setLength(m_ledBuffer.getLength());
@@ -45,6 +46,7 @@ public class Bling extends DiagnosticsSubsystem {
     this.collector = collector;
     this.feeder = feeder;
     this.shooter = shooter;
+    this.aprilTagFinder = aprilTagFinder;
   }
 
   /**
@@ -64,7 +66,12 @@ public class Bling extends DiagnosticsSubsystem {
     // This method will be called once per scheduler run
     m_led.setData(m_ledBuffer);
     setBatteryBling();
-    setAlignedBling(); //TODO: needs an if statement
+    if(aprilTagFinder.isAligned()){
+      setAlignedBling();
+    }
+    else{
+      setUnalignedBling();
+    }
     // boolean shooterBling = setRainbowBling();
     double tofCollectorValue = collector.getRangeTOF();
     double tofFeederValue = feeder.getTofRange();
@@ -222,8 +229,13 @@ public class Bling extends DiagnosticsSubsystem {
   public void setAlignedBling() {
     //  setQuadRGB(quadNum1, 255, 0, 0);
     //  setQuadRGB(quadNum2, 255, 0, 0);
-     setQuadRGB(0, 255, 0, 0);
-     setQuadRGB(3, 255, 0, 0);
+     setQuadRGB(0, 0, 255, 0);
+     setQuadRGB(3, 0, 255, 0);
+  }
+
+  public void setUnalignedBling() {
+     setQuadRGB(0, 0, 0, 0);
+     setQuadRGB(3, 0, 0, 0);
   }
 
   public boolean setRainbowBling(){

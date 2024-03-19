@@ -63,6 +63,9 @@ public class AprilTagFinder extends SubsystemBase {
     return this.tagData.isValid();
   }
 
+  public boolean isAligned(){
+    return aligned;
+  }
 
   public void parseResponse(byte[] response) {
     if (response.length < 8) {
