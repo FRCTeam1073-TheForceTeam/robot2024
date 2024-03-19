@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import frc.robot.commands.AlignSpeakerAutoSchema;
 import frc.robot.commands.CollectFeedCommand;
 import frc.robot.commands.DrivePathSchema;
 import frc.robot.commands.Path;
@@ -28,6 +29,7 @@ public class BlueCenterL2
     public static Command create(Drivetrain drivetrain, Shooter shooter, Pivot pivot, Feeder feeder, 
         CollectFeedCommand collectCommand, Collector collector, CollectorArm collectorArm)
     {
+
         Path.Point start = new Path.Point(0.0, 0.0);
         Path.Point shootPoint = new Path.Point(1.5, 0.0);
         Path.Point wingNote7 = new Path.Point(1.5, -0.43);
@@ -45,7 +47,6 @@ public class BlueCenterL2
                 new RunShooter(shooter, range1),
                 new PivotRangeCommand(pivot, range1)
             ),
-            new WaitForPoint(drivetrain, poseShootPoint, 0.25, 0.15),
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30),
                 new StopShooter(shooter)
@@ -56,7 +57,6 @@ public class BlueCenterL2
                 new RunShooter(shooter, range1),
                 new PivotRangeCommand(pivot, range1)
             ),
-            new WaitForPoint(drivetrain, poseShootPoint, 0.25, 0.15),
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30),
                 new StopShooter(shooter)
