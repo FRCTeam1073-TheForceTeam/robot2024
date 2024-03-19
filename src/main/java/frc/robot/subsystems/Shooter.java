@@ -216,9 +216,7 @@ public class Shooter extends DiagnosticsSubsystem{
     TalonFXConfiguration configs = new TalonFXConfiguration();
 
     configs.MotionMagic.MotionMagicCruiseVelocity = 25;
-    // configs.MotionMagic.MotionMagicAcceleration = 20;
     configs.MotionMagic.MotionMagicAcceleration = 50;
-    // configs.MotionMagic.MotionMagicJerk = 25;
     configs.MotionMagic.MotionMagicJerk = 50;
 
     configs.Slot0.kP = p;
@@ -230,8 +228,6 @@ public class Shooter extends DiagnosticsSubsystem{
 
     configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
     configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
-
-    
 
     topConfigError = topShooterMotor.getConfigurator().apply(configs);
     bottomConfigError = bottomShooterMotor.getConfigurator().apply(configs);

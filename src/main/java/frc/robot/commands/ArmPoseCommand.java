@@ -49,7 +49,7 @@ public class ArmPoseCommand extends Command {
         break;
       case STOW_INTERMEDIATE_1:
         // m_targetLift = 0.25;
-        m_targetLift = 0.6;
+        m_targetLift = 0.5;
         m_targetExtend = 0.0;
         break;
       case STOW_INTERMEDIATE_2:

@@ -143,7 +143,7 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
-  private final Bling m_bling = new Bling(m_collector, m_feeder, m_shooter);
+  private final Bling m_bling = new Bling(m_collector, m_feeder, m_shooter, m_aprilTagFinder);
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -234,7 +234,7 @@ public class RobotContainer {
     Trigger farSpinUp = new Trigger(m_OI::getOperatorDPadUp);
     farSpinUp.onTrue(m_setShotsSequences.runFarShot(m_pivot, m_shooter));
 
-    Trigger cancelCommand = new Trigger(m_OI::getOperatorBButton);
+    Trigger cancelCommand = new Trigger(m_OI::getOperatorYButton);
     cancelCommand.onTrue(m_cancelCommand.cancel(m_collector, m_collectorArm, m_shooter, m_feeder, m_pivot));
 
     Trigger armStartCommand = new Trigger(m_OI::getOperatorAButton);
@@ -243,7 +243,7 @@ public class RobotContainer {
     Trigger armStowCommand = new Trigger(m_OI::getOperatorXButton);
     armStowCommand.onTrue(m_armPoseTeleop.stowPose());
 
-    Trigger armAmpCommand = new Trigger(m_OI::getOperatorYButton);
+    Trigger armAmpCommand = new Trigger(m_OI::getOperatorBButton);
     armAmpCommand.onTrue(m_armPoseTeleop.ampPose());
 
     // System.out.println("Configuring buttons");

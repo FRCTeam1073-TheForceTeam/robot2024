@@ -130,7 +130,7 @@ public class Pivot extends DiagnosticsSubsystem {
     configs.Voltage.PeakForwardVoltage = 12;
     configs.Voltage.PeakReverseVoltage = -12;
 
-    configs.MotionMagic.MotionMagicCruiseVelocity = 15;
+    configs.MotionMagic.MotionMagicCruiseVelocity = 45;
     //configs.MotionMagic.MotionMagicAcceleration = 35;
     configs.MotionMagic.MotionMagicAcceleration = 80;
     configs.MotionMagic.MotionMagicJerk = 0;
