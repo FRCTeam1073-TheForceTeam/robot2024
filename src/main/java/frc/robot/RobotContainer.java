@@ -333,7 +333,7 @@ public class RobotContainer {
       case kRedSourceSnowplow:
         return RedSourceSnowplow.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
       case kRedCenterL1:
-        return RedCenterL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
+        return RedCenterL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder);
       case kRedCenterL2:
         return RedCenterL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kRedCenterL3:

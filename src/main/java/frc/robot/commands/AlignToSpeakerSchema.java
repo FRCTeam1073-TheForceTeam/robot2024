@@ -35,8 +35,8 @@ public class AlignToSpeakerSchema extends MotionSchema
 
     if (oi.getDriverBButton() && apriltag.isValid())
     {
-      rotation = 0.015 * (160 - apriltag.cx);
-      MathUtil.clamp(rotation, -1.0, 1.0);
+      rotation = 0.02 * (160 - apriltag.cx);
+      MathUtil.clamp(rotation, -1.5, 1.5);
 
       setRotate(rotation, 1.0);
     }
