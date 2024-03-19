@@ -44,7 +44,7 @@ public class AlignSpeakerAutoSchema extends MotionSchema implements Activate
       rotation = 0.01 * (160 - apriltag.cx);
       MathUtil.clamp(rotation, -0.7, 0.7);
 
-      setRotate(rotation, 1.0);
+      setRotate(rotation, 3.0);
     }
     else //if((Math.abs(160 - apriltag.cx) < 20) && !finder.tagFound())
     {
