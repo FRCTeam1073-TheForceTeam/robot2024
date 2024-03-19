@@ -5,9 +5,6 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.autos.BlueWing4Note;
-import frc.robot.commands.autos.BlueCloseMidline2Note;
-import frc.robot.commands.autos.BlueCloseMidline3Note;
 import frc.robot.commands.autos.BlueAmpL1;
 import frc.robot.commands.autos.BlueAmpL2;
 import frc.robot.commands.autos.BlueAmpL3;
@@ -16,7 +13,6 @@ import frc.robot.commands.autos.BlueCenterL1;
 import frc.robot.commands.autos.BlueCenterL2;
 import frc.robot.commands.autos.BlueCenterL3;
 import frc.robot.commands.autos.BlueCenterL4;
-import frc.robot.commands.autos.BlueFarMidline3Note;
 import frc.robot.commands.autos.BlueSourceL1;
 import frc.robot.commands.autos.BlueSourceL2;
 import frc.robot.commands.autos.BlueSourceL3;
@@ -31,10 +27,6 @@ import frc.robot.commands.autos.RedCenterL1;
 import frc.robot.commands.autos.RedCenterL2;
 import frc.robot.commands.autos.RedCenterL3;
 import frc.robot.commands.autos.RedCenterL4;
-import frc.robot.commands.autos.RedCloseMidline2Note;
-import frc.robot.commands.autos.RedCloseSnowPlowAuto;
-import frc.robot.commands.autos.RedFar1Note;
-import frc.robot.commands.autos.RedFarSnowPlowAuto;
 import frc.robot.commands.autos.RedSourceL1;
 import frc.robot.commands.autos.RedSourceL2;
 import frc.robot.commands.autos.RedSourceL3;
@@ -53,33 +45,22 @@ import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
 import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Preferences;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-
-import frc.robot.Constants.OperatorConstants;
 // import frc.robot.subsystems.Camera;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
-
-import java.util.ArrayList;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -378,9 +359,9 @@ public class RobotContainer {
       case kBlueSourceSnowPlow:
         return BlueSourceSnowplow.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
       case kBlueCenterL1:
-        return BlueCenterL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
+        return BlueCenterL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder);
       case kBlueCenterL2:
-        return BlueCenterL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
+        return BlueCenterL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder);
       case kBlueCenterL3:
         return BlueCenterL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kBlueCenterL4:

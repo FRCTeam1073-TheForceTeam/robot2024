@@ -30,9 +30,9 @@ import frc.robot.subsystems.Shooter;
 public class RedSourceL2 
 {
     public static Command create(Drivetrain drivetrain, Shooter shooter, Pivot pivot, Feeder feeder, 
-        CollectFeedCommand collectCommand, Collector collector, CollectorArm collectorArm, AprilTagFinder finder, RangeFinder rangeFinder)
+        CollectFeedCommand collectCommand, Collector collector, CollectorArm collectorArm, AprilTagFinder tagFinder, RangeFinder rangeFinder)
     {
-        AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(finder);
+        AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder);
 
         Path.Point start = new Path.Point(0.0, 0.0);
         Path.Point pathShootPoint = new Path.Point(3.5, 0.0);

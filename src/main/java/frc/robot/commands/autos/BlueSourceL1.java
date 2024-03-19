@@ -7,8 +7,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.AlignSpeakerAutoSchema;
 import frc.robot.commands.DrivePathSchema;
 import frc.robot.commands.NWSetPivot;
+import frc.robot.commands.NWStopShooter;
 import frc.robot.commands.Path;
 import frc.robot.commands.Path.Segment;
 import frc.robot.commands.PivotRangeCommand;
@@ -48,7 +50,6 @@ public class BlueSourceL1
         path.transverseVelocity = 1.5;
 
         return new ParallelCommandGroup(
-            SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), drivetrain),
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), new AlignSpeakerAutoSchema(tagFinder), drivetrain), 
                 new RunShooter(shooter, range1),
