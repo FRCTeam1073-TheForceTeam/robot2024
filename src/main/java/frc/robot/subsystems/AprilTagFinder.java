@@ -29,6 +29,8 @@ public class AprilTagFinder extends SubsystemBase {
   public boolean waiting_for_response = false;
   public int sendCounter = 0;
   public int recvCounter = 0;
+  int cxf;
+  int cxs;
 
   // Internal subsystem data:
   public int wait_counter = 0;
@@ -76,12 +78,16 @@ public class AprilTagFinder extends SubsystemBase {
 
     tagData.id = response[2]; // ID of the found tag.
     //tagData.cx = response[3] * 2; // Undo packing so it fits a byte.
-    tagData.cx = (response[3] & 0xFF) * 2; // Undo packing so it fits a byte.
+
+    tagData.cx = (response[3] & 0xFF) + (response[4] & 0xFF); // Undo packing so it fits a byte.
+
+    cxf = (response[3] & 0xff);
+    cxs = (response[4] & 0xff);
     //tagData.cy = response[4] * 2; // Undo packing so it fits a byte.
     //tagData.cy = Byte.toUnsignedInt(response[4]) * 2;
-    tagData.cy = (response[4] & 0xFF) * 2;
+    tagData.cy = (response[5] & 0xFF) * 2;
     //tagData.area = response[5] * 64; // Undo packing so it fits a byte.
-    tagData.area = (response[5] & 0xFF) * 64;
+    tagData.area = (response[6] & 0xFF) * 64;
     tagData.timestamp = Timer.getFPGATimestamp();
   }
 
@@ -141,7 +147,9 @@ public class AprilTagFinder extends SubsystemBase {
 
     // Found tag feedback:
     SmartDashboard.putNumber("AprilTag/ID", this.tagData.id);
-    SmartDashboard.putNumber("AprilTag/X", this.tagData.cx);
+    SmartDashboard.putNumber("AprilTag/X(Added)", this.tagData.cx);
+    SmartDashboard.putNumber("AprilTag/X(First)", cxf);
+    SmartDashboard.putNumber("AprilTag/X(Second)", cxs);
     SmartDashboard.putNumber("AprilTag/Y", this.tagData.cy);
     SmartDashboard.putNumber("AprilTag/Area", this.tagData.area);
     SmartDashboard.putBoolean("AprilTag/Valid", this.tagData.isValid()); // Allows dashboard indicator.
