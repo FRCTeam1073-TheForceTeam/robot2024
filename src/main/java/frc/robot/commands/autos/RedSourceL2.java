@@ -72,17 +72,17 @@ public class RedSourceL2
 
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
-                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path1), new AlignSpeakerAutoSchema(finder), drivetrain), 
+                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path1), new AlignSpeakerAutoSchema(tagFinder), drivetrain), 
                 new RunShooter(shooter, range1),
                 new PivotRangeCommand(pivot, range1)
             ),
             new SequentialCommandGroup(
                 new RunShooter(shooter, rangeFinder),
                 new PivotRangeCommand(pivot, rangeFinder),
-                new ParallelCommandGroup(
+                // new ParallelCommandGroup(
                     new RunFeeder(feeder, 30),
-                    new NWStopShooter(shooter)
-                ),
+                    new NWStopShooter(shooter),
+                // ),
                 new NWSetPivot(pivot, 0.0)
             ),             
             new ParallelCommandGroup(
@@ -95,14 +95,12 @@ public class RedSourceL2
                     )
                 )      
             ),
-            new SequentialCommandGroup(
-                new RunShooter(shooter, rangeFinder),
-                new PivotRangeCommand(pivot, rangeFinder),                
-                new ParallelCommandGroup(
+            new SequentialCommandGroup(                
+                // new ParallelCommandGroup(
                     new RunFeeder(feeder, 30),
-                    new StopShooter(shooter)
-                ),
-                new SetPivotCommand(pivot, 0.0)
+                    new NWStopShooter(shooter),
+                // ),
+                new NWSetPivot(pivot, 0.0)
             )
         );
     }

@@ -342,7 +342,7 @@ public class RobotContainer {
       case kNoAuto:
         return null;
       case kRedSourceL1:
-        return RedSourceL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
+        return RedSourceL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder);
       case kRedSourceL2:
         return RedSourceL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder);
       case kRedSourceL3:
@@ -368,7 +368,7 @@ public class RobotContainer {
       case kRedAmpL4:
         return RedAmpL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
       case kBlueSourceL1:
-        return BlueSourceL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
+        return BlueSourceL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder);
       case kBlueSourceL2:
         return BlueSourceL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder);
       case kBlueSourceL3:
