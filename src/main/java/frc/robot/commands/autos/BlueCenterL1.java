@@ -31,8 +31,6 @@ public class BlueCenterL1
 
         double range1 = 2.3;
 
-        Pose2d poseShootPoint = new Pose2d(1.31, -0.37, new Rotation2d(-0.13));
-
         ArrayList<Segment> segments = new ArrayList<Segment>();
         segments.add(new Segment(start, shootPoint, -0.13, 2.5)); 
 
@@ -45,7 +43,6 @@ public class BlueCenterL1
                     new RunShooter(shooter, range1),
                     new PivotRangeCommand(pivot, range1)
                 ),
-                new WaitForPoint(drivetrain, poseShootPoint, 0.25, 0.15),
                 new ParallelCommandGroup(
                     new RunFeeder(feeder, 30),
                     new StopShooter(shooter)
