@@ -35,17 +35,19 @@ public class RedSourceL2
         AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder);
 
         Path.Point start = new Path.Point(0.0, 0.0);
-        Path.Point pathShootPoint = new Path.Point(3.5, 0.0);
+        Path.Point pathShootPoint = new Path.Point(3.165, -0.848);
+        // Path.Point pathShootPoint = new Path.Point(3.5, 0.0);
         Path.Point avoidStagePost = new Path.Point(5.7, 0.75);
         Path.Point midlineNote2 = new Path.Point(8.1, -0.35);
         Path.Point stagePoint = new Path.Point(5.368, -2.37);
         stagePoint.blend_radius = 1.0;
         // avoidStagePost.blend_radius = 0.6;
 
-        double range1 = 4.55;
+        // double range1 = 4.55;
+        double range1 = 3.9;
 
         ArrayList<Segment> segments1 = new ArrayList<Segment>();
-        segments1.add(new Segment(start, pathShootPoint, 0.668, 3.0));
+        segments1.add(new Segment(start, pathShootPoint, Math.PI / 6, 3.0));
 
         segments1.get(0).entryActivateValue = true;
         segments1.get(0).entryActivate = alignSchema;
@@ -57,22 +59,23 @@ public class RedSourceL2
         segments2.add(new Segment(pathShootPoint, avoidStagePost, 0.0, 3.0));
         segments2.add(new Segment(avoidStagePost, midlineNote2, 0.0, 3.0));
         segments2.add(new Segment(midlineNote2, avoidStagePost, 0.0, 3.0));
-        segments2.add(new Segment(avoidStagePost, pathShootPoint, 0.668, 3.0));
+        segments2.add(new Segment(avoidStagePost, pathShootPoint, Math.PI / 6, 3.0));
 
         segments2.get(3).entryActivateValue = true;
         segments2.get(3).entryActivate = alignSchema;
         segments2.get(3).exitActivateValue = false;
         segments2.get(3).exitActivate = alignSchema;
 
-        Path path1 = new Path(segments1, 0.668);
+        Path path1 = new Path(segments1, Math.PI / 6);
         path1.transverseVelocity = 1.5;
 
-        Path path2 = new Path(segments2, 0.668);
+        Path path2 = new Path(segments2, Math.PI / 6);
+        path2.transverseVelocity = 1.5;
 
 
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
-                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path1), new AlignSpeakerAutoSchema(tagFinder), drivetrain), 
+                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path1), alignSchema, drivetrain), 
                 new RunShooter(shooter, range1),
                 new PivotRangeCommand(pivot, range1)
             ),

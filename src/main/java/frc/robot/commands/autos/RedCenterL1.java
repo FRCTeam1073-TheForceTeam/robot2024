@@ -65,7 +65,7 @@ public class RedCenterL1
                 new RunFeeder(feeder, 30),
                 new StopShooter(shooter)
             ),
-                new SetPivotCommand(pivot, 0.0)
+            new SetPivotCommand(pivot, 0.0)
         );
     }
 }

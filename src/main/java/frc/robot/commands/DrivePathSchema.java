@@ -81,7 +81,8 @@ public class DrivePathSchema extends MotionSchema {
   {
     startTime = Timer.getFPGATimestamp();
     currentTime = 0.01;
-    currentSegmentIndex = path.closestSegment(drivetrain.getOdometry());    
+    // currentSegmentIndex = path.closestSegment(drivetrain.getOdometry());   
+    currentSegmentIndex = 0; 
 
     if (currentSegmentIndex != -1 && path.segments.get(currentSegmentIndex).entryCommand != null) {
       CommandScheduler.getInstance().schedule(path.segments.get(currentSegmentIndex).entryCommand);
