@@ -7,7 +7,9 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.AlignSpeakerAutoSchema;
 import frc.robot.commands.DrivePathSchema;
+import frc.robot.commands.NWSetPivot;
 import frc.robot.commands.Path;
 import frc.robot.commands.Path.Segment;
 import frc.robot.commands.PivotRangeCommand;
@@ -17,41 +19,53 @@ import frc.robot.commands.SchemaDriveAuto;
 import frc.robot.commands.SetPivotCommand;
 import frc.robot.commands.StopShooter;
 import frc.robot.commands.WaitForPoint;
+import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.Shooter;
 
 public class RedAmpL1 
 {
-    public static Command create(Drivetrain drivetrain, Shooter shooter, Pivot pivot, Feeder feeder)
+    public static Command create(Drivetrain drivetrain, Shooter shooter, Pivot pivot, Feeder feeder, AprilTagFinder tagFinder, RangeFinder rangeFinder)
     {
+        AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder);
+
         Path.Point start = new Path.Point(0.0, 0.0);
         Path.Point avoidNote = new Path.Point(0.63, 0.85);
         Path.Point shootPoint = new Path.Point(2.077, 0.52);
 
         double range1 = 3.15;
-        Pose2d poseShootPoint = new Pose2d(2.077, 0.52, new Rotation2d(-0.26));
 
         ArrayList<Segment> segments = new ArrayList<Segment>();
         segments.add(new Segment(start, avoidNote, 0.0, 2.5));
         segments.add(new Segment(avoidNote, shootPoint, -0.26, 2.5));
+        segments.get(1).entryActivateValue = true;
+        segments.get(1).entryActivate = alignSchema;
+        segments.get(1).exitActivateValue = false;
+        segments.get(1).exitActivate = alignSchema;
 
         Path path = new Path(segments, -0.26);
 
-        return new ParallelCommandGroup(
-            SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), drivetrain),
-            new SequentialCommandGroup(
+        return new SequentialCommandGroup(
+            new ParallelCommandGroup(
+                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), alignSchema, drivetrain),
                 new ParallelCommandGroup(
                     new RunShooter(shooter, range1),
                     new PivotRangeCommand(pivot, range1)
-                ),
-                new WaitForPoint(drivetrain, poseShootPoint, 0.35, 0.25),
+                )
+            ),
+            new ParallelCommandGroup(
+                new RunShooter(shooter, rangeFinder),
+                new PivotRangeCommand(pivot, rangeFinder)
+            ),
+            new SequentialCommandGroup(
                 new ParallelCommandGroup(
                     new RunFeeder(feeder, 30),
                     new StopShooter(shooter)
                 ),
-                new SetPivotCommand(pivot, 0.0)
+                new NWSetPivot(pivot, 0.0)
             )
         );
     }
