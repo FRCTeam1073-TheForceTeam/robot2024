@@ -36,14 +36,12 @@ public class RedSourceL2
 
         Path.Point start = new Path.Point(0.0, 0.0);
         Path.Point pathShootPoint = new Path.Point(3.165, -0.848);
-        // Path.Point pathShootPoint = new Path.Point(3.5, 0.0);
         Path.Point avoidStagePost = new Path.Point(5.7, 0.75);
         Path.Point midlineNote2 = new Path.Point(8.1, -0.35);
         Path.Point stagePoint = new Path.Point(5.368, -2.37);
         stagePoint.blend_radius = 1.0;
         // avoidStagePost.blend_radius = 0.6;
 
-        // double range1 = 4.55;
         double range1 = 3.9;
 
         ArrayList<Segment> segments1 = new ArrayList<Segment>();

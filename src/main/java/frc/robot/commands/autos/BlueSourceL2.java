@@ -42,12 +42,11 @@ public class BlueSourceL2
         stagePoint.blend_radius = 1.0;
         // avoidStagePost.blend_radius = 0.6;
 
-        // double range1 = 4.55;
         double range1 = 3.9;
 
         ArrayList<Segment> segments1 = new ArrayList<Segment>();
         segments1.add(new Segment(start, pathShootPoint, -Math.PI / 6, 3.0));
-        
+
         segments1.get(0).entryActivateValue = true;
         segments1.get(0).entryActivate = alignSchema;
         segments1.get(0).exitActivateValue = false;
@@ -107,5 +106,5 @@ public class BlueSourceL2
             ),
             new NWSetPivot(pivot, 0.0)
         );
-    } 
+    }
 }
