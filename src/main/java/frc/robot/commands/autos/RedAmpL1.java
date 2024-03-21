@@ -32,41 +32,41 @@ public class RedAmpL1
     {
         AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder);
 
-        Path.Point start = new Path.Point(0.0, 0.0);
-        Path.Point avoidNote = new Path.Point(0.63, 0.85);
-        Path.Point shootPoint = new Path.Point(2.077, 0.52);
+        Path.Point startPoint = new Path.Point(0.0, 0.0);
+        Path.Point shootPoint = new Path.Point(1.757, 0.109);
 
         double range1 = 3.15;
 
         ArrayList<Segment> segments = new ArrayList<Segment>();
-        segments.add(new Segment(start, avoidNote, 0.0, 2.5));
-        segments.add(new Segment(avoidNote, shootPoint, -0.26, 2.5));
-        segments.get(1).entryActivateValue = true;
-        segments.get(1).entryActivate = alignSchema;
-        segments.get(1).exitActivateValue = false;
-        segments.get(1).exitActivate = alignSchema;
+        segments.add(new Segment(startPoint, shootPoint, -0.724, 2.5));
+        segments.get(0).entryActivateValue = true;
+        segments.get(0).entryActivate = alignSchema;
+        segments.get(0).exitActivateValue = false;
+        segments.get(0).exitActivate = alignSchema;
 
-        Path path = new Path(segments, -0.26);
+        Path path = new Path(segments, -0.724);
 
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), alignSchema, drivetrain),
                 new ParallelCommandGroup(
+                    //warm up shooter
                     new RunShooter(shooter, range1),
+                    //warm up pivot
                     new PivotRangeCommand(pivot, range1)
                 )
             ),
             new ParallelCommandGroup(
+                //shoot shot
                 new RunShooter(shooter, rangeFinder),
+                //find pivot
                 new PivotRangeCommand(pivot, rangeFinder)
             ),
-            new SequentialCommandGroup(
-                new ParallelCommandGroup(
-                    new RunFeeder(feeder, 30),
-                    new StopShooter(shooter)
-                ),
-                new NWSetPivot(pivot, 0.0)
-            )
+            new ParallelCommandGroup(
+                new RunFeeder(feeder, 30),
+                new StopShooter(shooter)
+            ),
+            new NWSetPivot(pivot, 0.0)
         );
     }
 }
