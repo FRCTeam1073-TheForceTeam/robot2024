@@ -151,8 +151,8 @@ public class Drivetrain extends DiagnosticsSubsystem
     super.initSendable(builder);
     // builder.setSmartDashboardType("Drivetrain");
     builder.addBooleanProperty("ParkingBrake", this::getParkingBrake, null);
-    builder.addDoubleProperty("Odo X", this.getOdometry()::getX, null);
-    builder.addDoubleProperty("Odo Y", this.getOdometry()::getY, null);
+    //builder.addDoubleProperty("Odo X", this.getOdometry()::getX, null);
+    //builder.addDoubleProperty("Odo Y", this.getOdometry()::getY, null);
     builder.addDoubleProperty("Odo Heading(DEG)", this::getHeadingDegrees, null);
     builder.addDoubleProperty("Odo Wrapped Heading", this::getWrappedHeadingDegrees, null);
     builder.addDoubleProperty("Target Vx", this::getTargetVx, null);
@@ -320,8 +320,8 @@ public class Drivetrain extends DiagnosticsSubsystem
     updateOdometry();
 
     // Removed this is already in sendable:
-    // SmartDashboard.putNumber("Odometry X", getOdometry().getX());
-    // SmartDashboard.putNumber("Odometry Y", getOdometry().getY());
+    SmartDashboard.putNumber("Odometry X", getOdometry().getX());
+    SmartDashboard.putNumber("Odometry Y", getOdometry().getY());
     // SmartDashboard.putNumber("Wrapped Heading Degrees", getWrappedHeadingDegrees());
     // SmartDashboard.putNumber("Wrapped Heading Radians", getWrappedHeadingRadians());
   }
