@@ -15,8 +15,11 @@ import frc.robot.subsystems.OI;
 public class AlignSpeakerAutoSchema extends MotionSchema implements Activate
 {
   AprilTagFinder finder;
-  double rotation;
-  boolean active;
+  double rotation = 0.0;
+  double error = 0.0;
+  double last_error = 0.0;
+  boolean active = false;
+  double center_point = 160.0;
 
   /** Creates a new AlignToSpeakerSchema. */
   public AlignSpeakerAutoSchema(AprilTagFinder finder) 
@@ -27,7 +30,9 @@ public class AlignSpeakerAutoSchema extends MotionSchema implements Activate
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize(Drivetrain drivetrain) {}
+  public void initialize(Drivetrain drivetrain) {
+
+  }
 
   @Override
   public void activate(boolean active)
@@ -43,13 +48,17 @@ public class AlignSpeakerAutoSchema extends MotionSchema implements Activate
 
     if (apriltag.isValid() && active)
     {
-      rotation = 0.01 * (160 - apriltag.cx);
-      MathUtil.clamp(rotation, -0.7, 0.7);
+      last_error = error;
+      error = (center_point - apriltag.cx);
+
+      // PD controller form:
+      rotation = 0.02 * error +  0.0 * (error - last_error) ;
+      MathUtil.clamp(rotation, -1.0, 1.0);
 
 
       setRotate(rotation, 3.0);
     }
-    else //if((Math.abs(160 - apriltag.cx) < 20) && !finder.tagFound())
+    else
     {
       setRotate(0.0, 0.0);
     }

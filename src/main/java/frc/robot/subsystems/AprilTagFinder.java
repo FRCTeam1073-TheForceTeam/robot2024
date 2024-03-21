@@ -16,6 +16,7 @@ public class AprilTagFinder extends SubsystemBase {
     public int cx = 0;
     public int cy = 0;
     public int area = 0;
+    public double x_rotation = 0;
     public double timestamp = 0;
 
     public boolean isValid() {

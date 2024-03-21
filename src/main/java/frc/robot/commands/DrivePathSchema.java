@@ -73,6 +73,7 @@ public class DrivePathSchema extends MotionSchema {
       0.05,
       0.01
     );
+    SmartDashboard.putString("DrivePath/Status","Idle");
   }
 
   // Called when the command is initially scheduled.
@@ -96,8 +97,7 @@ public class DrivePathSchema extends MotionSchema {
     xController.reset();
     yController.reset();
     thetaController.reset();
-    System.out.println("Drive Path Starting Segment  " + currentSegmentIndex);
-    System.out.println("End time: " + endTime);
+    SmartDashboard.putString("DrivePath/Status",String.format("Starting Segment: %d", currentSegmentIndex));
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -107,7 +107,9 @@ public class DrivePathSchema extends MotionSchema {
   {
     if (currentSegmentIndex < 0) 
     {
-      System.out.println("DrivePathSchema: Invalid segment index.");
+      SmartDashboard.putString("DrivePath/Status","Invalid segment index.");
+
+      // System.out.println("DrivePathSchema: Invalid segment index.");
       // Stop:
       setTranslate(0,0,1);
       setRotate(0,1);
@@ -146,18 +148,15 @@ public class DrivePathSchema extends MotionSchema {
     // Create (field-centric) chassis speeds:
     ChassisSpeeds fcSpeeds = new ChassisSpeeds(xVelocity, yVelocity, thetaVelocity);
 
-    SmartDashboard.putNumber("Robot pose x", robotPose.getX());
-    SmartDashboard.putNumber("Robot Pose y", robotPose.getY());
     // SmartDashboard.putNumber("Trajectory Time", currentTime);
 
-    SmartDashboard.putNumber("Traj FB Velocity X", pathFeedback.velocity.get(0,0));
-    SmartDashboard.putNumber("Traj FB Velocity Y", pathFeedback.velocity.get(1,0));
+    SmartDashboard.putNumber("DrivePath/TrajFBVx", pathFeedback.velocity.get(0,0));
+    SmartDashboard.putNumber("DrivePath/TrajFBVy", pathFeedback.velocity.get(1,0));
 
-    SmartDashboard.putNumber("Trajectory Speed X", fcSpeeds.vxMetersPerSecond);
-    SmartDashboard.putNumber("Trajectory Speed Y", fcSpeeds.vyMetersPerSecond);
-    SmartDashboard.putNumber("Trajectory Angular Speed", fcSpeeds.omegaRadiansPerSecond);
-
-    SmartDashboard.putNumber("Segment Index", currentSegmentIndex);
+    SmartDashboard.putNumber("DrivePath/TrajVx", fcSpeeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("DrivePath/TrajVy", fcSpeeds.vyMetersPerSecond);
+    SmartDashboard.putNumber("DrivePath/TrajW", fcSpeeds.omegaRadiansPerSecond);
+    SmartDashboard.putString("DrivePath/Status", String.format("Segment Index: %d", currentSegmentIndex));
 
     // Controlled drive command with weights from our path segment feedback, set our two channels of schema output/w weights.
     setTranslate(fcSpeeds.vxMetersPerSecond, fcSpeeds.vyMetersPerSecond, pathFeedback.translation_weight);
@@ -209,7 +208,7 @@ public class DrivePathSchema extends MotionSchema {
     currentSegmentIndex = currentSegmentIndex + 1;
     if (currentSegmentIndex >= path.segments.size()) 
     {
-      System.out.println("DrivePathSchema: Finished.");
+      SmartDashboard.putString("DrivePath/Status","Finished.");
       return true;
     } 
     else 
