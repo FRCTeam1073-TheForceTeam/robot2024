@@ -5,59 +5,30 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.autos.BlueAmpL1;
-import frc.robot.commands.autos.BlueAmpL2;
-import frc.robot.commands.autos.BlueAmpL3;
-import frc.robot.commands.autos.BlueAmpL4;
-import frc.robot.commands.autos.BlueCenterL1;
-import frc.robot.commands.autos.BlueCenterL2;
-import frc.robot.commands.autos.BlueCenterL3;
-import frc.robot.commands.autos.BlueCenterL4;
-import frc.robot.commands.autos.BlueSourceL1;
-import frc.robot.commands.autos.BlueSourceL2;
-import frc.robot.commands.autos.BlueSourceL3;
-import frc.robot.commands.autos.BlueSourceL4;
-import frc.robot.commands.autos.BlueSourceSnowplow;
+import frc.robot.commands.autos.AmpL1;
+import frc.robot.commands.autos.AmpL2;
+import frc.robot.commands.autos.AmpL3;
+import frc.robot.commands.autos.AmpL4;
+import frc.robot.commands.autos.CenterL1;
+import frc.robot.commands.autos.CenterL2;
+import frc.robot.commands.autos.CenterL3;
+import frc.robot.commands.autos.CenterL4;
 import frc.robot.commands.autos.LeaveAuto;
-import frc.robot.commands.autos.RedAmpL1;
-import frc.robot.commands.autos.RedAmpL2;
-import frc.robot.commands.autos.RedAmpL3;
-import frc.robot.commands.autos.RedAmpL4;
-import frc.robot.commands.autos.RedCenterL1;
-import frc.robot.commands.autos.RedCenterL2;
-import frc.robot.commands.autos.RedCenterL3;
-import frc.robot.commands.autos.RedCenterL4;
-import frc.robot.commands.autos.RedSourceL1;
-import frc.robot.commands.autos.RedSourceL2;
-import frc.robot.commands.autos.RedSourceL3;
-import frc.robot.commands.autos.RedSourceL4;
-import frc.robot.commands.autos.RedSourceSnowplow;
+import frc.robot.commands.autos.SourceL1;
+import frc.robot.commands.autos.SourceL2;
+import frc.robot.commands.autos.SourceL3;
+import frc.robot.commands.autos.SourceL4;
+import frc.robot.commands.autos.SourceSnowplow;
 import frc.robot.commands.autos.TestAuto;
-import frc.robot.subsystems.CollectorArm.POSE;
-
-import java.util.ArrayList;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
-
-import edu.wpi.first.apriltag.AprilTag;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 // import frc.robot.subsystems.Camera;
 import frc.robot.commands.*;
 import frc.robot.subsystems.*;
@@ -101,35 +72,23 @@ public class RobotContainer {
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private static final String kNoAuto = "No Autonomous";
-  private static final String kRedSourceL1 = "Red Source L1";
-  private static final String kRedSourceL2 = "Red Source L2";
-  private static final String kRedSourceL3 = "Red Source L3";
-  private static final String kRedSourceL4 = "Red Source L4";
-  private static final String kRedCenterL1 = "Red Center L1";
-  private static final String kRedCenterL2 = "Red Center L2";
-  private static final String kRedCenterL3 = "Red Center L3";
-  private static final String kRedCenterL4 = "Red Center L4";
-  private static final String kRedAmpL1 = "Red Amp L1";
-  private static final String kRedAmpL2 = "Red Amp L2";
-  private static final String kRedAmpL3 = "Red Amp L3";
-  private static final String kRedAmpL4 = "Red Amp L4";
-  private static final String kRedSourceSnowplow = "Red Source Snowplow";
-  private static final String kBlueSourceL1 = "Blue Source L1";
-  private static final String kBlueSourceL2 = "Blue Source L2";
-  private static final String kBlueSourceL3 = "Blue Source L3";
-  private static final String kBlueSourceL4 = "Blue Source L4";
-  private static final String kBlueSourceSnowPlow = "Blue Source Snowplow";
-  private static final String kBlueCenterL1 = "Blue Center L1";
-  private static final String kBlueCenterL2 = "Blue Center L2";
-  private static final String kBlueCenterL3 = "Blue Center L3";
-  private static final String kBlueCenterL4 = "Blue Center L4";
-  private static final String kBlueAmpL1 = "Blue Amp L1";
-  private static final String kBlueAmpL2 = "Blue Amp L2";
-  private static final String kBlueAmpL3 = "Blue Amp L3";
-  private static final String kBlueAmpL4 = "Blue Amp L4";
+  private static final String kSourceL2 = "Source L2";
+  private static final String kSourceL1 = "Source L1";
+  private static final String kSourceL3 = "Source L3";
+  private static final String kSourceL4 = "Source L4";
+  private static final String kCenterL1 = "Center L1";
+  private static final String kCenterL2 = "Center L2";
+  private static final String kCenterL3 = "Center L3";
+  private static final String kCenterL4 = "Center L4";
+  private static final String kAmpL1 = "Amp L1";
+  private static final String kAmpL2 = "Amp L2";
+  private static final String kAmpL3 = "Amp L3";
+  private static final String kAmpL4 = "Amp L4";
+  private static final String kSourceSnowplow = "Source Snowplow";
   private static final String kLeaveAuto = "Leave Auto";
   private static final String kTestAuto = "Test Auto";
   
+  private boolean isRed;
 
   // private final Camera m_camera1 = new Camera(m_serial, "1");  // camID is how SerialComms and the cameras themselves tells them apart
   // private final Camera m_camera2 = new Camera(m_serial, "2");
@@ -172,32 +131,19 @@ public class RobotContainer {
 
     m_chooser.setDefaultOption("No Autonomous", kNoAuto);
 
-    m_chooser.addOption("Red Source L1", kRedSourceL1);
-    m_chooser.addOption("Red Source L2", kRedSourceL2);
-    m_chooser.addOption("Red Source L3", kRedSourceL3);
-    m_chooser.addOption("Red Source L4", kRedSourceL4);
-    m_chooser.addOption("Red Source Snowplow", kRedSourceSnowplow);
-    m_chooser.addOption("Red Center L1", kRedCenterL1);
-    m_chooser.addOption("Red Center L2", kRedCenterL2);
-    m_chooser.addOption("Red Center L3", kRedCenterL3);
-    m_chooser.addOption("Red Center L4", kRedCenterL4);
-    m_chooser.addOption("Red Amp L1", kRedAmpL1);
-    m_chooser.addOption("Red Amp L2", kRedAmpL2);
-    m_chooser.addOption("Red Amp L3", kRedAmpL3);
-    m_chooser.addOption("Red Amp L4", kRedAmpL4);
-    m_chooser.addOption("Blue Source L1", kBlueSourceL1);
-    m_chooser.addOption("Blue Source L2", kBlueSourceL2);
-    m_chooser.addOption("Blue Source L3", kBlueSourceL3);
-    m_chooser.addOption("Blue Source L4", kBlueSourceL4);
-    m_chooser.addOption("Blue Source Snowplow", kBlueSourceSnowPlow);
-    m_chooser.addOption("Blue Center L1", kBlueCenterL1);
-    m_chooser.addOption("Blue Center L2", kBlueCenterL2);
-    m_chooser.addOption("Blue Center L3", kBlueCenterL3);
-    m_chooser.addOption("Blue Center L4", kBlueCenterL4);
-    m_chooser.addOption("Blue Amp L1", kBlueAmpL1);
-    m_chooser.addOption("Blue Amp L2", kBlueAmpL2);
-    m_chooser.addOption("Blue Amp L3", kBlueAmpL3);
-    m_chooser.addOption("Blue Amp L4", kBlueAmpL4); 
+    m_chooser.addOption("Source L1", kSourceL1);
+    m_chooser.addOption("Source L2", kSourceL2);
+    m_chooser.addOption("Source L3", kSourceL3);
+    m_chooser.addOption("Source L4", kSourceL4);
+    m_chooser.addOption("Source Snowplow", kSourceSnowplow);
+    m_chooser.addOption("Center L1", kCenterL1);
+    m_chooser.addOption("Center L2", kCenterL2);
+    m_chooser.addOption("Center L3", kCenterL3);
+    m_chooser.addOption("Center L4", kCenterL4);
+    m_chooser.addOption("Amp L1", kAmpL1);
+    m_chooser.addOption("Amp L2", kAmpL2);
+    m_chooser.addOption("Amp L3", kAmpL3);
+    m_chooser.addOption("Amp L4", kAmpL4); 
     m_chooser.addOption("Leave Auto", kLeaveAuto);
     m_chooser.addOption("Test Auto", kTestAuto);
 
@@ -269,10 +215,12 @@ public class RobotContainer {
         if (DriverStation.getAlliance().get() == Alliance.Blue)
         {
           m_aprilTagFinder.setSearchTagId(7);
+          isRed = false;
         }
         else
         {
           m_aprilTagFinder.setSearchTagId(4);
+          isRed = true;
         }
       }
     }
@@ -322,58 +270,32 @@ public class RobotContainer {
     {
       case kNoAuto:
         return null;
-      case kRedSourceL1:
-        return RedSourceL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder);
-      case kRedSourceL2:
-        return RedSourceL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder);
-      case kRedSourceL3:
-        return RedSourceL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
-      case kRedSourceL4:
-        return RedSourceL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
-      case kRedSourceSnowplow:
-        return RedSourceSnowplow.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
-      case kRedCenterL1:
-        return RedCenterL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder);
-      case kRedCenterL2:
-        return RedCenterL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder);
-      case kRedCenterL3:
-        return RedCenterL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
-      case kRedCenterL4:
-        return RedCenterL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
-      case kRedAmpL1:
-        return RedAmpL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder);
-      case kRedAmpL2:
-        return RedAmpL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
-      case kRedAmpL3:
-        return RedAmpL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
-      case kRedAmpL4:
-        return RedAmpL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
-      case kBlueSourceL1:
-        return BlueSourceL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder);
-      case kBlueSourceL2:
-        return BlueSourceL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder);
-      case kBlueSourceL3:
-        return BlueSourceL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder);
-      case kBlueSourceL4:
-        return BlueSourceL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
-      case kBlueSourceSnowPlow:
-        return BlueSourceSnowplow.create(m_drivetrain, m_shooter, m_pivot, m_feeder);
-      case kBlueCenterL1:
-        return BlueCenterL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder);
-      case kBlueCenterL2:
-        return BlueCenterL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder);
-      case kBlueCenterL3:
-        return BlueCenterL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder);
-      case kBlueCenterL4:
-        return BlueCenterL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
-      case kBlueAmpL1:
-        return BlueAmpL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder);
-      case kBlueAmpL2:
-        return BlueAmpL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder, m_collectAndFeed, m_collector, m_collectorArm); 
-      case kBlueAmpL3:
-        return BlueAmpL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
-      case kBlueAmpL4:
-        return BlueAmpL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm);
+      case kSourceL1:
+        return SourceL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder, isRed);
+      case kSourceL2:
+        return SourceL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
+      case kSourceL3:
+        return SourceL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
+      case kSourceL4:
+        return SourceL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
+      case kSourceSnowplow:
+        return SourceSnowplow.create(m_drivetrain, m_shooter, m_pivot, m_feeder, isRed);
+      case kCenterL1:
+        return CenterL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
+      case kCenterL2:
+        return CenterL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
+      case kCenterL3:
+        return CenterL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
+      case kCenterL4:
+        return CenterL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
+      case kAmpL1:
+        return AmpL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder, isRed);
+      case kAmpL2:
+        return AmpL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder, m_collector, m_collectorArm, m_collectAndFeed, isRed);
+      case kAmpL3:
+        return AmpL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder, m_collector, m_collectorArm, m_collectAndFeed, isRed);
+      case kAmpL4:
+        return AmpL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder, m_collector, m_collectorArm, m_collectAndFeed, isRed);
       case kLeaveAuto:
         return LeaveAuto.create(m_drivetrain);
       case kTestAuto:
