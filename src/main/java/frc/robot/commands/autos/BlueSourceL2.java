@@ -45,7 +45,7 @@ public class BlueSourceL2
         double range1 = 3.9;
 
         ArrayList<Segment> segments1 = new ArrayList<Segment>();
-        segments1.add(new Segment(start, pathShootPoint, -Math.PI / 6, 3.0));
+        segments1.add(new Segment(start, pathShootPoint, -Math.PI / 6, 2.5));
 
         segments1.get(0).entryActivateValue = true;
         segments1.get(0).entryActivate = alignSchema;
@@ -54,10 +54,10 @@ public class BlueSourceL2
         
 
         ArrayList<Segment> segments2 = new ArrayList<Segment>();
-        segments2.add(new Segment(pathShootPoint, avoidStagePost, 0.0, 3.0));
-        segments2.add(new Segment(avoidStagePost, midlineNote2, 0.0, 3.0));
-        segments2.add(new Segment(midlineNote2, avoidStagePost, 0.0, 3.0));
-        segments2.add(new Segment(avoidStagePost, pathShootPoint, -Math.PI / 6, 3.0));
+        segments2.add(new Segment(pathShootPoint, avoidStagePost, 0.0, 2.5));
+        segments2.add(new Segment(avoidStagePost, midlineNote2, 0.0, 2.5));
+        segments2.add(new Segment(midlineNote2, avoidStagePost, 0.0, 2.5));
+        segments2.add(new Segment(avoidStagePost, pathShootPoint, -Math.PI / 6, 2.5));
 
         segments2.get(3).entryActivateValue = true;
         segments2.get(3).entryActivate = alignSchema;
@@ -97,8 +97,8 @@ public class BlueSourceL2
                 )      
             ), 
             new ParallelCommandGroup(
-                new RunShooter(shooter, rangeFinder, range1),
-                new PivotRangeCommand(pivot, rangeFinder, range1)
+                new RunShooter(shooter, rangeFinder, 4.3),
+                new PivotRangeCommand(pivot, rangeFinder, 4.3)
             ),
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30),
