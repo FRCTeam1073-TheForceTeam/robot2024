@@ -37,7 +37,7 @@ public class AlignSpeakerAutoSchema extends MotionSchema implements Activate
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void update(Drivetrain drivetrain) 
+  public void execute() 
   {
     var apriltag = finder.getCurrentTagData();
 
