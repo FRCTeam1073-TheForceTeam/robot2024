@@ -5,6 +5,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.Drivetrain;
@@ -44,12 +46,15 @@ public class AlignSpeakerAutoSchema extends MotionSchema implements Activate
       rotation = 0.01 * (160 - apriltag.cx);
       MathUtil.clamp(rotation, -0.7, 0.7);
 
+
       setRotate(rotation, 3.0);
     }
     else //if((Math.abs(160 - apriltag.cx) < 20) && !finder.tagFound())
     {
       setRotate(0.0, 0.0);
     }
+
+    SmartDashboard.putBoolean("Align To Speaker Active", apriltag.isValid() && active);
   }
 
   // Called once the command ends or is interrupted.

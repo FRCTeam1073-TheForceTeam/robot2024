@@ -19,6 +19,7 @@ public class StopShooter extends Command {
   private double maxRange;
   private boolean noteEntered;
   private boolean noteGone;
+  private double tolerance;
   
   /* Creates a new StopShooter. */
 
@@ -27,6 +28,7 @@ public class StopShooter extends Command {
     // Use addRequirements() here to declare subsystem dependencies.
     maxRange = 0.4;
     minRange = 0.4;
+    tolerance = 5.0;
     this.shooter = shooter;
     noteEntered = false;
     noteGone = false;
@@ -65,6 +67,6 @@ public class StopShooter extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return shooter.getCurrentTopVelocityInMPS() == 0;
+    return shooter.getCurrentTopVelocityInMPS() < tolerance;
   }
 }
