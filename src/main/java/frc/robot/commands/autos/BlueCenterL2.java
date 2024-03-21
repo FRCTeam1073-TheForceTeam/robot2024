@@ -39,8 +39,6 @@ public class BlueCenterL2
         Path.Point wingNote7 = new Path.Point(1.5, 0.313);
 
         double range1 = 2.0;
-        double range2 = 2.5;
-        //Pose2d poseShootPoint = new Pose2d();
 
         ArrayList<Segment> segments1 = new ArrayList<Segment>();
         segments1.add(new Segment(start, pathShootPoint, 0, 3.0)); //TODO: ask about the orientations
