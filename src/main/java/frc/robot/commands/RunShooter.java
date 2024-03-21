@@ -18,6 +18,8 @@ public class RunShooter extends Command {
   private RangeFinder rangefinder;
   private double shooterTopMPS;
   private double shooterBottomMPS;
+  private double defaultRange;
+  private double tolerance;
 
   double averageBottomVel = 0;
   double averageTopVel = 0;
@@ -36,6 +38,19 @@ public class RunShooter extends Command {
     // Use addRequirements() here to declare subsystem dependencies.
     this.shooter = shooter;
     this.rangefinder = rangeFinder;
+    defaultRange = -1;
+    this.shooterInterpolatorTable = new ShooterInterpolatorTable();
+    range = -1;
+    addRequirements(shooter);
+  }
+
+  public RunShooter(Shooter shooter, RangeFinder rangeFinder, double defaultRange) {
+    /* Range to calculate the speed needed */
+    // Use addRequirements() here to declare subsystem dependencies.
+    this.shooter = shooter;
+    this.rangefinder = rangeFinder;
+    this.defaultRange = defaultRange;
+    tolerance = 0.9;
     this.shooterInterpolatorTable = new ShooterInterpolatorTable();
     range = -1;
     addRequirements(shooter);
@@ -58,6 +73,24 @@ public class RunShooter extends Command {
   {
     if (range == -1) // if using rangefinder
     {
+      if (defaultRange == -1)
+      {
+        shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getFilteredRange());
+        shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getFilteredRange());
+      }
+      else
+      {
+        if (rangefinder.getFilteredRange() < tolerance)
+        {
+          shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(defaultRange);
+          shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(defaultRange);
+        }
+        else
+        {
+          shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getFilteredRange());
+          shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getFilteredRange());
+        }
+      }
       shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getFilteredRange());
       shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(rangefinder.getFilteredRange());
     }

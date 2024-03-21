@@ -19,6 +19,8 @@ public class PivotRangeCommand extends Command
   private ShooterInterpolatorTable pivotTable;
   private double targetPositionRad;
   private boolean isPivotOn;
+  private double tolerance;
+  private double defaultRange;
 
   double currentRange;
   double avgRange;
@@ -35,6 +37,20 @@ public class PivotRangeCommand extends Command
     this.pivot = pivot;
     this.rangefinder = rangefinder;
     pivotTable = new ShooterInterpolatorTable();
+    tolerance = -1;
+    range = -1;
+    // Use addRequirements() here to declare subsystem dependencies.
+    addRequirements(pivot);
+  }
+
+  public PivotRangeCommand(Pivot pivot, RangeFinder rangefinder, double defaultRange) 
+  {
+    // when we do not have a set range to shoot from
+    this.pivot = pivot;
+    this.rangefinder = rangefinder;
+    this.defaultRange = defaultRange;
+    pivotTable = new ShooterInterpolatorTable();
+    tolerance = 0.9;
     range = -1;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(pivot);
@@ -80,10 +96,30 @@ public class PivotRangeCommand extends Command
       }
       else
       {
-        isWaiting = false;
-        targetPositionRad = pivotTable.interpolatePivotAngle(avgRange);
-        pivot.setTargetPositionInRad(targetPositionRad);
-        pivot.setPivotRangeCommandAngle(targetPositionRad);
+        if (tolerance == -1)
+        {
+          isWaiting = false;
+          targetPositionRad = pivotTable.interpolatePivotAngle(avgRange);
+          pivot.setTargetPositionInRad(targetPositionRad);
+          pivot.setPivotRangeCommandAngle(targetPositionRad);
+        }
+        else 
+        {
+          if (avgRange < tolerance)
+          {
+            isWaiting = false;
+            targetPositionRad = pivotTable.interpolatePivotAngle(defaultRange);
+            pivot.setTargetPositionInRad(targetPositionRad);
+            pivot.setPivotRangeCommandAngle(targetPositionRad);
+          }
+          else
+          {
+            isWaiting = false;
+            targetPositionRad = pivotTable.interpolatePivotAngle(avgRange);
+            pivot.setTargetPositionInRad(targetPositionRad);
+            pivot.setPivotRangeCommandAngle(targetPositionRad);
+          }
+        }
       }
     }
     

@@ -29,21 +29,23 @@ public class BlueCenterL3
         CollectFeedCommand collectCommand, Collector collector, CollectorArm collectorArm)
     {
         Path.Point start = new Path.Point(0.0, 0.0);
-        Path.Point shootPoint = new Path.Point(1.5, 0.0);
-        Path.Point wingNote7 = new Path.Point(1.5, -0.43);
-        Path.Point avoidStage = new Path.Point();
-        Path.Point midlineNote4 = new Path.Point();
+        Path.Point pathShootPoint = new Path.Point(0.9208, 0.3447);
+        Path.Point wingNote7 = new Path.Point(1.5, 0.313);
+        Path.Point transitionPoint = new Path.Point(0.4521, -0.6529);
+        Path.Point wingNote6 = new Path.Point(1.3312, -1.0337);
 
-        double range1 = 0;
+        double range1 = 2.0;
+        // double range2 = 2.5;
+        // double range3 = 3;
         Pose2d poseShootPoint1 = new Pose2d();
 
 
         ArrayList<Segment> segments = new ArrayList<Segment>();
-        segments.add(new Segment(start, shootPoint, 0, 2.5));
-        segments.add(new Segment(shootPoint, wingNote7, 0, 2.5));
-        segments.add(new Segment(wingNote7, avoidStage, 0.0, 2.5));
-        segments.add(new Segment(avoidStage, midlineNote4, 0.0, 2.5));
-        segments.add(new Segment(midlineNote4, avoidStage, 0.0, 2.5));
+        segments.add(new Segment(start, pathShootPoint, 0, 2.5));
+        segments.add(new Segment(pathShootPoint, wingNote7, 0, 2.5));
+        segments.add(new Segment(wingNote7, transitionPoint, 0.0, 2.5));
+        segments.add(new Segment(transitionPoint, wingNote6, 0.0, 2.5));
+        segments.add(new Segment(wingNote6, transitionPoint, 0.0, 2.5));
 
         return new ParallelCommandGroup(
             SchemaDriveAuto.create(new DrivePathSchema(drivetrain, new Path(segments, 0)), drivetrain),

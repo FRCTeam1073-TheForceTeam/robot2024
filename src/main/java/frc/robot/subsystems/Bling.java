@@ -204,10 +204,10 @@ public class Bling extends DiagnosticsSubsystem {
    * Clears the note bling ring.
    */
   public void setNoNoteBling(){
-    setQuadRGB(4, 0, 0, 0);
-    setQuadRGB(5, 0, 0, 0);
-    setQuadRGB(6, 0, 0, 0);
-    setQuadRGB(7, 0, 0, 0);
+    setQuadRGB(4, 2, 0, 0);
+    setQuadRGB(5, 2, 0, 0);
+    setQuadRGB(6, 2, 0, 0);
+    setQuadRGB(7, 2, 0, 0);
   }
 
   /**

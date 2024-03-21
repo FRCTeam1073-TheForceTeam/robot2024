@@ -34,23 +34,21 @@ public class RedSourceL1
         AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder);
 
         Path.Point start = new Path.Point(0.0, 0.0);
-        Path.Point pathShootPoint = new Path.Point(3.5, 0.0);
+        Path.Point pathShootPoint = new Path.Point(3.165, -0.848);
 
-        Pose2d poseShootPoint = new Pose2d(3.5, 0.0, new Rotation2d(0.83));
-        double range1 = 4.1;
+        double range1 = 3.9;
 
         ArrayList<Segment> segments = new ArrayList<Segment>();
-        segments.add(new Segment(start, pathShootPoint, 0.83, 2.5));
+        segments.add(new Segment(start, pathShootPoint, Math.PI / 6, 2.5));
         segments.get(0).entryActivateValue = true;
         segments.get(0).entryActivate = alignSchema;
         segments.get(0).exitActivateValue = false;
         segments.get(0).exitActivate = alignSchema;
 
-        Path path = new Path(segments, 0.83 );
+        Path path = new Path(segments, Math.PI / 6);
         path.transverseVelocity = 1.5;
 
         return new ParallelCommandGroup(
-            SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), drivetrain),
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), new AlignSpeakerAutoSchema(tagFinder), drivetrain), 
                 new RunShooter(shooter, range1),

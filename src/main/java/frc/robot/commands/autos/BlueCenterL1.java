@@ -33,19 +33,19 @@ public class BlueCenterL1
         AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder);
 
         Path.Point start = new Path.Point(0.0, 0.0);
-        Path.Point pathShootPoint = new Path.Point(1.31, -0.37);
+        Path.Point pathShootPoint = new Path.Point(1.31, 0.37);
 
         double range1 = 2.3;
 
         ArrayList<Segment> segments = new ArrayList<Segment>();
-        segments.add(new Segment(start, pathShootPoint, -0.13, 2.5)); 
+        segments.add(new Segment(start, pathShootPoint, 0.13, 2.5)); 
 
         segments.get(0).entryActivateValue = true;
         segments.get(0).entryActivate = alignSchema;
         segments.get(0).exitActivateValue = false;
         segments.get(0).exitActivate = alignSchema;
         
-        Path path = new Path(segments, -0.13);
+        Path path = new Path(segments, 0.13);
         path.transverseVelocity = 1.5;
 
         return new SequentialCommandGroup(

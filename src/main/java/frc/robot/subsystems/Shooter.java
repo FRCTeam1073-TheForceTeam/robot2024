@@ -106,7 +106,7 @@ public class Shooter extends DiagnosticsSubsystem{
     
     shooterTofFreq = shooterTofDutyCycleInput.getFrequency();
     shooterTofDutyCycle = shooterTofDutyCycleInput.getOutput();
-    shooterTofRange = shooterTofDutyCycleInput.getOutput();
+    // shooterTofRange = shooterTofDutyCycleInput.getOutput();
     shooterTofRange = (shooterTofScaleFactor * (shooterTofDutyCycle / shooterTofFreq - 0.001)) / 1000;
 
     // Calculate ratelimited commanded velocities in rotations/second based on meters/second target velocity

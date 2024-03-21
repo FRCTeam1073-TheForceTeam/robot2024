@@ -78,12 +78,12 @@ public class BlueSourceL2
                 new PivotRangeCommand(pivot, range1)
             ),
             new ParallelCommandGroup(
-                new RunShooter(shooter, rangeFinder),
-                new PivotRangeCommand(pivot, rangeFinder)
+                new RunShooter(shooter, rangeFinder, range1),
+                new PivotRangeCommand(pivot, rangeFinder, range1)
             ),
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30),
-                new StopShooter(shooter)
+                new NWStopShooter(shooter)
             ),
             new NWSetPivot(pivot, 0.0),     
             new ParallelCommandGroup(
@@ -97,12 +97,12 @@ public class BlueSourceL2
                 )      
             ), 
             new ParallelCommandGroup(
-                new RunShooter(shooter, rangeFinder),
-                new PivotRangeCommand(pivot, rangeFinder)
+                new RunShooter(shooter, rangeFinder, range1),
+                new PivotRangeCommand(pivot, rangeFinder, range1)
             ),
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30),
-                new StopShooter(shooter)
+                new NWStopShooter(shooter)
             ),
             new NWSetPivot(pivot, 0.0)
         );
