@@ -16,7 +16,7 @@ public class AprilTagFinder extends SubsystemBase {
     public int cx = 0;
     public int cy = 0;
     public int area = 0;
-    public double x_rotation = 0;
+    public double y_rotation = 0;
     public double timestamp = 0;
 
     public boolean isValid() {
@@ -89,6 +89,7 @@ public class AprilTagFinder extends SubsystemBase {
     tagData.cy = (response[5] & 0xFF) * 2;
     //tagData.area = response[5] * 64; // Undo packing so it fits a byte.
     tagData.area = (response[6] & 0xFF) * 64;
+    tagData.y_rotation = (response[7] & 0xFF) /10; //y_rotation cast into a
     tagData.timestamp = Timer.getFPGATimestamp();
   }
 
@@ -153,6 +154,7 @@ public class AprilTagFinder extends SubsystemBase {
     SmartDashboard.putNumber("AprilTag/X(Second)", cxs);
     SmartDashboard.putNumber("AprilTag/Y", this.tagData.cy);
     SmartDashboard.putNumber("AprilTag/Area", this.tagData.area);
+    SmartDashboard.putNumber("AprilTag/Y_Rotaion", this.tagData.y_rotation);
     SmartDashboard.putBoolean("AprilTag/Valid", this.tagData.isValid()); // Allows dashboard indicator.
     SmartDashboard.putBoolean("AprilTag/Aligned", aligned);
   }

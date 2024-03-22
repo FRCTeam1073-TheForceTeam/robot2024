@@ -9,13 +9,13 @@ import frc.robot.commands.AlignSpeakerAutoSchema;
 import frc.robot.commands.CollectFeedCommand;
 import frc.robot.commands.DrivePathSchema;
 import frc.robot.commands.Path;
-import frc.robot.commands.SchemaDriveAuto;
-import frc.robot.commands.SetPivotCommand;
-import frc.robot.commands.StopShooter;
 import frc.robot.commands.Path.Segment;
 import frc.robot.commands.PivotRangeCommand;
 import frc.robot.commands.RunFeeder;
 import frc.robot.commands.RunShooter;
+import frc.robot.commands.SchemaDriveAuto;
+import frc.robot.commands.SetPivotCommand;
+import frc.robot.commands.StopShooter;
 import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.CollectorArm;
@@ -25,27 +25,37 @@ import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.Shooter;
 
-public class RedCenterL1 
+public class CenterL1 
 {
     public static Command create(Drivetrain drivetrain, Shooter shooter, Pivot pivot, Feeder feeder, CollectFeedCommand collectCommand, 
-    Collector collector, CollectorArm collectorArm, AprilTagFinder tagFinder, RangeFinder rangeFinder)
+    Collector collector, CollectorArm collectorArm, AprilTagFinder tagFinder, RangeFinder rangeFinder, boolean isRed)
     {
+        int allianceSign = 0;
+        if (isRed)
+        {
+            allianceSign = 1;
+        }
+        else
+        {
+            allianceSign = -1;
+        }
+
         AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder);
 
         Path.Point start = new Path.Point(0.0, 0.0);
-        Path.Point pathShootPoint = new Path.Point(1.31, -0.37);
+        Path.Point pathShootPoint = new Path.Point(1.31, -0.37 * allianceSign);
 
         double range1 = 2.3;
 
         ArrayList<Segment> segments = new ArrayList<Segment>();
-        segments.add(new Segment(start, pathShootPoint, -0.13, 2.5)); 
+        segments.add(new Segment(start, pathShootPoint, -0.13 * allianceSign, 2.5)); 
 
         segments.get(0).entryActivateValue = true;
         segments.get(0).entryActivate = alignSchema;
         segments.get(0).exitActivateValue = false;
         segments.get(0).exitActivate = alignSchema;
         
-        Path path = new Path(segments, -0.13);
+        Path path = new Path(segments, -0.13 * allianceSign);
         path.transverseVelocity = 1.5;
 
         return new SequentialCommandGroup(
@@ -64,5 +74,5 @@ public class RedCenterL1
             ),
             new SetPivotCommand(pivot, 0.0)
         );
-    }
+    }    
 }
