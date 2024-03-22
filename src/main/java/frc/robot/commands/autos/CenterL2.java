@@ -9,7 +9,6 @@ import frc.robot.commands.AlignSpeakerAutoSchema;
 import frc.robot.commands.CollectFeedCommand;
 import frc.robot.commands.DrivePathSchema;
 import frc.robot.commands.NWSetPivot;
-import frc.robot.commands.NWStopShooter;
 import frc.robot.commands.Path;
 import frc.robot.commands.Path.Segment;
 import frc.robot.commands.PivotRangeCommand;
@@ -101,7 +100,7 @@ public class CenterL2
             ),
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30),
-                new NWStopShooter(shooter)
+                new StopShooter(shooter)
             ),
                 new NWSetPivot(pivot, 0.0)
         );

@@ -27,9 +27,8 @@ import frc.robot.subsystems.Shooter;
 
 public class AmpL2 
 {
-    public static Command create(Drivetrain drivetrain, Shooter shooter, Pivot pivot, Feeder feeder, 
-        AprilTagFinder tagFinder, RangeFinder rangeFinder, Collector collector, CollectorArm collectorArm,
-        CollectFeedCommand collectCommand, boolean isRed)
+    public static Command create(Drivetrain drivetrain, Shooter shooter, Pivot pivot, Feeder feeder, AprilTagFinder tagFinder, 
+        RangeFinder rangeFinder, Collector collector, CollectorArm collectorArm, CollectFeedCommand collectCommand, boolean isRed)
     {
         int allianceSign = 0;
         if (isRed)
@@ -45,8 +44,10 @@ public class AmpL2
 
         Path.Point startPoint = new Path.Point(0.0, 0.0);
         Path.Point shootPoint = new Path.Point(1.757, 0.109 * allianceSign);
+        Path.Point collectShootPoint = new Path.Point(2.479, 0.163 * allianceSign);
 
-        double range1 = 3.15;
+
+        double range1 = 2.5;
 
         ArrayList<Segment> segments = new ArrayList<Segment>();
         segments.add(new Segment(startPoint, shootPoint, -0.724 * allianceSign, 2.5));
@@ -54,30 +55,53 @@ public class AmpL2
         segments.get(0).entryActivate = alignSchema;
         segments.get(0).exitActivateValue = false;
         segments.get(0).exitActivate = alignSchema;
+        ArrayList<Segment> segments1 = new ArrayList<Segment>();
+        segments1.add(new Segment(shootPoint, shootPoint, 0.0, 2.5));
+        ArrayList<Segment> segments2 = new ArrayList<Segment>();
+        segments2.add(new Segment(shootPoint, collectShootPoint, -0.588 * allianceSign, 2.5));
+        segments2.get(0).entryActivateValue  = true;
+        segments2.get(0).entryActivate = alignSchema;
+        segments2.get(0).exitActivateValue = false;
+        segments2.get(0).exitActivate = alignSchema;
 
         Path path = new Path(segments, -0.724 * allianceSign);
+        Path path1 = new Path(segments1, 0.0);
+        Path path2 = new Path(segments2, -0.588 * allianceSign);
 
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
+                //drives while alinging
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), alignSchema, drivetrain),
                 new ParallelCommandGroup(
-                    //warm up shooter
+                    //warm up shooter, oproximit
                     new RunShooter(shooter, range1),
-                    //warm up pivot
+                    //warm up pivot oproximit
                     new PivotRangeCommand(pivot, range1)
                 )
             ),
             new ParallelCommandGroup(
                 //shoot shot
-                new RunShooter(shooter, rangeFinder),
+                new RunShooter(shooter, range1),
                 //find pivot
-                new PivotRangeCommand(pivot, rangeFinder)
+                new PivotRangeCommand(pivot, range1)
             ),
             new ParallelCommandGroup(
+                //run feeder
                 new RunFeeder(feeder, 30),
+                //stop shooter
                 new StopShooter(shooter)
             ),
-            new NWSetPivot(pivot, 0.0)
+            //sets pivot to 0
+            new NWSetPivot(pivot, 0.0),
+            SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path1), alignSchema, drivetrain),
+            new ParallelCommandGroup(
+                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), alignSchema, drivetrain),
+                collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter)
+            ),
+            new ParallelCommandGroup(
+                new RunShooter(shooter, rangeFinder),
+                new PivotRangeCommand(pivot, rangeFinder)
+            )
         );
-    }        
+    }       
 }
