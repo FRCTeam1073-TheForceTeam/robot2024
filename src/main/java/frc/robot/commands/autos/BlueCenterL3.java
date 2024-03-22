@@ -122,10 +122,6 @@ public class BlueCenterL3
                 new RunFeeder(feeder, 30),
                 new NWStopShooter(shooter)
             ),
-            new ParallelCommandGroup(
-                new RunFeeder(feeder, 30),
-                new NWStopShooter(shooter)
-            ),
             new NWSetPivot(pivot, 0.0)
         );
     }
