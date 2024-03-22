@@ -90,7 +90,7 @@ public class BlueCenterL2
             ),
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30),
-                new NWStopShooter(shooter)
+                new StopShooter(shooter)
             ),
                 new NWSetPivot(pivot, 0.0)
         );
