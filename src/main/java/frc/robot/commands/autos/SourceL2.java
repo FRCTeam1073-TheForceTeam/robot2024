@@ -65,7 +65,7 @@ public class SourceL2
         ArrayList<Segment> segments2 = new ArrayList<Segment>();
         segments2.add(new Segment(pathShootPoint, avoidStagePost, 0.0, 2.5));
         segments2.add(new Segment(avoidStagePost, midlineNote2, 0.0, 2.5));
-        segments2.add(new Segment(midlineNote2, avoidStagePost, 0.0, 2.5));
+        segments2.add(new Segment(midlineNote2, avoidStagePost, Math.PI / 6 * allianceSign, 2.5));
         segments2.add(new Segment(avoidStagePost, pathShootPoint, Math.PI / 6 * allianceSign, 2.5));
 
         segments2.get(3).entryActivateValue = true;
