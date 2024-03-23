@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj.RobotController;
 public class Bling extends DiagnosticsSubsystem {
   public AddressableLED m_ledEyes;
   public AddressableLEDBuffer m_ledBufferEyes;
-  public AddressableLED m_ledArms;
-  public AddressableLEDBuffer m_ledBufferArms;
+  //public AddressableLED m_ledArms;
+  //public AddressableLEDBuffer m_ledBufferArms;
   public Collector collector;
   public Feeder feeder;
   public Shooter shooter;
@@ -48,11 +48,11 @@ public class Bling extends DiagnosticsSubsystem {
     m_ledEyes.setData(m_ledBufferEyes);
     m_ledEyes.start();
 
-    m_ledArms = new AddressableLED(1);
-    m_ledBufferArms = new AddressableLEDBuffer(armsLength);
-    m_ledArms.setLength(m_ledBufferArms.getLength());
-    m_ledArms.setData(m_ledBufferArms);
-    m_ledArms.start();
+    // m_ledArms = new AddressableLED(1);
+    // m_ledBufferArms = new AddressableLEDBuffer(armsLength);
+    // m_ledArms.setLength(m_ledBufferArms.getLength());
+    // m_ledArms.setData(m_ledBufferArms);
+    // m_ledArms.start();
 
     this.collector = collector;
     this.feeder = feeder;
@@ -75,7 +75,7 @@ public class Bling extends DiagnosticsSubsystem {
   public void periodic() {
     // This method will be called once per scheduler run
     m_ledEyes.setData(m_ledBufferEyes);
-    m_ledArms.setData(m_ledBufferArms);
+    //m_ledArms.setData(m_ledBufferArms);
 
     if(!DriverStation.isDisabled()){
       setBatteryBling();
@@ -91,8 +91,9 @@ public class Bling extends DiagnosticsSubsystem {
       }
       // boolean shooterBling = setRainbowBling();
       double tofCollectorValue = collector.getRangeTOF1();
+      double tof2CollectorValue = collector.getRangeTOF2();
       double tofFeederValue = feeder.getTofRange();
-      if(tofCollectorValue <= 0.72){
+      if(tofCollectorValue <= 0.47 || tof2CollectorValue <= 0.3){
         setCollectedBling();
       }
       else if(tofFeederValue <= 0.2){
@@ -110,7 +111,7 @@ public class Bling extends DiagnosticsSubsystem {
       }
     }
     if (DriverStation.isDisabled()){
-      setRainbowBling();
+      //setRainbowBling();
     }
   }
 
@@ -133,10 +134,10 @@ public class Bling extends DiagnosticsSubsystem {
     m_ledBufferEyes.setRGB(i, r, g, b);
   }
   
-  public void setArmsRGB(int i, int r, int g, int b)
-  {
-    m_ledBufferArms.setRGB(i, r, g, b);
-  }
+  // public void setArmsRGB(int i, int r, int g, int b)
+  // {
+  //   m_ledBufferArms.setRGB(i, r, g, b);
+  // }
 
   /**
    * Sets all the LEDs to one color
@@ -151,18 +152,18 @@ public class Bling extends DiagnosticsSubsystem {
     }
   }
 
-  public void setArmsRGBAll(int r, int g, int b) {
-    for (var i = 0; i < (m_ledBufferArms.getLength()); i++) {
-      m_ledBufferArms.setRGB(i, r, g, b);
-    }
-  }
+  // public void setArmsRGBAll(int r, int g, int b) {
+  //   for (var i = 0; i < (m_ledBufferArms.getLength()); i++) {
+  //     m_ledBufferArms.setRGB(i, r, g, b);
+  //   }
+  // }
 
   /**
    * Turns off all LEDs
    */
   public void clearLEDs() {
     setEyesRGBAll(0, 0, 0);
-    setArmsRGBAll(0, 0, 0);
+    //setArmsRGBAll(0, 0, 0);
   }
 
    /**
@@ -184,16 +185,16 @@ public class Bling extends DiagnosticsSubsystem {
     }
   }
 
-  public void setArmsRangeRGB(int min, int number, int r, int g, int b) {
-    if (number != 1) {
-      int max = min + number;
-      for (int i = min; i < (max); i++) {
-        m_ledBufferArms.setRGB(i, r, g, b);
-      }
-    } else {
-      m_ledBufferArms.setRGB(min, r, g, b);
-    }
-  }
+  // public void setArmsRangeRGB(int min, int number, int r, int g, int b) {
+  //   if (number != 1) {
+  //     int max = min + number;
+  //     for (int i = min; i < (max); i++) {
+  //       m_ledBufferArms.setRGB(i, r, g, b);
+  //     }
+  //   } else {
+  //     m_ledBufferArms.setRGB(min, r, g, b);
+  //   }
+  // }
 
   // first quadrant is 0, second is 1, third is 2, etc...
   public void setQuadRGB(int quad, int r, int g, int b){
@@ -201,7 +202,7 @@ public class Bling extends DiagnosticsSubsystem {
   }
 
   public void setSectionRGB(int sect, int r, int g, int b){
-    setArmsRangeRGB((sect * slengthArms), slengthArms, r, g, b);
+    //setArmsRangeRGB((sect * slengthArms), slengthArms, r, g, b);
   }
 
   /**
@@ -285,31 +286,31 @@ public class Bling extends DiagnosticsSubsystem {
      setQuadRGB(3, 0, 0, 0);
   }
 
-  public void setRainbowBling(){
-    int m_rainbowFirstPixelHue1 = 0;
-    int m_rainbowFirstPixelHue2 = 0;
-    int count2 = 0;
+  // public void setRainbowBling(){
+  //   int m_rainbowFirstPixelHue1 = 0;
+  //   int m_rainbowFirstPixelHue2 = 0;
+  //   int count2 = 0;
 
-    for (var i = 0; i < m_ledBufferArms.getLength()/2; i++) {
-      final var hue1 = (m_rainbowFirstPixelHue1 + (i * 180 / m_ledBufferEyes.getLength()*2)) % 180;
-      // Set the value
-      m_ledBufferEyes.setHSV(i, hue1, 255, 128);
+  //   for (var i = 0; i < m_ledBufferArms.getLength()/2; i++) {
+  //     final var hue1 = (m_rainbowFirstPixelHue1 + (i * 180 / m_ledBufferEyes.getLength()*2)) % 180;
+  //     // Set the value
+  //     m_ledBufferEyes.setHSV(i, hue1, 255, 128);
 
-      // Increase by to make the rainbow "move"
-      m_rainbowFirstPixelHue1 += 3;
-      // Check bounds
-      m_rainbowFirstPixelHue1 %= 180;
-    }
+  //     // Increase by to make the rainbow "move"
+  //     m_rainbowFirstPixelHue1 += 3;
+  //     // Check bounds
+  //     m_rainbowFirstPixelHue1 %= 180;
+  //   }
 
-    for (var j = m_ledBufferArms.getLength()/2; j < m_ledBufferArms.getLength(); j++) {
-      final var hue2 = (m_rainbowFirstPixelHue2 + (count2 * 180 / m_ledBufferEyes.getLength()*2)) % 180;
-      m_ledBufferEyes.setHSV(j, hue2, 255, 128);
-      count2++;
-    }
-    m_rainbowFirstPixelHue2 += 3;
-    m_rainbowFirstPixelHue2 %= 180;
+  //   for (var j = m_ledBufferArms.getLength()/2; j < m_ledBufferArms.getLength(); j++) {
+  //     final var hue2 = (m_rainbowFirstPixelHue2 + (count2 * 180 / m_ledBufferEyes.getLength()*2)) % 180;
+  //     m_ledBufferEyes.setHSV(j, hue2, 255, 128);
+  //     count2++;
+  //   }
+  //   m_rainbowFirstPixelHue2 += 3;
+  //   m_rainbowFirstPixelHue2 %= 180;
       
-  }
+  // }
 
   public void setArmsBling() {
      setQuadRGB(0, 0, 0, 0);

@@ -250,6 +250,7 @@ public class RobotContainer {
 
   public void autonomousInit()
   {
+    SmartDashboard.putString("Alliance", "None");
     if (m_aprilTagFinder != null)
     {
       if(DriverStation.getAlliance().isPresent())
@@ -257,15 +258,26 @@ public class RobotContainer {
         if (DriverStation.getAlliance().get() == Alliance.Blue)
         {
           m_aprilTagFinder.setSearchTagId(7);
-          isRed = false;
         }
         else
         {
           m_aprilTagFinder.setSearchTagId(4);
-          isRed = true;
         }
       }
     }
+    if(DriverStation.getAlliance().isPresent())
+      {
+        if (DriverStation.getAlliance().get() == Alliance.Red)
+        {
+          SmartDashboard.putString("Alliance", "Red");
+          isRed = true;
+        }
+        else 
+        {
+          SmartDashboard.putString("Alliance", "Blue");
+          isRed = false;
+        }
+      }
   }
 
   public void printAllFalseDiagnostics(){

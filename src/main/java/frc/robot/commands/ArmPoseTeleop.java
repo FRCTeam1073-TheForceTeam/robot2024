@@ -23,7 +23,7 @@ public class ArmPoseTeleop extends Command {
 
   public SequentialCommandGroup startPose() {
     return new SequentialCommandGroup(
-      new ArmPoseCommand(arm, POSE.STOW_INTERMEDIATE_2, 0.035, 0.02),
+      new ArmPoseCommand(arm, POSE.STOW_INTERMEDIATE_1, 0.2, 0.03), //
       new ArmPoseCommand(arm, POSE.START)
     );
   }

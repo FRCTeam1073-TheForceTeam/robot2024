@@ -335,7 +335,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     extendConfigs.Feedback.SensorToMechanismRatio = 1 / extendMetersPerRotation;  // This should be used for remote CANCoder with continuous wrap.
   
     extendConfigs.MotionMagic.MotionMagicCruiseVelocity = 1;
-    extendConfigs.MotionMagic.MotionMagicAcceleration = 2.0;
+    extendConfigs.MotionMagic.MotionMagicAcceleration = 1;
     extendConfigs.MotionMagic.MotionMagicJerk = 0;
 
     extendMotor.getConfigurator().apply(extendConfigs);
