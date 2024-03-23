@@ -94,6 +94,7 @@ public class RobotContainer {
   private final RangeFinder m_rangeFinder = new RangeFinder();
   private final SerialComms m_serial = new SerialComms();
   private final AprilTagFinder m_aprilTagFinder = new AprilTagFinder(m_serial);
+  private final Headlight m_headlight = new Headlight();
 
 
   private final CollectFeedCommand m_collectAndFeed = new CollectFeedCommand();
@@ -142,8 +143,8 @@ public class RobotContainer {
 
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  // private final CommandXboxController m_driverController =
+  //     new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final Bling m_bling = new Bling(m_collector, m_feeder, m_shooter, m_aprilTagFinder);
 
 
@@ -169,6 +170,7 @@ public class RobotContainer {
     SmartDashboard.putData(m_pivot);
     SmartDashboard.putData(m_rangeFinder);
     SmartDashboard.putData(m_climber);
+    SmartDashboard.putData(m_headlight);
 
 
     m_chooser.setDefaultOption("No Autonomous", kNoAuto);
@@ -257,11 +259,11 @@ public class RobotContainer {
       {
         if (DriverStation.getAlliance().get() == Alliance.Blue)
         {
-          m_aprilTagFinder.setSearchTagId(7);
+          m_aprilTagFinder.setSearchTagId(7, 8);
         }
         else
         {
-          m_aprilTagFinder.setSearchTagId(4);
+          m_aprilTagFinder.setSearchTagId(4, 3);
         }
       }
     }

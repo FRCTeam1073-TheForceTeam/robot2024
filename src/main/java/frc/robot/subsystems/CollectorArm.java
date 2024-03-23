@@ -337,7 +337,6 @@ public class CollectorArm extends DiagnosticsSubsystem {
     extendConfigs.MotionMagic.MotionMagicCruiseVelocity = 1;
     extendConfigs.MotionMagic.MotionMagicAcceleration = 1;
     extendConfigs.MotionMagic.MotionMagicJerk = 0;
-
     extendMotor.getConfigurator().apply(extendConfigs);
     extendMotor.setPosition(0);
     

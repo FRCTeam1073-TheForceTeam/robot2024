@@ -77,7 +77,7 @@ public class Bling extends DiagnosticsSubsystem {
     m_ledEyes.setData(m_ledBufferEyes);
     //m_ledArms.setData(m_ledBufferArms);
 
-    if(!DriverStation.isDisabled()){
+    // if(!DriverStation.isDisabled()){
       setBatteryBling();
 
       setSectionRGB(0, 0, 255, 0);
@@ -90,10 +90,8 @@ public class Bling extends DiagnosticsSubsystem {
         setUnalignedBling();
       }
       // boolean shooterBling = setRainbowBling();
-      double tofCollectorValue = collector.getRangeTOF1();
-      double tof2CollectorValue = collector.getRangeTOF2();
       double tofFeederValue = feeder.getTofRange();
-      if(tofCollectorValue <= 0.47 || tof2CollectorValue <= 0.3){
+      if(collector.hasNote()){
         setCollectedBling();
       }
       else if(tofFeederValue <= 0.2){
@@ -109,10 +107,10 @@ public class Bling extends DiagnosticsSubsystem {
       else{
         setNoNoteBling();
       }
-    }
-    if (DriverStation.isDisabled()){
+    // }
+    // if (DriverStation.isDisabled()){
       //setRainbowBling();
-    }
+    // }
   }
 
   /**

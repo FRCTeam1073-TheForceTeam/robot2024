@@ -19,7 +19,7 @@ public class AlignSpeakerAutoSchema extends MotionSchema implements Activate
   double error = 0.0;
   double last_error = 0.0;
   boolean active = false;
-  double center_point = 160.0;
+  double center_point = 155.0;
 
   /** Creates a new AlignToSpeakerSchema. */
   public AlignSpeakerAutoSchema(AprilTagFinder finder) 

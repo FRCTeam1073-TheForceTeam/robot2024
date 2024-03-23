@@ -31,9 +31,9 @@ public class SpeakerTagAllianceSearch extends Command {
   public void execute() {
     if(DriverStation.getAlliance().isPresent()){
       if (DriverStation.getAlliance().get() == Alliance.Blue){
-        finder.setSearchTagId(7);
+        finder.setSearchTagId(7, 8);
       }else{
-        finder.setSearchTagId(4);
+        finder.setSearchTagId(4, 3);
     }
   }
   }
@@ -49,3 +49,4 @@ public class SpeakerTagAllianceSearch extends Command {
     return false;
   }
 }
+

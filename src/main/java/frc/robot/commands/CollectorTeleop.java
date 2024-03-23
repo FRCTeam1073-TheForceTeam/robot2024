@@ -30,7 +30,7 @@ public class CollectorTeleop extends Command {
   double tofOldValue;
 
   double count = 0;
-  double extraIntakeCounter = 2;
+  double extraIntakeCounter = 3;
 
 
 
@@ -73,7 +73,7 @@ public class CollectorTeleop extends Command {
 
     if(tofCurrentValue > maxRange){
       isCollectable = true;
-      extraIntakeCounter = 2;
+      extraIntakeCounter = 3;
     }
     
     if(m_OI.getOperatorRawButton(5)) //outtake

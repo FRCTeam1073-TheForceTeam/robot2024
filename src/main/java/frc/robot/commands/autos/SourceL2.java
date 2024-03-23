@@ -46,12 +46,14 @@ public class SourceL2
         Path.Point start = new Path.Point(0.0, 0.0);
         Path.Point pathShootPoint = new Path.Point(3.165, -0.848 * allianceSign);
         Path.Point avoidStagePost = new Path.Point(5.7, 0.75 * allianceSign);
-        Path.Point midlineNote2 = new Path.Point(8.1, -0.35 * allianceSign);
+        Path.Point midlineNote2 = new Path.Point(8.1, -0.85 * allianceSign);
         Path.Point stagePoint = new Path.Point(5.368, -2.37 * allianceSign);
+        Path.Point pathShootPoint2 = new Path.Point(2.665, -0.848 * allianceSign);
         stagePoint.blend_radius = 1.0;
         // avoidStagePost.blend_radius = 0.6;
 
         double range1 = 3.9;
+        double range2 = 4.2;
 
         ArrayList<Segment> segments1 = new ArrayList<Segment>();
         segments1.add(new Segment(start, pathShootPoint, Math.PI / 6 * allianceSign, 2.5));
@@ -66,7 +68,7 @@ public class SourceL2
         segments2.add(new Segment(pathShootPoint, avoidStagePost, 0.0, 2.5));
         segments2.add(new Segment(avoidStagePost, midlineNote2, 0.0, 2.5));
         segments2.add(new Segment(midlineNote2, avoidStagePost, Math.PI / 6 * allianceSign, 2.5));
-        segments2.add(new Segment(avoidStagePost, pathShootPoint, Math.PI / 6 * allianceSign, 2.5));
+        segments2.add(new Segment(avoidStagePost, pathShootPoint2, 0.61 * allianceSign, 2.5));
 
         segments2.get(3).entryActivateValue = true;
         segments2.get(3).entryActivate = alignSchema;
@@ -76,7 +78,7 @@ public class SourceL2
         Path path1 = new Path(segments1, Math.PI / 6 * allianceSign);
         path1.transverseVelocity = 1.5;
 
-        Path path2 = new Path(segments2, Math.PI / 6 * allianceSign);
+        Path path2 = new Path(segments2, 0.61 * allianceSign);
         path2.transverseVelocity = 1.5;
 
 
@@ -100,14 +102,14 @@ public class SourceL2
                 new SequentialCommandGroup(
                     collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter),
                     new ParallelCommandGroup(
-                        new RunShooter(shooter, range1),
-                        new PivotRangeCommand(pivot, range1)
+                        new RunShooter(shooter, range2),
+                        new PivotRangeCommand(pivot, range2)
                     )
                 )      
             ), 
             new ParallelCommandGroup(
-                new RunShooter(shooter, rangeFinder, 4.3),
-                new PivotRangeCommand(pivot, rangeFinder, 4.3)
+                new RunShooter(shooter, rangeFinder, range2),
+                new PivotRangeCommand(pivot, rangeFinder, range2)
             ),
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30),
