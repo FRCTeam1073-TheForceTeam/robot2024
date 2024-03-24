@@ -56,7 +56,7 @@ public class AmpL1
         Path path = new Path(segments, -0.724 * allianceSign);
 
         return new SequentialCommandGroup(
-            new WaitCommand(8.0),
+            new WaitCommand(7.0),
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), alignSchema, drivetrain),
                 new ParallelCommandGroup(
@@ -68,9 +68,9 @@ public class AmpL1
             ),
             new ParallelCommandGroup(
                 //shoot shot
-                new RunShooter(shooter, rangeFinder),
+                new RunShooter(shooter, rangeFinder, range1),
                 //find pivot
-                new PivotRangeCommand(pivot, rangeFinder)
+                new PivotRangeCommand(pivot, rangeFinder, range1)
             ),
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30),
