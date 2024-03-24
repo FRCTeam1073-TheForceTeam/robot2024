@@ -119,9 +119,9 @@ public class Drivetrain extends DiagnosticsSubsystem
 
 
     // Add each module as a child for debugging:
-    for (int mod = 0; mod < 4; ++mod) {
-      addChild(String.format("Module[%d]", mod), modules[mod]);
-    }
+    // for (int mod = 0; mod < 4; ++mod) {
+    //   addChild(String.format("Module[%d]", mod), modules[mod]);
+    // }
   }
 
   // Initialize preferences for this class:

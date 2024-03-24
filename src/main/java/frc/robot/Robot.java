@@ -78,7 +78,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-      m_robotContainer.printAllFalseDiagnostics();
+      // m_robotContainer.printAllFalseDiagnostics();
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
