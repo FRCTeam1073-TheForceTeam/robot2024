@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.AlignSpeakerAutoSchema;
 import frc.robot.commands.DrivePathSchema;
 import frc.robot.commands.NWSetPivot;
@@ -21,10 +22,11 @@ import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Headlight;
 
 public class AmpL1 
 {
-    public static Command create(Drivetrain drivetrain, Shooter shooter, Pivot pivot, Feeder feeder, 
+    public static Command create(Drivetrain drivetrain, Headlight headlight, Shooter shooter, Pivot pivot, Feeder feeder, 
         AprilTagFinder tagFinder, RangeFinder rangeFinder, boolean isRed)
     {
         int allianceSign = 0;
@@ -37,7 +39,7 @@ public class AmpL1
             allianceSign = -1;
         }
 
-        AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder);
+        AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder, headlight);
 
         Path.Point startPoint = new Path.Point(0.0, 0.0);
         Path.Point shootPoint = new Path.Point(1.757, 0.109 * allianceSign);
@@ -54,6 +56,7 @@ public class AmpL1
         Path path = new Path(segments, -0.724 * allianceSign);
 
         return new SequentialCommandGroup(
+            new WaitCommand(8.0),
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), alignSchema, drivetrain),
                 new ParallelCommandGroup(

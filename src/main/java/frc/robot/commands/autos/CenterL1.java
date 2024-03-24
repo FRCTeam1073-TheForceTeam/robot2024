@@ -24,10 +24,11 @@ import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Headlight;
 
 public class CenterL1 
 {
-    public static Command create(Drivetrain drivetrain, Shooter shooter, Pivot pivot, Feeder feeder, CollectFeedCommand collectCommand, 
+    public static Command create(Drivetrain drivetrain, Headlight headlight, Shooter shooter, Pivot pivot, Feeder feeder, CollectFeedCommand collectCommand, 
     Collector collector, CollectorArm collectorArm, AprilTagFinder tagFinder, RangeFinder rangeFinder, boolean isRed)
     {
         int allianceSign = 0;
@@ -40,7 +41,7 @@ public class CenterL1
             allianceSign = -1;
         }
 
-        AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder);
+        AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder, headlight);
 
         Path.Point start = new Path.Point(0.0, 0.0);
         Path.Point pathShootPoint = new Path.Point(1.31, -0.37 * allianceSign);
@@ -60,7 +61,7 @@ public class CenterL1
 
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
-                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), new AlignSpeakerAutoSchema(tagFinder), drivetrain),
+                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
                 new RunShooter(shooter, range1),
                 new PivotRangeCommand(pivot, range1)
             ),

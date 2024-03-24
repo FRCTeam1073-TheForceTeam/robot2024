@@ -9,28 +9,29 @@ import frc.robot.commands.AlignSpeakerAutoSchema;
 import frc.robot.commands.CollectFeedCommand;
 import frc.robot.commands.DrivePathSchema;
 import frc.robot.commands.Path;
-import frc.robot.commands.SchemaDriveAuto;
-import frc.robot.commands.SetPivotCommand;
-import frc.robot.commands.StopShooter;
 import frc.robot.commands.Path.Segment;
 import frc.robot.commands.PivotRangeCommand;
 import frc.robot.commands.RunFeeder;
 import frc.robot.commands.RunShooter;
+import frc.robot.commands.SchemaDriveAuto;
+import frc.robot.commands.SetPivotCommand;
+import frc.robot.commands.StopShooter;
 import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.CollectorArm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.Headlight;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.Shooter;
 
 public class RedCenterL1 
 {
-    public static Command create(Drivetrain drivetrain, Shooter shooter, Pivot pivot, Feeder feeder, CollectFeedCommand collectCommand, 
+    public static Command create(Drivetrain drivetrain, Headlight headlight, Shooter shooter, Pivot pivot, Feeder feeder, CollectFeedCommand collectCommand, 
     Collector collector, CollectorArm collectorArm, AprilTagFinder tagFinder, RangeFinder rangeFinder)
     {
-        AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder);
+        AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder, headlight);
 
         Path.Point start = new Path.Point(0.0, 0.0);
         Path.Point pathShootPoint = new Path.Point(1.31, -0.37);
@@ -50,7 +51,7 @@ public class RedCenterL1
 
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
-                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), new AlignSpeakerAutoSchema(tagFinder), drivetrain),
+                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
                 new RunShooter(shooter, range1),
                 new PivotRangeCommand(pivot, range1)
             ),

@@ -4,76 +4,55 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
+// import frc.robot.subsystems.Camera;
+import frc.robot.commands.ArmPoseTeleop;
+import frc.robot.commands.CancelCommand;
+import frc.robot.commands.ClimberTeleop;
+import frc.robot.commands.CollectFeedCommand;
+import frc.robot.commands.CollectorArmTeleop;
+import frc.robot.commands.CollectorTeleop;
+import frc.robot.commands.HandoffCommand;
+import frc.robot.commands.LaunchFeederToSpeaker;
+import frc.robot.commands.SetShotsSequences;
+import frc.robot.commands.SpeakerTagAllianceSearch;
+import frc.robot.commands.TeleopDrive;
 import frc.robot.commands.autos.AmpL1;
 import frc.robot.commands.autos.AmpL2;
 import frc.robot.commands.autos.AmpL3;
 import frc.robot.commands.autos.AmpL4;
-import frc.robot.commands.autos.BlueAmpL1;
-import frc.robot.commands.autos.BlueAmpL2;
-import frc.robot.commands.autos.BlueAmpL3;
-import frc.robot.commands.autos.BlueAmpL4;
-import frc.robot.commands.autos.BlueCenterL1;
-import frc.robot.commands.autos.BlueCenterL2;
-import frc.robot.commands.autos.BlueCenterL3;
-import frc.robot.commands.autos.BlueCenterL4;
-import frc.robot.commands.autos.BlueSourceL1;
-import frc.robot.commands.autos.BlueSourceL2;
-import frc.robot.commands.autos.BlueSourceL3;
-import frc.robot.commands.autos.BlueSourceL4;
-import frc.robot.commands.autos.BlueSourceSnowplow;
 import frc.robot.commands.autos.CenterL1;
 import frc.robot.commands.autos.CenterL2;
 import frc.robot.commands.autos.CenterL3;
 import frc.robot.commands.autos.CenterL4;
 import frc.robot.commands.autos.LeaveAuto;
-import frc.robot.commands.autos.RedAmpL1;
-import frc.robot.commands.autos.RedAmpL2;
-import frc.robot.commands.autos.RedAmpL3;
-import frc.robot.commands.autos.RedAmpL4;
-import frc.robot.commands.autos.RedCenterL1;
-import frc.robot.commands.autos.RedCenterL2;
-import frc.robot.commands.autos.RedCenterL3;
-import frc.robot.commands.autos.RedCenterL4;
-import frc.robot.commands.autos.RedSourceL1;
-import frc.robot.commands.autos.RedSourceL2;
-import frc.robot.commands.autos.RedSourceL3;
-import frc.robot.commands.autos.RedSourceL4;
-import frc.robot.commands.autos.RedSourceSnowplow;
 import frc.robot.commands.autos.SourceL1;
 import frc.robot.commands.autos.SourceL2;
 import frc.robot.commands.autos.SourceL3;
 import frc.robot.commands.autos.SourceL4;
 import frc.robot.commands.autos.SourceSnowplow;
 import frc.robot.commands.autos.TestAuto;
-import frc.robot.subsystems.CollectorArm.POSE;
-
-import java.util.ArrayList;
-
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-
-import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
-
-import edu.wpi.first.apriltag.AprilTag;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Preferences;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-// import frc.robot.subsystems.Camera;
-import frc.robot.commands.*;
-import frc.robot.subsystems.*;
+import frc.robot.subsystems.AprilTagFinder;
+import frc.robot.subsystems.Bling;
+import frc.robot.subsystems.Climber;
+import frc.robot.subsystems.Collector;
+import frc.robot.subsystems.CollectorArm;
+import frc.robot.subsystems.Drivetrain;
+import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.Headlight;
+import frc.robot.subsystems.OI;
+import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.RangeFinder;
+import frc.robot.subsystems.SerialComms;
+import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.SwerveModuleConfig;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -101,7 +80,7 @@ public class RobotContainer {
   private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
   private final SetShotsSequences m_setShotsSequences = new SetShotsSequences();
   private final CancelCommand m_cancelCommand = new CancelCommand();
-  private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_OI, m_aprilTagFinder);
+  private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_headlight, m_OI, m_aprilTagFinder);
   private final Collector m_collector = new Collector();
   private final CollectorArm m_collectorArm = new CollectorArm();
   private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_collectorArm, m_drivetrain, m_OI);
@@ -327,31 +306,31 @@ public class RobotContainer {
       case kNoAuto:
         return null;
       case kSourceL1:
-        return SourceL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder, isRed);
+        return SourceL1.create(m_drivetrain, m_headlight, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder, isRed);
       case kSourceL2:
-        return SourceL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
+        return SourceL2.create(m_drivetrain, m_headlight, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
       case kSourceL3:
-        return SourceL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
+        return SourceL3.create(m_drivetrain, m_headlight, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
       case kSourceL4:
-        return SourceL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
+        return SourceL4.create(m_drivetrain, m_headlight, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
       case kSourceSnowplow:
         return SourceSnowplow.create(m_drivetrain, m_shooter, m_pivot, m_feeder, isRed);
       case kCenterL1:
-        return CenterL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
+        return CenterL1.create(m_drivetrain, m_headlight, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
       case kCenterL2:
-        return CenterL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
+        return CenterL2.create(m_drivetrain, m_headlight, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
       case kCenterL3:
-        return CenterL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
+        return CenterL3.create(m_drivetrain, m_headlight, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
       case kCenterL4:
-        return CenterL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
+        return CenterL4.create(m_drivetrain, m_headlight, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
       case kAmpL1:
-        return AmpL1.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder, isRed);
+        return AmpL1.create(m_drivetrain, m_headlight, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder, isRed);
       case kAmpL2:
-        return AmpL2.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder, m_collector, m_collectorArm, m_collectAndFeed, isRed);
+        return AmpL2.create(m_drivetrain, m_headlight, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder, m_collector, m_collectorArm, m_collectAndFeed, isRed);
       case kAmpL3:
-        return AmpL3.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder, m_collector, m_collectorArm, m_collectAndFeed, isRed);
+        return AmpL3.create(m_drivetrain, m_headlight, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder, m_collector, m_collectorArm, m_collectAndFeed, isRed);
       case kAmpL4:
-        return AmpL4.create(m_drivetrain, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder, m_collector, m_collectorArm, m_collectAndFeed, isRed);
+        return AmpL4.create(m_drivetrain, m_headlight, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder, m_collector, m_collectorArm, m_collectAndFeed, isRed);
       case kLeaveAuto:
         return LeaveAuto.create(m_drivetrain);
       case kTestAuto:

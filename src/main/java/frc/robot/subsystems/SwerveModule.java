@@ -316,15 +316,16 @@ public class SwerveModule extends DiagnosticsBase implements Sendable
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.setSmartDashboardType(String.format("SwerveModule[%d]", cfg.moduleNumber));
-        builder.addDoubleProperty(String.format("Target Steer R %d", cfg.moduleNumber), this::getTargetSteerRotations, null);
-        builder.addDoubleProperty(String.format("Target Drive V %d", cfg.moduleNumber), this::getTargetDriveVelocity, null);
-        builder.addDoubleProperty(String.format("Steer R %d", cfg.moduleNumber), this::getSteerRotations, null);
-        builder.addDoubleProperty(String.format("Drive V %d", cfg.moduleNumber), this::getDriveVelocity, null);
-        builder.addDoubleProperty(String.format("Drive Position %d", cfg.moduleNumber), this::getDrivePosition, null);
-        builder.addDoubleProperty(String.format("Target Drive V Rotations %d", cfg.moduleNumber), this::getTargetDriveVelocityRotations, null);
-        builder.addDoubleProperty(String.format("Drive V Rotations %d", cfg.moduleNumber), this::getDriveVelocityRotations, null);
-        builder.addDoubleProperty(String.format("Drive V Error %d", cfg.moduleNumber), this::getVelocityError, null);
+        // Removed for elims:
+        // builder.setSmartDashboardType(String.format("SwerveModule[%d]", cfg.moduleNumber));
+        // builder.addDoubleProperty(String.format("Target Steer R %d", cfg.moduleNumber), this::getTargetSteerRotations, null);
+        // builder.addDoubleProperty(String.format("Target Drive V %d", cfg.moduleNumber), this::getTargetDriveVelocity, null);
+        // builder.addDoubleProperty(String.format("Steer R %d", cfg.moduleNumber), this::getSteerRotations, null);
+        // builder.addDoubleProperty(String.format("Drive V %d", cfg.moduleNumber), this::getDriveVelocity, null);
+        // builder.addDoubleProperty(String.format("Drive Position %d", cfg.moduleNumber), this::getDrivePosition, null);
+        // builder.addDoubleProperty(String.format("Target Drive V Rotations %d", cfg.moduleNumber), this::getTargetDriveVelocityRotations, null);
+        // builder.addDoubleProperty(String.format("Drive V Rotations %d", cfg.moduleNumber), this::getDriveVelocityRotations, null);
+        // builder.addDoubleProperty(String.format("Drive V Error %d", cfg.moduleNumber), this::getVelocityError, null);
     //   steerEncoder.initSendable(builder);
     //   steerMotor.initSendable(builder);
     //   driveMotor.initSendable(builder);

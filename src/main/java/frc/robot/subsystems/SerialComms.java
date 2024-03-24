@@ -72,6 +72,7 @@ public class SerialComms {
     if (serialPort != null) {
       try {
         int bytestoread = serialPort.getBytesReceived();
+      
         if (bytestoread >= 8 ) {
           bytes = serialPort.read(bytestoread);
           // We got a message.

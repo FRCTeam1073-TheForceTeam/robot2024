@@ -21,13 +21,14 @@ import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.CollectorArm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.Headlight;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.Shooter;
 
 public class SourceL2 
 {
-    public static Command create(Drivetrain drivetrain, Shooter shooter, Pivot pivot, Feeder feeder, 
+    public static Command create(Drivetrain drivetrain, Headlight headlight, Shooter shooter, Pivot pivot, Feeder feeder, 
         CollectFeedCommand collectCommand, Collector collector, CollectorArm collectorArm, AprilTagFinder tagFinder, 
         RangeFinder rangeFinder, boolean isRed)
     {
@@ -41,7 +42,7 @@ public class SourceL2
             allianceSign = -1;
         }
 
-        AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder);
+        AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder, headlight);
 
         Path.Point start = new Path.Point(0.0, 0.0);
         Path.Point pathShootPoint = new Path.Point(3.165, -0.848 * allianceSign);
@@ -68,7 +69,7 @@ public class SourceL2
         segments2.add(new Segment(pathShootPoint, avoidStagePost, 0.0, 2.5));
         segments2.add(new Segment(avoidStagePost, midlineNote2, 0.0, 2.5));
         segments2.add(new Segment(midlineNote2, avoidStagePost, Math.PI / 6 * allianceSign, 2.5));
-        segments2.add(new Segment(avoidStagePost, pathShootPoint2, 0.61 * allianceSign, 2.5));
+        segments2.add(new Segment(avoidStagePost, pathShootPoint2, 0.69 * allianceSign, 2.5));
 
         segments2.get(3).entryActivateValue = true;
         segments2.get(3).entryActivate = alignSchema;
@@ -78,7 +79,7 @@ public class SourceL2
         Path path1 = new Path(segments1, Math.PI / 6 * allianceSign);
         path1.transverseVelocity = 1.5;
 
-        Path path2 = new Path(segments2, 0.61 * allianceSign);
+        Path path2 = new Path(segments2, 0.69 * allianceSign);
         path2.transverseVelocity = 1.5;
 
 

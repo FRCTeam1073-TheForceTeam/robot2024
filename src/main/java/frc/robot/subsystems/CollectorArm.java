@@ -291,7 +291,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
     //double liftAngleRotations = (liftAngle + liftAbsoluteOffset) / liftRadiansPerRotation;
     double liftAngleRotations = liftAngle;
     double liftFeedForward = lift_kG * Math.cos(currentLiftAngle);
-    SmartDashboard.putNumber("Commanded Motor LiftAngleRotations", liftAngleRotations);
+    //SmartDashboard.putNumber("Commanded Motor LiftAngleRotations", liftAngleRotations);
     liftMotor.setControl(liftPositionVoltage.withPosition(liftAngleRotations).withFeedForward(liftFeedForward));
   }
 
@@ -299,7 +299,7 @@ public class CollectorArm extends DiagnosticsSubsystem {
   {
     //double extendLengthRotations = (extendLength + extendAbsoluteOffset) / extendMetersPerRotation;
     double extendLengthRotations = extendLength;
-    SmartDashboard.putNumber("Commanded Motor ExtendLengthRotations", extendLengthRotations);
+    //SmartDashboard.putNumber("Commanded Motor ExtendLengthRotations", extendLengthRotations);
     extendMotor.setControl(extendPositionVoltage.withPosition(extendLengthRotations)); 
   }
 

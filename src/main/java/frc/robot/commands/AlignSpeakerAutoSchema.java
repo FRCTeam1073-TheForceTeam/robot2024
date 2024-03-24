@@ -11,27 +11,29 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
+import frc.robot.subsystems.Headlight;
 
 public class AlignSpeakerAutoSchema extends MotionSchema implements Activate
 {
   AprilTagFinder finder;
+  Headlight headlight;
   double rotation = 0.0;
   double error = 0.0;
   double last_error = 0.0;
   boolean active = false;
-  double center_point = 155.0;
+  double center_point = 150.0;
 
   /** Creates a new AlignToSpeakerSchema. */
-  public AlignSpeakerAutoSchema(AprilTagFinder finder) 
+  public AlignSpeakerAutoSchema(AprilTagFinder finder, Headlight headlight) 
   {
     this.finder = finder;
+    this.headlight = headlight;
     active = false;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize(Drivetrain drivetrain) {
-
   }
 
   @Override
@@ -46,21 +48,30 @@ public class AlignSpeakerAutoSchema extends MotionSchema implements Activate
   {
     var apriltag = finder.getCurrentTagData();
 
-    if (apriltag.isValid() && active)
+    if (active)
     {
-      last_error = error;
-      error = (center_point - apriltag.cx);
+      headlight.setHeadlight(true);
+      if (apriltag.isValid())
+      {
+        last_error = error;
+        error = (center_point - apriltag.cx);
 
-      // PD controller form:
-      rotation = 0.02 * error +  0.0 * (error - last_error) ;
-      MathUtil.clamp(rotation, -1.0, 1.0);
+        // PD controller form:
+        rotation = 0.02 * error +  0.0 * (error - last_error) ;
+        MathUtil.clamp(rotation, -1.0, 1.0);
 
 
-      setRotate(rotation, 3.0);
+        setRotate(rotation, 3.0);
+      }
+      else
+      {
+        setRotate(0.0, 0.0);
+      }
     }
     else
     {
       setRotate(0.0, 0.0);
+      headlight.setHeadlight(false);
     }
 
     SmartDashboard.putBoolean("Align To Speaker Active", apriltag.isValid() && active);
@@ -68,7 +79,9 @@ public class AlignSpeakerAutoSchema extends MotionSchema implements Activate
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    headlight.setHeadlight(false);
+  }
 
   // Returns true when the command should end.
   @Override

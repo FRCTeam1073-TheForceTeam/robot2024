@@ -138,10 +138,10 @@ public class Climber extends DiagnosticsSubsystem {
    @Override
     public void initSendable(SendableBuilder builder) {
         builder.setSmartDashboardType("Climber");
-        builder.addDoubleProperty("Target Left Vel", this::getTargetLeftVelocity, null);
-        builder.addDoubleProperty("Target Right Vel", this::getTargetRightVelocity, null);
-        builder.addDoubleProperty("Left Vel", this::getLeftVelocity, null);
-        builder.addDoubleProperty("Right Vel", this::getRightVelocity, null);
+        // builder.addDoubleProperty("Target Left Vel", this::getTargetLeftVelocity, null);
+        // builder.addDoubleProperty("Target Right Vel", this::getTargetRightVelocity, null);
+        // builder.addDoubleProperty("Left Vel", this::getLeftVelocity, null);
+        // builder.addDoubleProperty("Right Vel", this::getRightVelocity, null);
         builder.addDoubleProperty("Left Pos", this::getLeftPosition, null);
         builder.addDoubleProperty("Right Pos", this::getRightPosition, null);
     }  

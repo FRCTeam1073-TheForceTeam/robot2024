@@ -151,8 +151,8 @@ public class Drivetrain extends DiagnosticsSubsystem
     super.initSendable(builder);
     // builder.setSmartDashboardType("Drivetrain");
     builder.addBooleanProperty("ParkingBrake", this::getParkingBrake, null);
-    //builder.addDoubleProperty("Odo X", this.getOdometry()::getX, null);
-    //builder.addDoubleProperty("Odo Y", this.getOdometry()::getY, null);
+    builder.addDoubleProperty("Odo X", this::getOdometryX, null);
+    builder.addDoubleProperty("Odo Y", this::getOdometryY, null);
     builder.addDoubleProperty("Odo Heading(DEG)", this::getHeadingDegrees, null);
     builder.addDoubleProperty("Odo Wrapped Heading", this::getWrappedHeadingDegrees, null);
     builder.addDoubleProperty("Target Vx", this::getTargetVx, null);
@@ -288,6 +288,14 @@ public class Drivetrain extends DiagnosticsSubsystem
     return new Pose2d(odometry.getPoseMeters().getX(), odometry.getPoseMeters().getY(), Rotation2d.fromDegrees(MathUtils.wrapAngleDegrees(getHeadingDegrees())));
   }
 
+  public double getOdometryX(){
+    return odometry.getPoseMeters().getX();
+  }
+
+  public double getOdometryY(){
+    return odometry.getPoseMeters().getY();
+  }
+
   public Pose3d get3dOdometry()
   {
     // return odometry position as a pose 3d
@@ -320,12 +328,11 @@ public class Drivetrain extends DiagnosticsSubsystem
     updateOdometry();
 
     // Removed this is already in sendable:
-    SmartDashboard.putNumber("Odometry X", getOdometry().getX());
-    SmartDashboard.putNumber("Odometry Y", getOdometry().getY());
+    // SmartDashboard.putNumber("Odometry X", getOdometry().getX());
+    // SmartDashboard.putNumber("Odometry Y", getOdometry().getY());
     // SmartDashboard.putNumber("Wrapped Heading Degrees", getWrappedHeadingDegrees());
     // SmartDashboard.putNumber("Wrapped Heading Radians", getWrappedHeadingRadians());
   }
-
 
   // rotates all the wheels to be facing inwards and stops the motors to hold position
   public void parkingBrake(boolean parkingBrakeOn) 

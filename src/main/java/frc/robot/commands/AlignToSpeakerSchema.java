@@ -10,23 +10,28 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
+import frc.robot.subsystems.Headlight;
 
 public class AlignToSpeakerSchema extends MotionSchema 
 {
   AprilTagFinder finder;
+  Headlight headlight;
   OI oi;
   double rotation;
 
   /** Creates a new AlignToSpeakerSchema. */
-  public AlignToSpeakerSchema(AprilTagFinder finder, OI oi) 
+  public AlignToSpeakerSchema(AprilTagFinder finder, Headlight headlight, OI oi) 
   {
     this.finder = finder;
+    this.headlight = headlight;
     this.oi = oi;
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize(Drivetrain drivetrain) {}
+  public void initialize(Drivetrain drivetrain) {
+    headlight.setHeadlight(false);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -34,22 +39,33 @@ public class AlignToSpeakerSchema extends MotionSchema
   {
     var apriltag = finder.getCurrentTagData();
 
-    if (oi.getDriverBButton() && apriltag.isValid())
+    if (oi.getDriverBButton())
     {
-      rotation = (0.02 + (drivetrain.getChassisSpeeds().vyMetersPerSecond * 0.01)) * (155 - apriltag.cx);
-      MathUtil.clamp(rotation, -1.5, 1.5);
+      headlight.setHeadlight(true);
+      if (apriltag.isValid())
+      {
+       rotation = (0.02 + (drivetrain.getChassisSpeeds().vyMetersPerSecond * 0.01)) * (155 - apriltag.cx);
+       MathUtil.clamp(rotation, -1.5, 1.5);
 
-      setRotate(rotation, 1.0);
+        setRotate(rotation, 1.0);
+      }
+      else //if((Math.abs(160 - apriltag.cx) < 20) && !finder.tagFound())
+      {
+        setRotate(0.0, 0.0);
+      }
     }
-    else //if((Math.abs(160 - apriltag.cx) < 20) && !finder.tagFound())
+    else
     {
       setRotate(0.0, 0.0);
+      headlight.setHeadlight(false);
     }
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    headlight.setHeadlight(false);
+  }
 
   // Returns true when the command should end.
   @Override
