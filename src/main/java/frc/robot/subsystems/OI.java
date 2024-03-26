@@ -23,6 +23,7 @@ public class OI extends DiagnosticsSubsystem
   public Debouncer aDriverButtonDebouncer = new Debouncer(0.05);
   public Debouncer bDriverButtonDebouncer = new Debouncer(0.05);
   public Debouncer yDriverButtonDebouncer = new Debouncer(0.05);
+  public Debouncer menuOperatorButtonDebouncer = new Debouncer(0.1);
 
   // Declares the "zero" value variables (which allow us to compensate for joysticks that are a little off)
   private double LEFT_X_ZERO;
@@ -226,7 +227,8 @@ public class OI extends DiagnosticsSubsystem
   }
 
   public boolean getOperatorMenuButton() {
-    return getOperatorRawButton(8);
+    return menuOperatorButtonDebouncer.calculate(operatorController.getRawButton(8));
+
   }
 
   public boolean getOperatorDPadUp(){

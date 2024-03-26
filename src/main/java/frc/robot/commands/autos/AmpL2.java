@@ -2,28 +2,20 @@ package frc.robot.commands.autos;
 
 import java.util.ArrayList;
 
-import javax.naming.PartialResultException;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AlignSpeakerAutoSchema;
 import frc.robot.commands.CollectFeedCommand;
-import frc.robot.commands.CollectorIntakeCommand;
 import frc.robot.commands.DrivePathSchema;
-import frc.robot.commands.HandoffCommand;
 import frc.robot.commands.NWSetPivot;
 import frc.robot.commands.Path;
+import frc.robot.commands.Path.Segment;
 import frc.robot.commands.PivotRangeCommand;
 import frc.robot.commands.RunFeeder;
 import frc.robot.commands.RunShooter;
 import frc.robot.commands.SchemaDriveAuto;
-import frc.robot.commands.SetPivotCommand;
 import frc.robot.commands.StopShooter;
-import frc.robot.commands.WaitForPoint;
-import frc.robot.commands.Path.Segment;
 import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.CollectorArm;
@@ -34,22 +26,32 @@ import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.Shooter;
 
-public class BlueAmpL2 
+public class AmpL2 
 {
-   public static Command create(Drivetrain drivetrain, Headlight headlight, Shooter shooter, Pivot pivot, Feeder feeder, AprilTagFinder tagFinder, RangeFinder rangeFinder, 
-    CollectFeedCommand collectCommand, Collector collector, CollectorArm collectorArm)
+    public static Command create(Drivetrain drivetrain, Headlight headlight, Shooter shooter, Pivot pivot, Feeder feeder, AprilTagFinder tagFinder, 
+        RangeFinder rangeFinder, Collector collector, CollectorArm collectorArm, CollectFeedCommand collectCommand, boolean isRed)
     {
+        int allianceSign = 0;
+        if (isRed)
+        {
+            allianceSign = 1;
+        }
+        else
+        {
+            allianceSign = -1;
+        }
+
         AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder, headlight);
 
         Path.Point startPoint = new Path.Point(0.0, 0.0);
-        Path.Point shootPoint = new Path.Point(1.757, -0.109);
-        Path.Point collectShootPoint = new Path.Point(2.479, -0.163);
+        Path.Point shootPoint = new Path.Point(1.757, 0.109 * allianceSign);
+        Path.Point collectShootPoint = new Path.Point(2.479, 0.163 * allianceSign);
 
 
         double range1 = 2.5;
 
         ArrayList<Segment> segments = new ArrayList<Segment>();
-        segments.add(new Segment(startPoint, shootPoint, 0.724, 2.5));
+        segments.add(new Segment(startPoint, shootPoint, -0.724 * allianceSign, 2.5));
         segments.get(0).entryActivateValue = true;
         segments.get(0).entryActivate = alignSchema;
         segments.get(0).exitActivateValue = false;
@@ -57,15 +59,15 @@ public class BlueAmpL2
         ArrayList<Segment> segments1 = new ArrayList<Segment>();
         segments1.add(new Segment(shootPoint, shootPoint, 0.0, 2.5));
         ArrayList<Segment> segments2 = new ArrayList<Segment>();
-        segments2.add(new Segment(shootPoint, collectShootPoint, 0.588, 2.5));
+        segments2.add(new Segment(shootPoint, collectShootPoint, -0.588 * allianceSign, 2.5));
         segments2.get(0).entryActivateValue  = true;
         segments2.get(0).entryActivate = alignSchema;
         segments2.get(0).exitActivateValue = false;
         segments2.get(0).exitActivate = alignSchema;
 
-        Path path = new Path(segments, 0.724);
+        Path path = new Path(segments, -0.724 * allianceSign);
         Path path1 = new Path(segments1, 0.0);
-        Path path2 = new Path(segments2, 0.588);
+        Path path2 = new Path(segments2, -0.588 * allianceSign);
 
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
@@ -102,6 +104,5 @@ public class BlueAmpL2
                 new PivotRangeCommand(pivot, rangeFinder)
             )
         );
-    }
-    
+    }       
 }

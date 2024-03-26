@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.OI;
+import frc.robot.subsystems.Headlight;
 
 public class TeleopDrive extends SchemaArbiter 
 {
@@ -23,6 +24,7 @@ public class TeleopDrive extends SchemaArbiter
   Pose2d targetRotation;
   Pose2d robotRotation;
   Drivetrain m_drivetrain;
+  Headlight m_headlight;
   OI m_OI;
   private boolean fieldCentric;
   private boolean parked = false;
@@ -48,11 +50,12 @@ public class TeleopDrive extends SchemaArbiter
 
 
   /** Creates a new Teleop. */
-  public TeleopDrive(Drivetrain ds, OI oi, AprilTagFinder finder) 
+  public TeleopDrive(Drivetrain ds, Headlight headlight, OI oi, AprilTagFinder finder) 
   {
     super(ds, true, false);
     super.setName("Teleop Drive");
     m_drivetrain = ds;
+    m_headlight = headlight;
     m_OI = oi;
     fieldCentric = true;
     startAngle = ds.getHeadingDegrees();
@@ -67,7 +70,7 @@ public class TeleopDrive extends SchemaArbiter
     rotateSchema = new TeleopRotateSchema(m_OI, maximumRotationVelocity);
     holdSchema = new TeleopHeadingHoldSchema(m_OI);
     targetSchema = new PointAtTargetSchema(maximumRotationVelocity, new Pose2d(2.5, 0.0, new Rotation2d()), 1.75);
-    alignSchema = new AlignToSpeakerSchema(aprilTagFinder, m_OI);
+    alignSchema = new AlignToSpeakerSchema(aprilTagFinder, headlight, m_OI);
     addSchema(translateSchema);
     addSchema(rotateSchema);
     addSchema(holdSchema);

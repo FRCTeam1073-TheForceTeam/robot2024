@@ -34,16 +34,17 @@ public class DiagnosticsSubsystem extends SubsystemBase implements Diagnostics {
 
   /** This method should only be run from the subsystem's updateDiagnostics method! */
   public boolean setDiagnosticsFeedback(String diagnosticDetails, boolean ok){
-    this.diagnosticsDetails = diagnosticDetails;
-    this.diagnosticsOk = ok;
-    return this.diagnosticsOk;
+    // this.diagnosticsDetails = diagnosticDetails;
+    // this.diagnosticsOk = ok;
+    // return this.diagnosticsOk;
+    return false;
   }
 
   /** Run this method in RobotContainer's printAllFalseDiagnostics method to print error messages to the console. */
   public boolean printDiagnostics(boolean disabled){
-    if(!this.diagnosticsOk && disabled){
-      DriverStation.reportError(this.diagnosticsDetails, false);
-    }
-    return this.diagnosticsOk;
+    // if(!this.diagnosticsOk && disabled){
+    //   DriverStation.reportError(this.diagnosticsDetails, false);
+    // }
+    return false;
   }
 }

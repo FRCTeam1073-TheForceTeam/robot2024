@@ -41,6 +41,8 @@ public class Robot extends TimedRobot {
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
 
+    SmartDashboard.putString("Alliance", "None");
+
     // Last but not least start up a camera server to get basic driver feedback.
     CameraServer.startAutomaticCapture();
   }
@@ -76,19 +78,20 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-      m_robotContainer.printAllFalseDiagnostics();
+      // m_robotContainer.printAllFalseDiagnostics();
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
-  public void autonomousInit() {
+  public void autonomousInit() 
+  {
+    m_robotContainer.autonomousInit();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
     }
-    m_robotContainer.autonomousInit();
   }
 
   /** This function is called periodically during autonomous. */

@@ -30,7 +30,7 @@ public class CollectorTeleop extends Command {
   double tofOldValue;
 
   double count = 0;
-  double extraIntakeCounter = 2;
+  double extraIntakeCounter = 3;
 
 
 
@@ -62,7 +62,7 @@ public class CollectorTeleop extends Command {
   public void execute() {
 
     double rate = 0;
-    tofCurrentValue = m_collector.getRangeTOF(); 
+    tofCurrentValue = m_collector.getRangeTOF1(); 
     if(isCollectable){
       rate = (tofCurrentValue - tofOldValue) / 0.02; // calculating the rate of change of the TOF range
 
@@ -73,7 +73,7 @@ public class CollectorTeleop extends Command {
 
     if(tofCurrentValue > maxRange){
       isCollectable = true;
-      extraIntakeCounter = 2;
+      extraIntakeCounter = 3;
     }
     
     if(m_OI.getOperatorRawButton(5)) //outtake

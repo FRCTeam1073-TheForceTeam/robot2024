@@ -34,8 +34,14 @@ public class Collector extends DiagnosticsSubsystem {
   private double tof1DutyCycle;
   private double tof1Freq;
   private double tof1Range;
-  private final double tofCollectorScaleFactor = 3000000/4; // for 50cm (irs16a): 3/4 million || for 130 cm (irs17a): 2 million || for 300 cm (irs17a): 4 million
+  private final double tof1CollectorScaleFactor = 3000000/4; // for 50cm (irs16a): 3/4 million || for 130 cm (irs17a): 2 million || for 300 cm (irs17a): 4 million
 
+  private DigitalInput tof2;
+  private DutyCycle tof2DutyCycleInput;
+  private double tof2DutyCycle;
+  private double tof2Freq;
+  private double tof2Range;
+  private final double tof2CollectorScaleFactor = 3000000/4; // for 50cm (irs16a): 3/4 million || for 130 cm (irs17a): 2 million || for 300 cm (irs17a): 4 million
 
   private final double collectorGearRatio = 3.0/1.0;
   private final double collectorWheelRadius = 0.0254; //meters
@@ -60,6 +66,11 @@ public class Collector extends DiagnosticsSubsystem {
     tof1Freq = 0;
     tof1Range = 0;
 
+    tof2 = new DigitalInput(3); 
+    tof2DutyCycleInput = new DutyCycle(tof2);
+    tof2Freq = 0;
+    tof2Range = 0;
+
     collectorVelocityVoltage = new MotionMagicVelocityVoltage(0).withSlot(0); 
     //collectorLimiter = new SlewRateLimiter(24);
 
@@ -74,7 +85,11 @@ public class Collector extends DiagnosticsSubsystem {
     runCollectMotor(targetCollectorVelocity);
     tof1Freq = tof1DutyCycleInput.getFrequency();
     tof1DutyCycle = tof1DutyCycleInput.getOutput();
-    tof1Range = tofCollectorScaleFactor * (tof1DutyCycle / tof1Freq - 0.001) / 1000; //supposedly in meters
+    tof1Range = tof1CollectorScaleFactor * (tof1DutyCycle / tof1Freq - 0.001) / 1000; //supposedly in meters
+
+    tof2Freq = tof2DutyCycleInput.getFrequency();
+    tof2DutyCycle = tof2DutyCycleInput.getOutput();
+    tof2Range = tof2CollectorScaleFactor * (tof2DutyCycle / tof2Freq - 0.001) / 1000; //supposedly in meters
     // updateDiagnostics();
   }
   
@@ -107,12 +122,20 @@ public class Collector extends DiagnosticsSubsystem {
     return -collectMotor.getPosition().getValueAsDouble();
   }
 
-  public double getRangeTOF() {
+  public double getRangeTOF1() {
     return tof1Range;
   }
 
-  public void setRangeTOF(double tof1Range) {
+  public void setRangeTOF1(double tof1Range) {
     this.tof1Range = tof1Range;
+  }
+
+  public double getRangeTOF2() {
+    return tof2Range;
+  }
+
+  public void setRangeTOF2(double tof2Range) {
+    this.tof2Range = tof2Range;
   }
 
   private void configureHardware(){
@@ -135,7 +158,7 @@ public class Collector extends DiagnosticsSubsystem {
 
   public boolean hasNote()
   {
-    if (getRangeTOF() < 0.42)
+    if (getRangeTOF1() < 0.45 || getRangeTOF2() < 0.3) // fill in Tof2 range value
     {
       return true;
     }
@@ -152,7 +175,8 @@ public class Collector extends DiagnosticsSubsystem {
     builder.addDoubleProperty("Target Velocity", this::getTargetCollectorVelocity, null);
     builder.addDoubleProperty("Actual Velocity", this::getActualCollectorVelocity, null);
     builder.addDoubleProperty("Commanded Velocity", this::getCommandedCollectorVelocity, null);
-    builder.addDoubleProperty("tofCollectorRange", this::getRangeTOF, null);
+    builder.addDoubleProperty("tof1CollectorRange", this::getRangeTOF1, null);
+    builder.addDoubleProperty("tof2CollectorRange", this::getRangeTOF2, null);
     builder.addBooleanProperty("Collector Has Note", this::hasNote, null);
     //builder.addBooleanProperty("ok", this::isOK, null);
     //builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
@@ -169,8 +193,13 @@ public class Collector extends DiagnosticsSubsystem {
       OK = false;
     }
 
-    if(tof1DutyCycleInput.getFrequency()< 2 || collectMotorFault.hasFaults()){
+    if(tof1DutyCycleInput.getFrequency() < 2 || collectMotorFault.hasFaults()){
       result += String.format("tof1 not working");
+      OK = false;
+    }
+    
+    if(tof2DutyCycleInput.getFrequency() < 2 || collectMotorFault.hasFaults()){
+      result += String.format("tof2 not working");
       OK = false;
     }
 

@@ -130,9 +130,9 @@ public class Pivot extends DiagnosticsSubsystem {
     configs.Voltage.PeakForwardVoltage = 12;
     configs.Voltage.PeakReverseVoltage = -12;
 
-    configs.MotionMagic.MotionMagicCruiseVelocity = 15;
+    configs.MotionMagic.MotionMagicCruiseVelocity = 130;
     //configs.MotionMagic.MotionMagicAcceleration = 35;
-    configs.MotionMagic.MotionMagicAcceleration = 80;
+    configs.MotionMagic.MotionMagicAcceleration = 200;
     configs.MotionMagic.MotionMagicJerk = 0;
     // configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
     // configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
@@ -170,9 +170,11 @@ public class Pivot extends DiagnosticsSubsystem {
   public void initSendable(SendableBuilder builder)
   {
     super.initSendable(builder);
-    builder.addDoubleProperty("Debug Pivot Angle", this::getDebugPivotAngle, this::setDebugPivotAngle);
+    // builder.addDoubleProperty("Debug Pivot Angle", this::getDebugPivotAngle, this::setDebugPivotAngle);
     builder.addDoubleProperty("Pivot Test Command Motor Position", this::getTargetPositionInRad, null);
-    builder.addDoubleProperty("Target Pivot Motor Position", this::getTargetPositionInRad, this::setTargetPositionInRad);
+    // builder.addDoubleProperty("Target Pivot Motor Position", this::getTargetPositionInRad, this::setTargetPositionInRad);
+    builder.addDoubleProperty("Target Pivot Motor Position", this::getTargetPositionInRad, null);
+
     builder.addDoubleProperty("Commanded Pivot Motor Position", this::getCommandedPositionInRad, null);
     builder.addDoubleProperty("Actual Pivot Motor Position", this::getCurrentPositionInRad, null);
 

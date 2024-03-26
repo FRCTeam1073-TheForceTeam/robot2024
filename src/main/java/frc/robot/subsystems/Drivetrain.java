@@ -63,7 +63,7 @@ public class Drivetrain extends DiagnosticsSubsystem
 
     SwerveModuleConfig moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 0;
-    moduleConfig.position = new Translation2d(Preferences.getDouble("Drive.ModulePositions", 0.254), Preferences.getDouble("Drive.ModulePositions", 0.5017));
+    moduleConfig.position = new Translation2d(Preferences.getDouble("Drive.ModulePositions", 0.264), Preferences.getDouble("Drive.ModulePositions", 0.264));
 
     modules[0] = new SwerveModule(moduleConfig, moduleIDConfig);
     modulePositions[0] = new SwerveModulePosition();
@@ -73,7 +73,7 @@ public class Drivetrain extends DiagnosticsSubsystem
 
     moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 1;
-    moduleConfig.position = new Translation2d(Preferences.getDouble("Drive.ModulePositions", 0.254), -Preferences.getDouble("Drive.ModulePositions", 0.5017));
+    moduleConfig.position = new Translation2d(Preferences.getDouble("Drive.ModulePositions", 0.264), -Preferences.getDouble("Drive.ModulePositions", 0.264));
 
     modules[1] = new SwerveModule(moduleConfig, moduleIDConfig);
     modulePositions[1] = new SwerveModulePosition();
@@ -83,7 +83,7 @@ public class Drivetrain extends DiagnosticsSubsystem
 
     moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 2;
-    moduleConfig.position = new Translation2d(-Preferences.getDouble("Drive.ModulePositions", 0.254), Preferences.getDouble("Drive.ModulePositions", 0.5017));
+    moduleConfig.position = new Translation2d(-Preferences.getDouble("Drive.ModulePositions", 0.264), Preferences.getDouble("Drive.ModulePositions", 0.264));
 
     modules[2] = new SwerveModule(moduleConfig, moduleIDConfig);
     modulePositions[2] = new SwerveModulePosition();
@@ -92,7 +92,7 @@ public class Drivetrain extends DiagnosticsSubsystem
     moduleIDConfig = new SwerveModuleIDConfig(12, 8, 4);
     moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 3;
-    moduleConfig.position = new Translation2d(-Preferences.getDouble("Drive.ModulePositions", 0.254), -Preferences.getDouble("Drive.ModulePositions", 0.5017));
+    moduleConfig.position = new Translation2d(-Preferences.getDouble("Drive.ModulePositions", 0.264), -Preferences.getDouble("Drive.ModulePositions", 0.264));
 
     modules[3] = new SwerveModule(moduleConfig, moduleIDConfig);
     modulePositions[3] = new SwerveModulePosition();
@@ -119,16 +119,16 @@ public class Drivetrain extends DiagnosticsSubsystem
 
 
     // Add each module as a child for debugging:
-    for (int mod = 0; mod < 4; ++mod) {
-      addChild(String.format("Module[%d]", mod), modules[mod]);
-    }
+    // for (int mod = 0; mod < 4; ++mod) {
+    //   addChild(String.format("Module[%d]", mod), modules[mod]);
+    // }
   }
 
   // Initialize preferences for this class:
   public static void initPreferences() 
   {
-    Preferences.initDouble("Drive.MaximumLinearSpeed", 3.5); // Meters/second
-    Preferences.initDouble("Drive.ModulePositions", 0.5017);
+    Preferences.initDouble("Drive.MaximumLinearSpeed", 4.0); // Meters/second
+    Preferences.initDouble("Drive.ModulePositions", 0.264);
   }
 
   // Returns target x velocity (for sendable)
@@ -151,8 +151,8 @@ public class Drivetrain extends DiagnosticsSubsystem
     super.initSendable(builder);
     // builder.setSmartDashboardType("Drivetrain");
     builder.addBooleanProperty("ParkingBrake", this::getParkingBrake, null);
-    builder.addDoubleProperty("Odo X", this.getOdometry()::getX, null);
-    builder.addDoubleProperty("Odo Y", this.getOdometry()::getY, null);
+    builder.addDoubleProperty("Odo X", this::getOdometryX, null);
+    builder.addDoubleProperty("Odo Y", this::getOdometryY, null);
     builder.addDoubleProperty("Odo Heading(DEG)", this::getHeadingDegrees, null);
     builder.addDoubleProperty("Odo Wrapped Heading", this::getWrappedHeadingDegrees, null);
     builder.addDoubleProperty("Target Vx", this::getTargetVx, null);
@@ -288,6 +288,14 @@ public class Drivetrain extends DiagnosticsSubsystem
     return new Pose2d(odometry.getPoseMeters().getX(), odometry.getPoseMeters().getY(), Rotation2d.fromDegrees(MathUtils.wrapAngleDegrees(getHeadingDegrees())));
   }
 
+  public double getOdometryX(){
+    return odometry.getPoseMeters().getX();
+  }
+
+  public double getOdometryY(){
+    return odometry.getPoseMeters().getY();
+  }
+
   public Pose3d get3dOdometry()
   {
     // return odometry position as a pose 3d
@@ -319,12 +327,12 @@ public class Drivetrain extends DiagnosticsSubsystem
    
     updateOdometry();
 
-    SmartDashboard.putNumber("Odometry X", getOdometry().getX());
-    SmartDashboard.putNumber("Odometry Y", getOdometry().getY());
-    SmartDashboard.putNumber("Wrapped Heading Degrees", getWrappedHeadingDegrees());
-    SmartDashboard.putNumber("Wrapped Heading Radians", getWrappedHeadingRadians());
+    // Removed this is already in sendable:
+    // SmartDashboard.putNumber("Odometry X", getOdometry().getX());
+    // SmartDashboard.putNumber("Odometry Y", getOdometry().getY());
+    // SmartDashboard.putNumber("Wrapped Heading Degrees", getWrappedHeadingDegrees());
+    // SmartDashboard.putNumber("Wrapped Heading Radians", getWrappedHeadingRadians());
   }
-
 
   // rotates all the wheels to be facing inwards and stops the motors to hold position
   public void parkingBrake(boolean parkingBrakeOn) 
@@ -388,14 +396,3 @@ public class Drivetrain extends DiagnosticsSubsystem
   }
 
 }
-
-// class AprilTagSubscriber {
-//   // the publisher is an instance variable so its lifetime matches that of the class
-//   IntegerArraySubscriber intArraySub;
-  
-//   public void GetAprilTag(IntegerArrayTopic intArrayTopic) {
-//       // start publishing; the return value must be retained (in this case, via
-//       // an instance variable)
-//       intArraySub = intArrayTopic.subscribe();
-//     }
-//   }

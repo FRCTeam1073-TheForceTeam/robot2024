@@ -61,7 +61,7 @@ public class CollectorIntakeCommand extends Command {
   @Override
   public void execute() {
     double rate = 0;
-    tofCurrentValue = m_collector.getRangeTOF(); 
+    tofCurrentValue = m_collector.getRangeTOF1(); 
     if(isCollectable){
       rate = (tofCurrentValue - tofOldValue) / 0.02; // calculating the rate of change of the TOF range
 

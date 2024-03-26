@@ -23,30 +23,31 @@ import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.CollectorArm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Feeder;
+import frc.robot.subsystems.Headlight;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.Shooter;
 
 public class BlueSourceL2 
 {
-    public static Command create(Drivetrain drivetrain, Shooter shooter, Pivot pivot, Feeder feeder, 
-        CollectFeedCommand collectCommand, Collector collector, CollectorArm collectorArm, AprilTagFinder finder, RangeFinder rangeFinder)
+    public static Command create(Drivetrain drivetrain, Headlight headlight, Shooter shooter, Pivot pivot, Feeder feeder, 
+        CollectFeedCommand collectCommand, Collector collector, CollectorArm collectorArm, AprilTagFinder tagFinder, RangeFinder rangeFinder)
     {
-        AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(finder);
+        AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder, headlight);
 
         Path.Point start = new Path.Point(0.0, 0.0);
-        Path.Point pathShootPoint = new Path.Point(3.5, 0.0);
+        Path.Point pathShootPoint = new Path.Point(3.165, 0.848);
         Path.Point avoidStagePost = new Path.Point(5.7, -0.75);
-        Path.Point midlineNote2 = new Path.Point(8.1, 0.85);
+        Path.Point midlineNote2 = new Path.Point(8.1, 0.35);
         Path.Point stagePoint = new Path.Point(5.368, 2.37);
         stagePoint.blend_radius = 1.0;
         // avoidStagePost.blend_radius = 0.6;
 
-        double range1 = 4.55;
+        double range1 = 3.9;
 
         ArrayList<Segment> segments1 = new ArrayList<Segment>();
-        segments1.add(new Segment(start, pathShootPoint, -0.768, 3.0));
-        
+        segments1.add(new Segment(start, pathShootPoint, -Math.PI / 6, 2.5));
+
         segments1.get(0).entryActivateValue = true;
         segments1.get(0).entryActivate = alignSchema;
         segments1.get(0).exitActivateValue = false;
@@ -54,37 +55,38 @@ public class BlueSourceL2
         
 
         ArrayList<Segment> segments2 = new ArrayList<Segment>();
-        segments2.add(new Segment(pathShootPoint, avoidStagePost, 0.0, 3.0));
-        segments2.add(new Segment(avoidStagePost, midlineNote2, 0.0, 3.0));
-        segments2.add(new Segment(midlineNote2, avoidStagePost, 0.0, 3.0));
-        segments2.add(new Segment(avoidStagePost, pathShootPoint, -0.768, 3.0));
+        segments2.add(new Segment(pathShootPoint, avoidStagePost, 0.0, 2.5));
+        segments2.add(new Segment(avoidStagePost, midlineNote2, 0.0, 2.5));
+        segments2.add(new Segment(midlineNote2, avoidStagePost, 0.0, 2.5));
+        segments2.add(new Segment(avoidStagePost, pathShootPoint, -Math.PI / 6, 2.5));
 
         segments2.get(3).entryActivateValue = true;
         segments2.get(3).entryActivate = alignSchema;
         segments2.get(3).exitActivateValue = false;
         segments2.get(3).exitActivate = alignSchema;
 
-        Path path1 = new Path(segments1, -0.768);
+        Path path1 = new Path(segments1, -Math.PI / 6);
         path1.transverseVelocity = 1.5;
 
-        Path path2 = new Path(segments2, -0.768);
+        Path path2 = new Path(segments2, -Math.PI / 6);
+        path2.transverseVelocity = 1.5;
 
 
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
-                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path1), new AlignSpeakerAutoSchema(finder), drivetrain), 
+                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path1), alignSchema, drivetrain), 
                 new RunShooter(shooter, range1),
                 new PivotRangeCommand(pivot, range1)
             ),
-            new SequentialCommandGroup(
-                new RunShooter(shooter, rangeFinder),
-                new PivotRangeCommand(pivot, rangeFinder),
-                new ParallelCommandGroup(
-                    new RunFeeder(feeder, 30),
-                    new NWStopShooter(shooter)
-                ),
-                new NWSetPivot(pivot, 0.0)
-            ),             
+            new ParallelCommandGroup(
+                new RunShooter(shooter, rangeFinder, range1),
+                new PivotRangeCommand(pivot, rangeFinder, range1)
+            ),
+            new ParallelCommandGroup(
+                new RunFeeder(feeder, 30),
+                new NWStopShooter(shooter)
+            ),
+            new NWSetPivot(pivot, 0.0),     
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), alignSchema, drivetrain),
                 new SequentialCommandGroup(
@@ -94,14 +96,16 @@ public class BlueSourceL2
                         new PivotRangeCommand(pivot, range1)
                     )
                 )      
+            ), 
+            new ParallelCommandGroup(
+                new RunShooter(shooter, rangeFinder, 4.3),
+                new PivotRangeCommand(pivot, rangeFinder, 4.3)
             ),
-            new SequentialCommandGroup(                
-                new ParallelCommandGroup(
-                    new RunFeeder(feeder, 30),
-                    new StopShooter(shooter)
-                ),
-                new SetPivotCommand(pivot, 0.0)
-            )
+            new ParallelCommandGroup(
+                new RunFeeder(feeder, 30),
+                new NWStopShooter(shooter)
+            ),
+            new NWSetPivot(pivot, 0.0)
         );
-    } 
+    }
 }

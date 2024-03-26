@@ -88,23 +88,24 @@ Swerve module #0 is front left, #1 is front right, #2 is back left, and #3 is ba
 
 |          Button          | Number | Function                   |
 | ------------------------ | ------ | -------------------------- |
-| A                        | 1      |                            |
-| B                        | 2      |                            |
-| X                        | 3      | (W0) Collector             |
-| Y                        | 4      |                            |
-| Front Left Trigger       | 5      |                            |
-| Front Right Trigger      | 6      |                            |
+| A                        | 1      |  Ground Collect Pose       |
+| B                        | 2      |  Amp Pose                  |
+| X                        | 3      |  Stow                      |
+| Y                        | 4      |  Cancel Command            |
+| Front Left Bumper        | 5      |                            |
+| Front Right Bumper       | 6      |  Run Collect Motor         |
 | View Button              | 7      |                            |
-| Menu Button              | 8      |                            |
+| Menu Button              | 8      |  Climb Mode                |
 | Push Down Left Joystick  | 9      |                            |
 | Push Down Right Joystick | 10     |                            |
 
 | Axes & Other             | Axes   | Function                   |
 | ------------------------ | ------ | -------------------------- |
-| Left Joystick            | 0 & 1  |                            |
-| Right Joystick           | 2      |                            |
-| Back Left Trigger        | 3      |                            |
-| Back Right Trigger       | 4 & 5  |                            |
+| Left Joystick (Normal)   | 0 & 1  |  Collector Arm In/Out      |
+| Right Joystick (Normal)  | 2      |  Collector Arm Up/Down     |
+| Joysticks (Climber)      | 0, 1, 2|  Climbers Up/Down          |
+| Back Left Trigger        | 3      |  Handoff                   |
+| Back Right Trigger       | 4 & 5  |  Shoot                     |
 | Dpad                     |        |                            |
 
 ## Reference

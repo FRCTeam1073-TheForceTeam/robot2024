@@ -106,7 +106,7 @@ public class Shooter extends DiagnosticsSubsystem{
     
     shooterTofFreq = shooterTofDutyCycleInput.getFrequency();
     shooterTofDutyCycle = shooterTofDutyCycleInput.getOutput();
-    shooterTofRange = shooterTofDutyCycleInput.getOutput();
+    // shooterTofRange = shooterTofDutyCycleInput.getOutput();
     shooterTofRange = (shooterTofScaleFactor * (shooterTofDutyCycle / shooterTofFreq - 0.001)) / 1000;
 
     // Calculate ratelimited commanded velocities in rotations/second based on meters/second target velocity
@@ -216,10 +216,8 @@ public class Shooter extends DiagnosticsSubsystem{
     TalonFXConfiguration configs = new TalonFXConfiguration();
 
     configs.MotionMagic.MotionMagicCruiseVelocity = 25;
-    // configs.MotionMagic.MotionMagicAcceleration = 20;
-    configs.MotionMagic.MotionMagicAcceleration = 50;
-    // configs.MotionMagic.MotionMagicJerk = 25;
-    configs.MotionMagic.MotionMagicJerk = 50;
+    configs.MotionMagic.MotionMagicAcceleration = 80;
+    configs.MotionMagic.MotionMagicJerk = 80;
 
     configs.Slot0.kP = p;
     configs.Slot0.kI = i;
@@ -230,8 +228,6 @@ public class Shooter extends DiagnosticsSubsystem{
 
     configs.TorqueCurrent.PeakForwardTorqueCurrent = 40;
     configs.TorqueCurrent.PeakReverseTorqueCurrent = -40;
-
-    
 
     topConfigError = topShooterMotor.getConfigurator().apply(configs);
     bottomConfigError = bottomShooterMotor.getConfigurator().apply(configs);
@@ -281,14 +277,15 @@ public class Shooter extends DiagnosticsSubsystem{
     super.initSendable(builder);
     builder.addDoubleProperty("Target Top Motor Velocity", this::getTargetTopVelocityInMPS, null);
     builder.addDoubleProperty("Target Bottom Motor Velocity", this::getTargetBottomVelocityInMPS, null);
-    builder.addDoubleProperty("Set Shooter", this::getTargetBottomVelocityInMPS, this::setBothShooterMotorsInMPS);
+    // builder.addDoubleProperty("Set Shooter", this::getTargetBottomVelocityInMPS, this::setBothShooterMotorsInMPS);
     builder.addBooleanProperty("Note Seen", this::isNoteShot, this::setShot);
     
     builder.addDoubleProperty("Tof Range", this::getTofRange, null);
     builder.addDoubleProperty("Tof Freq", this::getTofFreq, null);
 
-    builder.addDoubleProperty("RunShooter Target Top Motor Velocity", this::getRunShooterTargetTopVelocityInMPS, this::setRunShooterTargetTopVelocityInMPS);
-    builder.addDoubleProperty("RunShooter Bottom Motor Velocity", this::getRunShooterTargetBottomVelocityInMPS, this::setRunShooterTargetBottomVelocityInMPS);
+    // builder.addDoubleProperty("RunShooter Target Top Motor Velocity", this::getRunShooterTargetTopVelocityInMPS, this::setRunShooterTargetTopVelocityInMPS);
+    // builder.addDoubleProperty("RunShooter Bottom Motor Velocity", this::getRunShooterTargetBottomVelocityInMPS, this::setRunShooterTargetBottomVelocityInMPS);
+
     builder.addDoubleProperty("Commanded Top Motor Velocity", this::getCommandedTopVelocityInMPS, null);
     builder.addDoubleProperty("Commanded Bottom Motor Velocity", this::getCommandedBottomVelocityInMPS, null);
     builder.addDoubleProperty("Actual Top Motor Velocity", this::getCurrentTopVelocityInMPS, null);
