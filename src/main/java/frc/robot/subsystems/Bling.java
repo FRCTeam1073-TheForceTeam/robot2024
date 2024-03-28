@@ -11,22 +11,17 @@ import edu.wpi.first.wpilibj.RobotController;
 
 
 public class Bling extends DiagnosticsSubsystem {
-  public AddressableLED m_ledEyes;
-  public AddressableLEDBuffer m_ledBufferEyes;
-  //public AddressableLED m_ledArms;
-  //public AddressableLEDBuffer m_ledBufferArms;
+  public AddressableLED m_led;
+  public AddressableLEDBuffer m_ledBuffer;
   public Collector collector;
   public Feeder feeder;
   public Shooter shooter;
   public AprilTagFinder aprilTagFinder;
 
   public int eyesLength = 48;
-  public int qlengthEyes = 6;
-  //public int eyesNumSlots = 48;
-  //public int qnum = 8;
-
-  public int armsLength = 32;
-  public int slengthArms = 16;
+  public int eyesQuarterLength = 6;
+  public int stripsLength = 32;
+  public int stripSlotLength = 16;
 
   
   /**
@@ -42,11 +37,11 @@ public class Bling extends DiagnosticsSubsystem {
    * @return the buffer length
    */
   public Bling(Collector collector, Feeder feeder, Shooter shooter, AprilTagFinder aprilTagFinder) {
-    m_ledEyes = new AddressableLED(0);
-    m_ledBufferEyes = new AddressableLEDBuffer(eyesLength);
-    m_ledEyes.setLength(m_ledBufferEyes.getLength());
-    m_ledEyes.setData(m_ledBufferEyes);
-    m_ledEyes.start();
+    m_led = new AddressableLED(0);
+    m_ledBuffer = new AddressableLEDBuffer(eyesLength + stripsLength);
+    m_led.setLength(m_ledBuffer.getLength());
+    m_led.setData(m_ledBuffer);
+    m_led.start();
 
     // m_ledArms = new AddressableLED(1);
     // m_ledBufferArms = new AddressableLEDBuffer(armsLength);
@@ -74,14 +69,10 @@ public class Bling extends DiagnosticsSubsystem {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    m_ledEyes.setData(m_ledBufferEyes);
-    //m_ledArms.setData(m_ledBufferArms);
+    m_led.setData(m_ledBuffer);
 
-    // if(!DriverStation.isDisabled()){
+    if(!DriverStation.isDisabled()){
       setBatteryBling();
-
-      setSectionRGB(0, 0, 255, 0);
-      setSectionRGB(1, 0, 255, 0);
 
       if(aprilTagFinder.isAligned()){
         setAlignedBling();
@@ -107,7 +98,7 @@ public class Bling extends DiagnosticsSubsystem {
       else{
         setNoNoteBling();
       }
-    // }
+    }
     // if (DriverStation.isDisabled()){
       //setRainbowBling();
     // }
@@ -127,9 +118,9 @@ public class Bling extends DiagnosticsSubsystem {
    * @param g - the g value [0-255]
    * @param b - the b value [0-255]
    */
-  public void setEyesRGB(int i, int r, int g, int b)
+  public void setRGB(int i, int r, int g, int b)
   {
-    m_ledBufferEyes.setRGB(i, r, g, b);
+    m_ledBuffer.setRGB(i, r, g, b);
   }
   
   // public void setArmsRGB(int i, int r, int g, int b)
@@ -145,26 +136,26 @@ public class Bling extends DiagnosticsSubsystem {
    * @return buffer length
    */
   public void setEyesRGBAll(int r, int g, int b) {
-    for (var i = 0; i < (m_ledBufferEyes.getLength()); i++) {
-      m_ledBufferEyes.setRGB(i, r, g, b);
+    for (var i = 0; i < eyesLength; i++) {
+      setRGB(i, r, g, b);
     }
   }
 
-  // public void setArmsRGBAll(int r, int g, int b) {
-  //   for (var i = 0; i < (m_ledBufferArms.getLength()); i++) {
-  //     m_ledBufferArms.setRGB(i, r, g, b);
-  //   }
-  // }
+  public void setStripRGBAll(int r, int g, int b){
+    for (var i = eyesLength + 1; i < m_ledBuffer.getLength(); i++){
+      setRGB(i, r, g, b);
+    }
+  }
 
   /**
    * Turns off all LEDs
    */
   public void clearLEDs() {
     setEyesRGBAll(0, 0, 0);
-    //setArmsRGBAll(0, 0, 0);
+    setStripRGBAll(0, 0, 0);
   }
 
-   /**
+  /**
     * Sets a range of LEDs to one color.
     * @param min
     * @param number
@@ -172,35 +163,24 @@ public class Bling extends DiagnosticsSubsystem {
     * @param g - the g value [0-255]
     * @param b - the b value [0-255]
     */
-   public void setEyesRangeRGB(int min, int number, int r, int g, int b) {
+  public void setRangeRGB(int min, int number, int r, int g, int b) {
     if (number != 1) {
       int max = min + number;
       for (int i = min; i < (max); i++) {
-        m_ledBufferEyes.setRGB(i, r, g, b);
+        m_ledBuffer.setRGB(i, r, g, b);
       }
     } else {
-      m_ledBufferEyes.setRGB(min, r, g, b);
+      m_ledBuffer.setRGB(min, r, g, b);
     }
   }
 
-  // public void setArmsRangeRGB(int min, int number, int r, int g, int b) {
-  //   if (number != 1) {
-  //     int max = min + number;
-  //     for (int i = min; i < (max); i++) {
-  //       m_ledBufferArms.setRGB(i, r, g, b);
-  //     }
-  //   } else {
-  //     m_ledBufferArms.setRGB(min, r, g, b);
-  //   }
-  // }
-
   // first quadrant is 0, second is 1, third is 2, etc...
   public void setQuadRGB(int quad, int r, int g, int b){
-    setEyesRangeRGB((quad * qlengthEyes), qlengthEyes, r, g, b);
+    setRangeRGB((quad * eyesQuarterLength), eyesQuarterLength, r, g, b);
   }
 
-  public void setSectionRGB(int sect, int r, int g, int b){
-    //setArmsRangeRGB((sect * slengthArms), slengthArms, r, g, b);
+  public void setSlotRGB(int slot, int r, int g, int b){
+    setRangeRGB((eyesLength + 1) + (slot * stripSlotLength), stripSlotLength, r, g, b);
   }
 
   /**
@@ -234,6 +214,8 @@ public class Bling extends DiagnosticsSubsystem {
     setQuadRGB(5, 0, 0, 0);
     setQuadRGB(6, 85, 55, 0);
     setQuadRGB(7, 85, 55, 0);
+    setSlotRGB(0, 85, 55, 0);
+    setSlotRGB(1, 0, 0, 0);
   }
 
   /**
@@ -244,6 +226,8 @@ public class Bling extends DiagnosticsSubsystem {
     setQuadRGB(5, 85, 55, 0);
     setQuadRGB(6, 85, 55, 0);
     setQuadRGB(7, 85, 55, 0);
+    setSlotRGB(0, 85, 55, 0);
+    setSlotRGB(1, 85, 55, 0);
   }
 
   /**
@@ -254,6 +238,8 @@ public class Bling extends DiagnosticsSubsystem {
     setQuadRGB(5, 2, 0, 0);
     setQuadRGB(6, 2, 0, 0);
     setQuadRGB(7, 2, 0, 0);
+    setSlotRGB(0, 2, 0, 0);
+    setSlotRGB(1, 2, 0, 0);
   }
 
   /**
