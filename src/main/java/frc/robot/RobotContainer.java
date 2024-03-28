@@ -71,8 +71,7 @@ public class RobotContainer {
   private final OI m_OI = new OI();
   private final Climber m_climber = new Climber();
   private final RangeFinder m_rangeFinder = new RangeFinder();
-  private final SerialComms m_serial = new SerialComms();
-  private final AprilTagFinder m_aprilTagFinder = new AprilTagFinder(m_serial);
+  private final AprilTagFinder m_aprilTagFinder = new AprilTagFinder();
   private final Headlight m_headlight = new Headlight();
 
 
