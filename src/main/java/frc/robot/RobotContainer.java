@@ -40,7 +40,7 @@ import frc.robot.commands.autos.SourceL4;
 import frc.robot.commands.autos.SourceSnowplow;
 import frc.robot.commands.autos.TestAuto;
 import frc.robot.subsystems.AprilTagFinder;
-// import frc.robot.subsystems.Bling;
+import frc.robot.subsystems.Bling;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.CollectorArm;
@@ -125,7 +125,7 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   // private final CommandXboxController m_driverController =
   //     new CommandXboxController(OperatorConstants.kDriverControllerPort);
-  // private final Bling m_bling = new Bling(m_collector, m_feeder, m_shooter, m_aprilTagFinder);
+  private final Bling m_bling = new Bling(m_collector, m_feeder, m_shooter, m_aprilTagFinder);
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
