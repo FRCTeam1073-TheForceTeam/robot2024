@@ -4,19 +4,21 @@
 
 package frc.robot.subsystems;
 
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 
 public class AprilTagFinder extends SubsystemBase {
 
   // Sensed target data type:
   public class TagData {
     public int id = -1;
-    public int cx = 0;
-    public int cy = 0;
-    public int counterpartX_low = 0;
-    public double counterpartX_high = 0;
+    public int x = 0;
+    public int y = 0;
     public double timestamp = 0;
 
     public boolean isValid() {
@@ -24,20 +26,26 @@ public class AprilTagFinder extends SubsystemBase {
       else return true;
     }
   }
+  //TODO: replace code to pull smartdashboard and replace with getLatestData() and hasTarget() methods
+  
+  // Communications:
+  public String tableName;
+  //public PhotonCamera camera = new PhotonCamera("photonvision");
   public static int searchTagID = -1;  // use the SetSearchTagID to modify
-  public static int searchTagID1 = -1;
-  public int camID = 1;  // Camera ID to send to
-  public byte outputBuffer[] = new byte[8];
-  public TagData tagData = new TagData();
+  TagData tagData = new TagData();
+  public int wait_counter = 0;
   private boolean aligned;
+  public boolean waiting_for_response;
+  public PhotonCamera camera = new PhotonCamera("Global_Shutter_Camera"); 
 
 
+
+  public AprilTagFinder() {
+    this.tableName = tableName;
   }
 
   /// Sets the tagID we're searching for.
-  public void setSearchTagId(int id, int id2) {
-    this.searchTagID = id; // We're searching for this ID on next cycle.
-    this.searchTagID1 = id2;
+  public void setSearchTagId(int id) {
   }
 
   /// Returns the current tag data found.
@@ -53,8 +61,18 @@ public class AprilTagFinder extends SubsystemBase {
     return aligned;
   }
 
+  public TagData readTagData(){
+    PhotonPipelineResult response = camera.getLatestResult();
+    if(response.hasTargets() == true){
+      tagData.id = response.getFiducialId();
+      tagData.x = (int) SmartDashboard.getNumber("targetPixelX", -1);
+      tagData.y = (int) SmartDashboard.getNumber("targetPixelsY", -1);
+      tagData.timestamp = Timer.getFPGATimestamp();
     }
+    return tagData;
   }
+  
+    //tagData.timestamp = Timer.getFPGATimestamp();
 
   @Override
   public void periodic() {
@@ -63,6 +81,7 @@ public class AprilTagFinder extends SubsystemBase {
     // if -1, don't bother doing anything.
     if (this.searchTagID == -1) {
       this.tagData.id = -1;
+    } 
        // Too long without an update. stop waiting, reset counter, clear tag data (too old to be useful)
       if (this.wait_counter >= 25) {
         this.waiting_for_response = false;
@@ -73,18 +92,17 @@ public class AprilTagFinder extends SubsystemBase {
       } else {
         // We are waiting for a response:
         if (response != null) {
-          parseResponse(response);
-          this.recvCounter += 1; // We received a packet.
-          this.wait_counter = 0; // We're not waiting anymore.
-          this.waiting_for_response = false;
+          //this.wait_counter = 0; // We're not waiting anymore.
+          //this.waiting_for_response = false;
+          assert true;
         } else {
             // Else we don't yet have a full response.
             this.wait_counter += 1; // Count the cycles we're waiting.
         }
-      }
-    }
+     // }
+    //}
 
-    aligned = Math.abs(tagData.cx - 160) <= 10;
+    aligned = Math.abs(tagData.x - 160) <= 10;
 
 
     // Subsystem feedback:
@@ -92,8 +110,12 @@ public class AprilTagFinder extends SubsystemBase {
 
     // Found tag feedback:
     SmartDashboard.putNumber("AprilTag/ID", this.tagData.id);
+    SmartDashboard.putNumber("AprilTag/X(Added)", this.tagData.x);
+    SmartDashboard.putNumber("AprilTag/X", tagData.x);
+    SmartDashboard.putNumber("AprilTag/Y", this.tagData.y);
     SmartDashboard.putBoolean("AprilTag/Valid", this.tagData.isValid()); // Allows dashboard indicator.
     SmartDashboard.putBoolean("AprilTag/Aligned", aligned);
   }
 
+}
 }

@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import org.photonvision.PhotonCamera;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -50,7 +52,6 @@ import frc.robot.subsystems.Headlight;
 import frc.robot.subsystems.OI;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.RangeFinder;
-import frc.robot.subsystems.SerialComms;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.SwerveModuleConfig;
 
@@ -73,6 +74,7 @@ public class RobotContainer {
   private final RangeFinder m_rangeFinder = new RangeFinder();
   private final AprilTagFinder m_aprilTagFinder = new AprilTagFinder();
   private final Headlight m_headlight = new Headlight();
+  private final PhotonCamera photonCamera = new PhotonCamera("photonVision");
 
 
   private final CollectFeedCommand m_collectAndFeed = new CollectFeedCommand();
@@ -237,11 +239,11 @@ public class RobotContainer {
       {
         if (DriverStation.getAlliance().get() == Alliance.Blue)
         {
-          m_aprilTagFinder.setSearchTagId(7, 8);
+          m_aprilTagFinder.setSearchTagId(7);
         }
         else
         {
-          m_aprilTagFinder.setSearchTagId(4, 3);
+          m_aprilTagFinder.setSearchTagId(4);
         }
       }
     }
