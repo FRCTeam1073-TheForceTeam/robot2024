@@ -83,7 +83,7 @@ public class Bling extends DiagnosticsSubsystem {
       // boolean shooterBling = setRainbowBling();
       double tofFeederValue = feeder.getTofRange();
       if(collector.hasNote()){
-        setCollectedBling();
+        //setCollectedBling();
       }
       else if(tofFeederValue <= 0.2){
         if(shooter.getCurrentTopVelocityInMPS() > (shooter.getTargetTopVelocityInMPS() - 2)
@@ -96,7 +96,7 @@ public class Bling extends DiagnosticsSubsystem {
         }
       }
       else{
-        setNoNoteBling();
+        //setNoNoteBling();
       }
     }
     // if (DriverStation.isDisabled()){
@@ -107,9 +107,9 @@ public class Bling extends DiagnosticsSubsystem {
   /**
    * @return LED buffer
    */
-  public AddressableLEDBuffer getM_LEDBuffer() {
-    return m_ledBufferEyes;
-  }
+  // public AddressableLEDBuffer getM_LEDBuffer() {
+  //   return m_ledBufferEyes;
+  // }
 
   /**
    * Sets one LED to a color
@@ -215,7 +215,7 @@ public class Bling extends DiagnosticsSubsystem {
     setQuadRGB(6, 85, 55, 0);
     setQuadRGB(7, 85, 55, 0);
     setSlotRGB(0, 85, 55, 0);
-    setSlotRGB(1, 0, 0, 0);
+    //setSlotRGB(1, 0, 0, 0);
   }
 
   /**
@@ -239,7 +239,7 @@ public class Bling extends DiagnosticsSubsystem {
     setQuadRGB(6, 2, 0, 0);
     setQuadRGB(7, 2, 0, 0);
     setSlotRGB(0, 2, 0, 0);
-    setSlotRGB(1, 2, 0, 0);
+    //setSlotRGB(1, 2, 0, 0);
   }
 
   /**

@@ -18,7 +18,7 @@ import frc.robot.commands.CancelCommand;
 import frc.robot.commands.ClimberTeleop;
 import frc.robot.commands.CollectFeedCommand;
 import frc.robot.commands.CollectorArmTeleop;
-import frc.robot.commands.CollectorTeleop;
+import frc.robot.commands.CollectorOuttakeCommand;
 import frc.robot.commands.HandoffCommand;
 import frc.robot.commands.LaunchFeederToSpeaker;
 import frc.robot.commands.SetShotsSequences;
@@ -40,7 +40,7 @@ import frc.robot.commands.autos.SourceL4;
 import frc.robot.commands.autos.SourceSnowplow;
 import frc.robot.commands.autos.TestAuto;
 import frc.robot.subsystems.AprilTagFinder;
-import frc.robot.subsystems.Bling;
+// import frc.robot.subsystems.Bling;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.CollectorArm;
@@ -76,15 +76,16 @@ public class RobotContainer {
   private final Headlight m_headlight = new Headlight();
 
 
-  private final CollectFeedCommand m_collectAndFeed = new CollectFeedCommand();
   private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
   private final SetShotsSequences m_setShotsSequences = new SetShotsSequences();
   private final CancelCommand m_cancelCommand = new CancelCommand();
   private final TeleopDrive m_teleopCommand = new TeleopDrive(m_drivetrain, m_headlight, m_OI, m_aprilTagFinder);
   private final Collector m_collector = new Collector();
   private final CollectorArm m_collectorArm = new CollectorArm();
-  private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_collectorArm, m_drivetrain, m_OI);
+  private final CollectFeedCommand m_collectAndFeed = new CollectFeedCommand(m_collectorArm);
+  //private final CollectorTeleop m_collectorTeleopCommand = new CollectorTeleop(m_collector, m_collectorArm, m_drivetrain, m_OI);
   private final CollectorArmTeleop m_collectorArmTeleop = new CollectorArmTeleop(m_collectorArm, m_OI);
+  private final CollectorOuttakeCommand m_collectorOuttakeCommand = new CollectorOuttakeCommand(m_collector, m_collectorArm, m_drivetrain);
   private final ArmPoseTeleop m_armPoseTeleop = new ArmPoseTeleop(m_collectorArm);
   private final HandoffCommand m_handoffCommand = new HandoffCommand();
   private final ClimberTeleop m_ClimberTeleop = new ClimberTeleop(m_climber, m_OI);
@@ -124,7 +125,7 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   // private final CommandXboxController m_driverController =
   //     new CommandXboxController(OperatorConstants.kDriverControllerPort);
-  private final Bling m_bling = new Bling(m_collector, m_feeder, m_shooter, m_aprilTagFinder);
+  // private final Bling m_bling = new Bling(m_collector, m_feeder, m_shooter, m_aprilTagFinder);
 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -133,7 +134,7 @@ public class RobotContainer {
     // CommandScheduler.getInstance().setDefaultCommand(m_shooter, m_shooterTestCommand);
     //CommandScheduler.getInstance().setDefaultCommand(m_feeder, m_feederTestCommand);
     CommandScheduler.getInstance().setDefaultCommand(m_drivetrain, m_teleopCommand);
-    CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand); 
+    //CommandScheduler.getInstance().setDefaultCommand(m_collector, m_collectorTeleopCommand); 
     CommandScheduler.getInstance().setDefaultCommand(m_climber, m_ClimberTeleop);
     CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_collectorArmTeleop);
     //CommandScheduler.getInstance().setDefaultCommand(m_collectorArm, m_armPoseTeleop);
@@ -215,18 +216,11 @@ public class RobotContainer {
     Trigger armAmpCommand = new Trigger(m_OI::getOperatorBButton);
     armAmpCommand.onTrue(m_armPoseTeleop.ampPose());
 
-    // System.out.println("Configuring buttons");
-    // Trigger tagButton = new Trigger(m_OI::getXButton);
-    // tagButton.onTrue(getTagData());
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
+    Trigger collectCommand = new Trigger(m_OI::getOperatorRightBumper);
+    collectCommand.onTrue(m_collectAndFeed.runCollectCommand(m_drivetrain, m_collector, m_collectorArm));
 
-    // Trigger armStartPoseTrigger = new Trigger(m_OI::getOperatorAButton);
-    // armStartPoseTrigger.onTrue(collectorScoreCommand());
-
-    // Trigger armAmpPoseTrigger = new Trigger(m_OI::getOperatorYButton);
-    // armAmpPoseTrigger.onTrue(armAmpPoseCommand());
-
+    Trigger outtakeCommand = new Trigger(m_OI::getOperatorLeftBumper);
+    outtakeCommand.onTrue(m_collectorOuttakeCommand);
   }
 
   public void autonomousInit()
