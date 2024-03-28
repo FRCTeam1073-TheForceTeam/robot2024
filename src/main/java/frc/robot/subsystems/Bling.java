@@ -99,16 +99,16 @@ public class Bling extends DiagnosticsSubsystem {
         setNoNoteBling();
       }
     }
-    // if (DriverStation.isDisabled()){
-      //setRainbowBling();
-    // }
+    if (DriverStation.isDisabled()){
+      setRainbowBling();
+    }
   }
 
   /**
    * @return LED buffer
    */
   public AddressableLEDBuffer getM_LEDBuffer() {
-    return m_ledBufferEyes;
+    return m_ledBuffer;
   }
 
   /**
@@ -259,46 +259,39 @@ public class Bling extends DiagnosticsSubsystem {
    * Red when Note isn't aligned?
    * @param quadNum */
   public void setAlignedBling() {
-    //  setQuadRGB(quadNum1, 255, 0, 0);
-    //  setQuadRGB(quadNum2, 255, 0, 0);
      setQuadRGB(0, 0, 255, 0);
      setQuadRGB(3, 0, 255, 0);
   }
 
   public void setUnalignedBling() {
-     setQuadRGB(0, 0, 0, 0);
-     setQuadRGB(3, 0, 0, 0);
+     setQuadRGB(0, 2, 0, 0);
+     setQuadRGB(3, 2, 0, 0);
   }
 
-  // public void setRainbowBling(){
-  //   int m_rainbowFirstPixelHue1 = 0;
-  //   int m_rainbowFirstPixelHue2 = 0;
-  //   int count2 = 0;
+  public void setRainbowBling(){
+    int m_rainbowFirstPixelHue1 = 0;
+    int m_rainbowFirstPixelHue2 = 0;
+    int count2 = 0;
 
-  //   for (var i = 0; i < m_ledBufferArms.getLength()/2; i++) {
-  //     final var hue1 = (m_rainbowFirstPixelHue1 + (i * 180 / m_ledBufferEyes.getLength()*2)) % 180;
-  //     // Set the value
-  //     m_ledBufferEyes.setHSV(i, hue1, 255, 128);
+    for (var i = eyesLength + 1; i < eyesLength + 1 + stripSlotLength; i++) {
+      final var hue1 = (m_rainbowFirstPixelHue1 + (i * 180 / stripSlotLength)) % 180;
+      // Set the value
+      m_ledBuffer.setHSV(i, hue1, 255, 128);
 
-  //     // Increase by to make the rainbow "move"
-  //     m_rainbowFirstPixelHue1 += 3;
-  //     // Check bounds
-  //     m_rainbowFirstPixelHue1 %= 180;
-  //   }
+      // Increase by to make the rainbow "move"
+      m_rainbowFirstPixelHue1 += 3;
+      // Check bounds
+      m_rainbowFirstPixelHue1 %= 180;
+    }
 
-  //   for (var j = m_ledBufferArms.getLength()/2; j < m_ledBufferArms.getLength(); j++) {
-  //     final var hue2 = (m_rainbowFirstPixelHue2 + (count2 * 180 / m_ledBufferEyes.getLength()*2)) % 180;
-  //     m_ledBufferEyes.setHSV(j, hue2, 255, 128);
-  //     count2++;
-  //   }
-  //   m_rainbowFirstPixelHue2 += 3;
-  //   m_rainbowFirstPixelHue2 %= 180;
+    for (var j = eyesLength + 1 + stripSlotLength; j < m_ledBuffer.getLength(); j++) {
+      final var hue2 = (m_rainbowFirstPixelHue2 + (count2 * 180 / stripSlotLength)) % 180;
+      m_ledBuffer.setHSV(j, hue2, 255, 128);
+      count2++;
+    }
+    m_rainbowFirstPixelHue2 += 3;
+    m_rainbowFirstPixelHue2 %= 180;
       
-  // }
-
-  public void setArmsBling() {
-     setQuadRGB(0, 0, 0, 0);
-     setQuadRGB(3, 0, 0, 0);
   }
 
   // Initialize preferences for this class:
