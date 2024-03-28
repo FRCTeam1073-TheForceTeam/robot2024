@@ -16,6 +16,7 @@ import frc.robot.commands.PivotRangeCommand;
 import frc.robot.commands.RunFeeder;
 import frc.robot.commands.RunShooter;
 import frc.robot.commands.SchemaDriveAuto;
+import frc.robot.commands.WaitForShot;
 import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.CollectorArm;
@@ -95,9 +96,8 @@ public class SourceL2
             ),
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30),
-                new NWStopShooter(shooter)
-            ),
-            new NWSetPivot(pivot, 0.0),     
+                new WaitForShot(shooter)
+            ),    
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), alignSchema, drivetrain),
                 new SequentialCommandGroup(
