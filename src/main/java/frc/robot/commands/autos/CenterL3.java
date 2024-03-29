@@ -16,7 +16,6 @@ import frc.robot.commands.PivotRangeCommand;
 import frc.robot.commands.RunFeeder;
 import frc.robot.commands.RunShooter;
 import frc.robot.commands.SchemaDriveAuto;
-import frc.robot.commands.StopShooter;
 import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.CollectorArm;
@@ -47,9 +46,12 @@ public class CenterL3
         Path.Point start = new Path.Point(0.0, 0.0);
         Path.Point pathShootPoint = new Path.Point(0.9208, -0.3447 * allianceSign);
         Path.Point wingNote7 = new Path.Point(1.5, -0.313 * allianceSign);
+        Path.Point btwPoint = new Path.Point(0.8090, 0.3534 * allianceSign);
+        Path.Point wingNote6 = new Path.Point(1.331, 1.0337 * allianceSign);
 
         double range1 = 2.0;
-        // double range2 = 2.5;
+        double range2 = 2.5;
+        double range3 = 2.7;
         //Pose2d poseShootPoint = new Pose2d();
 
         ArrayList<Segment> segments1 = new ArrayList<Segment>();
@@ -69,13 +71,37 @@ public class CenterL3
         segments2.get(0).exitActivateValue = false;
         segments2.get(0).exitActivate = alignSchema;
 
+        ArrayList<Segment> segments3 = new ArrayList<Segment>();
+        segments3.add(new Segment(wingNote7, btwPoint, 0.0 * allianceSign, 3.0));
+
+        segments3.get(0).entryActivateValue = true;
+        segments3.get(0).entryActivate = alignSchema;
+        segments3.get(0).exitActivateValue = false;
+        segments3.get(0).exitActivate = alignSchema;
+
+        ArrayList<Segment> segments4 = new ArrayList<Segment>();
+        segments4.add(new Segment(btwPoint, wingNote6, 0.0 * allianceSign, 3.0));
+
+        segments4.get(0).entryActivateValue = true;
+        segments4.get(0).entryActivate = alignSchema;
+        segments4.get(0).exitActivateValue = false;
+        segments4.get(0).exitActivate = alignSchema;
+
+
         Path path1 = new Path(segments1, -0.0524 * allianceSign);
         path1.transverseVelocity = 1.5;
 
         Path path2 = new Path(segments2, -0.1361 * allianceSign);
         path2.transverseVelocity = 1.5;
+        
+        Path path3 = new Path(segments3, -0.0414 * allianceSign);
+        path3.transverseVelocity = 1.5;
+
+        Path path4 = new Path(segments4, 0.2538 * allianceSign);
+        path4.transverseVelocity = 1.5;
 
         return new SequentialCommandGroup(
+        //first path - back up and shoot preload
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path1), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
                 new RunShooter(shooter, range1),
@@ -86,17 +112,43 @@ public class CenterL3
                 new PivotRangeCommand(pivot, rangeFinder)
             ),
             new ParallelCommandGroup(
-                new RunFeeder(feeder, 30),
-                new StopShooter(shooter)
+                new RunFeeder(feeder, 30)
+                //new StopShooter(shooter)
             ),
-            new NWSetPivot(pivot, 0.0), 
+            //new NWSetPivot(pivot, 0.0), 
+        //second path - back up, collect note, shoot from that point
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
                 new SequentialCommandGroup(
-                    collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter),
-                    new ParallelCommandGroup(    
-                        new RunShooter(shooter, rangeFinder),
-                        new PivotRangeCommand(pivot, rangeFinder)
+                    collectCommand.runCollectCommand(drivetrain, collector, collectorArm),
+                    new ParallelCommandGroup(
+                        collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter)//,
+                        //new RunShooter(shooter, range2)
+                    ),
+                     new ParallelCommandGroup(    
+                        new RunShooter(shooter, rangeFinder, range2),
+                        new PivotRangeCommand(pivot, rangeFinder, range2)
+                     )
+                )
+            ),
+            new ParallelCommandGroup(
+                new RunFeeder(feeder, 30)//,
+                //new NWStopShooter(shooter)
+            ),
+                //new NWSetPivot(pivot, 0.0),
+        //third path
+            SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path3), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
+            new ParallelCommandGroup(
+                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path4), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
+                new SequentialCommandGroup(
+                    collectCommand.runCollectCommand(drivetrain, collector, collectorArm),
+                    new ParallelCommandGroup(
+                        collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter),
+                        new RunShooter(shooter, range3)
+                    ),
+                    new ParallelCommandGroup(
+                        new RunShooter(shooter, rangeFinder, range3),
+                        new PivotRangeCommand(pivot, rangeFinder, range3)
                     )
                 )
             ),
@@ -104,7 +156,7 @@ public class CenterL3
                 new RunFeeder(feeder, 30),
                 new NWStopShooter(shooter)
             ),
-                new NWSetPivot(pivot, 0.0)
+            new NWSetPivot(pivot, 0.0)
         );
     }    
 }
