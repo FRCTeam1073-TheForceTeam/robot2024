@@ -33,6 +33,10 @@ public class CollectFeedCommand extends Command
     return m_collectorArm.getPoseName() == POSE.STOW;
   }
 
+  public boolean isAmpPose(){
+    return m_collectorArm.getPoseName() == POSE.AMP;
+  }
+
   public SequentialCommandGroup runCollectFeedCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm, Pivot m_pivot, Feeder m_feeder, Shooter m_shooter) {
     ArmPoseTeleop armCommands = new ArmPoseTeleop(m_collectorArm);
     return new SequentialCommandGroup(
@@ -62,8 +66,13 @@ public class CollectFeedCommand extends Command
     ArmPoseTeleop armCommands = new ArmPoseTeleop(m_collectorArm);
 
     return new SequentialCommandGroup(
-      new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
-      armCommands.stowPose()
+      new ConditionalCommand(
+        new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain), 
+        new SequentialCommandGroup(
+          new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
+          armCommands.stowPose()
+        ), 
+        this::isAmpPose)
     );
   }
 }

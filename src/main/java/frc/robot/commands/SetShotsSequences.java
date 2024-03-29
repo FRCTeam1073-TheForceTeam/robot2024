@@ -19,7 +19,7 @@ public class SetShotsSequences extends Command {
   public ParallelCommandGroup runSubwooferShot(Pivot m_pivot, Shooter m_shooter){
     return new ParallelCommandGroup(
       new SetPivotCommand(m_pivot, 0.0),
-      new SetShooterVel(m_shooter, 25, 25, true)
+      new SetShooterVel(m_shooter, 20, 20, true)
     );
   }
 
