@@ -101,35 +101,37 @@ public class CenterL3
         path4.transverseVelocity = 1.5;
 
         return new SequentialCommandGroup(
-        //first path - back up and shoot preload
+            //first path - back up and shoot preload
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path1), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
                 new RunShooter(shooter, range1),
                 new PivotRangeCommand(pivot, range1)
             ),
+            //adjust shooter speed/pivot based on range finder for shot 1
             new ParallelCommandGroup(
                 new RunShooter(shooter, rangeFinder),
                 new PivotRangeCommand(pivot, rangeFinder)
             ),
+            // shot #1
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30)
                 //new StopShooter(shooter)
             ),
             //new NWSetPivot(pivot, 0.0), 
+
         //second path - back up, collect note, shoot from that point
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
+                new RunShooter(shooter, range2),
                 new SequentialCommandGroup(
+                    // collect 
                     collectCommand.runCollectCommand(drivetrain, collector, collectorArm),
-                    new ParallelCommandGroup(
-                        collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter)//,
-                        //new RunShooter(shooter, range2)
-                    ),
-                     new ParallelCommandGroup(    
-                        new RunShooter(shooter, rangeFinder, range2),
-                        new PivotRangeCommand(pivot, rangeFinder, range2)
-                     )
+                    collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter)
                 )
+            ),
+            new ParallelCommandGroup(    
+                new RunShooter(shooter, rangeFinder, range2),
+                new PivotRangeCommand(pivot, rangeFinder, range2)
             ),
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30)//,
@@ -138,6 +140,7 @@ public class CenterL3
                 //new NWSetPivot(pivot, 0.0),
         //third path
             SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path3), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
+            // 3rd shot
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path4), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
                 new SequentialCommandGroup(
