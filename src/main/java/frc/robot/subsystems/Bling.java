@@ -81,10 +81,7 @@ public class Bling extends DiagnosticsSubsystem {
         setUnalignedBling();
       }
       double tofFeederValue = feeder.getTofRange();
-      if(collector.hasNote()){
-        setCollectedBling();
-      }
-      else if(tofFeederValue <= 0.2){
+      if(tofFeederValue <= 0.2){
         if(shooter.getCurrentTopVelocityInMPS() > (shooter.getTargetTopVelocityInMPS() - 2)
           && shooter.getCurrentTopVelocityInMPS() > 20
           && shooter.getCurrentBottomVelocityInMPS() > (shooter.getTargetBottomVelocityInMPS() - 2)){
@@ -93,6 +90,9 @@ public class Bling extends DiagnosticsSubsystem {
         else{
           setFeededBling();
         }
+      }
+      else if(collector.hasNote()){
+        setCollectedBling();
       }
       else{
         setNoNoteBling();
