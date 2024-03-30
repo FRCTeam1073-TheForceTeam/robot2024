@@ -70,7 +70,7 @@ public class TeleopDrive extends SchemaArbiter
     rotateSchema = new TeleopRotateSchema(m_OI, maximumRotationVelocity);
     holdSchema = new TeleopHeadingHoldSchema(m_OI);
     targetSchema = new PointAtTargetSchema(maximumRotationVelocity, new Pose2d(2.5, 0.0, new Rotation2d()), 1.75);
-    alignSchema = new AlignToSpeakerSchema(aprilTagFinder, headlight, m_OI);
+    alignSchema = new AlignToSpeakerSchema(aprilTagFinder, headlight, m_OI, m_drivetrain);
     addSchema(translateSchema);
     addSchema(rotateSchema);
     addSchema(holdSchema);

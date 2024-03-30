@@ -15,6 +15,7 @@ import frc.robot.subsystems.CollectorArm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.RangeFinder;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.CollectorArm.POSE;
 
@@ -35,6 +36,34 @@ public class CollectFeedCommand extends Command
 
   public boolean isAmpPose(){
     return m_collectorArm.getPoseName() == POSE.AMP;
+  }
+
+  public SequentialCommandGroup runCollectFeedCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm, Pivot m_pivot, Feeder m_feeder, Shooter m_shooter, RangeFinder m_rangeFinder) {
+    ArmPoseTeleop armCommands = new ArmPoseTeleop(m_collectorArm);
+    return new SequentialCommandGroup(
+      new ConditionalCommand(
+        new SetPivotCommand(m_pivot, -0.6), //On true
+        new ParallelCommandGroup( //on False
+          armCommands.stowPose(),
+          new SetPivotCommand(m_pivot, -0.6)
+        ), 
+        this::isStowed), //checks if arm is already stowed. If it is, then don't go to stow again
+      new ParallelDeadlineGroup(
+        new LoadFeeder(m_feeder, 1.5),
+        new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain)
+      ),
+      new ParallelCommandGroup(
+        new ArmPoseCommand(m_collectorArm, POSE.START),
+        new ParallelDeadlineGroup(
+          new WaitCommand(0.25),
+          new AdjustFeed(m_feeder)
+        )
+      ),
+      new ParallelCommandGroup(
+        new DynamicPivotRangeCommand(m_pivot, m_rangeFinder, m_drivetrain),
+        new DynamicRunShooter(m_shooter, m_rangeFinder)
+      )
+    );
   }
 
   public SequentialCommandGroup runCollectFeedCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm, Pivot m_pivot, Feeder m_feeder, Shooter m_shooter) {
