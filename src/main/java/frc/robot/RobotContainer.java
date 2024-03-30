@@ -113,16 +113,6 @@ public class RobotContainer {
   
   private boolean isRed;
 
-  // private final Camera m_camera1 = new Camera(m_serial, "1");  // camID is how SerialComms and the cameras themselves tells them apart
-  // private final Camera m_camera2 = new Camera(m_serial, "2");
-  // private final Camera[] m_cameras = {m_camera1, m_camera2};
-
-  // private final StartRecordingAutonomous c_startRecordingAutonomous = new StartRecordingAutonomous(m_cameras);
-  // private final StartRecordingTeleop c_startRecordingTeleop = new StartRecordingTeleop(m_cameras);
-  // private final StopRecording c_stopRecording = new StopRecording(m_cameras);
-
-
-  // Replace with CommandPS4Controller or CommandJoystick if needed
   // private final CommandXboxController m_driverController =
   //     new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final Bling m_bling = new Bling(m_collector, m_feeder, m_shooter, m_aprilTagFinder);
@@ -187,7 +177,7 @@ public class RobotContainer {
    * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
    * joysticks}.
    */
-  private void configureBindings() // TODO: NSARGENT: is this legit? configureBindings() call up on line 82
+  private void configureBindings()
   {
     Trigger loadNoteToFeeder = new Trigger(m_OI::getOperatorLeftTrigger);
     loadNoteToFeeder.onTrue(m_collectAndFeed.runCollectFeedCommand(m_drivetrain, m_collector, m_collectorArm, m_pivot, m_feeder, m_shooter));
@@ -221,13 +211,6 @@ public class RobotContainer {
     // tagButton.onTrue(getTagData());
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
-
-    // Trigger armStartPoseTrigger = new Trigger(m_OI::getOperatorAButton);
-    // armStartPoseTrigger.onTrue(collectorScoreCommand());
-
-    // Trigger armAmpPoseTrigger = new Trigger(m_OI::getOperatorYButton);
-    // armAmpPoseTrigger.onTrue(armAmpPoseCommand());
-
   }
 
   public void autonomousInit()
