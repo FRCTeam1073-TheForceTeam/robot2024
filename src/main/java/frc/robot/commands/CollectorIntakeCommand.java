@@ -118,7 +118,8 @@ public class CollectorIntakeCommand extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if(count == 20){
+    //return isCollected;
+    if(count == 2){
       return true;
     }
     else{
