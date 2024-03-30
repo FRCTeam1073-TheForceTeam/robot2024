@@ -54,7 +54,7 @@ public class AlignSpeakerAutoSchema extends MotionSchema implements Activate
       if (apriltag.isValid())
       {
         last_error = error;
-        error = (center_point - apriltag.cx);
+        error = (center_point - apriltag.yaw);
 
         // PD controller form:
         rotation = 0.02 * error +  0.0 * (error - last_error) ;
