@@ -74,8 +74,6 @@ public class RobotContainer {
   private final RangeFinder m_rangeFinder = new RangeFinder();
   private final AprilTagFinder m_aprilTagFinder = new AprilTagFinder();
   private final Headlight m_headlight = new Headlight();
-  private final PhotonCamera photonCamera = new PhotonCamera("photonVision");
-
 
   private final CollectFeedCommand m_collectAndFeed = new CollectFeedCommand();
   private final LaunchFeederToSpeaker m_launchFeederToSpeaker = new LaunchFeederToSpeaker();
@@ -90,7 +88,6 @@ public class RobotContainer {
   private final HandoffCommand m_handoffCommand = new HandoffCommand();
   private final ClimberTeleop m_ClimberTeleop = new ClimberTeleop(m_climber, m_OI);
   private final SpeakerTagAllianceSearch m_allianceSearch = new SpeakerTagAllianceSearch(m_aprilTagFinder);
-
 
 
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
