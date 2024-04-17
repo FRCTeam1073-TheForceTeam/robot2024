@@ -34,8 +34,8 @@ public class Climber extends DiagnosticsSubsystem {
 
   private double minLeftPosition = 0;
   private double minRightPosition = 0;
-  private double maxLeftPosition = 0.254;
-  private double maxRightPosition = 0.254;
+  private double maxLeftPosition = 0.3;
+  private double maxRightPosition = 0.3;
 
   /** Creates a new Climber. */
   public Climber() {

@@ -20,16 +20,18 @@ public class AlignToSpeakerSchema extends MotionSchema
 {
   AprilTagFinder finder;
   Headlight headlight;
+  Drivetrain drivetrain;
   OI oi;
   double rotation;
   PIDController turnController = new PIDController(0.15, 0, 0.015);
 
   /** Creates a new AlignToSpeakerSchema. */
-  public AlignToSpeakerSchema(AprilTagFinder finder, Headlight headlight, OI oi) 
+  public AlignToSpeakerSchema(AprilTagFinder finder, Headlight headlight, OI oi, Drivetrain drivetrain) 
   {
     this.finder = finder;
     this.headlight = headlight;
     this.oi = oi;
+    this.drivetrain = drivetrain;
   }
 
   // Called when the command is initially scheduled.
@@ -50,7 +52,7 @@ public class AlignToSpeakerSchema extends MotionSchema
       if (apriltag.isValid())
       {
        //rotation = (0.02 + (drivetrain.getChassisSpeeds().vyMetersPerSecond * 0.01)) * (0 - apriltag.yaw);
-       rotation = turnController.calculate(apriltag.yaw,  0);
+       rotation = turnController.calculate(apriltag.yaw,  0); //- (0.2 * drivetrain.getChassisSpeeds().vyMetersPerSecond));
        SmartDashboard.putNumber("turnController-rotation", rotation);
        MathUtil.clamp(rotation, -1.5, 1.5);
         setRotate(rotation, 1.0);

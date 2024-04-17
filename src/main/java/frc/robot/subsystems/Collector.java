@@ -158,7 +158,7 @@ public class Collector extends DiagnosticsSubsystem {
 
   public boolean hasNote()
   {
-    if (getRangeTOF1() < 0.45 || getRangeTOF2() < 0.3) // fill in Tof2 range value
+    if (getRangeTOF1() < 0.45 || getRangeTOF2() < 0.2) // fill in Tof2 range value
     {
       return true;
     }

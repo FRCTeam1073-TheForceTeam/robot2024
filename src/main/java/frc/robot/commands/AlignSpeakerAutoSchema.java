@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,10 +19,8 @@ public class AlignSpeakerAutoSchema extends MotionSchema implements Activate
   AprilTagFinder finder;
   Headlight headlight;
   double rotation = 0.0;
-  double error = 0.0;
-  double last_error = 0.0;
   boolean active = false;
-  double center_point = 150.0;
+  PIDController turnController = new PIDController(0.15, 0, 0.015);
 
   /** Creates a new AlignToSpeakerSchema. */
   public AlignSpeakerAutoSchema(AprilTagFinder finder, Headlight headlight) 
@@ -53,15 +52,10 @@ public class AlignSpeakerAutoSchema extends MotionSchema implements Activate
       headlight.setHeadlight(true);
       if (apriltag.isValid())
       {
-        last_error = error;
-        error = (center_point - apriltag.yaw);
-
-        // PD controller form:
-        rotation = 0.02 * error +  0.0 * (error - last_error) ;
-        MathUtil.clamp(rotation, -1.0, 1.0);
-
-
-        setRotate(rotation, 3.0);
+        rotation = turnController.calculate(apriltag.yaw,  0);
+        SmartDashboard.putNumber("turnController-rotation", rotation);
+        MathUtil.clamp(rotation, -1.5, 1.5);
+        setRotate(rotation, 1.0);
       }
       else
       {

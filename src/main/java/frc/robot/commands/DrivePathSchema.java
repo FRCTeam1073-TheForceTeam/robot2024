@@ -57,13 +57,13 @@ public class DrivePathSchema extends MotionSchema {
     this.path = path;
 
     xController = new PIDController(
-      1.0, 
+      1.1, 
       0.05, 
       0.01
     );
 
     yController = new PIDController(
-      1.0, 
+      1.1, 
       0.05, 
       0.01
     );

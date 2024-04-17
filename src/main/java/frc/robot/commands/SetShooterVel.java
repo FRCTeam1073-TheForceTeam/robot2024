@@ -25,6 +25,8 @@ public class SetShooterVel extends Command {
     this.targetTopVel = targetTopVel;
     this.targetBottomVel = targetBottomVel;
     this.readyToShoot = readyToShoot;
+
+    addRequirements(m_shooter);
   }
 
   // Called when the command is initially scheduled.

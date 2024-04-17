@@ -44,7 +44,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putString("Alliance", "None");
 
     // Last but not least start up a camera server to get basic driver feedback.
-    CameraServer.startAutomaticCapture();
+    //CameraServer.startAutomaticCapture();
   }
 
   /**

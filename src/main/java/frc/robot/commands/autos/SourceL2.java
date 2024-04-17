@@ -16,6 +16,7 @@ import frc.robot.commands.PivotRangeCommand;
 import frc.robot.commands.RunFeeder;
 import frc.robot.commands.RunShooter;
 import frc.robot.commands.SchemaDriveAuto;
+import frc.robot.commands.WaitForShot;
 import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.CollectorArm;
@@ -45,19 +46,19 @@ public class SourceL2
         AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder, headlight);
 
         Path.Point start = new Path.Point(0.0, 0.0);
-        Path.Point pathShootPoint = new Path.Point(3.165, -0.848 * allianceSign);
+        Path.Point pathShootPoint = new Path.Point(4.97, 0.42 * allianceSign);
         Path.Point avoidStagePost = new Path.Point(5.7, 0.75 * allianceSign);
-        Path.Point midlineNote2 = new Path.Point(8.1, -0.85 * allianceSign);
+        Path.Point midlineNote2 = new Path.Point(8.1, -0.55 * allianceSign);
         Path.Point stagePoint = new Path.Point(5.368, -2.37 * allianceSign);
-        Path.Point pathShootPoint2 = new Path.Point(2.665, -0.848 * allianceSign);
+        Path.Point pathShootPoint2 = new Path.Point(4.97, 0.42 * allianceSign);
         stagePoint.blend_radius = 1.0;
         // avoidStagePost.blend_radius = 0.6;
 
-        double range1 = 3.9;
-        double range2 = 4.2;
+        double range1 = 5.6;
+        double range2 = 5.6;
 
         ArrayList<Segment> segments1 = new ArrayList<Segment>();
-        segments1.add(new Segment(start, pathShootPoint, Math.PI / 6 * allianceSign, 2.5));
+        segments1.add(new Segment(start, pathShootPoint, 0.51 * allianceSign, 2.5));
 
         segments1.get(0).entryActivateValue = true;
         segments1.get(0).entryActivate = alignSchema;
@@ -69,7 +70,7 @@ public class SourceL2
         segments2.add(new Segment(pathShootPoint, avoidStagePost, 0.0, 2.5));
         segments2.add(new Segment(avoidStagePost, midlineNote2, 0.0, 2.5));
         segments2.add(new Segment(midlineNote2, avoidStagePost, Math.PI / 6 * allianceSign, 2.5));
-        segments2.add(new Segment(avoidStagePost, pathShootPoint2, 0.69 * allianceSign, 2.5));
+        segments2.add(new Segment(avoidStagePost, pathShootPoint2, 0.51 * allianceSign, 2.5));
 
         segments2.get(3).entryActivateValue = true;
         segments2.get(3).entryActivate = alignSchema;
@@ -79,7 +80,7 @@ public class SourceL2
         Path path1 = new Path(segments1, Math.PI / 6 * allianceSign);
         path1.transverseVelocity = 1.5;
 
-        Path path2 = new Path(segments2, 0.69 * allianceSign);
+        Path path2 = new Path(segments2, 0.51 * allianceSign);
         path2.transverseVelocity = 1.5;
 
 
@@ -95,12 +96,12 @@ public class SourceL2
             ),
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30),
-                new NWStopShooter(shooter)
-            ),
-            new NWSetPivot(pivot, 0.0),     
+                new WaitForShot(shooter)
+            ),    
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), alignSchema, drivetrain),
                 new SequentialCommandGroup(
+                    collectCommand.runCollectCommand(drivetrain, collector, collectorArm),
                     collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter),
                     new ParallelCommandGroup(
                         new RunShooter(shooter, range2),

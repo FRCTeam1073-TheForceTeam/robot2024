@@ -231,6 +231,14 @@ public class OI extends DiagnosticsSubsystem
 
   }
 
+  public boolean getOperatorRightBumper(){
+    return getOperatorRawButton(6);
+  }
+
+  public boolean getOperatorLeftBumper(){
+    return getOperatorRawButton(5);
+  }
+
   public boolean getOperatorDPadUp(){
     return (operatorController.getPOV() == 0);
   }

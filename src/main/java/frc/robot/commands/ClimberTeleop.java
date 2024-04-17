@@ -38,8 +38,8 @@ public class ClimberTeleop extends Command {
         rightVelocity = 0;
       }
 
-      rightVelocity *= 0.1;
-      leftVelocity *= 0.1;
+      rightVelocity *= 0.3;
+      leftVelocity *= 0.3;
 
       m_climber.setVelocities(leftVelocity, rightVelocity);
     }

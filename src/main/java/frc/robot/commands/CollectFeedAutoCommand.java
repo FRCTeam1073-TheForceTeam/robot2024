@@ -20,12 +20,12 @@ import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.CollectorArm.POSE;
 
 
-public class CollectFeedCommand extends Command 
+public class CollectFeedAutoCommand extends Command 
 {
   private CollectorArm m_collectorArm;
 
   /** Creates a new CollectShootCommand. */
-  public CollectFeedCommand(CollectorArm m_collectorArm) {
+  public CollectFeedAutoCommand(CollectorArm m_collectorArm) {
     this.m_collectorArm = m_collectorArm;
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -38,9 +38,10 @@ public class CollectFeedCommand extends Command
     return m_collectorArm.getPoseName() == POSE.AMP;
   }
 
-  public SequentialCommandGroup runCollectFeedCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm, Pivot m_pivot, Feeder m_feeder, Shooter m_shooter, RangeFinder m_rangeFinder) {
+  public SequentialCommandGroup runCollectFeedAutoCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm, Pivot m_pivot, Feeder m_feeder, Shooter m_shooter, RangeFinder m_rangeFinder) {
     ArmPoseTeleop armCommands = new ArmPoseTeleop(m_collectorArm);
     return new SequentialCommandGroup(
+        armCommands.stowPose(),
       new ConditionalCommand(
         new SetPivotCommand(m_pivot, -0.6), //On true
         new ParallelCommandGroup( //on False
@@ -66,7 +67,7 @@ public class CollectFeedCommand extends Command
     );
   }
 
-  public SequentialCommandGroup runCollectFeedCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm, Pivot m_pivot, Feeder m_feeder, Shooter m_shooter) {
+  public SequentialCommandGroup runCollectFeedAutoCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm, Pivot m_pivot, Feeder m_feeder, Shooter m_shooter) {
     ArmPoseTeleop armCommands = new ArmPoseTeleop(m_collectorArm);
     return new SequentialCommandGroup(
       new ConditionalCommand(
@@ -86,20 +87,19 @@ public class CollectFeedCommand extends Command
           new WaitCommand(0.25),
           new AdjustFeed(m_feeder)
         )
-      ),
-      new SetShooterVel(m_shooter, 20, 20, false)
+      )
     );
   }
 
-  public SequentialCommandGroup runCollectCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm){
+  public SequentialCommandGroup runCollectAutoCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm){
     ArmPoseTeleop armCommands = new ArmPoseTeleop(m_collectorArm);
 
     return new SequentialCommandGroup(
       new ConditionalCommand(
         new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain), 
         new SequentialCommandGroup(
-          new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
-          armCommands.stowPose()
+          new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain)//,
+          //armCommands.stowPose()
         ), 
         this::isAmpPose)
     );

@@ -43,6 +43,8 @@ public class BlueCenterL3
         Path.Point wingNote6 = new Path.Point(1.331, -1.0337);
 
         double range1 = 2.0;
+        double range2 = 2.3; // TODO: replace with actual numbers
+        double range3 = 2.5;
 
         ArrayList<Segment> segments1 = new ArrayList<Segment>();
         segments1.add(new Segment(start, pathShootPoint, 0, 3.0)); //TODO: ask about the orientations
@@ -84,44 +86,32 @@ public class BlueCenterL3
                 new PivotRangeCommand(pivot, range1)
             ),
             new ParallelCommandGroup(
-                new RunShooter(shooter, rangeFinder),
-                new PivotRangeCommand(pivot, rangeFinder)
+                new RunShooter(shooter, rangeFinder, range1),
+                new PivotRangeCommand(pivot, rangeFinder, range1)
+            ),
+            new RunFeeder(feeder, 30),
+    //second path
+            new ParallelCommandGroup(
+                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
+                collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter)
+            ),
+            new ParallelCommandGroup(
+                new RunShooter(shooter, rangeFinder, range2),
+                new PivotRangeCommand(pivot, rangeFinder, range2)
+            ),
+            new RunFeeder(feeder, 30),
+    //third path
+            new ParallelCommandGroup(
+                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path3), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
+                collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter)
+            ),
+            new ParallelCommandGroup(
+                new RunShooter(shooter, rangeFinder, range3),
+                new PivotRangeCommand(pivot, rangeFinder, range3)
             ),
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30),
                 new StopShooter(shooter)
-            ),
-            new NWSetPivot(pivot, 0.0), 
-    //second path
-            new ParallelCommandGroup(
-                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
-                new SequentialCommandGroup(
-                    collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter),
-                    new ParallelCommandGroup(    
-                        new RunShooter(shooter, rangeFinder),
-                        new PivotRangeCommand(pivot, rangeFinder)
-                    )
-                )
-            ),
-            new ParallelCommandGroup(
-                new RunFeeder(feeder, 30),
-                new NWStopShooter(shooter)
-            ),
-            new NWSetPivot(pivot, 0.0),
-    //third path
-            new ParallelCommandGroup(
-                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path3), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
-                new SequentialCommandGroup(
-                    collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter),
-                    new ParallelCommandGroup(    
-                        new RunShooter(shooter, rangeFinder),
-                        new PivotRangeCommand(pivot, rangeFinder)
-                    )
-                )
-            ),
-            new ParallelCommandGroup(
-                new RunFeeder(feeder, 30),
-                new NWStopShooter(shooter)
             ),
             new NWSetPivot(pivot, 0.0)
         );

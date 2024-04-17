@@ -71,23 +71,14 @@ public class BlueCenterL2
                 new PivotRangeCommand(pivot, range1)
             ),
             new ParallelCommandGroup(
-                new RunShooter(shooter, rangeFinder),
-                new PivotRangeCommand(pivot, rangeFinder)
+                new RunShooter(shooter, rangeFinder, range1),
+                new PivotRangeCommand(pivot, rangeFinder, range1)
             ),
-            new ParallelCommandGroup(
-                new RunFeeder(feeder, 30),
-                new StopShooter(shooter)
-            ),
-            new NWSetPivot(pivot, 0.0), 
+            new RunFeeder(feeder, 30),
+    
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
-                new SequentialCommandGroup(
-                    collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter),
-                    new ParallelCommandGroup(    
-                        new RunShooter(shooter, rangeFinder),
-                        new PivotRangeCommand(pivot, rangeFinder)
-                    )
-                )
+                collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter)
             ),
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30),
