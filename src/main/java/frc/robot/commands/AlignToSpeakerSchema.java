@@ -52,7 +52,7 @@ public class AlignToSpeakerSchema extends MotionSchema
       if (apriltag.isValid())
       {
        //rotation = (0.02 + (drivetrain.getChassisSpeeds().vyMetersPerSecond * 0.01)) * (0 - apriltag.yaw);
-       rotation = turnController.calculate(apriltag.yaw,  0 - (0.2 * drivetrain.getChassisSpeeds().vyMetersPerSecond));
+       rotation = turnController.calculate(apriltag.yaw,  0); //- (0.2 * drivetrain.getChassisSpeeds().vyMetersPerSecond));
        SmartDashboard.putNumber("turnController-rotation", rotation);
        MathUtil.clamp(rotation, -1.5, 1.5);
         setRotate(rotation, 1.0);
