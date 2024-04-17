@@ -5,65 +5,53 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.OI;
 import frc.robot.subsystems.Headlight;
+import frc.robot.subsystems.NoteFinder;
+import frc.robot.subsystems.OI;
 
-public class AlignSpeakerAutoSchema extends MotionSchema implements Activate
-{
-  AprilTagFinder finder;
+public class AlignToNote extends MotionSchema {
+  NoteFinder noteFinder;
   Headlight headlight;
-  double rotation = 0.0;
-  double error = 0.0;
-  double last_error = 0.0;
-  boolean active = false;
-  double center_point = 150.0;
+  OI oi;
+  double noteRotation;
+  PIDController turnController = new PIDController(0.15, 0, 0.015);
 
-  /** Creates a new AlignToSpeakerSchema. */
-  public AlignSpeakerAutoSchema(AprilTagFinder finder, Headlight headlight) 
+  public AlignToNote(NoteFinder noteFinder, Headlight headlight, OI oi) 
   {
-    this.finder = finder;
+    this.noteFinder = noteFinder;
     this.headlight = headlight;
-    active = false;
+    this.oi = oi;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize(Drivetrain drivetrain) {
-  }
-
-  @Override
-  public void activate(boolean active)
-  {
-    this.active = active;
+    headlight.setHeadlight(false);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() 
+  public void update(Drivetrain drivetrain) 
   {
-    var apriltag = finder.getCurrentTagData();
+    var note = noteFinder.getCurrentNoteData();
 
-    if (active)
+    if (oi.getDriverBButton())
     {
       headlight.setHeadlight(true);
-      if (apriltag.isValid())
+      if (note.validNote())
       {
-        last_error = error;
-        error = (center_point - apriltag.yaw);
-
-        // PD controller form:
-        rotation = 0.02 * error +  0.0 * (error - last_error) ;
-        MathUtil.clamp(rotation, -1.0, 1.0);
-
-
-        setRotate(rotation, 3.0);
+       //rotation = (0.02 + (drivetrain.getChassisSpeeds().vyMetersPerSecond * 0.01)) * (0 - apriltag.yaw);
+       noteRotation = turnController.calculate(note.noteYaw,  0);
+       SmartDashboard.putNumber("turnController-rotation", noteRotation);
+       MathUtil.clamp(noteRotation, -1.5, 1.5);
+        setRotate(noteRotation, 1.0);
       }
-      else
+      else //if((Math.abs(160 - apriltag.cx) < 20) && !finder.tagFound())
       {
         setRotate(0.0, 0.0);
       }
@@ -73,8 +61,6 @@ public class AlignSpeakerAutoSchema extends MotionSchema implements Activate
       setRotate(0.0, 0.0);
       headlight.setHeadlight(false);
     }
-
-    SmartDashboard.putBoolean("Align To Speaker Active", apriltag.isValid() && active);
   }
 
   // Called once the command ends or is interrupted.
@@ -85,8 +71,7 @@ public class AlignSpeakerAutoSchema extends MotionSchema implements Activate
 
   // Returns true when the command should end.
   @Override
-  public boolean isFinished() 
-  {
+  public boolean isFinished() {
    return false;
   }
 }
