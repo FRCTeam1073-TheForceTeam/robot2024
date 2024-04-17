@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AlignSpeakerAutoSchema;
+import frc.robot.commands.CollectFeedAutoCommand;
 import frc.robot.commands.CollectFeedCommand;
 import frc.robot.commands.DrivePathSchema;
 import frc.robot.commands.NWSetPivot;
@@ -28,7 +29,7 @@ import frc.robot.subsystems.Shooter;
 
 public class CenterL3
 {
-    public static Command create(Drivetrain drivetrain, Headlight headlight, Shooter shooter, Pivot pivot, Feeder feeder, CollectFeedCommand collectCommand, 
+    public static Command create(Drivetrain drivetrain, Headlight headlight, Shooter shooter, Pivot pivot, Feeder feeder, CollectFeedAutoCommand collectAutoCommand, 
     Collector collector, CollectorArm collectorArm, AprilTagFinder tagFinder, RangeFinder rangeFinder, boolean isRed)
     {
         int allianceSign = 0;
@@ -135,10 +136,10 @@ public class CenterL3
             new ParallelCommandGroup(
                 new RunShooter(shooter, range2),
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
-                collectCommand.runCollectCommand(drivetrain, collector, collectorArm)
+                collectAutoCommand.runCollectAutoCommand(drivetrain, collector, collectorArm)
             ),
             new ParallelCommandGroup(
-                collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter), 
+                collectAutoCommand.runCollectFeedAutoCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter), 
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path3), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain)
             ),
             new ParallelCommandGroup(    
@@ -155,11 +156,11 @@ public class CenterL3
             new ParallelCommandGroup(
                 new RunShooter(shooter, range3),
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path4), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
-                collectCommand.runCollectCommand(drivetrain, collector, collectorArm)
+                collectAutoCommand.runCollectAutoCommand(drivetrain, collector, collectorArm)
             ),
                 
             new ParallelCommandGroup(
-                collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter), 
+                collectAutoCommand.runCollectFeedAutoCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter), 
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path5), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain)
             ),
 
@@ -175,5 +176,12 @@ public class CenterL3
 
             new NWSetPivot(pivot, 0.0)
         );
+    }
+
+    public static Command create(Drivetrain m_drivetrain, Headlight m_headlight, Shooter m_shooter, Pivot m_pivot,
+            Feeder m_feeder, CollectFeedCommand m_collectAndFeed, Collector m_collector, CollectorArm m_collectorArm,
+            AprilTagFinder m_aprilTagFinder, RangeFinder m_rangeFinder, boolean isRed) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'create'");
     }    
 }
