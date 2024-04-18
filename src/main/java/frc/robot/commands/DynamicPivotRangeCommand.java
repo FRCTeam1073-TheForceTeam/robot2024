@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Pivot;
@@ -24,7 +25,11 @@ public class DynamicPivotRangeCommand extends Command {
   double currentRange;
   double avgRange;
 
+  double currentTime = 0.0;
+  double oldTime = 0.0;
+
   double range;
+  double rangeRate = 0;
 
   double count;
 
@@ -54,8 +59,11 @@ public class DynamicPivotRangeCommand extends Command {
   @Override
   public void execute() {
     isWaiting = true;
+    currentTime = Timer.getFPGATimestamp();
     currentRange = rangefinder.getRange();
-  
+
+    rangeRate = (currentRange - avgRange) / (currentTime - oldTime);
+
     avgRange = (0.05 * avgRange) + (0.95 * currentRange);
 
     if (count < 20)
@@ -63,9 +71,11 @@ public class DynamicPivotRangeCommand extends Command {
       count++;
     }
     else{ 
-      targetPositionRad = pivotTable.interpolatePivotAngle(avgRange) + (drivetrain.getChassisSpeeds().vxMetersPerSecond * 0.2);
+      targetPositionRad = pivotTable.interpolatePivotAngle(avgRange) + (rangeRate * 0.2);
       pivot.setTargetPositionInRad(targetPositionRad);
     }
+
+    oldTime = currentTime;
   }
 
   // Called once the command ends or is interrupted.
