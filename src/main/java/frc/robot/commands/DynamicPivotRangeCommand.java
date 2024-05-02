@@ -64,14 +64,14 @@ public class DynamicPivotRangeCommand extends Command {
 
     rangeRate = (currentRange - avgRange) / (currentTime - oldTime);
 
-    avgRange = (0.2 * avgRange) + (0.8 * currentRange);
+    avgRange = (0.4 * avgRange) + (0.6 * currentRange);
 
     if (count < 20)
     {
       count++;
     }
     else{ 
-      targetPositionRad = pivotTable.interpolatePivotAngle(avgRange) + (rangeRate * 0.2);
+      targetPositionRad = pivotTable.interpolatePivotAngle(avgRange);// + (rangeRate * 0.2);
       pivot.setTargetPositionInRad(targetPositionRad);
     }
 
