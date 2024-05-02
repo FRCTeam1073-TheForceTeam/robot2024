@@ -99,7 +99,7 @@ public class RunShooter extends Command {
       shooterTopMPS = shooterInterpolatorTable.interpolateShooterVelocity(range);
       shooterBottomMPS = shooterInterpolatorTable.interpolateShooterVelocity(range);
     }
-    
+    //SHOOTER TUNING
     // shooterTopMPS = shooter.getRunShooterTargetBottomVelocityInMPS();
     // shooterBottomMPS = shooter.getRunShooterTargetBottomVelocityInMPS();
     count = 0;

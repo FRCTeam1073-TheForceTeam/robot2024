@@ -64,7 +64,7 @@ public class DynamicPivotRangeCommand extends Command {
 
     rangeRate = (currentRange - avgRange) / (currentTime - oldTime);
 
-    avgRange = (0.05 * avgRange) + (0.95 * currentRange);
+    avgRange = (0.2 * avgRange) + (0.8 * currentRange);
 
     if (count < 20)
     {

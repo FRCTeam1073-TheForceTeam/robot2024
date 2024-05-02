@@ -283,8 +283,8 @@ public class Shooter extends DiagnosticsSubsystem{
     builder.addDoubleProperty("Tof Range", this::getTofRange, null);
     builder.addDoubleProperty("Tof Freq", this::getTofFreq, null);
 
-    // builder.addDoubleProperty("RunShooter Target Top Motor Velocity", this::getRunShooterTargetTopVelocityInMPS, this::setRunShooterTargetTopVelocityInMPS);
-    // builder.addDoubleProperty("RunShooter Bottom Motor Velocity", this::getRunShooterTargetBottomVelocityInMPS, this::setRunShooterTargetBottomVelocityInMPS);
+    builder.addDoubleProperty("RunShooter Target Top Motor Velocity", this::getRunShooterTargetTopVelocityInMPS, this::setRunShooterTargetTopVelocityInMPS);
+    builder.addDoubleProperty("RunShooter Bottom Motor Velocity", this::getRunShooterTargetBottomVelocityInMPS, this::setRunShooterTargetBottomVelocityInMPS);
 
     builder.addDoubleProperty("Commanded Top Motor Velocity", this::getCommandedTopVelocityInMPS, null);
     builder.addDoubleProperty("Commanded Bottom Motor Velocity", this::getCommandedBottomVelocityInMPS, null);

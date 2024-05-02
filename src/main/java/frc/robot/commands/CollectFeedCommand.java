@@ -63,6 +63,11 @@ public class CollectFeedCommand extends Command
         new DynamicPivotRangeCommand(m_pivot, m_rangeFinder, m_drivetrain),
         new DynamicRunShooter(m_shooter, m_rangeFinder)
       )
+      // new ParallelCommandGroup(
+      //   new RunShooter(m_shooter, m_rangeFinder),
+      //   new PivotRangeCommand(m_pivot, 0)
+      // )
+      
     );
   }
 
