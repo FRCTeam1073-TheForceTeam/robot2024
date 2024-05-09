@@ -65,17 +65,18 @@ public class DynamicPivotRangeCommand extends Command {
     rangeRate = (currentRange - avgRange) / (currentTime - oldTime);
 
     avgRange = (0.4 * avgRange) + (0.6 * currentRange);
+    oldTime = currentTime;
 
     if (count < 20)
     {
       count++;
     }
     else{ 
-      targetPositionRad = pivotTable.interpolatePivotAngle(avgRange);// + (rangeRate * 0.2);
+      targetPositionRad = pivotTable.interpolatePivotAngle(avgRange) - (drivetrain.getChassisSpeeds().vxMetersPerSecond * 0.0) - (rangeRate * 0.0);
       pivot.setTargetPositionInRad(targetPositionRad);
     }
 
-    oldTime = currentTime;
+    
   }
 
   // Called once the command ends or is interrupted.
