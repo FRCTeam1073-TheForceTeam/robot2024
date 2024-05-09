@@ -4,10 +4,13 @@ import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AlignSpeakerAutoSchema;
 import frc.robot.commands.CollectFeedCommand;
 import frc.robot.commands.DrivePathSchema;
+import frc.robot.commands.DynamicPivotRangeCommand;
+import frc.robot.commands.DynamicRunShooter;
 import frc.robot.commands.NWSetPivot;
 import frc.robot.commands.NWStopShooter;
 import frc.robot.commands.Path;
@@ -90,14 +93,12 @@ public class SourceL2
                 new RunShooter(shooter, range1),
                 new PivotRangeCommand(pivot, range1)
             ),
-            new ParallelCommandGroup(
-                new RunShooter(shooter, rangeFinder, range1),
-                new PivotRangeCommand(pivot, rangeFinder, range1)
-            ),
-            new ParallelCommandGroup(
+            new ParallelDeadlineGroup(
+                new DynamicRunShooter(shooter, rangeFinder),
+                new DynamicPivotRangeCommand(pivot, rangeFinder, drivetrain),
                 new RunFeeder(feeder, 30),
                 new WaitForShot(shooter)
-            ),    
+            ),
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), alignSchema, drivetrain),
                 new SequentialCommandGroup(
@@ -109,14 +110,13 @@ public class SourceL2
                     )
                 )      
             ), 
-            new ParallelCommandGroup(
-                new RunShooter(shooter, rangeFinder, range2),
-                new PivotRangeCommand(pivot, rangeFinder, range2)
-            ),
-            new ParallelCommandGroup(
+            new ParallelDeadlineGroup(
+                new DynamicRunShooter(shooter, rangeFinder),
+                new DynamicPivotRangeCommand(pivot, rangeFinder, drivetrain),
                 new RunFeeder(feeder, 30),
-                new NWStopShooter(shooter)
+                new WaitForShot(shooter)
             ),
+            new NWStopShooter(shooter),
             new NWSetPivot(pivot, 0.0)
         );
     }    
