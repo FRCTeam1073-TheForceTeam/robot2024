@@ -7,7 +7,6 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AlignSpeakerAutoSchema;
 import frc.robot.commands.CollectFeedCommand;
-import frc.robot.commands.CollectFeedCommand;
 import frc.robot.commands.DrivePathSchema;
 import frc.robot.commands.NWSetPivot;
 import frc.robot.commands.NWStopShooter;
@@ -51,9 +50,9 @@ public class CenterL3
         Path.Point wingNote6 = new Path.Point(1.331, 1.0337 * allianceSign);
         Path.Point afterWingNote6 = new Path.Point(0.67937, -0.435164 * allianceSign);
 
-        double range1 = 1.41;
-        double range2 = 1.61;
-        double range3 = 1.8;
+        double range1 = 1.40;
+        double range2 = 2.00;
+        double range3 = 1.81;
         //Pose2d poseShootPoint = new Pose2d();
 
         ArrayList<Segment> segments1 = new ArrayList<Segment>();
@@ -80,6 +79,8 @@ public class CenterL3
         segments3.get(0).entryActivate = alignSchema;
         segments3.get(0).exitActivateValue = false;
         segments3.get(0).exitActivate = alignSchema;
+        segments3.get(0).end.blend_radius = 0.35;
+
 
         ArrayList<Segment> segments4 = new ArrayList<Segment>();
         segments4.add(new Segment(pathShootPoint, wingNote7, 0.0 * allianceSign, 3.0));
@@ -88,6 +89,7 @@ public class CenterL3
         segments4.get(0).entryActivate = alignSchema;
         segments4.get(0).exitActivateValue = false;
         segments4.get(0).exitActivate = alignSchema;
+        segments4.get(0).end.blend_radius = 0.35;
 
         ArrayList<Segment> segments5 = new ArrayList<Segment>();
         segments5.add(new Segment(wingNote7, afterWingNote6, 0.0 * allianceSign, 3.0));
@@ -96,6 +98,8 @@ public class CenterL3
         segments5.get(0).entryActivate = alignSchema;
         segments5.get(0).exitActivateValue = false;
         segments5.get(0).exitActivate = alignSchema;
+        segments5.get(0).end.blend_radius = 0.35;
+
 
 
         Path path1 = new Path(segments1, -0.11083 * allianceSign);
@@ -121,10 +125,10 @@ public class CenterL3
                 new PivotRangeCommand(pivot, range1)
             ),
             //adjust shooter speed/pivot based on range finder for shot 1
-            new ParallelCommandGroup(
-                new RunShooter(shooter, rangeFinder, range1),
-                new PivotRangeCommand(pivot, rangeFinder, range1)
-            ),
+            // new ParallelCommandGroup(
+            //     new RunShooter(shooter, range1),
+                new PivotRangeCommand(pivot, range1),
+            //),
             // shot #1
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30),
@@ -138,16 +142,16 @@ public class CenterL3
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
                 collectCommand.runCollectCommand(drivetrain, collector, collectorArm)
             ),
-            // new ParallelCommandGroup(
-            //     collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter), 
-            //     SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path3), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain)
-            // ),
-            collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter), 
-            
+
+            new ParallelCommandGroup(
+                collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter), 
+                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path3), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain)
+            ),
+
             new ParallelCommandGroup(  
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path3), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),  
-                new RunShooter(shooter, rangeFinder, range1),
-                new PivotRangeCommand(pivot, rangeFinder, range1)
+                //new RunShooter(shooter, range1),
+                new PivotRangeCommand(pivot, range3)
             ),
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30),
@@ -161,18 +165,17 @@ public class CenterL3
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path4), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
                 collectCommand.runCollectCommand(drivetrain, collector, collectorArm)
             ),
-            collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter), 
+        
 
-            // new ParallelCommandGroup(
-            //     collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter), 
-            //     SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path5), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain)
-            // ),
-
-             new ParallelCommandGroup(
-                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path5), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
-                new RunShooter(shooter, rangeFinder, range3),
-                new PivotRangeCommand(pivot, rangeFinder, range3)
+            new ParallelCommandGroup(
+                collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter), 
+                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path5), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain)
             ),
+
+            //  new ParallelCommandGroup(
+            //     new RunShooter(shooter, range3),
+                new PivotRangeCommand(pivot, range3),
+            // ),
 
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30),

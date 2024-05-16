@@ -70,37 +70,38 @@ public class Bling extends DiagnosticsSubsystem {
   public void periodic() {
     // This method will be called once per scheduler run
     m_led.setData(m_ledBuffer);
+    setBatteryBling();
 
-    if(!DriverStation.isDisabled()){
-      setBatteryBling();
+    // if(!DriverStation.isDisabled()){
+    //   setBatteryBling();
 
-      if(aprilTagFinder.isAligned()){
-        setAlignedBling();
-      }
-      else{
-        setUnalignedBling();
-      }
-      double tofFeederValue = feeder.getTofRange();
-      if(tofFeederValue <= 0.2){
-        if(shooter.getCurrentTopVelocityInMPS() > (shooter.getTargetTopVelocityInMPS() - 2)
-          && shooter.getCurrentTopVelocityInMPS() > 20
-          && shooter.getCurrentBottomVelocityInMPS() > (shooter.getTargetBottomVelocityInMPS() - 2)){
-            setShooterBling();
-        }
-        else{
-          setFeededBling();
-        }
-      }
-      else if(collector.hasNote()){
-        setCollectedBling();
-      }
-      else{
-        setNoNoteBling();
-      }
-    }
-    if (DriverStation.isDisabled()){
-      setRainbowBling();
-    }
+    //   if(aprilTagFinder.isAligned()){
+    //     setAlignedBling();
+    //   }
+    //   else{
+    //     setUnalignedBling();
+    //   }
+    //   double tofFeederValue = feeder.getTofRange();
+    //   if(tofFeederValue <= 0.2){
+    //     if(shooter.getCurrentTopVelocityInMPS() > (shooter.getTargetTopVelocityInMPS() - 2)
+    //       && shooter.getCurrentTopVelocityInMPS() > 20
+    //       && shooter.getCurrentBottomVelocityInMPS() > (shooter.getTargetBottomVelocityInMPS() - 2)){
+    //         setShooterBling();
+    //     }
+    //     else{
+    //       setFeededBling();
+    //     }
+    //   }
+    //   else if(collector.hasNote()){
+    //     setCollectedBling();
+    //   }
+    //   else{
+    //     setNoNoteBling();
+    //   }
+    // }
+    // if (DriverStation.isDisabled()){
+    //   setRainbowBling();
+    // }
   }
 
   /**
