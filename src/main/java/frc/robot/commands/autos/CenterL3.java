@@ -79,6 +79,8 @@ public class CenterL3
         segments3.get(0).entryActivate = alignSchema;
         segments3.get(0).exitActivateValue = false;
         segments3.get(0).exitActivate = alignSchema;
+        segments3.get(0).end.blend_radius = 0.35;
+
 
         ArrayList<Segment> segments4 = new ArrayList<Segment>();
         segments4.add(new Segment(pathShootPoint, wingNote7, 0.0 * allianceSign, 3.0));
@@ -87,6 +89,7 @@ public class CenterL3
         segments4.get(0).entryActivate = alignSchema;
         segments4.get(0).exitActivateValue = false;
         segments4.get(0).exitActivate = alignSchema;
+        segments4.get(0).end.blend_radius = 0.35;
 
         ArrayList<Segment> segments5 = new ArrayList<Segment>();
         segments5.add(new Segment(wingNote7, afterWingNote6, 0.0 * allianceSign, 3.0));
@@ -95,6 +98,8 @@ public class CenterL3
         segments5.get(0).entryActivate = alignSchema;
         segments5.get(0).exitActivateValue = false;
         segments5.get(0).exitActivate = alignSchema;
+        segments5.get(0).end.blend_radius = 0.35;
+
 
 
         Path path1 = new Path(segments1, -0.11083 * allianceSign);

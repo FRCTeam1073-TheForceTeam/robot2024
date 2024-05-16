@@ -98,7 +98,6 @@ public class CollectFeedCommand extends Command
 
   public SequentialCommandGroup runCollectCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm){
     ArmPoseTeleop armCommands = new ArmPoseTeleop(m_collectorArm);
-    System.out.println("driving through note");
 
     return new SequentialCommandGroup(
       new ConditionalCommand(
