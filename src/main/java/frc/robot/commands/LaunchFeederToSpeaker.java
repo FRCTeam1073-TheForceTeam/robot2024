@@ -40,9 +40,9 @@ public class LaunchFeederToSpeaker extends SequentialCommandGroup{
     );
   }
 
-  public Command runDynamicAiming(Pivot m_Pivot, Shooter m_Shooter, RangeFinder m_RangeFinder, Drivetrain m_Drivetrain){
+  public Command runDynamicAiming(Pivot m_Pivot, Shooter m_Shooter, RangeFinder m_RangeFinder, Drivetrain m_Drivetrain, AprilTagFinder m_AprilTagFinder){
     return new ParallelCommandGroup(
-      new DynamicPivotRangeCommand(m_Pivot, m_RangeFinder, m_Drivetrain),
+      new DynamicPivotRangeCommand(m_Pivot, m_RangeFinder, m_Drivetrain, m_AprilTagFinder),
       new DynamicRunShooter(m_Shooter, m_RangeFinder)
     );
   }

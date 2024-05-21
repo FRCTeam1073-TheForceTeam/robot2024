@@ -6,6 +6,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.RangeFinder;
@@ -17,6 +18,7 @@ public class DynamicPivotRangeCommand extends Command {
   private RangeFinder rangefinder;
   private ShooterInterpolatorTable pivotTable;
   private Drivetrain drivetrain;
+  private AprilTagFinder tagFinder;
   private double targetPositionRad;
   private boolean isPivotOn;
   private double tolerance;
@@ -33,13 +35,16 @@ public class DynamicPivotRangeCommand extends Command {
 
   double count;
 
+  double ySpeedProportional = 0;
+
   boolean isWaiting = true;
 
 
-  public DynamicPivotRangeCommand(Pivot pivot, RangeFinder rangefinder, Drivetrain drivetrain) {
+  public DynamicPivotRangeCommand(Pivot pivot, RangeFinder rangefinder, Drivetrain drivetrain, AprilTagFinder tagFinder) {
     this.pivot = pivot;
     this.rangefinder = rangefinder;
     this.drivetrain = drivetrain;
+    this.tagFinder = tagFinder;
     pivotTable = new ShooterInterpolatorTable();
     tolerance = -1;
     range = -1;
@@ -59,20 +64,23 @@ public class DynamicPivotRangeCommand extends Command {
   @Override
   public void execute() {
     isWaiting = true;
-    currentTime = Timer.getFPGATimestamp();
+  
     currentRange = rangefinder.getRange();
+    
+    ySpeedProportional = (drivetrain.getChassisSpeeds().vyMetersPerSecond * 0.3);
+    
+    if(ySpeedProportional > 0){
+      ySpeedProportional += drivetrain.getChassisSpeeds().vyMetersPerSecond * 0.15;
+    }
 
-    rangeRate = (currentRange - avgRange) / (currentTime - oldTime);
-
-    avgRange = (0.4 * avgRange) + (0.6 * currentRange);
-    oldTime = currentTime;
-
+    avgRange = (0.25 * avgRange) + (0.75 * currentRange);
+    
     if (count < 20)
     {
       count++;
     }
     else{ 
-      targetPositionRad = pivotTable.interpolatePivotAngle(avgRange) - (drivetrain.getChassisSpeeds().vxMetersPerSecond * 0.0) - (rangeRate * 0.0);
+      targetPositionRad = pivotTable.interpolatePivotAngle(avgRange) - ySpeedProportional;
       pivot.setTargetPositionInRad(targetPositionRad);
     }
 

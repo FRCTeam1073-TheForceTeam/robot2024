@@ -128,7 +128,7 @@ public class SourceL2
             ),
             new ParallelDeadlineGroup(
                 new DynamicRunShooter(shooter, rangeFinder),
-                new DynamicPivotRangeCommand(pivot, rangeFinder, drivetrain),
+                new DynamicPivotRangeCommand(pivot, rangeFinder, drivetrain, tagFinder),
                 new RunFeeder(feeder, 30)
                 // new WaitForShot(shooter)
             ),
@@ -145,7 +145,7 @@ public class SourceL2
             ), 
             new ParallelDeadlineGroup(
                 new DynamicRunShooter(shooter, rangeFinder),
-                new DynamicPivotRangeCommand(pivot, rangeFinder, drivetrain),
+                new DynamicPivotRangeCommand(pivot, rangeFinder, drivetrain, tagFinder),
                 new RunFeeder(feeder, 30)
                 // new WaitForShot(shooter)
             ),
