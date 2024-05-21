@@ -70,7 +70,7 @@ public class RobotContainer {
   private final Feeder m_feeder = new Feeder(); 
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
-  private final Climber m_climber = new Climber();
+  private final Climber m_climber = new Climber(m_OI);
   private final RangeFinder m_rangeFinder = new RangeFinder();
   private final AprilTagFinder m_aprilTagFinder = new AprilTagFinder();
   private final Headlight m_headlight = new Headlight();

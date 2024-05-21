@@ -16,6 +16,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 
 public class Climber extends DiagnosticsSubsystem {
   private final String kCANbus = "CANivore";
+  private final OI m_OI;
 
   private final double gearRatio = 21; // TODO: Get from hardware.
   private final double winchDiameter = 0.01905; // TODO: Get from hardware. .75 inches
@@ -24,6 +25,9 @@ public class Climber extends DiagnosticsSubsystem {
 
   private TalonFX left, right;   // Left and right motors wrt to robot +X forward. left is on +Y side. right is on -Y side.
   private VelocityVoltage leftVelocityVoltage, rightVelocityVoltage;
+  private PositionVoltage leftPositionVoltage, rightPositionVoltage;
+  private double leftTargetPosition = 0.0;
+  private double rightTargetPosition = 0.0;
   private double leftTargetVelocity = 0.0;
   private double rightTargetVelocity = 0.0;
 
@@ -38,14 +42,21 @@ public class Climber extends DiagnosticsSubsystem {
   private double maxRightPosition = 0.3;
 
   /** Creates a new Climber. */
-  public Climber() {
+  public Climber(OI oi) {
     left = new TalonFX(22, kCANbus);
     right = new TalonFX(23, kCANbus);
 
     leftVelocityVoltage = new VelocityVoltage(0).withSlot(0);
     rightVelocityVoltage = new VelocityVoltage(0).withSlot(0);
 
+    leftPositionVoltage = new PositionVoltage(0).withSlot(0);
+    rightPositionVoltage = new PositionVoltage(0).withSlot(0);
+
+    leftTargetPosition = minLeftPosition;
+    rightTargetPosition = minRightPosition;
+
     configureHardware();
+    m_OI = oi;
   }
 
   @Override
@@ -61,9 +72,14 @@ public class Climber extends DiagnosticsSubsystem {
 
     
     // Send down current command:
-    left.setControl(leftVelocityVoltage.withVelocity((leftTargetVelocity / leftMetersPerRotation)));
-    right.setControl(rightVelocityVoltage.withVelocity((rightTargetVelocity / rightMetersPerRotation)));
-
+    if(!m_OI.getCollectMode()){
+      left.setControl(leftVelocityVoltage.withVelocity((leftTargetVelocity / leftMetersPerRotation)));
+      //right.setControl(rightVelocityVoltage.withVelocity((rightTargetVelocity / rightMetersPerRotation)));
+    }
+    else{
+      left.setControl(leftPositionVoltage.withPosition((leftTargetPosition / leftMetersPerRotation)));
+      //right.setControl(rightPositionVoltage.withPosition((rightTargetPosition / rightMetersPerRotation)));
+    }
   }
 
   /**
@@ -95,12 +111,42 @@ public class Climber extends DiagnosticsSubsystem {
     // rightTargetVelocity = rightVelocity;
   }
 
+  public void setPositions(double leftPosition, double rightPosition){
+    if(leftPosition < minLeftPosition){
+      leftTargetPosition = minLeftPosition;
+    }
+    else if(leftPosition > maxLeftPosition){
+      leftTargetPosition = maxLeftPosition;
+    }
+    else{
+      leftTargetPosition = leftPosition;
+    }
+
+    if(rightPosition < minRightPosition){
+      rightTargetPosition = minRightPosition;
+    }
+    else if(rightPosition > maxRightPosition){
+      rightTargetPosition = maxRightPosition;
+    }
+    else{
+      rightTargetPosition = rightPosition;
+    }
+  }
+
   public double getLeftPosition() {
     return leftPosition;
   }
 
   public double getRightPosition() {
     return rightPosition;
+  }
+
+  public double getTargetLeftPosition() {
+    return leftTargetPosition;
+  }
+
+  public double getTargetRightPosition() {
+    return rightTargetPosition;
   }
 
   public double getLeftVelocity() {
@@ -111,7 +157,7 @@ public class Climber extends DiagnosticsSubsystem {
     return rightVelocity;
   }
 
-    public double getTargetLeftVelocity() {
+  public double getTargetLeftVelocity() {
     return leftTargetVelocity;
   }
 
@@ -144,6 +190,8 @@ public class Climber extends DiagnosticsSubsystem {
         // builder.addDoubleProperty("Right Vel", this::getRightVelocity, null);
         builder.addDoubleProperty("Left Pos", this::getLeftPosition, null);
         builder.addDoubleProperty("Right Pos", this::getRightPosition, null);
+        builder.addDoubleProperty("Target Left Pos", this::getTargetLeftPosition, null);
+        builder.addDoubleProperty("Target Right Pos", this::getTargetRightPosition, null);
     }  
 
   private void configureHardware() {
