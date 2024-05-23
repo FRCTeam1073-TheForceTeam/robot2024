@@ -65,7 +65,10 @@ public class DynamicPivotRangeCommand extends Command {
   public void execute() {
     isWaiting = true;
   
-    currentRange = rangefinder.getRange();
+    if (rangefinder.getRange() > 1.0)
+    {
+      currentRange = rangefinder.getRange();
+    }
     
     ySpeedProportional = (drivetrain.getChassisSpeeds().vyMetersPerSecond * 0.3);
     

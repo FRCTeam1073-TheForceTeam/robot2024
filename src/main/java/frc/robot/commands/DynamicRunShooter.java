@@ -49,7 +49,10 @@ public class DynamicRunShooter extends Command {
   @Override
   public void execute() {
 
-    currentRange = rangefinder.getRange();
+    if (rangefinder.getRange() > 1.0)
+    {
+      currentRange = rangefinder.getRange();
+    }
   
     avgRange = (0.2 * avgRange) + (0.8 * currentRange);
     

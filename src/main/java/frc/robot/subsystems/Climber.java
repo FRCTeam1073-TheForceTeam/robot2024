@@ -74,11 +74,11 @@ public class Climber extends DiagnosticsSubsystem {
     // Send down current command:
     if(!m_OI.getCollectMode()){
       left.setControl(leftVelocityVoltage.withVelocity((leftTargetVelocity / leftMetersPerRotation)));
-      //right.setControl(rightVelocityVoltage.withVelocity((rightTargetVelocity / rightMetersPerRotation)));
+      right.setControl(rightVelocityVoltage.withVelocity((rightTargetVelocity / rightMetersPerRotation)));
     }
     else{
       left.setControl(leftPositionVoltage.withPosition((leftTargetPosition / leftMetersPerRotation)));
-      //right.setControl(rightPositionVoltage.withPosition((rightTargetPosition / rightMetersPerRotation)));
+      right.setControl(rightPositionVoltage.withPosition((rightTargetPosition / rightMetersPerRotation)));
     }
   }
 
