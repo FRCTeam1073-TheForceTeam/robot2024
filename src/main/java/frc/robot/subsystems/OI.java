@@ -17,13 +17,13 @@ public class OI extends DiagnosticsSubsystem
   public static Joystick driverController;
   public static Joystick operatorController;
 
-  public Debouncer fieldCentricDebouncer = new Debouncer(.05);
+  public Debouncer fieldCentricDebouncer = new Debouncer(0.05);
   public Debouncer parkingBrakeDebouncer = new Debouncer(0.05);
   public Debouncer menuDriverButtonDebouncer = new Debouncer(0.05);
   public Debouncer aDriverButtonDebouncer = new Debouncer(0.05);
   public Debouncer bDriverButtonDebouncer = new Debouncer(0.05);
   public Debouncer yDriverButtonDebouncer = new Debouncer(0.05);
-  public Debouncer menuOperatorButtonDebouncer = new Debouncer(0.1);
+  public Debouncer menuOperatorButtonDebouncer = new Debouncer(0.13);
 
   // Declares the "zero" value variables (which allow us to compensate for joysticks that are a little off)
   private double LEFT_X_ZERO;
