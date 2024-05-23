@@ -3,6 +3,7 @@ package frc.robot.commands.autos;
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -80,57 +81,33 @@ public class SourceL2
         segments2.get(3).exitActivateValue = false;
         segments2.get(3).exitActivate = alignSchema;
 
-        // Path path1 = new Path(segments1, Math.PI / 6 * allianceSign);
-        Path path1 = new Path(segments1, 0.51 * allianceSign);
+        Path path1 = new Path(segments1, Math.PI / 6 * allianceSign);
+        // Path path1 = new Path(segments1, 0.51 * allianceSign);
         path1.transverseVelocity = 1.5;
 
         Path path2 = new Path(segments2, 0.51 * allianceSign);
         path2.transverseVelocity = 1.5;
 
 
-        // return new ParallelCommandGroup(
-        //     SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path1), alignSchema, drivetrain), 
-        //     new SequentialCommandGroup(
-        //         new ParallelCommandGroup(
-        //             new RunShooter(shooter, range1),
-        //             new PivotRangeCommand(pivot, range1)
-        //         ),
-        //         new ParallelDeadlineGroup(
-        //             new DynamicRunShooter(shooter, rangeFinder),
-        //             new DynamicPivotRangeCommand(pivot, rangeFinder, drivetrain),
-        //             new RunFeeder(feeder, 30)
-        //             // new WaitForShot(shooter)
-        //         ),
-        //         new SequentialCommandGroup(
-        //             // collectCommand.runCollectCommand(drivetrain, collector, collectorArm),
-        //             collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter),
-        //             new ParallelCommandGroup(
-        //                 new RunShooter(shooter, range2),
-        //                 new PivotRangeCommand(pivot, range2)
-        //             )
-        //         ),      
-        //         new ParallelDeadlineGroup(
-        //             new DynamicRunShooter(shooter, rangeFinder),
-        //             new DynamicPivotRangeCommand(pivot, rangeFinder, drivetrain),
-        //             new RunFeeder(feeder, 30)
-        //             // new WaitForShot(shooter)
-        //         ),
-        //         new NWStopShooter(shooter),
-        //         new NWSetPivot(pivot, 0.0)
-        //     )
-        // );
-
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path1), alignSchema, drivetrain), 
-                new RunShooter(shooter, range1),
-                new PivotRangeCommand(pivot, range1)
-            ),
-            new ParallelDeadlineGroup(
-                new DynamicRunShooter(shooter, rangeFinder),
-                new DynamicPivotRangeCommand(pivot, rangeFinder, drivetrain, tagFinder),
-                new RunFeeder(feeder, 30)
-                // new WaitForShot(shooter)
+                new SequentialCommandGroup(
+                    new ParallelCommandGroup(
+                        new RunShooter(shooter, range1),
+                        new PivotRangeCommand(pivot, range1)
+                    ),
+                    new ParallelDeadlineGroup(
+                        new DynamicRunShooter(shooter, rangeFinder),
+                        new DynamicPivotRangeCommand(pivot, rangeFinder, drivetrain, tagFinder),
+                        new ConditionalCommand(
+                            new RunFeeder(feeder, 30), 
+                            new RunFeeder(feeder, 0), 
+                            tagFinder::tagFound
+                        )
+                        // new WaitForShot(shooter)
+                    )
+                )
             ),
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), alignSchema, drivetrain),
@@ -140,17 +117,54 @@ public class SourceL2
                     new ParallelCommandGroup(
                         new RunShooter(shooter, range2),
                         new PivotRangeCommand(pivot, range2)
+                    ),
+                    new ParallelDeadlineGroup(
+                        new DynamicRunShooter(shooter, rangeFinder),
+                        new DynamicPivotRangeCommand(pivot, rangeFinder, drivetrain, tagFinder),
+                        new ConditionalCommand(
+                            new RunFeeder(feeder, 30), 
+                            new RunFeeder(feeder, 0), 
+                            tagFinder::tagFound
+                        )
+                        // new WaitForShot(shooter)
                     )
                 )      
             ), 
-            new ParallelDeadlineGroup(
-                new DynamicRunShooter(shooter, rangeFinder),
-                new DynamicPivotRangeCommand(pivot, rangeFinder, drivetrain, tagFinder),
-                new RunFeeder(feeder, 30)
-                // new WaitForShot(shooter)
-            ),
             new NWStopShooter(shooter),
             new NWSetPivot(pivot, 0.0)
         );
+
+        // return new SequentialCommandGroup(
+        //     new ParallelCommandGroup(
+        //         SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path1), alignSchema, drivetrain), 
+        //         new RunShooter(shooter, range1),
+        //         new PivotRangeCommand(pivot, range1)
+        //     ),
+        //     new ParallelDeadlineGroup(
+        //         new DynamicRunShooter(shooter, rangeFinder),
+        //         new DynamicPivotRangeCommand(pivot, rangeFinder, drivetrain, tagFinder),
+        //         new RunFeeder(feeder, 30)
+        //         // new WaitForShot(shooter)
+        //     ),
+        //     new ParallelCommandGroup(
+        //         SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), alignSchema, drivetrain),
+        //         new SequentialCommandGroup(
+        //             collectCommand.runCollectCommand(drivetrain, collector, collectorArm),
+        //             collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter),
+        //             new ParallelCommandGroup(
+        //                 new RunShooter(shooter, range2),
+        //                 new PivotRangeCommand(pivot, range2)
+        //             )
+        //         )      
+        //     ), 
+        //     new ParallelDeadlineGroup(
+        //         new DynamicRunShooter(shooter, rangeFinder),
+        //         new DynamicPivotRangeCommand(pivot, rangeFinder, drivetrain, tagFinder),
+        //         new RunFeeder(feeder, 30)
+        //         // new WaitForShot(shooter)
+        //     ),
+        //     new NWStopShooter(shooter),
+        //     new NWSetPivot(pivot, 0.0)
+        // );
     }    
 }
