@@ -58,7 +58,7 @@ public class BlueCenterL4
                 new StopShooter(shooter)
             ),
             new SetPivotCommand(pivot, 0.0),
-            collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter),
+            collectCommand.runCollectFeedCommand(collector, collectorArm, pivot, feeder, shooter),
             new ParallelCommandGroup(
                 new RunShooter(shooter, range2),
                 new PivotRangeCommand(pivot, range2)

@@ -90,7 +90,7 @@ public class BlueSourceL2
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), alignSchema, drivetrain),
                 new SequentialCommandGroup(
-                    collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter),
+                    collectCommand.runCollectFeedCommand(collector, collectorArm, pivot, feeder, shooter),
                     new ParallelCommandGroup(
                         new RunShooter(shooter, range1),
                         new PivotRangeCommand(pivot, range1)

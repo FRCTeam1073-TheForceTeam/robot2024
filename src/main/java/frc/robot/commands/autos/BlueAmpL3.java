@@ -57,7 +57,7 @@ public class BlueAmpL3
                     new StopShooter(shooter)
                 ),
             new SetPivotCommand(pivot, 0.0),
-            collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter),
+            collectCommand.runCollectFeedCommand(collector, collectorArm, pivot, feeder, shooter),
             new ParallelCommandGroup(
                 new RunShooter(shooter, range1),
                 new PivotRangeCommand(pivot, range1)
@@ -67,7 +67,7 @@ public class BlueAmpL3
                 new RunFeeder(feeder, 30),
                 new StopShooter(shooter)
             ),
-            collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter),
+            collectCommand.runCollectFeedCommand(collector, collectorArm, pivot, feeder, shooter),
             new ParallelCommandGroup(
                 new RunShooter(shooter, range1),
                 new PivotRangeCommand(pivot, range1)

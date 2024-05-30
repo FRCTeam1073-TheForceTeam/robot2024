@@ -112,8 +112,8 @@ public class SourceL2
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), alignSchema, drivetrain),
                 new SequentialCommandGroup(
-                    collectCommand.runCollectCommand(drivetrain, collector, collectorArm),
-                    collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter),
+                    collectCommand.runCollectCommand(collector, collectorArm),
+                    collectCommand.runCollectFeedCommand(collector, collectorArm, pivot, feeder, shooter),
                     new ParallelCommandGroup(
                         new RunShooter(shooter, range2),
                         new PivotRangeCommand(pivot, range2)

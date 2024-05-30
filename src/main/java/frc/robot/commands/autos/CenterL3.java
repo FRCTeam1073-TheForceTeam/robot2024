@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
 import frc.robot.commands.AlignSpeakerAutoSchema;
 import frc.robot.commands.CollectFeedCommand;
 import frc.robot.commands.DrivePathSchema;
@@ -45,7 +46,7 @@ public class CenterL3
 
         Path.Point start = new Path.Point(0.0, 0.0);
         Path.Point pathShootPoint = new Path.Point(0.6308, 0.2343 * allianceSign);
-        Path.Point wingNote7 = new Path.Point(1.700267, -1.26481 * allianceSign); //-0.202768 Y
+        Path.Point wingNote7 = new Path.Point(1.900267, -1.26481 * allianceSign); //-0.202768 Y
         //Path.Point btwPoint = new Path.Point(0.8090, 0.3534 * allianceSign);
         Path.Point wingNote6 = new Path.Point(1.331, 1.0337 * allianceSign);
         Path.Point afterWingNote6 = new Path.Point(0.67937, -0.435164 * allianceSign);
@@ -65,7 +66,7 @@ public class CenterL3
 
         ArrayList<Segment> segments2 = new ArrayList<Segment>();
         segments2.add(new Segment(pathShootPoint, wingNote6, 0.0 * allianceSign, 3.0));
-        segments2.add(new Segment(wingNote6, pathShootPoint, 0.0 * allianceSign, 3.0));
+        // segments2.add(new Segment(wingNote6, pathShootPoint, 0.0 * allianceSign, 3.0));
 
         segments2.get(0).entryActivateValue = true;
         segments2.get(0).entryActivate = alignSchema;
@@ -74,7 +75,7 @@ public class CenterL3
 
         ArrayList<Segment> segments3 = new ArrayList<Segment>();
         segments3.add(new Segment(wingNote6, pathShootPoint, 0 * allianceSign, 3.0)); //TODO: ask about the orientations
-        //segments1.add(new Segment(shootPoint, wingNote7, 0, 2.5));
+        
         segments3.get(0).entryActivateValue = true;
         segments3.get(0).entryActivate = alignSchema;
         segments3.get(0).exitActivateValue = false;
@@ -105,7 +106,7 @@ public class CenterL3
         Path path1 = new Path(segments1, -0.11083 * allianceSign);
         path1.transverseVelocity = 5.0;
 
-        Path path2 = new Path(segments2, 1.002538 * allianceSign);  // 0.2538
+        Path path2 = new Path(segments2, 0.2538 * allianceSign);  // 1.002538 i think this is a bad point
         path2.transverseVelocity = 5.0;
         
         Path path3 = new Path(segments3, -0.0524 * allianceSign);
@@ -137,18 +138,24 @@ public class CenterL3
             new NWSetPivot(pivot, 0.0), 
 
         //second path - back up, collect note, shoot from that point
+            new RunShooter(shooter, range2),
             new ParallelCommandGroup(
-                new RunShooter(shooter, range2),
-                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
-                collectCommand.runCollectCommand(drivetrain, collector, collectorArm)
+                new SequentialCommandGroup(
+                    SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
+                    SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path3), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain)
+                ),
+                // new SequentialCommandGroup(
+                collectCommand.runCollectCommand(collector, collectorArm)
+                // )
             ),
+            collectCommand.runCollectFeedCommand(collector, collectorArm, pivot, feeder, shooter),
             // collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter), 
             // new PivotRangeCommand(pivot, range3),
-            new ParallelCommandGroup(
-                collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter), 
+            // new ParallelCommandGroup(
+            //     collectCommand.runCollectFeedCommand(collector, collectorArm, pivot, feeder, shooter), 
                 // new PivotRangeCommand(pivot, range3)
-                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path3), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain)
-            ),
+                // SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path3), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain)
+            // ),
 
             new ParallelCommandGroup(  
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path3), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),  
@@ -165,12 +172,11 @@ public class CenterL3
             new ParallelCommandGroup(
                 new RunShooter(shooter, range3),
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path4), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
-                collectCommand.runCollectCommand(drivetrain, collector, collectorArm)
+                collectCommand.runCollectCommand(collector, collectorArm)
             ),
-        
 
             new ParallelCommandGroup(
-                collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter), 
+                collectCommand.runCollectFeedCommand(collector, collectorArm, pivot, feeder, shooter), 
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path5), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain)
             ),
 

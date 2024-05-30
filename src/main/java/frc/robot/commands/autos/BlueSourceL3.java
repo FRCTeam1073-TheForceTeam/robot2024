@@ -97,7 +97,7 @@ public class BlueSourceL3
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
                 new SequentialCommandGroup(
-                    collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter),
+                    collectCommand.runCollectFeedCommand(collector, collectorArm, pivot, feeder, shooter),
                     new ParallelCommandGroup(    
                         new RunShooter(shooter, rangeFinder),
                         new PivotRangeCommand(pivot, rangeFinder)
@@ -113,7 +113,7 @@ public class BlueSourceL3
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path3), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
                 new SequentialCommandGroup(
-                    collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter),
+                    collectCommand.runCollectFeedCommand(collector, collectorArm, pivot, feeder, shooter),
                     new ParallelCommandGroup(    
                         new RunShooter(shooter, rangeFinder),
                         new PivotRangeCommand(pivot, rangeFinder)
