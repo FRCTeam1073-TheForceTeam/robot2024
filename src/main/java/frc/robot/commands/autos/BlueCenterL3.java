@@ -93,7 +93,7 @@ public class BlueCenterL3
     //second path
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
-                collectCommand.runCollectFeedCommand(collector, collectorArm, pivot, feeder, shooter)
+                collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter)
             ),
             new ParallelCommandGroup(
                 new RunShooter(shooter, rangeFinder, range2),
@@ -103,7 +103,7 @@ public class BlueCenterL3
     //third path
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path3), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
-                collectCommand.runCollectFeedCommand(collector, collectorArm, pivot, feeder, shooter)
+                collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter)
             ),
             new ParallelCommandGroup(
                 new RunShooter(shooter, rangeFinder, range3),

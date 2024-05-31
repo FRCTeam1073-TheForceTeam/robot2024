@@ -51,7 +51,7 @@ public class CollectFeedCommand extends Command
         this::isStowed), //checks if arm is already stowed. If it is, then don't go to stow again
       new ParallelDeadlineGroup(
         new LoadFeeder(m_feeder, 1.5),
-        new CollectorIntakeOutCommand(m_collector, m_collectorArm)
+        new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain)
       ),
       new ParallelCommandGroup(
         new ArmPoseCommand(m_collectorArm, POSE.START),
@@ -72,7 +72,7 @@ public class CollectFeedCommand extends Command
     );
   }
 
-  public SequentialCommandGroup runCollectFeedCommand(Collector m_collector, CollectorArm m_collectorArm, Pivot m_pivot, Feeder m_feeder, Shooter m_shooter) {
+  public SequentialCommandGroup runCollectFeedCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm, Pivot m_pivot, Feeder m_feeder, Shooter m_shooter) {
     ArmPoseTeleop armCommands = new ArmPoseTeleop(m_collectorArm);
     return new SequentialCommandGroup(
       new ConditionalCommand(
@@ -84,7 +84,7 @@ public class CollectFeedCommand extends Command
         this::isStowed), //checks if arm is already stowed. If it is, then don't go to stow again
       new ParallelDeadlineGroup(
         new LoadFeeder(m_feeder, 1.5),
-        new CollectorIntakeOutCommand(m_collector, m_collectorArm)
+        new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain)
       ),
       new ParallelCommandGroup(
         new ArmPoseCommand(m_collectorArm, POSE.START),
@@ -97,14 +97,14 @@ public class CollectFeedCommand extends Command
     );
   }
 
-  public SequentialCommandGroup runCollectCommand(Collector m_collector, CollectorArm m_collectorArm){
+  public SequentialCommandGroup runCollectCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm){
     ArmPoseTeleop armCommands = new ArmPoseTeleop(m_collectorArm);
 
     return new SequentialCommandGroup(
       new ConditionalCommand(
-        new CollectorIntakeOutCommand(m_collector, m_collectorArm), 
+        new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain), 
         new SequentialCommandGroup(
-          new CollectorIntakeCommand(m_collector, m_collectorArm),
+          new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
           armCommands.stowPose()
         ), 
         this::isAmpPose)

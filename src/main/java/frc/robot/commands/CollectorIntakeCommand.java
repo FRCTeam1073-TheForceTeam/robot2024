@@ -14,6 +14,7 @@ import frc.robot.subsystems.OI;
 public class CollectorIntakeCommand extends Command {
   Collector m_collector;
   CollectorArm m_collectorArm;
+  Drivetrain m_drivetrain;
   OI m_OI;
   double minRange;
   double maxRange;
@@ -33,11 +34,12 @@ public class CollectorIntakeCommand extends Command {
    * <p> This command is used for intaking into the collector from the ground
    * <p> This command ends when a note is in the collector
   */
-  public CollectorIntakeCommand(Collector collector, CollectorArm collectorArm) {
+  public CollectorIntakeCommand(Collector collector, CollectorArm collectorArm, Drivetrain ds) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     m_collector = collector;
     m_collectorArm = collectorArm;
+    m_drivetrain = ds;
     minRange = 0.4;
     maxRange = 0.72;
     intakeRateThreshold = 0.001;

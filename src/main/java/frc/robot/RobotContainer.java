@@ -205,7 +205,7 @@ public class RobotContainer {
     armAmpCommand.onTrue(m_armPoseTeleop.ampPose());
 
     Trigger collectCommand = new Trigger(m_OI::getOperatorRightBumper);
-    collectCommand.onTrue(m_collectAndFeed.runCollectCommand(m_collector, m_collectorArm));
+    collectCommand.onTrue(m_collectAndFeed.runCollectCommand(m_drivetrain, m_collector, m_collectorArm));
 
     Trigger outtakeCommand = new Trigger(m_OI::getOperatorLeftBumper);
     outtakeCommand.onTrue(m_collectorOuttakeCommand);

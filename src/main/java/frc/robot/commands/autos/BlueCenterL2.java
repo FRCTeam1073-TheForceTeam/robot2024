@@ -78,7 +78,7 @@ public class BlueCenterL2
     
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
-                collectCommand.runCollectFeedCommand(collector, collectorArm, pivot, feeder, shooter)
+                collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter)
             ),
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30),

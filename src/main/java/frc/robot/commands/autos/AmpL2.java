@@ -97,7 +97,7 @@ public class AmpL2
             SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path1), alignSchema, drivetrain),
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), alignSchema, drivetrain),
-                collectCommand.runCollectFeedCommand(collector, collectorArm, pivot, feeder, shooter)
+                collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter)
             ),
             new ParallelCommandGroup(
                 new RunShooter(shooter, rangeFinder),

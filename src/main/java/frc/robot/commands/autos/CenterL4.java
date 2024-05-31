@@ -93,7 +93,7 @@ public class CenterL4
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
                 new SequentialCommandGroup(
-                    collectCommand.runCollectFeedCommand(collector, collectorArm, pivot, feeder, shooter),
+                    collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter),
                     new ParallelCommandGroup(    
                         new RunShooter(shooter, rangeFinder),
                         new PivotRangeCommand(pivot, rangeFinder)

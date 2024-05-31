@@ -38,7 +38,7 @@ public class HandoffCommand extends Command
       //),
       new ParallelDeadlineGroup(
         new LoadFeeder(m_feeder, 1.5),
-        new CollectorIntakeOutCommand(m_collector, m_collectorArm)
+        new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain)
       ),
       new ParallelCommandGroup(
         new ArmPoseCommand(m_collectorArm, POSE.START),
