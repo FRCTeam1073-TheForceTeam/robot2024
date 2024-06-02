@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.AprilTagFinder;
@@ -105,9 +106,12 @@ public class CollectFeedCommand extends Command
         new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain), 
         new SequentialCommandGroup(
           new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
-          armCommands.stowPose()
-        ), 
-        this::isAmpPose)
+          new ParallelRaceGroup(
+            new AdjustCollector(m_collector),
+            armCommands.stowPose()
+          )
+        ),
+      this::isAmpPose)
     );
   }
 }

@@ -55,7 +55,7 @@ public class SourceL2
         // avoidStagePost.blend_radius = 0.6;
 
         double range1 = 5.6;
-        double range2 = 5.6;
+        double range2 = 5.4;
 
         ArrayList<Segment> segments1 = new ArrayList<Segment>();
         segments1.add(new Segment(start, pathShootPoint, 0.51 * allianceSign, 2.5));
