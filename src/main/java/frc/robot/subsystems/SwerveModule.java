@@ -234,7 +234,8 @@ public class SwerveModule extends DiagnosticsBase implements Sendable
 
         // Set control direction of motors:
         steerMotor.setInverted(true);
-        driveMotor.setInverted(false);
+        System.out.println(cfg.isInverted);
+        driveMotor.setInverted(cfg.isInverted);
 
 
         // Default to brakes off:

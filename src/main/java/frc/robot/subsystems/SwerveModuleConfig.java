@@ -37,6 +37,8 @@ public class SwerveModuleConfig
     public double driveMaxIntegrator = 400.0;
     public double steerMaxIntegrator = 400.0;    
 
+    public boolean isInverted = false;
+
     /**SwerveModuleConfig contstructor sets PIDF values and current limits
      * 
      */

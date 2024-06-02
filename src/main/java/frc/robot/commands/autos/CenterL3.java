@@ -45,7 +45,7 @@ public class CenterL3
 
         Path.Point start = new Path.Point(0.0, 0.0);
         Path.Point pathShootPoint = new Path.Point(0.6308, 0.2343 * allianceSign);
-        Path.Point wingNote7 = new Path.Point(1.700267, -1.26481 * allianceSign); //-0.202768 Y
+        Path.Point wingNote7 = new Path.Point(1.4938, -0.202768 * allianceSign); //-0.202768 Y
         //Path.Point btwPoint = new Path.Point(0.8090, 0.3534 * allianceSign);
         Path.Point wingNote6 = new Path.Point(1.331, 1.0337 * allianceSign);
         Path.Point afterWingNote6 = new Path.Point(0.67937, -0.435164 * allianceSign);
@@ -65,15 +65,16 @@ public class CenterL3
 
         ArrayList<Segment> segments2 = new ArrayList<Segment>();
         segments2.add(new Segment(pathShootPoint, wingNote6, 0.0 * allianceSign, 3.0));
-        segments2.add(new Segment(wingNote6, pathShootPoint, 0.0 * allianceSign, 3.0));
+        //segments2.add(new Segment(wingNote6, pathShootPoint, 0.0 * allianceSign, 3.0));
 
         segments2.get(0).entryActivateValue = true;
         segments2.get(0).entryActivate = alignSchema;
         segments2.get(0).exitActivateValue = false;
         segments2.get(0).exitActivate = alignSchema;
+        segments2.get(0).end.blend_radius = 0.35;
 
         ArrayList<Segment> segments3 = new ArrayList<Segment>();
-        segments3.add(new Segment(wingNote6, pathShootPoint, 0 * allianceSign, 3.0)); //TODO: ask about the orientations
+        segments3.add(new Segment(wingNote6, pathShootPoint, 0.0 * allianceSign, 3.0)); //TODO: ask about the orientations
         //segments1.add(new Segment(shootPoint, wingNote7, 0, 2.5));
         segments3.get(0).entryActivateValue = true;
         segments3.get(0).entryActivate = alignSchema;
@@ -105,7 +106,7 @@ public class CenterL3
         Path path1 = new Path(segments1, -0.11083 * allianceSign);
         path1.transverseVelocity = 5.0;
 
-        Path path2 = new Path(segments2, 1.002538 * allianceSign);  // 0.2538
+        Path path2 = new Path(segments2, 0.2538 * allianceSign);  // 0.2538
         path2.transverseVelocity = 5.0;
         
         Path path3 = new Path(segments3, -0.0524 * allianceSign);
@@ -167,7 +168,6 @@ public class CenterL3
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path4), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain),
                 collectCommand.runCollectCommand(drivetrain, collector, collectorArm)
             ),
-        
 
             new ParallelCommandGroup(
                 collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter), 
