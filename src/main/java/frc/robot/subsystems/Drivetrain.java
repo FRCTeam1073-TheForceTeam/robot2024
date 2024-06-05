@@ -63,7 +63,6 @@ public class Drivetrain extends DiagnosticsSubsystem
 
     SwerveModuleConfig moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 0;
-    moduleConfig.isInverted = true;
     moduleConfig.position = new Translation2d(Preferences.getDouble("Drive.ModulePositions", 0.264), Preferences.getDouble("Drive.ModulePositions", 0.264));
 
     modules[0] = new SwerveModule(moduleConfig, moduleIDConfig);
@@ -74,7 +73,6 @@ public class Drivetrain extends DiagnosticsSubsystem
 
     moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 1;
-    moduleConfig.isInverted = false;
     moduleConfig.position = new Translation2d(Preferences.getDouble("Drive.ModulePositions", 0.264), -Preferences.getDouble("Drive.ModulePositions", 0.264));
 
     modules[1] = new SwerveModule(moduleConfig, moduleIDConfig);
@@ -85,7 +83,6 @@ public class Drivetrain extends DiagnosticsSubsystem
 
     moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 2;
-    moduleConfig.isInverted = true;
     moduleConfig.position = new Translation2d(-Preferences.getDouble("Drive.ModulePositions", 0.264), Preferences.getDouble("Drive.ModulePositions", 0.264));
 
     modules[2] = new SwerveModule(moduleConfig, moduleIDConfig);
@@ -95,7 +92,6 @@ public class Drivetrain extends DiagnosticsSubsystem
     moduleIDConfig = new SwerveModuleIDConfig(12, 8, 4);
     moduleConfig = new SwerveModuleConfig(); // Gets preferences and defaults for fields.
     moduleConfig.moduleNumber = 3;
-    moduleConfig.isInverted = false;
     moduleConfig.position = new Translation2d(-Preferences.getDouble("Drive.ModulePositions", 0.264), -Preferences.getDouble("Drive.ModulePositions", 0.264));
 
     modules[3] = new SwerveModule(moduleConfig, moduleIDConfig);
