@@ -4,7 +4,9 @@
 
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.RangeFinder;
@@ -16,6 +18,7 @@ public class DynamicPivotRangeCommand extends Command {
   private RangeFinder rangefinder;
   private ShooterInterpolatorTable pivotTable;
   private Drivetrain drivetrain;
+  private AprilTagFinder tagFinder;
   private double targetPositionRad;
   private boolean isPivotOn;
   private double tolerance;
@@ -24,17 +27,24 @@ public class DynamicPivotRangeCommand extends Command {
   double currentRange;
   double avgRange;
 
+  double currentTime = 0.0;
+  double oldTime = 0.0;
+
   double range;
+  double rangeRate = 0;
 
   double count;
+
+  double ySpeedProportional = 0;
 
   boolean isWaiting = true;
 
 
-  public DynamicPivotRangeCommand(Pivot pivot, RangeFinder rangefinder, Drivetrain drivetrain) {
+  public DynamicPivotRangeCommand(Pivot pivot, RangeFinder rangefinder, Drivetrain drivetrain, AprilTagFinder tagFinder) {
     this.pivot = pivot;
     this.rangefinder = rangefinder;
     this.drivetrain = drivetrain;
+    this.tagFinder = tagFinder;
     pivotTable = new ShooterInterpolatorTable();
     tolerance = -1;
     range = -1;
@@ -54,18 +64,30 @@ public class DynamicPivotRangeCommand extends Command {
   @Override
   public void execute() {
     isWaiting = true;
-    currentRange = rangefinder.getRange();
   
-    avgRange = (0.05 * avgRange) + (0.95 * currentRange);
+    if (rangefinder.getRange() > 1.0)
+    {
+      currentRange = rangefinder.getRange();
+    }
+    
+    ySpeedProportional = (drivetrain.getChassisSpeeds().vyMetersPerSecond * 0.3);
+    
+    if(ySpeedProportional > 0){
+      ySpeedProportional += drivetrain.getChassisSpeeds().vyMetersPerSecond * 0.15;
+    }
 
+    avgRange = (0.25 * avgRange) + (0.75 * currentRange);
+    
     if (count < 20)
     {
       count++;
     }
     else{ 
-      targetPositionRad = pivotTable.interpolatePivotAngle(avgRange) + (drivetrain.getChassisSpeeds().vxMetersPerSecond * 0.2);
+      targetPositionRad = pivotTable.interpolatePivotAngle(avgRange) - ySpeedProportional;
       pivot.setTargetPositionInRad(targetPositionRad);
     }
+
+    
   }
 
   // Called once the command ends or is interrupted.

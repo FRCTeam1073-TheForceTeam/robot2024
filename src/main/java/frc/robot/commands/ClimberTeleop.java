@@ -12,6 +12,8 @@ public class ClimberTeleop extends Command {
 
   Climber m_climber;
   OI m_oi;
+  double previousLeftPosition = 0.0;
+  double previousRightPosition = 0.0;
 
   /** Creates a new ClimberTeleop. */
   public ClimberTeleop(Climber climber, OI oi) {
@@ -43,7 +45,14 @@ public class ClimberTeleop extends Command {
 
       m_climber.setVelocities(leftVelocity, rightVelocity);
     }
-    
+    if(m_oi.getCollectMode()){
+      if(Math.abs(m_climber.getLeftPosition() - previousLeftPosition) > .04 ||
+      Math.abs(m_climber.getRightPosition() - previousRightPosition) > .04){
+        m_climber.setPositions(m_climber.getLeftPosition(), m_climber.getRightPosition());
+      }
+      previousLeftPosition = m_climber.getLeftPosition();
+      previousRightPosition = m_climber.getRightPosition();
+    }
   }
 
   // Called once the command ends or is interrupted.

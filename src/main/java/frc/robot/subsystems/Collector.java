@@ -47,11 +47,11 @@ public class Collector extends DiagnosticsSubsystem {
   private final double collectorWheelRadius = 0.0254; //meters
   private final double collectorMeterPerRotations = -collectorWheelRadius * 2 * Math.PI * collectorGearRatio;
 
-  //private final SlewRateLimiter collectorLimiter;
+  // private final SlewRateLimiter collectorLimiter;
 
-  // private final double intakeTicksPerRadian = 2048.0 * collectorGearRatio / (2.0 * Math.PI);
+  private final double intakeTicksPerRadian = 2048.0 * collectorGearRatio / (2.0 * Math.PI);
   
-  // fill in PID values
+  //fill in PID values
   
   private double collect_kP = 0.27;
   private double collect_kI = 0;
@@ -90,7 +90,7 @@ public class Collector extends DiagnosticsSubsystem {
     tof2Freq = tof2DutyCycleInput.getFrequency();
     tof2DutyCycle = tof2DutyCycleInput.getOutput();
     tof2Range = tof2CollectorScaleFactor * (tof2DutyCycle / tof2Freq - 0.001) / 1000; //supposedly in meters
-    // updateDiagnostics();
+    updateDiagnostics();
   }
   
   private void runCollectMotor(double vel)
@@ -178,8 +178,8 @@ public class Collector extends DiagnosticsSubsystem {
     builder.addDoubleProperty("tof1CollectorRange", this::getRangeTOF1, null);
     builder.addDoubleProperty("tof2CollectorRange", this::getRangeTOF2, null);
     builder.addBooleanProperty("Collector Has Note", this::hasNote, null);
-    //builder.addBooleanProperty("ok", this::isOK, null);
-    //builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
+    // builder.addBooleanProperty("ok", this::isOK, null);
+    // builder.addStringProperty("diagnosticResult", this::getDiagnosticResult, null);
   }
 
   @Override

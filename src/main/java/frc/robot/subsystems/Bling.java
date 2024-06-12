@@ -70,6 +70,7 @@ public class Bling extends DiagnosticsSubsystem {
   public void periodic() {
     // This method will be called once per scheduler run
     m_led.setData(m_ledBuffer);
+    setBatteryBling();
 
     if(!DriverStation.isDisabled()){
       setBatteryBling();

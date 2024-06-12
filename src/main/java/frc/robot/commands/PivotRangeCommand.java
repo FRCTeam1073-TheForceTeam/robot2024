@@ -68,8 +68,9 @@ public class PivotRangeCommand extends Command
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    // targetPositionRad = pivotTable.interpolatePivotAngle(rangefinder.getRange());
-    // targetPositionRad = pivot.getDebugPivotAngle();
+    //SHOOTER TUNING
+    //targetPositionRad = pivotTable.interpolatePivotAngle(rangefinder.getRange());
+    //targetPositionRad = pivot.getDebugPivotAngle();
     isWaiting = true;
     avgRange = 0.0;
     count = 0;
@@ -122,6 +123,7 @@ public class PivotRangeCommand extends Command
         }
       }
     }
+    //pivot.setTargetPositionInRad(targetPositionRad);
     
   }
 

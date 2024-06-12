@@ -70,7 +70,7 @@ public class RobotContainer {
   private final Feeder m_feeder = new Feeder(); 
   private final Drivetrain m_drivetrain = new Drivetrain();
   private final OI m_OI = new OI();
-  private final Climber m_climber = new Climber();
+  private final Climber m_climber = new Climber(m_OI);
   private final RangeFinder m_rangeFinder = new RangeFinder();
   private final AprilTagFinder m_aprilTagFinder = new AprilTagFinder();
   private final Headlight m_headlight = new Headlight();
@@ -178,7 +178,7 @@ public class RobotContainer {
   private void configureBindings()
   {
     Trigger loadNoteToFeeder = new Trigger(m_OI::getOperatorLeftTrigger);
-    loadNoteToFeeder.onTrue(m_collectAndFeed.runCollectFeedCommand(m_drivetrain, m_collector, m_collectorArm, m_pivot, m_feeder, m_shooter, m_rangeFinder));
+    loadNoteToFeeder.onTrue(m_collectAndFeed.runCollectFeedCommand(m_drivetrain, m_collector, m_collectorArm, m_pivot, m_feeder, m_shooter, m_rangeFinder, m_aprilTagFinder));
     
     Trigger launchFeederToSpeaker = new Trigger(m_OI::getOperatorRightTrigger);
     launchFeederToSpeaker.onTrue(m_launchFeederToSpeaker.runLaunchFeedertoSpeaker(m_shooter, m_feeder, m_pivot, m_rangeFinder));
@@ -216,7 +216,7 @@ public class RobotContainer {
     // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
     // cancelling on release.
     Trigger dynamicAimCommand = new Trigger(m_OI::getOperatorDPadRight);
-    dynamicAimCommand.onTrue(m_launchFeederToSpeaker.runDynamicAiming(m_pivot, m_shooter, m_rangeFinder, m_drivetrain));
+    dynamicAimCommand.onTrue(m_launchFeederToSpeaker.runDynamicAiming(m_pivot, m_shooter, m_rangeFinder, m_drivetrain, m_aprilTagFinder));
   }
 
   public void autonomousInit()

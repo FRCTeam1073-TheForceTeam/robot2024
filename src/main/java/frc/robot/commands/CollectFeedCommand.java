@@ -8,8 +8,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelDeadlineGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.subsystems.AprilTagFinder;
 import frc.robot.subsystems.Collector;
 import frc.robot.subsystems.CollectorArm;
 import frc.robot.subsystems.Drivetrain;
@@ -38,7 +40,7 @@ public class CollectFeedCommand extends Command
     return m_collectorArm.getPoseName() == POSE.AMP;
   }
 
-  public SequentialCommandGroup runCollectFeedCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm, Pivot m_pivot, Feeder m_feeder, Shooter m_shooter, RangeFinder m_rangeFinder) {
+  public SequentialCommandGroup runCollectFeedCommand(Drivetrain m_drivetrain, Collector m_collector, CollectorArm m_collectorArm, Pivot m_pivot, Feeder m_feeder, Shooter m_shooter, RangeFinder m_rangeFinder, AprilTagFinder m_AprilTagFinder) {
     ArmPoseTeleop armCommands = new ArmPoseTeleop(m_collectorArm);
     return new SequentialCommandGroup(
       new ConditionalCommand(
@@ -60,9 +62,14 @@ public class CollectFeedCommand extends Command
         )
       ),
       new ParallelCommandGroup(
-        new DynamicPivotRangeCommand(m_pivot, m_rangeFinder, m_drivetrain),
+        new DynamicPivotRangeCommand(m_pivot, m_rangeFinder, m_drivetrain, m_AprilTagFinder),
         new DynamicRunShooter(m_shooter, m_rangeFinder)
       )
+      // new ParallelCommandGroup(
+      //   new RunShooter(m_shooter, m_rangeFinder),
+      //   new PivotRangeCommand(m_pivot, 0)
+      // )
+      
     );
   }
 
@@ -99,9 +106,12 @@ public class CollectFeedCommand extends Command
         new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain), 
         new SequentialCommandGroup(
           new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
-          armCommands.stowPose()
-        ), 
-        this::isAmpPose)
+          new ParallelRaceGroup(
+            new AdjustCollector(m_collector),
+            armCommands.stowPose()
+          )
+        ),
+      this::isAmpPose)
     );
   }
 }

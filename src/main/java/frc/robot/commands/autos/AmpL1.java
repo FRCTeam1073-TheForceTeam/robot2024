@@ -56,7 +56,6 @@ public class AmpL1
         Path path = new Path(segments, -0.724 * allianceSign);
 
         return new SequentialCommandGroup(
-            new WaitCommand(7.0),
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), alignSchema, drivetrain),
                 new ParallelCommandGroup(
