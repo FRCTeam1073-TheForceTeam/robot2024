@@ -9,12 +9,9 @@ import frc.robot.subsystems.Collector;
 
 public class AdjustCollector extends Command {
   Collector collector;
-  private double maxCollectRange = 0.33;
-  private double minCollectRange = 0.32;
-  private double prevRange = -1;
-  private double currRange = -1;
-  private boolean signSet = false;
-  private int sign = 1;
+  private double maxCollectRange = 0.11;
+  private double minCollectRange = 0.09;
+  private double range = 0;
 
   /** Creates a new AdjustCollector. */
   public AdjustCollector(Collector collector) {
@@ -29,26 +26,16 @@ public class AdjustCollector extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(currRange != -1){
-      prevRange = currRange;
-    }
-    currRange = collector.getRangeTOF1();
-    if(currRange < minCollectRange){
+    range = collector.getRangeTOF2();
+    if(range < minCollectRange){
       // if note is too close to ToF sensor, need to back out of the colector (slowly)
-      if(signSet = false && prevRange != -1 && prevRange > currRange){
-        signSet = true;
-        sign *= -1;
-      }
-      collector.setTargetCollectorVelocity(sign * -0.7);
+      collector.setTargetCollectorVelocity(-0.7);
     }
-    if(currRange > maxCollectRange){
+    if(range > maxCollectRange){
       // if note is too far from the ToF sensor, pull farther into collector (slowly)
-      if(signSet = false && prevRange != -1 && prevRange < currRange){
-        signSet = true;
-        sign *= -1;
-      }
-      collector.setTargetCollectorVelocity(sign * 0.7);
-    }}
+      collector.setTargetCollectorVelocity(0.7);
+    }
+  }
 
   // Called once the command ends or is interrupted.
   @Override
