@@ -142,8 +142,8 @@ public class Collector extends DiagnosticsSubsystem {
     TalonFXConfiguration collectConfigs = new TalonFXConfiguration();
     collectConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RotorSensor;
     collectConfigs.MotionMagic.MotionMagicCruiseVelocity = 20;
-    collectConfigs.MotionMagic.MotionMagicAcceleration = 9000;
-    collectConfigs.MotionMagic.MotionMagicJerk = 9000;
+    collectConfigs.MotionMagic.MotionMagicAcceleration = 9500;
+    collectConfigs.MotionMagic.MotionMagicJerk = 9500;
     collectMotor.getConfigurator().apply(collectConfigs, 0.5);
 
     //PID loop setting for collect motor
