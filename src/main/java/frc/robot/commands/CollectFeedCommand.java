@@ -106,9 +106,10 @@ public class CollectFeedCommand extends Command
         new CollectorIntakeOutCommand(m_collector, m_collectorArm, m_drivetrain), 
         new SequentialCommandGroup(
           new CollectorIntakeCommand(m_collector, m_collectorArm, m_drivetrain),
-          new ParallelRaceGroup(
-            new AdjustCollector(m_collector),
-            armCommands.stowPose()
+          //new WaitCommand(1),
+          new ParallelDeadlineGroup(
+            armCommands.stowPose(),
+            new AdjustCollector(m_collector)
           )
         ),
       this::isAmpPose)

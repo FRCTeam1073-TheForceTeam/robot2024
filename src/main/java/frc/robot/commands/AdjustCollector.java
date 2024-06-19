@@ -9,8 +9,7 @@ import frc.robot.subsystems.Collector;
 
 public class AdjustCollector extends Command {
   Collector collector;
-  private double maxCollectRange = 0.11;
-  private double minCollectRange = 0.09;
+  private double minCollectRange = 0.15;
   private double range = 0;
 
   /** Creates a new AdjustCollector. */
@@ -29,10 +28,6 @@ public class AdjustCollector extends Command {
     range = collector.getRangeTOF2();
     if(range < minCollectRange){
       // if note is too close to ToF sensor, need to back out of the colector (slowly)
-      collector.setTargetCollectorVelocity(-0.7);
-    }
-    if(range > maxCollectRange){
-      // if note is too far from the ToF sensor, pull farther into collector (slowly)
       collector.setTargetCollectorVelocity(0.7);
     }
   }
@@ -46,6 +41,6 @@ public class AdjustCollector extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return ((collector.getRangeTOF1() <= maxCollectRange) && (collector.getRangeTOF1() >= minCollectRange));
+    return (range >= minCollectRange);
   }
 }

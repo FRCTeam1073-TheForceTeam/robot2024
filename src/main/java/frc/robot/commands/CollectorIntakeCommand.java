@@ -60,53 +60,54 @@ public class CollectorIntakeCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double rate = 0;
-    tofCurrentValue = m_collector.getRangeTOF1(); 
-    if(isCollectable){
-      rate = (tofCurrentValue - tofOldValue) / 0.02; // calculating the rate of change of the TOF range
+    // double rate = 0;
+    // tofCurrentValue = m_collector.getRangeTOF1(); 
+    // if(isCollectable){
+    //   rate = (tofCurrentValue - tofOldValue) / 0.02; // calculating the rate of change of the TOF range
 
-      if(rate < intakeRateThreshold){
-        isCollectable = false;
-      }
-    }
+    //   if(rate < intakeRateThreshold){
+    //     isCollectable = false;
+    //   }
+    // }
 
-    if(tofCurrentValue > maxRange){
-      isCollectable = true;
-      isCollected = false;
-      count = 0;
-    }
+    // if(tofCurrentValue > maxRange){
+    //   isCollectable = true;
+    //   isCollected = false;
+    //   count = 0;
+    // }
 
     
     
-    //if(m_collector.getRangeTOF() < minRange){
-    if(isCollectable){ // use the rate to decide when to stop
-      //vel = (0.05 * Math.abs(m_drivetrain.getChassisSpeeds().vxMetersPerSecond)) + 3;
-      vel = 18;
-      m_collector.setTargetCollectorVelocity(-vel); //meters per sec
-      extraIntakeCounter = 2;
-    }
-    else{
-      if(m_collectorArm.getPoseName() == POSE.AMP || m_collectorArm.getPoseName() == POSE.HANDOFF){
-        m_collector.setTargetCollectorVelocity(-vel);
-      }
-      else{
-        if(extraIntakeCounter == 0){
-          m_collector.setTargetCollectorVelocity(0);
-          extraIntakeCounter--;
-        }
-        else{
-          extraIntakeCounter--;
-        }
-      }
-      isCollected = true;
-    }
+    // //if(m_collector.getRangeTOF() < minRange){
+    // if(isCollectable){ // use the rate to decide when to stop
+    //   //vel = (0.05 * Math.abs(m_drivetrain.getChassisSpeeds().vxMetersPerSecond)) + 3;
+    //   vel = 18;
+    //   m_collector.setTargetCollectorVelocity(-vel); //meters per sec
+    //   extraIntakeCounter = 2;
+    // }
+    // else{
+    //   if(m_collectorArm.getPoseName() == POSE.AMP || m_collectorArm.getPoseName() == POSE.HANDOFF){
+    //     m_collector.setTargetCollectorVelocity(-vel);
+    //   }
+    //   else{
+    //     if(extraIntakeCounter == 0){
+    //       m_collector.setTargetCollectorVelocity(0);
+    //       extraIntakeCounter--;
+    //     }
+    //     else{
+    //       extraIntakeCounter--;
+    //     }
+    //   }
+    //   isCollected = true;
+    // }
 
-    if((isCollected && (count < 20))){ // check if it is collected and at the stow position and run for 50 loops
-      //m_collector.setTargetCollectorVelocity(0.5);
-      count++;
-    }
+    // if((isCollected && (count < 20))){ // check if it is collected and at the stow position and run for 50 loops
+    //   //m_collector.setTargetCollectorVelocity(0.5);
+    //   count++;
+    // }
 
-    tofOldValue = tofCurrentValue;
+    // tofOldValue = tofCurrentValue;
+    m_collector.setTargetCollectorVelocity(-8);
   }
 
   // Called once the command ends or is interrupted.
@@ -119,7 +120,7 @@ public class CollectorIntakeCommand extends Command {
   @Override
   public boolean isFinished() {
     //return isCollected;
-    if(count == 2){
+    if(m_collector.getRangeTOF2() < 0.3){
       return true;
     }
     else{
