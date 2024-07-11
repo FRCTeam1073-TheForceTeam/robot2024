@@ -31,15 +31,15 @@ public class TeleopRotateSchema extends MotionSchema
     public void update(Drivetrain drivetrain)
     {
         //multiples the angle by a number from 1 to the square root of 30:
-        double mult1 = 1.0 + (oi.getDriverLeftTrigger() * ((Math.sqrt(25)) - 1));
-        double mult2 = 1.0 + (oi.getDriverRightTrigger() * ((Math.sqrt(25)) - 1));
+        //double mult1 = 1.0 + (oi.getDriverLeftTrigger() * ((Math.sqrt(25)) - 1));
+        double mult1 = 1.0 + (oi.getDriverRightTrigger() * (12.5 - 1));
 
         double rightX = oi.getDriverRotate();
 
         //sets deadzones on the controller to extend to .05:
         if(Math.abs(rightX) < .15) {rightX = 0;}
 
-        double w = MathUtil.clamp(-(rightX * maximumRotationVelocity / 25) * mult1 * mult2, -maximumRotationVelocity, maximumRotationVelocity);
+        double w = MathUtil.clamp(-(rightX * maximumRotationVelocity / 25) * mult1, -maximumRotationVelocity, maximumRotationVelocity);
         if (active)
         {
             setRotate(w, 1);
