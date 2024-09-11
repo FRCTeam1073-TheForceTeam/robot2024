@@ -45,6 +45,9 @@ public class SourceL1
         Path.Point start = new Path.Point(0.0, 0.0);
         //Path.Point pathShootPoint = new Path.Point(3.165, -0.848 * allianceSign);
         Path.Point pathShootPoint = new Path.Point(2.921, -0.128 * allianceSign);
+        
+        Path.Point secondRingOne = new Path.Point(5.326, 0.505 * allianceSign);
+        Path.Point secondRingTwo = new Path.Point(7.396, -0.372 * allianceSign);
 
         double range1 = 5.6;
 
@@ -56,6 +59,26 @@ public class SourceL1
         segments.get(0).exitActivate = alignSchema;
 
         Path path = new Path(segments, 41.239 * degreesToRadians * allianceSign);
+        path.transverseVelocity = 1.5;
+
+        ArrayList<Segment> secondSegment = new ArrayList<Segment>();
+        segments.add(new Segment(pathShootPoint, secondRingOne, Math.PI / 6 * allianceSign, 2.5));
+        segments.get(0).entryActivateValue = true;
+        segments.get(0).entryActivate = alignSchema;
+        segments.get(0).exitActivateValue = false;
+        segments.get(0).exitActivate = alignSchema;      
+
+        Path secondPath = new Path(secondSegment, 2.123 * degreesToRadians * allianceSign);
+        path.transverseVelocity = 1.5;
+
+        ArrayList<Segment> thirdSegment = new ArrayList<Segment>();
+        segments.add(new Segment(secondRingOne, secondRingTwo, Math.PI / 6 * allianceSign, 2.5));
+        segments.get(0).entryActivateValue = true;
+        segments.get(0).entryActivate = alignSchema;
+        segments.get(0).exitActivateValue = false;
+        segments.get(0).exitActivate = alignSchema;
+        
+        Path thirdPath = new Path(thirdSegment, 7.526 * degreesToRadians * allianceSign);
         path.transverseVelocity = 1.5;
 
         // return new ParallelCommandGroup(
@@ -91,6 +114,8 @@ public class SourceL1
                 new RunFeeder(feeder, 30),
                 new NWStopShooter(shooter)
             ),
+            SchemaDriveAuto.create(new DrivePathSchema(drivetrain, secondPath), alignSchema, drivetrain),
+            SchemaDriveAuto.create(new DrivePathSchema(drivetrain, thirdPath), alignSchema, drivetrain),
             new NWSetPivot(pivot, 0.0)
         );
     }
