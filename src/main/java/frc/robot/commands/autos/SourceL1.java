@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.commands.AlignSpeakerAutoSchema;
+import frc.robot.commands.CollectFeedCommand;
+import frc.robot.commands.CollectorIntakeCommand;
 import frc.robot.commands.DrivePathSchema;
 import frc.robot.commands.NWSetPivot;
 import frc.robot.commands.NWStopShooter;
@@ -18,6 +20,8 @@ import frc.robot.commands.RunShooter;
 import frc.robot.commands.SchemaDriveAuto;
 import frc.robot.commands.WaitForShot;
 import frc.robot.subsystems.AprilTagFinder;
+import frc.robot.subsystems.Collector;
+import frc.robot.subsystems.CollectorArm;
 import frc.robot.subsystems.Drivetrain;
 import frc.robot.subsystems.Feeder;
 import frc.robot.subsystems.Headlight;
@@ -28,7 +32,7 @@ import frc.robot.subsystems.Shooter;
 public class SourceL1 
 {
     public static Command create(Drivetrain drivetrain, Headlight headlight, Shooter shooter, Pivot pivot, Feeder feeder, 
-        AprilTagFinder tagFinder, RangeFinder rangeFinder, boolean isRed)
+        Collector collector, CollectorArm collectorArm, AprilTagFinder tagFinder, RangeFinder rangeFinder, boolean isRed)
     {
         int allianceSign = 0;
         if (isRed)
@@ -101,22 +105,30 @@ public class SourceL1
 
         return new SequentialCommandGroup(
             new WaitCommand(1.0),
+            //ramps up and pivots the shoot as the drive base moves to the shooting position
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), alignSchema, drivetrain), 
                 new RunShooter(shooter, range1),
                 new PivotRangeCommand(pivot, range1)
             ),
+            //ramps up the shooter
             new ParallelCommandGroup(
-                new RunShooter(shooter, rangeFinder, range1),
+                new RunShooter(shooter, rangeFinder, range1), 
                 new PivotRangeCommand(pivot, rangeFinder, range1)
             ),
+            //shoot the note and then stop the shooter
             new ParallelCommandGroup(
                 new RunFeeder(feeder, 30),
                 new NWStopShooter(shooter)
             ),
-            SchemaDriveAuto.create(new DrivePathSchema(drivetrain, secondPath), alignSchema, drivetrain),
-            SchemaDriveAuto.create(new DrivePathSchema(drivetrain, thirdPath), alignSchema, drivetrain),
-            new NWSetPivot(pivot, 0.0)
+            new NWSetPivot(pivot, 0.0),
+            
+            //take new waypoints to get to note
+            new SequentialCommandGroup(
+                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, secondPath), alignSchema, drivetrain),
+                SchemaDriveAuto.create(new DrivePathSchema(drivetrain, thirdPath), alignSchema, drivetrain),
+                new CollectorIntakeCommand(collector, collectorArm, drivetrain)
+            )
         );
     }
 

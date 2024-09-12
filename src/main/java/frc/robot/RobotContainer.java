@@ -296,7 +296,7 @@ public class RobotContainer {
       case kNoAuto:
         return null;
       case kSourceL1:
-        return SourceL1.create(m_drivetrain, m_headlight, m_shooter, m_pivot, m_feeder, m_aprilTagFinder, m_rangeFinder, isRed);
+        return SourceL1.create(m_drivetrain, m_headlight, m_shooter, m_pivot, m_feeder, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
       case kSourceL2:
         return SourceL2.create(m_drivetrain, m_headlight, m_shooter, m_pivot, m_feeder, m_collectAndFeed, m_collector, m_collectorArm, m_aprilTagFinder, m_rangeFinder, isRed);
       case kSourceL3:
