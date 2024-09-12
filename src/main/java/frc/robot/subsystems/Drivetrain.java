@@ -278,6 +278,11 @@ public class Drivetrain extends DiagnosticsSubsystem
     odometry.update(Rotation2d.fromDegrees(getHeadingDegrees()), modulePositions);
   }
 
+  public SwerveModulePosition[] getSwerveModulePositions()
+  {
+    return modulePositions;
+  }
+
   public void resetOdometry(Pose2d where)
   {
     odometry.resetPosition(Rotation2d.fromDegrees(getHeadingDegrees()), modulePositions, where);
