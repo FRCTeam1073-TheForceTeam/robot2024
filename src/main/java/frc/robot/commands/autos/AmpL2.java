@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.AlignSpeakerAutoSchema;
 import frc.robot.commands.CollectFeedCommand;
+import frc.robot.commands.CollectorIntakeCommand;
 import frc.robot.commands.DrivePathSchema;
 import frc.robot.commands.NWSetPivot;
 import frc.robot.commands.Path;
@@ -44,8 +45,8 @@ public class AmpL2
         AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder, headlight);
 
         Path.Point startPoint = new Path.Point(0.0, 0.0);
-        Path.Point shootPoint = new Path.Point(1.757, 0.109 * allianceSign);
-        Path.Point collectShootPoint = new Path.Point(2.479, 0.163 * allianceSign);
+        Path.Point shootPoint = new Path.Point(1.7649722, 0.6477758 * allianceSign); //1.757 (x)  0.25(y)
+        Path.Point collectShootPoint = new Path.Point(2.107, 0.44 * allianceSign); //(0.2 y)
 
 
         double range1 = 2.5;
@@ -56,18 +57,20 @@ public class AmpL2
         segments.get(0).entryActivate = alignSchema;
         segments.get(0).exitActivateValue = false;
         segments.get(0).exitActivate = alignSchema;
+
         ArrayList<Segment> segments1 = new ArrayList<Segment>();
-        segments1.add(new Segment(shootPoint, shootPoint, 0.0, 2.5));
+        segments1.add(new Segment(shootPoint, shootPoint, -0.2, 2.5));
+
         ArrayList<Segment> segments2 = new ArrayList<Segment>();
-        segments2.add(new Segment(shootPoint, collectShootPoint, -0.588 * allianceSign, 2.5));
+        segments2.add(new Segment(shootPoint, collectShootPoint, -0.2 * allianceSign, 2.5));
         segments2.get(0).entryActivateValue  = true;
         segments2.get(0).entryActivate = alignSchema;
         segments2.get(0).exitActivateValue = false;
         segments2.get(0).exitActivate = alignSchema;
 
         Path path = new Path(segments, -0.724 * allianceSign);
-        Path path1 = new Path(segments1, 0.0);
-        Path path2 = new Path(segments2, -0.588 * allianceSign);
+        Path path1 = new Path(segments1, -0.5441317); //0.0  old(0.4)
+        Path path2 = new Path(segments2, -0.5441317 * allianceSign); //-0/588
 
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
@@ -97,7 +100,10 @@ public class AmpL2
             SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path1), alignSchema, drivetrain),
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), alignSchema, drivetrain),
-                collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter)
+                new SequentialCommandGroup(
+                    new CollectorIntakeCommand(collector, collectorArm, drivetrain), 
+                    collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter)
+                )
             ),
             new ParallelCommandGroup(
                 new RunShooter(shooter, rangeFinder),
