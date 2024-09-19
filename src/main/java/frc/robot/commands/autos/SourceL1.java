@@ -40,7 +40,8 @@ public class SourceL1
             allianceSign = -1;
         }
         AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder, headlight);
-        Double degreesToRadians = Math.PI / 180;
+      
+        double degreesToRadians = Math.PI / 180;
 
         Path.Point start = new Path.Point(0.0, 0.0);
         //Path.Point pathShootPoint = new Path.Point(3.165, -0.848 * allianceSign);
@@ -49,7 +50,7 @@ public class SourceL1
         double range1 = 5.6;
 
         ArrayList<Segment> segments = new ArrayList<Segment>();
-        segments.add(new Segment(start, pathShootPoint, Math.PI / 6 * allianceSign, 2.5));
+        segments.add(new Segment(start, pathShootPoint, ((Math.PI / 6) + 0.119) * allianceSign, 2.5));
         segments.get(0).entryActivateValue = true;
         segments.get(0).entryActivate = alignSchema;
         segments.get(0).exitActivateValue = false;
@@ -77,7 +78,7 @@ public class SourceL1
         // );
 
         return new SequentialCommandGroup(
-            new WaitCommand(1.0),
+            //new WaitCommand(1.0),
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), alignSchema, drivetrain), 
                 new RunShooter(shooter, range1),
