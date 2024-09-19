@@ -44,6 +44,7 @@ public class ShooterInterpolatorTable {
         // shooterVelocityTable.put(6.17, 32.0); // offset: 6 inches left
         // shooterVelocityTable.put(6.82, 34.0); // close enough
 
+
         // ex: shooterVelocityTable.put(0.0, 0.0);;
     }
 

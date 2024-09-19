@@ -40,6 +40,7 @@ public class SourceL1
             allianceSign = -1;
         }
         AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder, headlight);
+      
         double degreesToRadians = Math.PI / 180;
 
         Path.Point start = new Path.Point(0.0, 0.0);
