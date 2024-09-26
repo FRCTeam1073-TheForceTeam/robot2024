@@ -101,10 +101,17 @@ public class AmpL2
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path2), alignSchema, drivetrain),
                 new SequentialCommandGroup(
+                    //collectCommand.runCollectCommand(drivetrain, collector, collectorArm),
+                    //collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter, rangeFinder, tagFinder)
                     new CollectorIntakeCommand(collector, collectorArm, drivetrain), 
-                    collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter)
+                    collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter, rangeFinder, tagFinder)
                 )
             ),
+            /*new ParallelCommandGroup(
+                new PivotRangeCommand(pivot, rangeFinder),
+                new RunShooter(shooter, rangeFinder)
+            ),
+            */
             new ParallelCommandGroup(
                 new RunShooter(shooter, rangeFinder),
                 new PivotRangeCommand(pivot, rangeFinder)
