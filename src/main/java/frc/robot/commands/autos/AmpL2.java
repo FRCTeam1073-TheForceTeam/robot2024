@@ -46,7 +46,7 @@ public class AmpL2
 
         Path.Point startPoint = new Path.Point(0.0, 0.0);
         Path.Point shootPoint = new Path.Point(1.7649722, 0.6477758 * allianceSign); //1.757 (x)  0.25(y)
-        Path.Point collectShootPoint = new Path.Point(2.107, 0.44 * allianceSign); //(0.2 y)
+        Path.Point collectShootPoint = new Path.Point(2.04, 0.47 * allianceSign); //(0.2 y)
 
 
         double range1 = 2.5;
@@ -105,9 +105,27 @@ public class AmpL2
                     collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter)
                 )
             ),
+            //new ParallelCommandGroup(
+            //    new RunShooter(shooter, rangeFinder),
+            //    new PivotRangeCommand(pivot, rangeFinder)
+
             new ParallelCommandGroup(
-                new RunShooter(shooter, rangeFinder),
-                new PivotRangeCommand(pivot, rangeFinder)
+                    //warm up shooter, oproximit
+                    new RunShooter(shooter, range1),
+                    //warm up pivot oproximit
+                    new PivotRangeCommand(pivot, range1)
+                ),
+            new ParallelCommandGroup(
+                //shoot shot
+                new RunShooter(shooter, range1),
+                //find pivot
+                new PivotRangeCommand(pivot, range1)
+            ),
+            new ParallelCommandGroup(
+                //run feeder
+                new RunFeeder(feeder, 30),
+                //stop shooter
+                new StopShooter(shooter)
             )
         );
     }       

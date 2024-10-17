@@ -120,7 +120,7 @@ public class CollectorIntakeCommand extends Command {
   @Override
   public boolean isFinished() {
     //return isCollected;
-    if(m_collector.getRangeTOF2() < 0.3){
+    if(m_collector.getRangeTOF2() < 0.25){
       return true;
     }
     else{
