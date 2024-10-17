@@ -44,41 +44,21 @@ public class SourceL1
         double degreesToRadians = Math.PI / 180;
 
         Path.Point start = new Path.Point(0.0, 0.0);
-        //Path.Point pathShootPoint = new Path.Point(3.165, -0.848 * allianceSign);
-        Path.Point pathShootPoint = new Path.Point(2.921, -0.128 * allianceSign);
+        Path.Point pathShootPoint = new Path.Point(4.97, 0.42 * allianceSign);
 
         double range1 = 5.6;
 
         ArrayList<Segment> segments = new ArrayList<Segment>();
-        segments.add(new Segment(start, pathShootPoint, ((Math.PI / 6) + 0.119) * allianceSign, 2.5));
+        segments.add(new Segment(start, pathShootPoint, 0.51 * allianceSign, 2.5));
         segments.get(0).entryActivateValue = true;
         segments.get(0).entryActivate = alignSchema;
         segments.get(0).exitActivateValue = false;
         segments.get(0).exitActivate = alignSchema;
 
-        Path path = new Path(segments, 41.239 * degreesToRadians * allianceSign);
+        Path path = new Path(segments, Math.PI / 6 * allianceSign);
         path.transverseVelocity = 1.5;
 
-        // return new ParallelCommandGroup(
-        //     new WaitCommand(10.0),
-        //     new ParallelCommandGroup(
-        //         SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), new AlignSpeakerAutoSchema(tagFinder, headlight), drivetrain), 
-        //         new RunShooter(shooter, range1),
-        //         new PivotRangeCommand(pivot, range1)
-        //     ),
-        //     new SequentialCommandGroup(
-        //         new RunShooter(shooter, rangeFinder),
-        //         new PivotRangeCommand(pivot, rangeFinder),
-        //         new ParallelCommandGroup(
-        //             new RunFeeder(feeder, 30),
-        //             new NWStopShooter(shooter)
-        //         ),
-        //         new NWSetPivot(pivot, 0.0)
-        //     )
-        // );
-
         return new SequentialCommandGroup(
-            //new WaitCommand(1.0),
             new ParallelCommandGroup(
                 SchemaDriveAuto.create(new DrivePathSchema(drivetrain, path), alignSchema, drivetrain), 
                 new RunShooter(shooter, range1),
