@@ -45,8 +45,8 @@ public class AmpL2
         AlignSpeakerAutoSchema alignSchema = new AlignSpeakerAutoSchema(tagFinder, headlight);
 
         Path.Point startPoint = new Path.Point(0.0, 0.0);
-        Path.Point shootPoint = new Path.Point(1.7649722, 0.6477758 * allianceSign); //1.757 (x)  0.25(y)
-        Path.Point collectShootPoint = new Path.Point(2.04, 0.47 * allianceSign); //(0.2 y)
+        Path.Point shootPoint = new Path.Point(1.73, 0.6477758 * allianceSign); //1.757 (x)  0.25(y) 1.7649722 (x)
+        Path.Point collectShootPoint = new Path.Point(2.04, 0.8 * allianceSign); //(0.2 y)
 
 
         double range1 = 2.5;
@@ -68,9 +68,9 @@ public class AmpL2
         segments2.get(0).exitActivateValue = false;
         segments2.get(0).exitActivate = alignSchema;
 
-        Path path = new Path(segments, -0.724 * allianceSign);
-        Path path1 = new Path(segments1, -0.5441317); //0.0  old(0.4)
-        Path path2 = new Path(segments2, -0.5441317 * allianceSign); //-0/588
+        Path path = new Path(segments, -0.595 * allianceSign);  //-0.724
+        Path path1 = new Path(segments1, -0.51); //0.0  old(0.4)
+        Path path2 = new Path(segments2, -0.51 * allianceSign); //-0.588 - -0.5441317, -0.51
 
         return new SequentialCommandGroup(
             new ParallelCommandGroup(
@@ -105,6 +105,7 @@ public class AmpL2
                     collectCommand.runCollectFeedCommand(drivetrain, collector, collectorArm, pivot, feeder, shooter)
                 )
             ),
+            // hey we commented this out because it DOES NOT WORK and just makes the shooter keep running for eternity -vivi
             //new ParallelCommandGroup(
             //    new RunShooter(shooter, rangeFinder),
             //    new PivotRangeCommand(pivot, rangeFinder)
