@@ -46,10 +46,11 @@ public class AmpL2
 
         Path.Point startPoint = new Path.Point(0.0, 0.0);
         Path.Point shootPoint = new Path.Point(1.73, 0.6477758 * allianceSign); //1.757 (x)  0.25(y) 1.7649722 (x)
-        Path.Point collectShootPoint = new Path.Point(2.04, 0.8 * allianceSign); //(0.2 y)
+        Path.Point collectShootPoint = new Path.Point(2.09, 0.36 * allianceSign); //(0.2 y)
 
 
-        double range1 = 2.5;
+        double range1 = 2;
+        double range2 = 2.4;
 
         ArrayList<Segment> segments = new ArrayList<Segment>();
         segments.add(new Segment(startPoint, shootPoint, -0.724 * allianceSign, 2.5));
@@ -112,15 +113,15 @@ public class AmpL2
 
             new ParallelCommandGroup(
                     //warm up shooter, oproximit
-                    new RunShooter(shooter, range1),
+                    new RunShooter(shooter, range2),
                     //warm up pivot oproximit
-                    new PivotRangeCommand(pivot, range1)
+                    new PivotRangeCommand(pivot, range2)
                 ),
             new ParallelCommandGroup(
                 //shoot shot
-                new RunShooter(shooter, range1),
+                new RunShooter(shooter, range2),
                 //find pivot
-                new PivotRangeCommand(pivot, range1)
+                new PivotRangeCommand(pivot, range2)
             ),
             new ParallelCommandGroup(
                 //run feeder
