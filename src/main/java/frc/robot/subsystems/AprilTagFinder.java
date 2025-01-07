@@ -65,6 +65,7 @@ public class AprilTagFinder extends SubsystemBase {
 
   public boolean isAligned(){
     return aligned;
+    
   }
 
   public TagData readTagData(){
